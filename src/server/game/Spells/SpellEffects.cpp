@@ -3713,29 +3713,29 @@ void Spell::EffectEnchantItemTmp(SpellEffIndex effIndex)
 
     // rogue family enchantments exception by duration
     if (m_spellInfo->Id == 38615)
-        duration = 1800;                                    // 30 mins
+        duration = 864000;                                    // 10 days
     // other rogue family enchantments always 1 hour (some have spell damage=0, but some have wrong data in EffBasePoints)
     else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE)
-        duration = 3600;                                    // 1 hour
+        duration = 864000;                                    // 10 days
     // shaman family enchantments
     else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_SHAMAN)
-        duration = 1800;                                    // 30 mins
+        duration = 864000;                                    // 10 days
     // other cases with this SpellVisual already selected
     else if (m_spellInfo->SpellVisual[0] == 215)
-        duration = 1800;                                    // 30 mins
+        duration = 864000;                                    // 10 days
     // some fishing pole bonuses except Glow Worm which lasts full hour
     else if (m_spellInfo->SpellVisual[0] == 563 && m_spellInfo->Id != 64401)
-        duration = 600;                                     // 10 mins
+        duration = 864000;                                    // 10 days
     // shaman rockbiter enchantments
     else if (m_spellInfo->SpellVisual[0] == 0)
-        duration = 1800;                                    // 30 mins
+        duration = 864000;                                    // 10 days
     else if (m_spellInfo->Id == 29702)
-        duration = 300;                                     // 5 mins
+        duration = 864000;                                    // 10 days
     else if (m_spellInfo->Id == 37360)
-        duration = 300;                                     // 5 mins
+        duration = 864000;                                    // 10 days
     // default case
     else
-        duration = 3600;                                    // 1 hour
+        duration = 864000;                                    // 10 days
 
     // item can be in trade slot and have owner diff. from caster
     Player* item_owner = itemTarget->GetOwner();
