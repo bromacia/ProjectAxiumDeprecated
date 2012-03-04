@@ -51,6 +51,29 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 
     player->SendDuelCountdown(3000);
     plTarget->SendDuelCountdown(3000);
+    player->RemoveArenaSpellCooldowns();
+    plTarget->RemoveArenaSpellCooldowns();
+    player->RemoveAura(41425); // Remove Hypothermia Debuff
+    plTarget->RemoveAura(41425);
+    player->RemoveAura(25771); // Remove Forbearance Debuff
+    plTarget->RemoveAura(25771);
+    player->RemoveAura(57724); // Remove Sated Debuff
+    plTarget->RemoveAura(57724);
+    player->RemoveAura(57723); // Remove Exhaustion Debuff
+    plTarget->RemoveAura(57723);
+    player->RemoveAura(66233); // Remove Ardent Defender Debuff
+    plTarget->RemoveAura(66233);
+    player->RemoveAura(11196); // Remove Recently Bandaged Debuff
+    plTarget->RemoveAura(11196);
+    // Below - to prevent buff stack overflow crash with mages
+    player->RemoveAura(45204); // Clone Me!
+    plTarget->RemoveAura(45204);
+    player->RemoveAura(41054); // Copy Weapon
+    plTarget->RemoveAura(41054);
+    player->SetHealth(player->GetMaxHealth());
+    player->SetPower(POWER_MANA, player->GetMaxPower(POWER_MANA));
+    plTarget->SetHealth(plTarget->GetMaxHealth());
+    plTarget->SetPower(POWER_MANA,  plTarget->GetMaxPower(POWER_MANA));
 }
 
 void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recvPacket)
