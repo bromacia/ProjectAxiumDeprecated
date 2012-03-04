@@ -200,6 +200,12 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellInfo const* spellproto,
             else if ((spellproto->SpellFamilyFlags[0] & 0x10000000) && spellproto->SpellIconID == 2285)
                 return DIMINISHING_LIMITONLY;
             break;
+		}
+		case SPELLFAMILY_SHAMAN:
+		{
+            // Earthbind Totem - Slow
+            if (spellproto->Id == 3600)
+                return DIMINISHING_NONE;
         }
         default:
             break;
