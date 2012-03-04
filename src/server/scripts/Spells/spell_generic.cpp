@@ -28,6 +28,7 @@
 #include "GridNotifiers.h"
 #include "Group.h"
 #include "LFGMgr.h"
+#include "VMapFactory.h"
 
 class spell_gen_absorb0_hitlimit1 : public SpellScriptLoader
 {
@@ -2351,6 +2352,39 @@ class spell_gen_tournament_pennant : public SpellScriptLoader
         }
 };
 
+class spell_aoe_los : public SpellScriptLoader
+{
+    public:
+        spell_aoe_los() : SpellScriptLoader("spell_aoe_los") { }
+
+        class spell_aoe_los_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_aoe_los_SpellScript);
+
+            SpellCastResult CheckLos()
+            {
+                Unit *m_caster = GetCaster();
+                WorldLocation const* m_dstLoc = GetTargetDest();
+
+                if(VMAP::VMapFactory::createOrGetVMapManager()->isLineOfSightCalcEnabled())
+                    if (!m_caster->IsWithinLOS(m_dstLoc->GetPositionX(), m_dstLoc->GetPositionY(), m_dstLoc->GetPositionZ()))
+                        return SPELL_FAILED_LINE_OF_SIGHT;
+                
+                return SPELL_CAST_OK;
+            }
+
+            void Register()
+            {
+                OnCheckCast += SpellCheckCastFn(spell_aoe_los_SpellScript::CheckLos);
+            }
+        };
+
+        SpellScript* GetSpellScript() const
+        {
+            return new spell_aoe_los_SpellScript();
+        }
+};
+
 void AddSC_generic_spell_scripts()
 {
     new spell_gen_absorb0_hitlimit1();
@@ -2395,4 +2429,5 @@ void AddSC_generic_spell_scripts()
     new spell_gen_summon_tournament_mount();
     new spell_gen_on_tournament_mount();
     new spell_gen_tournament_pennant();
+    new spell_aoe_los();
 }
