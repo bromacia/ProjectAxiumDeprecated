@@ -3548,6 +3548,9 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->AttributesEx |= SPELL_ATTR0_CASTABLE_WHILE_DEAD;
                 break;
+            case 44559: // Damage Hack (Pet Passive)
+                spellInfo->AttributesEx |= SPELL_ATTR0_CANT_CANCEL;
+                break;
             default:
                 break;
         }
