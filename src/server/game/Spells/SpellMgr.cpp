@@ -2688,6 +2688,8 @@ void SpellMgr::LoadSpellCustomAttr()
                 case SPELL_AURA_OBS_MOD_HEALTH:
                 case SPELL_AURA_OBS_MOD_POWER:
                 case SPELL_AURA_POWER_BURN:
+					if (spellInfo->Speed == 0) // check if the spell is instant
+                        spellInfo->Speed = 200; // apply spell delay - 0.2sec
                     spellInfo->AttributesCu |= SPELL_ATTR0_CU_NO_INITIAL_THREAT;
                     break;
             }
@@ -2717,6 +2719,8 @@ void SpellMgr::LoadSpellCustomAttr()
                 case SPELL_EFFECT_JUMP:
                 case SPELL_EFFECT_JUMP_DEST:
                 case SPELL_EFFECT_LEAP_BACK:
+					if (spellInfo->Speed == 0) // check if the spell is instant
+                        spellInfo->Speed = 200; // apply spell delay - 0.2sec
                     spellInfo->AttributesCu |= SPELL_ATTR0_CU_CHARGE;
                     break;
                 case SPELL_EFFECT_PICKPOCKET:
