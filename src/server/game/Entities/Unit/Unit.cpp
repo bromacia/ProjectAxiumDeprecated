@@ -4891,6 +4891,8 @@ bool Unit::HandleHasteAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 case 13877:
                 case 33735:
                 {
+                    if (HasAura(46924)) //Bladestorm + Sweeping Strikes exploit prevention
+                        return false;
                     target = SelectNearbyTarget(victim);
                     if (!target)
                         return false;
@@ -5039,6 +5041,8 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 case 18765:
                 case 35429:
                 {
+                    if (HasAura(46924)) //Bladestorm + Sweeping Strikes exploit
+                        return false;
                     target = SelectNearbyTarget(victim);
                     if (!target)
                         return false;
