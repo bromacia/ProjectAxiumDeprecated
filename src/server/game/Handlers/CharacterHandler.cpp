@@ -1822,8 +1822,6 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
             trans->PAppend("DELETE FROM `character_social` WHERE `friend`= '%u'", lowGuid);
         }
 
-        // Leave Arena Teams
-        Player::LeaveAllArenaTeams(guid);
 
         // Reset homebind and position
         PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_PLAYER_HOMEBIND);
