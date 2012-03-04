@@ -1132,3 +1132,8 @@ bool BattlegroundMgr::IsBGWeekend(BattlegroundTypeId bgTypeId)
 {
     return IsHolidayActive(BGTypeToWeekendHolidayId(bgTypeId));
 }
+
+BattlegroundSet BattlegroundMgr::GetAllBattlegroundsWithTypeId(BattlegroundTypeId bgTypeId)
+{
+    return m_Battlegrounds[bgTypeId];
+}
