@@ -5237,8 +5237,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (m_caster->GetTypeId() == TYPEID_PLAYER && m_spellInfo->Id == 781 && !m_caster->isInCombat())
                     return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
-                Unit* target = m_targets.GetUnitTarget();
-                if (m_caster == target && m_caster->HasUnitState(UNIT_STATE_ROOT))
+                if (m_caster->HasUnitState(UNIT_STATE_ROOT))
                 {
                     if (m_caster->GetTypeId() == TYPEID_PLAYER)
                         return SPELL_FAILED_ROOTED;
@@ -5254,6 +5253,16 @@ SpellCastResult Spell::CheckCast(bool strict)
                         if (bg->GetStatus() == STATUS_IN_PROGRESS)
                             return SPELL_FAILED_NOT_IN_BATTLEGROUND;
                 break;
+            case SPELL_EFFECT_APPLY_AURA:
+            {
+                // Spells that cant be used while rooted (Shadowstep, Charge, Intercept, Intervene, Feral Charge Cat/Bear)
+                if (m_spellInfo->Id == 36554 || m_spellInfo->Id == 11578 || m_spellInfo->Id == 20252 || m_spellInfo->Id == 3411 || m_spellInfo->Id == 16979 || m_spellInfo->Id == 49376)
+				{
+                    if (m_caster->HasUnitState(UNIT_STATE_ROOT))
+                        return SPELL_FAILED_ROOTED;
+                    break;
+				}
+            }
             default:
                 break;
         }
