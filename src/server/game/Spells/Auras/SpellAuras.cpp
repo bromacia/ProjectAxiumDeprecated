@@ -1767,7 +1767,25 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                     else
                         caster->RemoveAurasDueToSpell(100001);
                 }
+				break;
             }
+			// Health Funnel
+            else if (GetSpellInfo()->SpellFamilyFlags[0] & 0x01000000 && target != caster)
+            {
+                // Improved Health Funnel
+                AuraEffect * aurEff = caster->GetAuraEffectOfRankedSpell(18704, 0);
+                if (apply && aurEff)
+                {
+                    uint32 spell = sSpellMgr->GetSpellWithRank(60956, sSpellMgr->GetSpellRank(aurEff->GetId()));
+                    target->CastSpell(target, spell, true, 0, 0, caster->GetGUID());
+                }
+                else
+                {
+                    target->RemoveAurasDueToSpell(60955);
+                    target->RemoveAurasDueToSpell(60956);
+                }
+            break;
+			}
             break;
     }
 }
