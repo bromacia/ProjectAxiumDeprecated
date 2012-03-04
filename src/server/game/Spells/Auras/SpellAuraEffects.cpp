@@ -3402,6 +3402,34 @@ void AuraEffect::HandleModMechanicImmunity(AuraApplication const* aurApp, uint8 
             target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_FREEZE, apply);
             target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_TURN, apply);
             break;
+       case 46924: // Bladestorm
+       case 51690: // Killing Spree
+	        mechanic = (1 << MECHANIC_SNARE) | (1 << MECHANIC_ROOT)
+               | (1 << MECHANIC_FEAR) | (1 << MECHANIC_STUN)
+               | (1 << MECHANIC_SLEEP) | (1 << MECHANIC_CHARM)
+               | (1 << MECHANIC_SAPPED) | (1 << MECHANIC_HORROR)
+               | (1 << MECHANIC_POLYMORPH) | (1 << MECHANIC_DISORIENTED)
+               | (1 << MECHANIC_FREEZE) | (1 << MECHANIC_TURN) | (1 << MECHANIC_KNOCKOUT);
+
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_SNARE, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_ROOT, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_FEAR, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_STUN, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_SLEEP, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_CHARM, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_SAPPED, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_HORROR, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_POLYMORPH, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_DISORIENTED, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_FREEZE, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_TURN, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_KNOCKOUT, apply);
+           target->ApplySpellImmune(GetId(), IMMUNITY_ID, 33786, apply);   // Bladestorm cannot be cycloned
+           target->ApplySpellImmune(GetId(), IMMUNITY_ID, 13810, apply);   // Frost Trap
+           target->ApplySpellImmune(GetId(), IMMUNITY_ID, 55741, apply);   // Desecration Rank 1
+           target->ApplySpellImmune(GetId(), IMMUNITY_ID, 68766, apply);   // Desecration Rank 2
+           target->ApplySpellImmune(GetId(), IMMUNITY_ID, 605, apply);     // Mind Control
+           break;
         default:
             if (GetMiscValue() < 1)
                 return;
