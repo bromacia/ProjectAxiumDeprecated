@@ -3537,6 +3537,10 @@ void SpellMgr::LoadDbcDataCorrections()
 			case 60946: case 60947: // Nightmare (Rank 1, Rank 2)
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
                 break;
+            case 45204: // Clone Me !
+			case 41054: // Copy Weapon
+                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
+                break;
             default:
                 break;
         }
