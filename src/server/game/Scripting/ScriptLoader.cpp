@@ -1231,11 +1231,13 @@ void AddBattlegroundScripts()
 // Custom
 #ifdef SCRIPTS
     void AddSC_prof_npc();
+    void AddSC_npc_teleport();
 #endif
 
 void AddCustomScripts()
 {
 #ifdef SCRIPTS
     AddSC_prof_npc();
+    AddSC_npc_teleport();
 #endif
 }

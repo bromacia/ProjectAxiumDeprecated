@@ -35,6 +35,8 @@ set(scripts_STAT_SRCS
   ../game/AI/ScriptedAI/ScriptedCreature.cpp
   ../game/AI/ScriptedAI/ScriptedFollowerAI.cpp
   ../game/AI/ScriptedAI/ScriptedSimpleAI.cpp
+  ../game/AI/ScriptedAI/sc_npc_teleport.cpp
+  ../game/AI/ScriptedAI/sc_npc_teleport.h
 )
 
 if(SCRIPTS)
