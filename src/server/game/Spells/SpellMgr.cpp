@@ -3541,6 +3541,10 @@ void SpellMgr::LoadDbcDataCorrections()
 			case 41054: // Copy Weapon
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 break;
+            case 55362: // Living Bomb Final Tic
+                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
+                spellInfo->AttributesEx |= SPELL_ATTR0_CASTABLE_WHILE_DEAD;
+                break;
             default:
                 break;
         }
