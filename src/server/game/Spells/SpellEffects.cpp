@@ -1071,7 +1071,7 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                 case 55004:                                 // Nitro Boosts
                     if (!m_CastItem)
                         return;
-                    if (roll_chance_i(95))                  // Nitro Boosts - success
+                    if (roll_chance_i(100))                  // Nitro Boosts - success
                         m_caster->CastSpell(m_caster, 54861, true, m_CastItem);
                     else                                    // Knocked Up   - backfire 5%
                         m_caster->CastSpell(m_caster, 46014, true, m_CastItem);
@@ -3367,8 +3367,6 @@ void Spell::EffectDistract(SpellEffIndex /*effIndex*/)
     unitTarget->ClearUnitState(UNIT_STATE_MOVING);
 
     if (unitTarget->GetTypeId() == TYPEID_UNIT)
-        if (unitTarget->ToPlayer()->IsSitState()) // If target is sitting
-            unitTarget->ToPlayer()->SetStandState(UNIT_STAND_STATE_STAND); // Make them stand up
         unitTarget->GetMotionMaster()->MoveDistract(damage * IN_MILLISECONDS);
 }
 
