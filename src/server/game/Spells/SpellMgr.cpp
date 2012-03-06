@@ -3532,8 +3532,8 @@ void SpellMgr::LoadDbcDataCorrections()
             case 52610: // Savage Roar
             case 49376: // Feral Charge - Cat
             case 50259: // Feral Charge - Cat (Daze)
-            case 2094: // Blind
 			case 60946: case 60947: // Nightmare (Rank 1, Rank 2)
+			case 51699: // Honor Among Thieves
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
                 break;
             case 45204: // Clone Me !
@@ -3552,6 +3552,9 @@ void SpellMgr::LoadDbcDataCorrections()
 // ------------------------------------
                 // Rogue
             case 2094: // Blind
+                spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
+                spellInfo->speed = 100.0f;
+                break;
             case 1833: // Cheap Shot
             case 8643: // Kidney Shot
             case 31224: // Cloak of Shadows
