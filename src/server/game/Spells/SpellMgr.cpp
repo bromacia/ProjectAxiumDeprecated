@@ -3534,11 +3534,14 @@ void SpellMgr::LoadDbcDataCorrections()
             case 50259: // Feral Charge - Cat (Daze)
 			case 60946: case 60947: // Nightmare (Rank 1, Rank 2)
 			case 51699: // Honor Among Thieves
+            case 2094: // Blind
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
                 break;
             case 45204: // Clone Me !
 			case 41054: // Copy Weapon
+			case 45205: // Copy Offhand Weapon
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
+                spellInfo->DurationIndex = 9;
                 break;
             case 55362: // Living Bomb Final Tic
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
@@ -3547,81 +3550,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 44559: // Damage Hack (Pet Passive)
                 spellInfo->AttributesEx |= SPELL_ATTR0_CANT_CANCEL;
                 break;
-// ------------------------------------
-// -----------Spell Delay--------------
-// ------------------------------------
-                // Rogue
-            case 2094: // Blind
-                spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
-                spellInfo->speed = 100.0f;
-                break;
-            case 1833: // Cheap Shot
-            case 8643: // Kidney Shot
-            case 31224: // Cloak of Shadows
-            case 1776: // Gouge
-            case 51724: // Sap
-// ------------------------------------
-                // Warrior
-            case 5246: // Intimidating Shout
-            case 46968: // Shockwave
-            case 12809: // Concussion Blow
-            case 12323: // Piercing Howl
-            case 47437: // Demoralizing Shout
-            case 47502: // Thunder Clap
-// ------------------------------------
-                // Paladin
-            case 10308: // Hammer of Justice
-            case 20066: // Repentance
-            case 642: // Divine Shield
-// ------------------------------------
-                // Priest
-            case 10890: // Psychic Scream
-            case 64044: // Psychic Horror
-// ------------------------------------
-                // Death Knight
-            case 49203: // Hungering Cold
-            case 47481: // Gnaw
-// ------------------------------------
-                // Shaman
-            case 8177: // Grounding Totem
-// ------------------------------------
-                // Mage
-            case 44572: // Deep Freeze
-            case 42945: // Blast Wave
-            case 42950: // Dragon's Breath
-            case 12826: // Polymorph
-            case 28271: // Polymorph Turtle
-            case 28272: // Polymorph Pig
-            case 61025: // Polymorph Serpent
-            case 61305: // Polymorph Black Cat
-            case 61721: // Polymorph Rabbit
-            case 61780: // Polymorph Turkey
-            case 42873: // Fire Blast
-// ------------------------------------
-                // Warlock
-            case 47847: // Shadowfury
-            case 17928: // Howl of Terror
-            case 6358: // Seduction
-            case 61290: // Shadowflame
-            case 6215: // Fear
-// ------------------------------------
-                // Druid
-            case 49802: // Maim
-            case 49803: // Pounce
-            case 8983: // Bash
-            case 33786: // Cyclone
-// ------------------------------------
-                // Misc
-            case 7744: // Will of the Forsaken
-            case 20549: // War Stomp
-            case 20589: // Escape Artist
-            case 42292: // Pvp Trinket
-            case 59752: // Every Man For Himself
-                spellInfo->speed = 100.0f;
-                break;
-// ------------------------------------
-// ---------End Spell Delay------------
-// ------------------------------------
             default:
                 break;
         }
