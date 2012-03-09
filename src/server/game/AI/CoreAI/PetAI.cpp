@@ -156,8 +156,11 @@ void PetAI::UpdateAI(const uint32 diff)
                         continue;
 
                     // allow only spell without cooldown > duration
-                    int32 cooldown = spellInfo->GetRecoveryTime();
+                    /*int32 cooldown = spellInfo->GetRecoveryTime();
                     if (cooldown >= 0 && duration >= 0 && cooldown > duration)
+                        continue;*/
+                    // Check spell cooldown
+                    if (me->HasSpellCooldown(spellInfo->Id))
                         continue;
                 }
 
