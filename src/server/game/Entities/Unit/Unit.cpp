@@ -5400,16 +5400,16 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     std::vector<uint32> RandomSpells;
                     switch (getClass())
                     {
-						// 71484 Strength
-						// 71485 Agility
-						// 71486 AP
-						// 71487 ArP
-						// 71491 Crit
-						// 71492 Haste
+                        // 71484 Strength
+                        // 71485 Agility
+                        // 71486 AP
+                        // 71487 ArP
+                        // 71491 Crit
+                        // 71492 Haste
                         case CLASS_WARRIOR:
                             RandomSpells.push_back(71484);
-							RandomSpells.push_back(71486);
-							break;
+                            RandomSpells.push_back(71486);
+                            break;
                         case CLASS_PALADIN:
                             RandomSpells.push_back(71484);
                             break;
@@ -5418,7 +5418,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                             break;
                         case CLASS_SHAMAN:
                             RandomSpells.push_back(71486);
-							break;
+                            break;
                         case CLASS_ROGUE:
                             RandomSpells.push_back(71486);
                             RandomSpells.push_back(71485);
@@ -5455,16 +5455,16 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     std::vector<uint32> RandomSpells;
                     switch (getClass())
                     {
-						// 71556 Agility
-						// 71557 ArP
-						// 71558 AP
-						// 71559 Crit
-						// 71560 Haste
-						// 71561 Strength
+                        // 71556 Agility
+                        // 71557 ArP
+                        // 71558 AP
+                        // 71559 Crit
+                        // 71560 Haste
+                        // 71561 Strength
                         case CLASS_WARRIOR:
                             RandomSpells.push_back(71558);
-							RandomSpells.push_back(71561);
-							break;
+                            RandomSpells.push_back(71561);
+                            break;
                         case CLASS_PALADIN:
                             RandomSpells.push_back(71561);
                             break;
@@ -5473,7 +5473,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                             break;
                         case CLASS_SHAMAN:
                             RandomSpells.push_back(71558);
-							break;
+                            break;
                         case CLASS_ROGUE:
                             RandomSpells.push_back(71556);
                             RandomSpells.push_back(71558);
@@ -12710,8 +12710,18 @@ void Unit::setDeathState(DeathState s)
         // remove aurastates allowing special moves
         ClearAllReactives();
         ClearDiminishings();
-        GetMotionMaster()->Clear(false);
-        GetMotionMaster()->MoveIdle();
+        
+        if (!isPet() || (isPet() && IsInWorld()))
+        {
+            // Only clear MotionMaster for non-pet entities OR if pet and in world
+            // Fixes crash when:
+            //  * Using 'call pet' on dead pets
+            //  * Using 'call stabled pet'
+            //  * Logging in with dead pets
+            GetMotionMaster()->Clear(false);
+            GetMotionMaster()->MoveIdle();
+        }
+        
         StopMoving();
         // without this when removing IncreaseMaxHealth aura player may stuck with 1 hp
         // do not why since in IncreaseMaxHealth currenthealth is checked
