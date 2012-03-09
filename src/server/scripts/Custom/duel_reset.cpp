@@ -28,11 +28,11 @@ class Reset_OnDuelEnd : public PlayerScript
             looser->RemoveAura(66233);
             winner->RemoveAura(11196); // Remove Recently Bandaged Debuff
             looser->RemoveAura(11196);
-			// Below - to prevent buff stack overflow crash with mages
+            // Below - to prevent buff stack overflow crash with mages
             winner->RemoveAura(45204); // Clone Me!
             looser->RemoveAura(45204);
-			winner->RemoveAura(41054); // Copy Weapon
-			looser->RemoveAura(41054);
+            winner->RemoveAura(41054); // Copy Weapon
+            looser->RemoveAura(41054);
             if (winner->getPowerType() == POWER_MANA) 
                 winner->SetPower(POWER_MANA, winner->GetMaxPower(POWER_MANA));
             if (looser->getPowerType() == POWER_MANA) 

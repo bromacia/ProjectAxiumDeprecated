@@ -3404,7 +3404,7 @@ void AuraEffect::HandleModMechanicImmunity(AuraApplication const* aurApp, uint8 
             break;
        case 46924: // Bladestorm
        case 51690: // Killing Spree
-	        mechanic = (1 << MECHANIC_SNARE) | (1 << MECHANIC_ROOT)
+            mechanic = (1 << MECHANIC_SNARE) | (1 << MECHANIC_ROOT)
                | (1 << MECHANIC_FEAR) | (1 << MECHANIC_STUN)
                | (1 << MECHANIC_SLEEP) | (1 << MECHANIC_CHARM)
                | (1 << MECHANIC_SAPPED) | (1 << MECHANIC_HORROR)
