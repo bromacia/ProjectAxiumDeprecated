@@ -203,9 +203,9 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellInfo const* spellproto,
             else if ((spellproto->SpellFamilyFlags[0] & 0x10000000) && spellproto->SpellIconID == 2285)
                 return DIMINISHING_LIMITONLY;
             break;
-		}
-		case SPELLFAMILY_SHAMAN:
-		{
+        }
+        case SPELLFAMILY_SHAMAN:
+        {
             // Earthbind Totem - Slow
             if (spellproto->Id == 3600)
                 return DIMINISHING_NONE;
@@ -3534,14 +3534,14 @@ void SpellMgr::LoadDbcDataCorrections()
             case 52610: // Savage Roar
             case 49376: // Feral Charge - Cat
             case 50259: // Feral Charge - Cat (Daze)
-			case 60946: case 60947: // Nightmare (Rank 1, Rank 2)
-			case 51699: // Honor Among Thieves
+            case 60946: case 60947: // Nightmare (Rank 1, Rank 2)
+            case 51699: // Honor Among Thieves
             case 2094: // Blind
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
                 break;
             case 45204: // Clone Me !
-			case 41054: // Copy Weapon
-			case 45205: // Copy Offhand Weapon
+            case 41054: // Copy Weapon
+            case 45205: // Copy Offhand Weapon
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->DurationIndex = 9;
                 break;
