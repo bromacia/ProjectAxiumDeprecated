@@ -65,11 +65,6 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     plTarget->RemoveAura(66233);
     player->RemoveAura(11196); // Remove Recently Bandaged Debuff
     plTarget->RemoveAura(11196);
-    // Below - to prevent buff stack overflow crash with mages
-    player->RemoveAura(45204); // Clone Me!
-    plTarget->RemoveAura(45204);
-    player->RemoveAura(41054); // Copy Weapon
-    plTarget->RemoveAura(41054);
     player->SetHealth(player->GetMaxHealth());
     player->SetPower(POWER_MANA, player->GetMaxPower(POWER_MANA));
     plTarget->SetHealth(plTarget->GetMaxHealth());
