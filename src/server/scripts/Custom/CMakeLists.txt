@@ -13,6 +13,7 @@ set(scripts_STAT_SRCS
   Custom/prof_npc.cpp
   Custom/npc_teleport.cpp
   Custom/duel_reset.cpp
+  Custom/npc_beastmaster.cpp
 )
 
 message("  -> Prepared: Custom")
