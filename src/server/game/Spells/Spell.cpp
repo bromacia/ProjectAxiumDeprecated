@@ -1567,17 +1567,17 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
 
                              if (durationadd)
                              {
-                             	switch (m_diminishLevel)
+                                 switch (m_diminishLevel)
                                 {
-                               	     case DIMINISHING_LEVEL_1: break;
+                                        case DIMINISHING_LEVEL_1: break;
                                      // lol, we lost 1 second here
                                      case DIMINISHING_LEVEL_2: duration += 1000; mod = 0.5f; break;
                                      case DIMINISHING_LEVEL_3: duration += 1000; mod = 0.25f; break;
                                      case DIMINISHING_LEVEL_IMMUNE: { m_spellAura->Remove(); return SPELL_MISS_IMMUNE; }
                                      default: break;
                                 }
-                             	durationadd *= mod;
-                             	duration += int32(durationadd);
+                                 durationadd *= mod;
+                                 duration += int32(durationadd);
                              }
                         }
 
@@ -2264,10 +2264,19 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
             }
 
             Position pos;
-            if (cur.GetTarget() == TARGET_DEST_CASTER_FRONT_LEAP)
-                m_caster->GetFirstCollisionPosition(pos, dist, angle);
-            else
-                m_caster->GetNearPosition(pos, dist, angle);
+            switch (cur.GetTarget())
+            {
+                case TARGET_DEST_CASTER_FRONT_LEAP:
+                case TARGET_DEST_CASTER_FRONT_LEFT:
+                case TARGET_DEST_CASTER_BACK_LEFT:
+                case TARGET_DEST_CASTER_BACK_RIGHT:
+                case TARGET_DEST_CASTER_FRONT_RIGHT:
+                    m_caster->GetFirstCollisionPosition(pos, dist, angle);
+                    break;
+                default:
+                    m_caster->GetNearPosition(pos, dist, angle);
+                    break;
+            }
             m_targets.SetDst(*m_caster);
             m_targets.ModDst(pos);
             break;
