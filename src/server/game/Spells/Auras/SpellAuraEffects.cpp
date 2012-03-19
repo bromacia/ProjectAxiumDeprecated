@@ -4757,7 +4757,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                     break;
                 }
                 case 39850:                                     // Rocket Blast
-                    if (roll_chance_i(20))                       // backfire stun
+                    if (roll_chance_i(0))                       // backfire stun
                         target->CastSpell(target, 51581, true, NULL, this);
                     break;
                 case 43873:                                     // Headless Horseman Laugh

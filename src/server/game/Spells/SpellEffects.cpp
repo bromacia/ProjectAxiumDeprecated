@@ -1073,9 +1073,21 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                         return;
                     if (roll_chance_i(100))                  // Nitro Boosts - success
                         m_caster->CastSpell(m_caster, 54861, true, m_CastItem);
-                    else                                    // Knocked Up   - backfire 5%
+                    else                                    // Knocked Up   - backfire 0%
                         m_caster->CastSpell(m_caster, 46014, true, m_CastItem);
                     return;
+                case 51582:                                 //Rocket Boots Engaged (Rocket Boots Xtreme and Rocket Boots Xtreme Lite)
+                {
+                    if (!m_CastItem) return;
+
+                    if (Battleground* bg = m_caster->ToPlayer()->GetBattleground())
+                        bg->EventPlayerDroppedFlag(m_caster->ToPlayer());
+
+                    ((Player*)m_caster)->RemoveSpellCooldown(30452, true);
+                    m_caster->CastSpell(m_caster, 30452, true, NULL);
+                    ((Player*)m_caster)->AddSpellCooldown(30452,m_CastItem->GetEntry(), time(NULL)+300);
+                    return;
+                }
                 case 50243:                                 // Teach Language
                 {
                     if (m_caster->GetTypeId() != TYPEID_PLAYER)
@@ -1095,17 +1107,6 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                         m_caster->CastSpell(m_caster, 50246, true);
                     }
 
-                    return;
-                }
-                case 51582:                                 //Rocket Boots Engaged (Rocket Boots Xtreme and Rocket Boots Xtreme Lite)
-                {
-                    if (m_caster->GetTypeId() != TYPEID_PLAYER)
-                        return;
-
-                    if (Battleground* bg = m_caster->ToPlayer()->GetBattleground())
-                        bg->EventPlayerDroppedFlag(m_caster->ToPlayer());
-
-                    m_caster->CastSpell(m_caster, 30452, true, NULL);
                     return;
                 }
                 case 52759:                                 // Ancestral Awakening
