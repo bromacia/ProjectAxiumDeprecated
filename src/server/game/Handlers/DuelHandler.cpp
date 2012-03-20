@@ -51,8 +51,6 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 
     player->SendDuelCountdown(3000);
     plTarget->SendDuelCountdown(3000);
-    player->RemoveArenaSpellCooldowns();
-    plTarget->RemoveArenaSpellCooldowns();
     player->RemoveAura(41425); // Remove Hypothermia Debuff
     plTarget->RemoveAura(41425);
     player->RemoveAura(25771); // Remove Forbearance Debuff
@@ -69,6 +67,8 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     player->SetPower(POWER_MANA, player->GetMaxPower(POWER_MANA));
     plTarget->SetHealth(plTarget->GetMaxHealth());
     plTarget->SetPower(POWER_MANA,  plTarget->GetMaxPower(POWER_MANA));
+    player->RemoveArenaSpellCooldowns();
+    plTarget->RemoveArenaSpellCooldowns();
 }
 
 void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recvPacket)

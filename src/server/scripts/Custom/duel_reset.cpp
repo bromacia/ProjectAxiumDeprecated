@@ -12,10 +12,6 @@ class Reset_OnDuelEnd : public PlayerScript
         // reset cooldowns
         if (sWorld->getBoolConfig(CONFIG_DUEL_RESET_COOLDOWN) && type == DUEL_WON)
         {
-            winner->RemoveArenaSpellCooldowns();
-            looser->RemoveArenaSpellCooldowns();
-            winner->SetHealth(winner->GetMaxHealth());
-            looser->SetHealth(looser->GetMaxHealth());
             winner->RemoveAura(41425); // Remove Hypothermia Debuff
             looser->RemoveAura(41425);
             winner->RemoveAura(25771); // Remove Forbearance Debuff
@@ -28,10 +24,14 @@ class Reset_OnDuelEnd : public PlayerScript
             looser->RemoveAura(66233);
             winner->RemoveAura(11196); // Remove Recently Bandaged Debuff
             looser->RemoveAura(11196);
+            winner->SetHealth(winner->GetMaxHealth());
+            looser->SetHealth(looser->GetMaxHealth());
             if (winner->getPowerType() == POWER_MANA) 
                 winner->SetPower(POWER_MANA, winner->GetMaxPower(POWER_MANA));
             if (looser->getPowerType() == POWER_MANA) 
                 looser->SetPower(POWER_MANA, looser->GetMaxPower(POWER_MANA));
+            winner->RemoveArenaSpellCooldowns();
+            looser->RemoveArenaSpellCooldowns();
 
         }
     }
