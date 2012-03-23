@@ -336,7 +336,7 @@ void MotionMaster::MoveKnockbackFrom(float srcX, float srcY, float speedXY, floa
     float dist = 2 * moveTimeHalf * speedXY;
 
     i_owner->GetNearPoint(i_owner, x, y, z, i_owner->GetObjectSize(), dist, i_owner->GetAngle(srcX, srcY) + M_PI);
-    MoveJump(x, y, z, speedXY, speedZ);
+    MoveJump(x, y, z, speedXY, speedXY/speedZ, speedZ);
 }
 
 void MotionMaster::MoveJumpTo(float angle, float speedXY, float speedZ)
