@@ -1891,7 +1891,6 @@ class Unit : public WorldObject
         void SetShapeshiftForm(ShapeshiftForm form)
         {
             SetByteValue(UNIT_FIELD_BYTES_2, 3, form);
-            ForceValuesUpdateAtIndex(UNIT_FIELD_BYTES_2);
         }
 
         inline bool IsInFeralForm() const
