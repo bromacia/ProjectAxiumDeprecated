@@ -1059,15 +1059,24 @@ void Creature::UpdateDamagePhysical(WeaponAttackType attType)
 ########                         ########
 #######################################*/
 
-#define ENTRY_IMP               416
-#define ENTRY_VOIDWALKER        1860
-#define ENTRY_SUCCUBUS          1863
-#define ENTRY_FELHUNTER         417
-#define ENTRY_FELGUARD          17252
-#define ENTRY_WATER_ELEMENTAL   510
-#define ENTRY_TREANT            1964
-#define ENTRY_FIRE_ELEMENTAL    15438
-#define ENTRY_GHOUL             26125
+// Warlock
+#define ENTRY_IMP                416
+#define ENTRY_VOIDWALKER         1860
+#define ENTRY_SUCCUBUS           1863
+#define ENTRY_FELHUNTER          417
+#define ENTRY_FELGUARD           17252
+// Druid
+#define ENTRY_TREANT             1964
+// Shaman
+#define ENTRY_FIRE_ELEMENTAL     15438
+// Death Knight
+#define ENTRY_GHOUL              26125
+#define ENTRY_ARMYOFDEADGHOUL    24207
+// Priest
+#define ENTRY_SHADOWFIEND        19668
+// Mage
+#define ENTRY_WATER_ELEMENTAL    510
+#define ENTRY_MIRRORIMAGE        31216
 
 bool Guardian::UpdateStats(Stats stat)
 {
@@ -1115,7 +1124,7 @@ bool Guardian::UpdateStats(Stats stat)
         }
         else
         {
-            mod = 0.45f;
+            mod = 0.85f;
             if (isPet())
             {
                 PetSpellMap::const_iterator itr = (ToPet()->m_spells.find(62758)); // Wild Hunt rank 1
@@ -1224,12 +1233,16 @@ void Guardian::UpdateMaxHealth()
     float multiplicator;
     switch (GetEntry())
     {
-        case ENTRY_IMP:         multiplicator = 8.4f;   break;
-        case ENTRY_VOIDWALKER:  multiplicator = 11.0f;  break;
-        case ENTRY_SUCCUBUS:    multiplicator = 9.1f;   break;
-        case ENTRY_FELHUNTER:   multiplicator = 9.5f;   break;
-        case ENTRY_FELGUARD:    multiplicator = 11.0f;  break;
-        default:                multiplicator = 10.0f;  break;
+        case ENTRY_IMP:                multiplicator = 10.0f;  break;
+        case ENTRY_VOIDWALKER:         multiplicator = 14.0f;  break;
+        case ENTRY_SUCCUBUS:           multiplicator = 10.0f;  break;
+        case ENTRY_FELHUNTER:          multiplicator = 12.0f;  break;
+        case ENTRY_FELGUARD:           multiplicator = 14.0f;  break;
+        case ENTRY_SHADOWFIEND:        multiplicator = 11.0f;  break;
+		case ENTRY_WATER_ELEMENTAL:    multiplicator = 6.0f;   break;
+        case ENTRY_MIRRORIMAGE:        multiplicator = 3.0f;   break;
+        case ENTRY_ARMYOFDEADGHOUL:    multiplicator = 0.0f;   break;
+        default:                       multiplicator = 10.0f;  break;
     }
 
     float value = GetModifierValue(unitMod, BASE_VALUE) + GetCreateHealth();
