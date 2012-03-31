@@ -3215,6 +3215,9 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->Effect[EFFECT_1] = SPELL_EFFECT_MODIFY_THREAT_PERCENT;
                 spellInfo->EffectBasePoints[EFFECT_1] = -6; // -5%
                 break;
+            case 12721: // Deep Wound
+            case 53353: // Chimera Shot - Serpent
+            case 61840: // Righteous Vengeance
             case 63675: // Improved Devouring Plague
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_DONE_BONUS;
                 break;
@@ -3565,7 +3568,7 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectBasePoints[0] = -1.5*IN_MILLISECONDS*0.66; // reduce cast time of seduction by 66% 
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER; 
                 break;
-			case 24259: // Spell Lock
+            case 24259: // Spell Lock
                 spellInfo->speed = 80;
                 break;
             default:
