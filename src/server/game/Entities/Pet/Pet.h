@@ -108,7 +108,7 @@ enum PetNameInvalidReason
 typedef UNORDERED_MAP<uint32, PetSpell> PetSpellMap;
 typedef std::vector<uint32> AutoSpellList;
 
-#define HAPPINESS_LEVEL_SIZE        333000
+#define HAPPINESS_LEVEL_SIZE        0
 
 #define ACTIVE_SPELLS_MAX           4
 
