@@ -2896,4 +2896,36 @@ DuelReset.Cooldown = 1
 IPHistoryLog = 1
 
 #
+#
+#     CastLogs.Enabled
+#        Description: Enable log of player casted spells
+#        Default:     0
+
+CastLogs.Enabled = 0
+
+#
+#     CastLogs.Accounts
+#        Description: Only log cast from players of these accounts
+#        Default:     ""
+#                     "12 24 43"
+
+CastLogs.Accounts = ""
+
+#
+#    CastLogFile
+#        Description: Log file for cast logs.
+#        Default:     "Cast.log" - (Enabled)
+#                     ""         - (Disabled)
+
+CastLogFile = "Cast.log"
+
+#
+#     CastLogTimestamp
+#        Description: Append timestamp to the cast log file name.
+#        Default: 1 = Enable
+#                 0 = Disable
+
+CastLogTimestamp = 1
+
+#
 ###################################################################################################

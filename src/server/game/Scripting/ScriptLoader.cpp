@@ -1234,6 +1234,7 @@ void AddBattlegroundScripts()
     void AddSC_npc_teleport();
     void AddSC_DuelReset();
     void AddSC_npc_beastmaster();
+    void AddSC_cast_log();
 #endif
 
 void AddCustomScripts()
@@ -1243,5 +1244,6 @@ void AddCustomScripts()
     AddSC_npc_teleport();
     AddSC_DuelReset();
     AddSC_npc_beastmaster();
+    AddSC_cast_log();
 #endif
 }

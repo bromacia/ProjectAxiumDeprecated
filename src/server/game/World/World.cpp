@@ -1175,6 +1175,9 @@ void World::LoadConfigSettings(bool reload)
     // IP logging
     m_bool_configs[CONFIG_IP_LOG_ENABLED]              = ConfigMgr::GetBoolDefault("IPHistoryLog", true);
 
+    // cast logging
+    m_bool_configs[CONFIG_CASTLOG_ENABLED] = ConfigMgr::GetBoolDefault("CastLogs.Enabled", false);
+
     // Warden
     m_bool_configs[CONFIG_WARDEN_ENABLED]              = ConfigMgr::GetBoolDefault("Warden.Enabled", false);
     m_int_configs[CONFIG_WARDEN_NUM_MEM_CHECKS]        = ConfigMgr::GetIntDefault("Warden.NumMemChecks", 3);

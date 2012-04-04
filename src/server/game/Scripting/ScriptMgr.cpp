@@ -1269,6 +1269,11 @@ void ScriptMgr::OnPlayerTextEmote(Player* player, uint32 textEmote, uint32 emote
     FOREACH_SCRIPT(PlayerScript)->OnTextEmote(player, textEmote, emoteNum, guid);
 }
 
+void ScriptMgr::OnPlayerCastSpellOpcode(Player* player, Spell* spell)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnCastSpellOpcode(player, spell);
+}
+
 void ScriptMgr::OnPlayerSpellCast(Player* player, Spell* spell, bool skipCheck)
 {
     FOREACH_SCRIPT(PlayerScript)->OnSpellCast(player, spell, skipCheck);

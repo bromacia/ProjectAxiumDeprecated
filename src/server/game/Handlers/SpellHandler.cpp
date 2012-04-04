@@ -407,6 +407,9 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     Spell* spell = new Spell(mover, spellInfo, TRIGGERED_NONE, 0, false);
     spell->m_cast_count = castCount;                       // set count of casts
     spell->prepare(&targets);
+
+    if (Player* playerCaster = mover->ToPlayer())
+        sScriptMgr->OnPlayerCastSpellOpcode(playerCaster, spell);
 }
 
 void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)

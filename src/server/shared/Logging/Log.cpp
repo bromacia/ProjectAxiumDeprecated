@@ -167,6 +167,7 @@ void Log::Initialize()
     dberLogfile = openLogFile("DBErrorLogFile", NULL, "a");
     raLogfile = openLogFile("RaLogFile", NULL, "a");
     chatLogfile = openLogFile("ChatLogFile", "ChatLogTimestamp", "a");
+    castLogfile = openLogFile("CastLogFile", "CastLogTimestamp", "a");
     arenaLogFile = openLogFile("ArenaLogFile", NULL, "a");
     sqlLogFile = openLogFile("SQLDriverLogFile", NULL, "a");
     sqlDevLogFile = openLogFile("SQLDeveloperLogFile", NULL, "a");
@@ -1045,6 +1046,23 @@ void Log::outChat(const char * str, ...)
         vfprintf(chatLogfile, str, ap);
         fprintf(chatLogfile, "\n" );
         fflush(chatLogfile);
+        va_end(ap);
+    }
+}
+
+void Log::outCast(const char * str, ...)
+{
+    if (!str)
+        return;
+
+    if (castLogfile)
+    {
+        outTimestamp(castLogfile);
+        va_list ap;
+        va_start(ap, str);
+        vfprintf(castLogfile, str, ap);
+        fprintf(castLogfile, "\n" );
+        fflush(castLogfile);
         va_end(ap);
     }
 }

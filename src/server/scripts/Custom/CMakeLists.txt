@@ -14,6 +14,7 @@ set(scripts_STAT_SRCS
   Custom/npc_teleport.cpp
   Custom/duel_reset.cpp
   Custom/npc_beastmaster.cpp
+  Custom/cast_log.cpp
 )
 
 message("  -> Prepared: Custom")

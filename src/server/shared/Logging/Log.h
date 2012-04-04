@@ -135,6 +135,7 @@ class Log
         void outCommand( uint32 account, const char * str, ...) ATTR_PRINTF(3, 4);
         void outRemote( const char * str, ... )                 ATTR_PRINTF(2, 3);
         void outChat( const char * str, ... )                   ATTR_PRINTF(2, 3);
+        void outCast( const char * str, ... )                   ATTR_PRINTF(2, 3);
         void outArena( const char * str, ... )                  ATTR_PRINTF(2, 3);
         void outSQLDriver( const char* str, ... )               ATTR_PRINTF(2, 3);
         void outWarden( const char * str, ... )                 ATTR_PRINTF(2, 3);
@@ -167,6 +168,7 @@ class Log
         FILE* charLogfile;
         FILE* dberLogfile;
         FILE* chatLogfile;
+        FILE* castLogfile;
         FILE* arenaLogFile;
         FILE* sqlLogFile;
         FILE* sqlDevLogFile;
