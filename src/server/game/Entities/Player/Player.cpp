@@ -17206,6 +17206,9 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     _LoadEquipmentSets(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS));
 
+    // Arena Spectator
+    SetSpectator(false);
+
     return true;
 }
 
@@ -25137,6 +25140,32 @@ void Player::_SaveInstanceTimeRestrictions(SQLTransaction& trans)
         stmt->setUInt32(1, itr->first);
         stmt->setUInt64(2, itr->second);
         trans->Append(stmt);
+    }
+}
+
+// Arena Spectator
+bool Player::IsSpectator() const
+{
+    if (!IsVisible() && isDead())
+        return true;
+    else
+        return false;
+}
+
+void Player::SetSpectator(bool x)
+{
+    if (IsSpectator())
+        return;
+
+    if (!x)
+    {
+        setDeathState(ALIVE);
+        SetVisible(true);
+    }
+    else
+    {
+        setDeathState(DEAD);
+        SetVisible(false);
     }
 }
 

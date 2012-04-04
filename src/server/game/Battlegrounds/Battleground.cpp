@@ -932,6 +932,18 @@ void Battleground::EndBattleground(uint32 winner)
 
     if (winmsg_id)
         SendMessageToAll(winmsg_id, CHAT_MSG_BG_SYSTEM_NEUTRAL);
+
+    // Arena Spectator
+    // teleport spectators to recall position and remove spectator state
+    Map::PlayerList const &PlList = m_Map->GetPlayers();
+
+    if (!PlList.isEmpty())
+        for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
+            if (Player* player = i->getSource())
+            {
+                player->SetSpectator(false);
+                player->TeleportTo(player->m_recallMap, player->m_recallX, player->m_recallY, player->m_recallZ, player->m_recallO);
+            }
 }
 
 uint32 Battleground::GetBonusHonorFromKill(uint32 kills) const

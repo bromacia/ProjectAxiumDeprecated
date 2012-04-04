@@ -3198,9 +3198,9 @@ public:
         player->PlayerTalkClass->ClearMenus();
 
         uint8 mode = ARENA_TYPE_2v2;
-        if (action == (GOSSIP_ACTION_INFO_DEF + 3)) // 3v3
+        if (action == (GOSSIP_ACTION_INFO_DEF + 3))
             mode = ARENA_TYPE_3v3;
-        if (action == (GOSSIP_ACTION_INFO_DEF + 5)) // 5v5
+        if (action == (GOSSIP_ACTION_INFO_DEF + 5))
             mode = ARENA_TYPE_5v5;
 
         if (action <= GOSSIP_OFFSET)
@@ -3224,14 +3224,14 @@ public:
             if (!bracketMatchs)
             {
                 std::stringstream errMsg;
-                errMsg << "Sorry " << player->GetName() << ", There are no current matches of the type you selected.";
+                errMsg << "Error: There are currently no arena matches being played in that bracket.";
                 creature->MonsterWhisper(errMsg.str().c_str(), player->GetGUID());
                 player->PlayerTalkClass->ClearMenus();
                 player->CLOSE_GOSSIP_MENU();
             }
             else
             {
-                // team 1 and 2!
+                // Team One and Two
                 for (BattlegroundSet::const_iterator itr = arenasSet.begin(); itr != arenasSet.end(); ++itr)
                 {
                     if (Battleground* bg = itr->second)
@@ -3243,7 +3243,7 @@ public:
                         {
                             std::stringstream gossipItem;
                             gossipItem << teamOne->GetName() << " (";
-                            gossipItem << teamOne->GetRating() << ") VS ";
+                            gossipItem << teamOne->GetRating() << ") vs ";
                             gossipItem << teamTwo->GetName() << " (";
                             gossipItem << teamTwo->GetRating() << ")";
                             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, gossipItem.str(), GOSSIP_SENDER_MAIN + 1, itr->first + GOSSIP_OFFSET);
@@ -3256,18 +3256,18 @@ public:
         else
         {
             uint32 arenaId = action - GOSSIP_OFFSET;
-            // Don't really bother about WPE injection here, we are allowing pretty much any arena selection
+            // Dont really care about WPE injection here, allowing pretty much any arena selection
             BattlegroundSet arenasSet = sBattlegroundMgr->GetAllBattlegroundsWithTypeId(BATTLEGROUND_AA);
 
             if (arenasSet[arenaId] != NULL)
             {
                 Battleground* arenaChosen = arenasSet[arenaId];
 
-                // spectator crap
+                // Spectator crap
                 if (arenaChosen->GetStatus() != STATUS_NONE && arenaChosen->GetStatus() != STATUS_IN_PROGRESS)
                 {
                     std::stringstream errMsg;
-                    errMsg << "Sorry " << player->GetName() << ", the chosen arena has ended";
+                    errMsg << "Error: The arena match you have chosen has already ended.";
                     creature->MonsterWhisper(errMsg.str().c_str(), player->GetGUID());
                     player->PlayerTalkClass->ClearMenus();
                     player->CLOSE_GOSSIP_MENU();
@@ -3287,6 +3287,7 @@ public:
                     case 559: x = 4055.504395f; y = 2919.660645f; z = 13.611241f; break; // Nagrand Arena
                 }
                 player->TeleportTo(arenaChosen->GetMapId(), x, y, z, player->GetOrientation());
+                player->SetSpectator(true);
             }
         }
         return true;
@@ -3300,35 +3301,43 @@ public:
         {
             switch (uiAction)
             {
-                case GOSSIP_ACTION_INFO_DEF + 4: // choosing a player
-                    // incase WPE check everything
+                case GOSSIP_ACTION_INFO_DEF + 4: // If choosing a player
+                    // Incase WPE check everything
                     const char* plrName = code;
                     if (Player* target = sObjectAccessor->FindPlayerByName(plrName))
                     {
                         if (!target->IsInWorld())
                         {
-                            creature->MonsterWhisper("Sorry, I can not allow you to teleport to that player. they are currently porting or being ported", player->GetGUID());
+                            creature->MonsterWhisper("Error: The player you are trying to spectate is currently being teleported.", player->GetGUID());
                             return true;
                         }
 
                         if (!target->InArena())
                         {
-                            creature->MonsterWhisper("Sorry, this player is not in arena. Nice try!", player->GetGUID());
+                            creature->MonsterWhisper("Error: The player you are trying to spectate not in any arena matches.", player->GetGUID());
                             return true;
                         }
 
                         if (target->isGameMaster())
                         {
-                            creature->MonsterWhisper("Sorry! We do not teleport to GMs!", player->GetGUID());
+                            creature->MonsterWhisper("Error: The player you are trying to spectate is a Gamemaster.", player->GetGUID());
                             return true;
                         }
 
-                        // target is in arena and not GM
+                        // To prevent people spectating people who are already spectating
+                        if (target->IsSpectator())
+						{
+                            creature->MonsterWhisper("Error: The player you are trying to spectate is already spectating an arena match.", player->GetGUID());
+                            return true;
+						}
+
+                        // If all checks are passed
                         player->SetBattlegroundId(target->GetBattleground()->GetInstanceID(), target->GetBattleground()->GetTypeID());
                         player->SetBattlegroundEntryPoint();
                         float x, y, z;
                         target->GetContactPoint(player, x, y, z);
                         player->TeleportTo(target->GetMapId(), x, y, z, player->GetAngle(target));
+                        player->SetSpectator(true);
                     }
                     return true;
             }
