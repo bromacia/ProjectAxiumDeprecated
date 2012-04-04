@@ -3531,13 +3531,18 @@ void SpellMgr::LoadDbcDataCorrections()
             case 40166: // Introspection
             case 40167: // Introspection
                 spellInfo->Attributes |= SPELL_ATTR0_NEGATIVE_1;
-            case 5171:  case 6774: // Slice and Dice (Rank 1, Rank 2)
+            case 5171: // Slice and Dice (Rank 1)
+            case 6774: // Slice and Dice (Rank 2)
             case 52610: // Savage Roar
             case 49376: // Feral Charge - Cat
             case 50259: // Feral Charge - Cat (Daze)
-            case 60946: case 60947: // Nightmare (Rank 1, Rank 2)
+            case 60946: // Nightmare (Rank 1)
+            case 60947: // Nightmare (Rank 2)
             case 51699: // Honor Among Thieves
             case 2094: // Blind
+            case 57934: // Tricks of the Trade - Trigger
+            case 57933: // Tricks of the Trade - Damage
+            case 59628: // Tricks of the Trade - Threat
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
                 break;
             case 45204: // Clone Me !
