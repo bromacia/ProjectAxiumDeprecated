@@ -3576,6 +3576,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 24259: // Spell Lock
                 spellInfo->speed = 80;
                 break;
+            case 25504: // Windfury Attack
+                spellInfo->speed = 500;
+                break;
             default:
                 break;
         }
