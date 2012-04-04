@@ -3141,8 +3141,8 @@ void AuraEffect::HandleModPossessPet(AuraApplication const* aurApp, uint8 mode, 
             if (!pet->getVictim())
             {
                 pet->GetMotionMaster()->MoveFollow(caster, PET_FOLLOW_DIST, pet->GetFollowAngle());
-                //if (target->GetCharmInfo())
-                //    target->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
+                if (target->GetCharmInfo())
+                    target->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
             }
         }
     }
