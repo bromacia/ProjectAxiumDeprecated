@@ -1793,6 +1793,17 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
             }
             break;
     }
+    if (apply)
+    {
+        for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (!GetSpellInfo()->Effects[i].Effect)
+            continue;
+
+            if (GetSpellInfo()->Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE || GetSpellInfo()->Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE_PERCENT)
+                GetEffect(i)->SetBonus(caster->SpellDamageBonus(target, m_spellInfo, GetEffect(i)->GetAmount(), DOT, GetStackAmount()) - GetEffect(i)->GetAmount());
+        }
+    }
 }
 
 bool Aura::CanBeAppliedOn(Unit* target)
