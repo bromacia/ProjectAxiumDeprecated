@@ -976,6 +976,17 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
 
                     return;
                 }
+                // Shadowmeld
+                case 58984:
+                {
+                    /*m_caster->InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
+                    m_caster->InterruptSpell(CURRENT_CHANNELED_SPELL);*/
+                    m_caster->AttackStop();
+                    m_caster->CombatStop();
+                    if (m_caster->ToPlayer())
+                        m_caster->ToPlayer()->SendAttackSwingCancelAttack();
+                    return;
+                }
                 // Demon Broiled Surprise
                 case 43723:
                 {
@@ -1572,6 +1583,7 @@ void Spell::EffectTriggerSpell(SpellEffIndex effIndex)
             {
                 unitTarget->RemoveMovementImpairingAuras();
                 unitTarget->RemoveAurasByType(SPELL_AURA_MOD_STALKED);
+				unitTarget->CombatStop();
 
                 // If this spell is given to an NPC, it must handle the rest using its own AI
                 if (unitTarget->GetTypeId() != TYPEID_PLAYER)
