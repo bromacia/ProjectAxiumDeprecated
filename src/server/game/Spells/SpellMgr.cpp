@@ -3575,17 +3575,11 @@ void SpellMgr::LoadDbcDataCorrections()
             case 24259: // Spell Lock
                 spellInfo->speed = 80;
                 break;
-            case 25504: // Windfury Attack
-                spellInfo->speed = 500;
-                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------
 // Todo - update for every rank of each spell
                 // Rogue
-			case 1784: // Stealth
-                spellInfo->speed = 150;
-                break;
             case 2094: // Blind
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
                 spellInfo->speed = 200;
