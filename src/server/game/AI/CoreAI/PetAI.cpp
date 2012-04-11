@@ -95,6 +95,10 @@ void PetAI::UpdateAI(const uint32 diff)
         if (me->getVictim()->HasBreakableByDamageCrowdControlAura(me))
         {
             me->InterruptNonMeleeSpells(false);
+            me->getHostileRefManager().deleteReferences();
+            me->AttackStop();
+            me->GetCharmInfo()->SetIsCommandAttack(false);
+            HandleReturnMovement();
             return;
         }
 
