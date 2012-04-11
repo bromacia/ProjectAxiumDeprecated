@@ -217,6 +217,7 @@ m_vehicleKit(NULL), m_unitTypeMask(UNIT_MASK_NONE), m_HostileRefManager(this), m
     m_modRangedHitChance = 0.0f;
     m_modSpellHitChance = 0.0f;
     m_baseSpellCritChance = 5;
+    m_positiveCastTimePrecent = 1.0f;
 
     m_CombatTimer = 0;
     m_lastManaUse = 0;
@@ -14931,7 +14932,10 @@ void Unit::ApplyAttackTimePercentMod(WeaponAttackType att, float val, bool apply
 void Unit::ApplyCastTimePercentMod(float val, bool apply)
 {
     if (val > 0)
+    {
+        ApplyPercentModFloatVar(m_positiveCastTimePrecent, val, !apply);
         ApplyPercentModFloatValue(UNIT_MOD_CAST_SPEED, val, !apply);
+    }
     else
         ApplyPercentModFloatValue(UNIT_MOD_CAST_SPEED, -val, apply);
 }
