@@ -185,6 +185,11 @@ class spell_pri_penance : public SpellScriptLoader
         {
             PrepareSpellScript(spell_pri_penance_SpellScript);
 
+            bool Load()
+            {
+                return GetCaster()->GetTypeId() == TYPEID_PLAYER;
+            }
+
             bool Validate(SpellInfo const* spellEntry)
             {
                 if (!sSpellMgr->GetSpellInfo(PRIEST_SPELL_PENANCE_R1))
@@ -218,10 +223,21 @@ class spell_pri_penance : public SpellScriptLoader
                     caster->CastSpell(unitTarget, sSpellMgr->GetSpellWithRank(PRIEST_SPELL_PENANCE_R1_DAMAGE, rank), false, 0);
             }
 
+            SpellCastResult CheckCast()
+            {
+                Player* caster = GetCaster()->ToPlayer();
+                if (GetTargetUnit())
+                    if (Player* target = GetTargetUnit()->ToPlayer())
+                        if (caster->GetTeam() != target->GetTeam() && !caster->IsValidAttackTarget(target))
+                            return SPELL_FAILED_BAD_TARGETS;
+                return SPELL_CAST_OK;
+            }
+
             void Register()
             {
                 // add dummy effect spell handler to Penance
                 OnEffectHitTarget += SpellEffectFn(spell_pri_penance_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnCheckCast += SpellCheckCastFn(spell_pri_penance_SpellScript::CheckCast);
             }
         };
 
