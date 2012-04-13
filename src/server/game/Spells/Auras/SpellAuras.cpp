@@ -1787,6 +1787,9 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
     }
     if (apply)
     {
+        if (GetSpellInfo()->SpellFamilyFlags[0] & 0x00004000)
+            return;
+
         for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
             if (!GetSpellInfo()->Effects[i].Effect)
