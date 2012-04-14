@@ -3570,6 +3570,10 @@ void SpellMgr::LoadDbcDataCorrections()
             case 24259: // Spell Lock
                 spellInfo->speed = 80;
                 break;
+            case 63311: // Glyph of Shadowflame
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CONE_ENEMY_104;
+                spellInfo->EffectRadiusIndex[0] = 13;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------

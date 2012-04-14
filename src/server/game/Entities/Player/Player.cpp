@@ -17212,6 +17212,9 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     // Arena Spectator
     SetSpectator(false);
+    ResurrectPlayer(1.0f);
+    SpawnCorpseBones();
+    SaveToDB();
 
     return true;
 }
