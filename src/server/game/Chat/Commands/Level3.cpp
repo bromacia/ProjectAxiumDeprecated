@@ -1939,9 +1939,10 @@ bool ChatHandler::HandleReviveCommand(const char *args)
 
     if (target)
     {
-        target->ResurrectPlayer(!AccountMgr::IsPlayerAccount(target->GetSession()->GetSecurity()) ? 1.0f : 0.5f);
+        target->ResurrectPlayer(1.0f);
         target->SpawnCorpseBones();
         target->SaveToDB();
+        target->SetSpectator(false);
     }
     else
         // will resurrected at login without corpse
