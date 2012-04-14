@@ -13827,9 +13827,9 @@ void Player::ApplyEnchantment(Item* item, EnchantmentSlot slot, bool apply, bool
 //                        case ITEM_MOD_HASTE_MELEE_RATING:
 //                            ApplyRatingMod(CR_HASTE_MELEE, enchant_amount, apply);
 //                            break;
-//                        case ITEM_MOD_HASTE_RANGED_RATING:
-//                            ApplyRatingMod(CR_HASTE_RANGED, enchant_amount, apply);
-//                            break;
+                        case ITEM_MOD_HASTE_RANGED_RATING:
+                            ApplyRatingMod(CR_HASTE_RANGED, enchant_amount, apply);
+                            break;
                         case ITEM_MOD_HASTE_SPELL_RATING:
                             ApplyRatingMod(CR_HASTE_SPELL, enchant_amount, apply);
                             break;
