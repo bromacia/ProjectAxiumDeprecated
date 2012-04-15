@@ -2218,7 +2218,7 @@ class Unit : public WorldObject
 
         // Movement info
         Movement::MoveSpline * movespline;
-		
+        
         float m_positiveCastTimePrecent;
 
     protected:

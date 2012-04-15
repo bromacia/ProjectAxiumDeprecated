@@ -1239,7 +1239,7 @@ void Guardian::UpdateMaxHealth()
         case ENTRY_FELHUNTER:          multiplicator = 12.0f;  break;
         case ENTRY_FELGUARD:           multiplicator = 14.0f;  break;
         case ENTRY_SHADOWFIEND:        multiplicator = 11.0f;  break;
-		case ENTRY_WATER_ELEMENTAL:    multiplicator = 6.0f;   break;
+        case ENTRY_WATER_ELEMENTAL:    multiplicator = 6.0f;   break;
         case ENTRY_MIRRORIMAGE:        multiplicator = 3.0f;   break;
         case ENTRY_ARMYOFDEADGHOUL:    multiplicator = 0.0f;   break;
         default:                       multiplicator = 10.0f;  break;

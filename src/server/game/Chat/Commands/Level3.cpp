@@ -4789,7 +4789,7 @@ bool ChatHandler::HandleAddPersonalQueueCommand(const char* args)
     if (!result)
     {
         PSendSysMessage("Unable to find player.");
-		SetSentErrorMessage(true);
+        SetSentErrorMessage(true);
         return false;
     }
 
@@ -4810,7 +4810,7 @@ bool ChatHandler::HandleAddPersonalQueueCommand(const char* args)
         CharacterDatabase.PExecute("UPDATE character_personalqueue SET x = '%f', y = '%f', z = '%f', map = '%u', orientation = '%f' WHERE accid='%u'", finiteAlways(x), finiteAlways(y), finiteAlways(z), map, finiteAlways(o), accid);
 
     PSendSysMessage("Personal queue spot saved.");
-	SetSentErrorMessage(true);
+    SetSentErrorMessage(true);
 
     return true;
 }

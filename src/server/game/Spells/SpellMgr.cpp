@@ -3605,7 +3605,7 @@ void SpellMgr::LoadDbcDataCorrections()
                 // Priest
             case 10890: // Psychic Scream
             case 64044: // Psychic Horror
-			case 48158: // Shadow Word: Death
+            case 48158: // Shadow Word: Death
 // ------------------------------------
                 // Death Knight
             case 49203: // Hungering Cold

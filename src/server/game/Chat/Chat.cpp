@@ -417,10 +417,10 @@ ChatCommand* ChatHandler::getCommandTable()
 
         // Custom
         { "leave",          SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleLeaveCommand>,   "", NULL },
-		{ "personalqueue",  SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandlePersonalQueueCommand>,       "", NULL },
+        { "personalqueue",  SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandlePersonalQueueCommand>,       "", NULL },
         { "addpersonalqueue", SEC_ADMINISTRATOR, false, OldHandler<&ChatHandler::HandleAddPersonalQueueCommand>,    "", NULL },
-		{ "spectate",		SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleSpectateCommand>,       "", NULL },
-		{ "unspectate",		SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleUnSpectateCommand>,       "", NULL },
+        { "spectate",        SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleSpectateCommand>,       "", NULL },
+        { "unspectate",        SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleUnSpectateCommand>,       "", NULL },
         { NULL,             0,                  false, NULL,                                           "", NULL }
     };
 
