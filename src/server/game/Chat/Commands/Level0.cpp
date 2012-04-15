@@ -72,9 +72,9 @@ bool ChatHandler::HandleStartCommand(const char* /*args*/)
 
     if ((chr->isDead()) || (chr->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)))
     {
-    // if player is dead and stuck, send ghost to graveyard
-    chr->RepopAtGraveyard();
-    return true;
+        // if player is dead and stuck, send ghost to graveyard
+        chr->RepopAtGraveyard();
+        return true;
     }
 
     // cast spell Stuck
@@ -160,14 +160,14 @@ bool ChatHandler::HandleServerMotdCommand(const char* /*args*/)
 // Arena Spectator leave command
 bool ChatHandler::HandleLeaveCommand(const char* /*args*/)
 {
-        Player* player = m_session->GetPlayer();
+    Player* player = m_session->GetPlayer();
  
-        if (!player->IsSpectator())
-            return false;
+    if (!player->IsSpectator())
+        return false;
  
-        player->SetSpectator(false);
-        player->TeleportTo(player->m_recallMap, player->m_recallX, player->m_recallY, player->m_recallZ, player->m_recallO);
-		return true;
+    player->SetSpectator(false);
+    player->TeleportTo(player->m_recallMap, player->m_recallX, player->m_recallY, player->m_recallZ, player->m_recallO);
+    return true;
 }
 
 // Arena Spectator spectate command

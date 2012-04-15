@@ -222,7 +222,7 @@ bool ChatHandler::HandleDeMorphCommand(const char* /*args*/)
 }
 
 //kick player
-bool ChatHandler::HandleKickPlayerCommand(const char *args)
+bool ChatHandler::HandleKickPlayerCommand(const char* args)
 {
     Player* target = NULL;
     std::string playerName;
@@ -558,7 +558,7 @@ bool ChatHandler::HandleCharacterChangeFactionCommand(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleCharacterChangeRaceCommand(const char * args)
+bool ChatHandler::HandleCharacterChangeRaceCommand(const char* args)
 {
     Player* target;
     uint64 targetGuid;
@@ -723,9 +723,9 @@ bool ChatHandler::HandleLookupPlayerIpCommand(const char* args)
     }
     else
     {
-        ip = strtok ((char*)args, " ");
-        limit_str = strtok (NULL, " ");
-        limit = limit_str ? atoi (limit_str) : -1;
+        ip = strtok((char*)args, " ");
+        limit_str = strtok(NULL, " ");
+        limit = limit_str ? atoi(limit_str) : -1;
     }
 
     LoginDatabase.EscapeString(ip);
@@ -740,35 +740,34 @@ bool ChatHandler::HandleLookupPlayerAccountCommand(const char* args)
     if (!*args)
         return false;
 
-    std::string account = strtok ((char*)args, " ");
-    char* limit_str = strtok (NULL, " ");
-    int32 limit = limit_str ? atoi (limit_str) : -1;
+    std::string account = strtok((char*)args, " ");
+    char* limit_str = strtok(NULL, " ");
+    int32 limit = limit_str ? atoi(limit_str) : -1;
 
-    if (!AccountMgr::normalizeString (account))
+    if (!AccountMgr::normalizeString(account))
         return false;
 
-    LoginDatabase.EscapeString (account);
+    LoginDatabase.EscapeString(account);
 
-    QueryResult result = LoginDatabase.PQuery ("SELECT id, username FROM account WHERE username = '%s'", account.c_str ());
+    QueryResult result = LoginDatabase.PQuery("SELECT id, username FROM account WHERE username = '%s'", account.c_str());
 
-    return LookupPlayerSearchCommand (result, limit);
+    return LookupPlayerSearchCommand(result, limit);
 }
 
 bool ChatHandler::HandleLookupPlayerEmailCommand(const char* args)
 {
-
     if (!*args)
         return false;
 
-    std::string email = strtok ((char*)args, " ");
-    char* limit_str = strtok (NULL, " ");
-    int32 limit = limit_str ? atoi (limit_str) : -1;
+    std::string email = strtok((char*)args, " ");
+    char* limit_str = strtok(NULL, " ");
+    int32 limit = limit_str ? atoi(limit_str) : -1;
 
-    LoginDatabase.EscapeString (email);
+    LoginDatabase.EscapeString(email);
 
-    QueryResult result = LoginDatabase.PQuery ("SELECT id, username FROM account WHERE email = '%s'", email.c_str ());
+    QueryResult result = LoginDatabase.PQuery("SELECT id, username FROM account WHERE email = '%s'", email.c_str());
 
-    return LookupPlayerSearchCommand (result, limit);
+    return LookupPlayerSearchCommand(result, limit);
 }
 
 bool ChatHandler::LookupPlayerSearchCommand(QueryResult result, int32 limit)
@@ -1001,7 +1000,7 @@ bool ChatHandler::HandlePetLearnCommand(const char* args)
     return true;
 }
 
-bool ChatHandler::HandlePetUnlearnCommand(const char *args)
+bool ChatHandler::HandlePetUnlearnCommand(const char* args)
 {
     if (!*args)
         return false;
