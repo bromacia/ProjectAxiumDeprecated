@@ -300,6 +300,8 @@ class ChatHandler
         // Custom Commands
 		bool HandleLeaveCommand(const char* args);
 
+		bool HandlePersonalQueueCommand(const char* args);
+
         bool HandleGroupLeaderCommand(const char* args);
         bool HandleGroupDisbandCommand(const char* args);
         bool HandleGroupRemoveCommand(const char* args);
