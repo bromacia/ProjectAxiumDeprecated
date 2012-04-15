@@ -3414,7 +3414,7 @@ bool ChatHandler::HandleBanListIPCommand(const char* args)
 
     if (filter.empty())
     {
-        result = LoginDatabase.Query ("SELECT ip, bandate, unbandate, bannedby, banreason FROM ip_banned"
+        result = LoginDatabase.Query("SELECT ip, bandate, unbandate, bannedby, banreason FROM ip_banned"
             " WHERE (bandate=unbandate OR unbandate>UNIX_TIMESTAMP())"
             " ORDER BY unbandate");
     }
@@ -4753,5 +4753,64 @@ bool ChatHandler::HandleUnbindSightCommand(const char* /*args*/)
         return false;
 
     m_session->GetPlayer()->StopCastingBindSight();
+    return true;
+}
+
+// Adds a personal queue spot in your current location to the selected 
+// player, or person you type in (e.g. .addpersonalqueue Takenbacon)
+bool ChatHandler::HandleAddPersonalQueueCommand(const char* args)
+{
+    std::string name;
+    Player* player;
+    char *TargetName = strtok((char*)args, " ");
+    if (!TargetName)
+    {
+        player = getSelectedPlayer();
+        if (player)
+        {
+            name = player->GetName();
+            normalizePlayerName(name);
+        }
+    }
+    else
+    {
+        name = TargetName;
+        normalizePlayerName(name);
+        player = sObjectAccessor->FindPlayerByName(name.c_str());
+    }
+
+    if (!player)
+        return false;
+
+    CharacterDatabase.EscapeString(name);
+
+    QueryResult result = CharacterDatabase.PQuery("SELECT account FROM characters WHERE name='%s'", name.c_str());
+
+    if (!result)
+    {
+        PSendSysMessage("Unable to find player.");
+		SetSentErrorMessage(true);
+        return false;
+    }
+
+    float x = player->GetPositionX();
+    float y = player->GetPositionY();
+    float z = player->GetPositionZ();
+    uint32 map = player->GetMapId();
+    float o = player->GetOrientation();
+
+    Field* fields = result->Fetch();
+    uint32 accid = fields[0].GetUInt32();
+
+    QueryResult result2 = CharacterDatabase.PQuery("SELECT x, y, z, map, orientation FROM character_personalqueue WHERE accid='%u'", accid);
+
+    if (!result2) // Could not find a personal queue spot
+        CharacterDatabase.PExecute("INSERT INTO character_personalqueue (accid, x, y, z, map, orientation) VALUES ('%u', '%f', '%f', '%f', '%u', '%f')", accid, finiteAlways(x), finiteAlways(y), finiteAlways(z), map, finiteAlways(o));
+    else // Found personal queue spot - Update old one
+        CharacterDatabase.PExecute("UPDATE character_personalqueue SET x = '%f', y = '%f', z = '%f', map = '%u', orientation = '%f' WHERE accid='%u'", finiteAlways(x), finiteAlways(y), finiteAlways(z), map, finiteAlways(o), accid);
+
+    PSendSysMessage("Personal queue spot saved.");
+	SetSentErrorMessage(true);
+
     return true;
 }
