@@ -157,3 +157,15 @@ bool ChatHandler::HandleServerMotdCommand(const char* /*args*/)
     return true;
 }
 
+// Arena Spectator leave command
+bool ChatHandler::HandleLeaveCommand(const char* /*args*/)
+{
+        Player* player = m_session->GetPlayer();
+ 
+        if (!player->IsSpectator())
+            return false;
+ 
+        player->SetSpectator(false);
+        player->TeleportTo(player->m_recallMap, player->m_recallX, player->m_recallY, player->m_recallZ, player->m_recallO);
+		return true;
+}

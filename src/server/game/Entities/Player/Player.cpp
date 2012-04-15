@@ -25155,7 +25155,7 @@ void Player::_SaveInstanceTimeRestrictions(SQLTransaction& trans)
 // Arena Spectator
 bool Player::IsSpectator() const
 {
-    if (!IsVisible() && isDead())
+    if (!IsVisible() && isDead() && IsInWorld() && InArena() && !isGameMaster())
         return true;
     else
         return false;
