@@ -17212,6 +17212,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     // Arena Spectator
     SetSpectator(false);
+
+    // Revive Player
     ResurrectPlayer(1.0f);
     SpawnCorpseBones();
     SaveToDB();
@@ -19589,7 +19591,7 @@ void Player::RemovePet(Pet* pet, PetSaveMode mode, bool returnreagent)
             return;
     }
 
-    if (returnreagent && (pet || m_temporaryUnsummonedPetNumber) && !InBattleground())
+    /*if (returnreagent && (pet || m_temporaryUnsummonedPetNumber) && !InBattleground())
     {
         //returning of reagents only for players, so best done here
         uint32 spellId = pet ? pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) : m_oldpetspell;
@@ -19613,26 +19615,26 @@ void Player::RemovePet(Pet* pet, PetSaveMode mode, bool returnreagent)
             }
         }
         m_temporaryUnsummonedPetNumber = 0;
-    }
+    }*/
 
     if (!pet || pet->GetOwnerGUID() != GetGUID())
         return;
 
     pet->CombatStop();
 
-    if (returnreagent)
-    {
-        switch (pet->GetEntry())
-        {
-            //warlock pets except imp are removed(?) when logging out
-            case 1860:
-            case 1863:
-            case 417:
-            case 17252:
-                mode = PET_SAVE_NOT_IN_SLOT;
-                break;
-        }
-    }
+    /*if (returnreagent)
+   {
+       switch (pet->GetEntry())
+       {
+           //warlock pets except imp are removed(?) when logging out
+           case 1860:
+           case 1863:
+           case 417:
+           case 17252:
+               mode = PET_SAVE_NOT_IN_SLOT;
+               break;
+       }
+   }*/
 
     // only if current pet in slot
     pet->SavePetToDB(mode);
