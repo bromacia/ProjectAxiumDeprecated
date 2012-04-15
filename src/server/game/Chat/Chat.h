@@ -302,6 +302,9 @@ class ChatHandler
 
 		bool HandlePersonalQueueCommand(const char* args);
 
+		bool HandleSpectateCommand(const char* args);
+		bool HandleUnSpectateCommand(const char* args);
+
         bool HandleGroupLeaderCommand(const char* args);
         bool HandleGroupDisbandCommand(const char* args);
         bool HandleGroupRemoveCommand(const char* args);

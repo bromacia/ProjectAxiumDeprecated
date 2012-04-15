@@ -418,6 +418,8 @@ ChatCommand* ChatHandler::getCommandTable()
         // Custom
         { "leave",          SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleLeaveCommand>,   "", NULL },
 		{ "personalqueue",  SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandlePersonalQueueCommand>,       "", NULL },
+		{ "spectate",		SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleSpectateCommand>,       "", NULL },
+		{ "unspectate",		SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleUnSpectateCommand>,       "", NULL },
         { NULL,             0,                  false, NULL,                                           "", NULL }
     };
 
