@@ -221,10 +221,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                             if (pet->ToCreature()->isPet() && ((Pet*)pet)->getPetType() == SUMMON_PET && pet != TargetUnit && urand(0, 100) < 10)
                                 pet->SendPetTalk((uint32)PET_TALK_ATTACK);
                             else
-                            {
-                                // 90% chance for pet and 100% chance for charmed creature
-                                pet->SendPetAIReaction(guid1);
-                            }
+                                pet->SendPetAIReaction(guid1); // 90% chance for pet and 100% chance for charmed creature
                         }
                         else                                // charmed player
                         {
@@ -341,7 +338,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                 }
                 if (Unit* powner = pet->GetCharmerOrOwner())
                     if (powner->GetTypeId() == TYPEID_PLAYER)
-              pet->SendUpdateToPlayer(powner->ToPlayer());
+                        pet->SendUpdateToPlayer(powner->ToPlayer());
                 result = SPELL_CAST_OK;
             }
 
@@ -356,9 +353,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                 if (pet->ToCreature()->isPet() && (((Pet*)pet)->getPetType() == SUMMON_PET) && (pet != unit_target) && (urand(0, 100) < 10))
                     pet->SendPetTalk((uint32)PET_TALK_SPECIAL_SPELL);
                 else
-                {
                     pet->SendPetAIReaction(guid1);
-                }
 
                 if (unit_target && !GetPlayer()->IsFriendlyTo(unit_target) && !pet->isPossessed() && !pet->IsVehicle())
                 {
@@ -629,9 +624,7 @@ void WorldSession::HandlePetRename(WorldPacket & recv_data)
     if (isdeclined)
     {
         for (uint8 i = 0; i < MAX_DECLINED_NAME_CASES; ++i)
-        {
             recv_data >> declinedname.name[i];
-        }
 
         std::wstring wname;
         Utf8toWStr(name, wname);
@@ -701,7 +694,7 @@ void WorldSession::HandlePetSpellAutocastOpcode(WorldPacket& recvPacket)
     if (ObjectAccessor::FindPlayer(guid))
         return;
 
-    Creature* pet=ObjectAccessor::GetCreatureOrPetOrVehicle(*_player, guid);
+    Creature* pet = ObjectAccessor::GetCreatureOrPetOrVehicle(*_player, guid);
 
     if (!pet || (pet != _player->GetGuardianPet() && pet != _player->GetCharm()))
     {
@@ -710,6 +703,7 @@ void WorldSession::HandlePetSpellAutocastOpcode(WorldPacket& recvPacket)
     }
 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellid);
+
     // do not add not learned spells/ passive spells
     if (!pet->HasSpell(spellid) || spellInfo->IsAutocastable())
         return;
@@ -717,7 +711,7 @@ void WorldSession::HandlePetSpellAutocastOpcode(WorldPacket& recvPacket)
     CharmInfo* charmInfo = pet->GetCharmInfo();
     if (!charmInfo)
     {
-        sLog->outError("WorldSession::HandlePetSpellAutocastOpcod: object (GUID: %u TypeId: %u) is considered pet-like but doesn't have a charminfo!", pet->GetGUIDLow(), pet->GetTypeId());
+        sLog->outError("WorldSession::HandlePetSpellAutocastOpcode: object (GUID: %u TypeId: %u) is considered pet-like but doesn't have a charminfo!", pet->GetGUIDLow(), pet->GetTypeId());
         return;
     }
 

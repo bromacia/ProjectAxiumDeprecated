@@ -192,7 +192,7 @@ class spell_sha_mana_tide_totem : public SpellScriptLoader
         }
 };
 
-// 6474 - Earthbind Totem - Fix Talent:Earthen Power
+// 6474 - Earthbind Totem
 class spell_sha_earthbind_totem : public SpellScriptLoader
 {
     public:

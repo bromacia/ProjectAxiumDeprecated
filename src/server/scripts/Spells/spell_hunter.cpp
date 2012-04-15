@@ -287,7 +287,7 @@ class spell_hun_masters_call : public SpellScriptLoader
                     TriggerCastFlags castMask = TriggerCastFlags(TRIGGERED_FULL_MASK & ~TRIGGERED_IGNORE_CASTER_AURASTATE);
                     target->CastSpell(target, GetEffectValue(), castMask);
                     target->CastSpell(target, HUNTER_SPELL_MASTERS_CALL_TRIGGERED, castMask);
-                    // there is a possibility that this effect should access effect 0 (dummy) target, but i dubt that
+                    // there is a possibility that this effect should access effect 0 (dummy) target, but i doubt that
                     // it's more likely that on on retail it's possible to call target selector based on dbc values
                     // anyways, we're using GetTargetUnit() here and it's ok
                     if (Unit* ally = GetTargetUnit())
