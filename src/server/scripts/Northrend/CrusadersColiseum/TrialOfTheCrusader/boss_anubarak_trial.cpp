@@ -558,29 +558,40 @@ public:
 
 class mob_frost_sphere : public CreatureScript
 {
-    public:
-        mob_frost_sphere() : CreatureScript("mob_frost_sphere") { }
+public:
+    mob_frost_sphere() : CreatureScript("mob_frost_sphere") { }
 
-        struct mob_frost_sphereAI : public ScriptedAI
+    CreatureAI* GetAI(Creature* creature) const
+    {
+        return new mob_frost_sphereAI(creature);
+    };
+
+    struct mob_frost_sphereAI : public ScriptedAI
+    {
+        mob_frost_sphereAI(Creature* creature) : ScriptedAI(creature)
         {
-            mob_frost_sphereAI(Creature* creature) : ScriptedAI(creature)
-            {
-            }
+        }
 
-            void Reset()
-            {
-                _isFalling = false;
-                me->SetReactState(REACT_PASSIVE);
-                me->SetFlying(true);
-                me->SetDisplayId(me->GetCreatureInfo()->Modelid2);
-                me->SetSpeed(MOVE_RUN, 0.5f, false);
-                me->GetMotionMaster()->MoveRandom(20.0f);
-                DoCast(SPELL_FROST_SPHERE);
-            }
+        bool   m_bFall;
+        float  x, y, z;
 
-            void DamageTaken(Unit* /*who*/, uint32& damage)
+        void Reset()
+        {
+            m_bFall = false;
+            me->SetReactState(REACT_PASSIVE);
+            me->SetFlying(true);
+            me->SetDisplayId(25144);
+            me->SetSpeed(MOVE_RUN, 0.5f, false);
+            me->GetMotionMaster()->MoveRandom(20.0f);
+            DoCast(SPELL_FROST_SPHERE);
+        }
+
+        void DamageTaken(Unit* /*who*/, uint32& uiDamage)
+        {
+            if (me->GetHealth() < uiDamage)
             {
-                if (me->GetHealth() <= damage)
+                uiDamage = 0;
+                if (!m_bFall)
                 {
                     m_bFall = true;
                     me->GetMotionMaster()->MoveIdle();
@@ -593,8 +604,13 @@ class mob_frost_sphere : public CreatureScript
                     //me->FallGround(); //need correct vmap use (i believe it isn't working properly right now)
                 }
             }
+        }
 
-            void MovementInform(uint32 type, uint32 pointId)
+        void MovementInform(uint32 uiType, uint32 uiId)
+        {
+            if (uiType != POINT_MOTION_TYPE) return;
+
+            switch (uiId)
             {
                 case 0:
                     me->RemoveAurasDueToSpell(SPELL_FROST_SPHERE);
@@ -605,15 +621,9 @@ class mob_frost_sphere : public CreatureScript
                     me->SetFloatValue(OBJECT_FIELD_SCALE_X, 2.0f);
                     break;
             }
+        }
+    };
 
-        private:
-            bool _isFalling;
-        };
-
-        CreatureAI* GetAI(Creature* creature) const
-        {
-            return new mob_frost_sphereAI(creature);
-        };
 };
 
 class mob_anubarak_spike : public CreatureScript

@@ -2253,6 +2253,8 @@ class Unit : public WorldObject
                 SetUInt64Value(UNIT_FIELD_TARGET, 0);
         }
 
+        float m_positiveCastTimePrecent;
+
     protected:
         explicit Unit (bool isWorldObject);
 

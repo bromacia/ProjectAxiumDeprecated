@@ -275,7 +275,7 @@ public:
 
         void MovementInform(uint32 motionType, uint32 pointId)
         {
-            if (motionType != EFFECT_MOTION_TYPE)
+            if (motionType != POINT_MOTION_TYPE)
                 return;
 
             if (pointId == 1)

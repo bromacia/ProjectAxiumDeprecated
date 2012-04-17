@@ -1882,5 +1882,5 @@ void GameObject::SetDestructibleState(GameObjectDestructibleState state, Player*
 void GameObject::SetLootState(LootState s, Unit* unit)
 {
     m_lootState = s;
-    AI()->OnStateChanged(s);
+    AI()->OnStateChanged(s, unit);
 }
