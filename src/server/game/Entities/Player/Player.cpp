@@ -17213,6 +17213,10 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     // Arena Spectator
     SetSpectator(false);
 
+    // In case player has bind sight for some reason, remove it
+    if (HasAura(6277))
+        RemoveAura(6277);
+
     // Revive Player
     ResurrectPlayer(1.0f);
     SpawnCorpseBones();

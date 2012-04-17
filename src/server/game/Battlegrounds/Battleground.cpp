@@ -943,7 +943,7 @@ void Battleground::EndBattleground(uint32 winner)
                 if (player->IsSpectator())
                 {
                     player->SetSpectator(false);
-                    player->TeleportTo(player->m_recallMap, player->m_recallX, player->m_recallY, player->m_recallZ, player->m_recallO);
+                    player->TeleportToBGEntryPoint();
                 }
 }
 
@@ -1278,6 +1278,7 @@ void Battleground::EventPlayerLoggedIn(Player* player)
 void Battleground::EventPlayerLoggedOut(Player* player)
 {
     uint64 guid = player->GetGUID();
+
     // player is correct pointer, it is checked in WorldSession::LogoutPlayer()
     m_OfflineQueue.push_back(player->GetGUID());
     m_Players[guid].OfflineRemoveTime = sWorld->GetGameTime() + MAX_OFFLINE_TIME;
@@ -1286,7 +1287,8 @@ void Battleground::EventPlayerLoggedOut(Player* player)
         if (player->IsSpectator())
         {
             player->SetSpectator(false);
-            player->TeleportTo(player->m_recallMap, player->m_recallX, player->m_recallY, player->m_recallZ, player->m_recallO);
+            player->TeleportToBGEntryPoint();
+            return;
         }
 
         // drop flag and handle other cleanups
@@ -1294,7 +1296,7 @@ void Battleground::EventPlayerLoggedOut(Player* player)
 
         // 1 player is logging out, if it is the last, then end arena!
         if (isArena())
-            if (GetAlivePlayersCountByTeam(player->GetTeam()) <= 1 && GetPlayersCountByTeam(GetOtherTeam(player->GetTeam())))
+            if (GetPlayersCountByTeam(player->GetTeam()) <= 0 || GetPlayersCountByTeam(GetOtherTeam(player->GetTeam())) <= 0)
                 EndBattleground(GetOtherTeam(player->GetTeam()));
     }
 }

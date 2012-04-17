@@ -3574,6 +3574,12 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CONE_ENEMY_104;
                 spellInfo->EffectRadiusIndex[0] = 13;
                 break;
+			case 6277: // Bind Sight
+                spellInfo->AttributesEx |= SPELL_ATTR0_CASTABLE_WHILE_DEAD;
+                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_DEAD;
+                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
+                spellInfo->AttributesEx3 |= SPELL_ATTR3_DEATH_PERSISTENT;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------

@@ -3224,7 +3224,7 @@ public:
             if (!bracketMatchs)
             {
                 std::stringstream errMsg;
-                errMsg << "Error: There are currently no arena matches being played in that bracket.";
+                errMsg << "There are currently no arena matches being played in that bracket.";
                 creature->MonsterWhisper(errMsg.str().c_str(), player->GetGUID());
                 player->PlayerTalkClass->ClearMenus();
                 player->CLOSE_GOSSIP_MENU();
@@ -3267,7 +3267,7 @@ public:
                 if (arenaChosen->GetStatus() != STATUS_NONE && arenaChosen->GetStatus() != STATUS_IN_PROGRESS)
                 {
                     std::stringstream errMsg;
-                    errMsg << "Error: The arena match you have chosen has already ended.";
+                    errMsg << "The arena match you have chosen has already ended.";
                     creature->MonsterWhisper(errMsg.str().c_str(), player->GetGUID());
                     player->PlayerTalkClass->ClearMenus();
                     player->CLOSE_GOSSIP_MENU();
@@ -3308,26 +3308,32 @@ public:
                     {
                         if (!target->IsInWorld())
                         {
-                            creature->MonsterWhisper("Error: The player you are trying to spectate is currently being teleported.", player->GetGUID());
+                            creature->MonsterWhisper("The player you are trying to spectate is currently being teleported.", player->GetGUID());
                             return true;
                         }
 
                         if (!target->InArena())
                         {
-                            creature->MonsterWhisper("Error: The player you are trying to spectate not in any arena matches.", player->GetGUID());
+                            creature->MonsterWhisper("The player you are trying to spectate not in any arena matches.", player->GetGUID());
+                            return true;
+                        }
+
+                        if (target->HasAura(32727))
+                        {
+                            creature->MonsterWhisper("The player you are trying to spectate is in an arena match that has not started yet.", player->GetGUID());
                             return true;
                         }
 
                         if (target->isGameMaster())
                         {
-                            creature->MonsterWhisper("Error: The player you are trying to spectate is a Gamemaster.", player->GetGUID());
+                            creature->MonsterWhisper("The player you are trying to spectate is a Gamemaster.", player->GetGUID());
                             return true;
                         }
 
                         // To prevent people spectating people who are already spectating
                         if (target->IsSpectator())
 						{
-                            creature->MonsterWhisper("Error: The player you are trying to spectate is already spectating an arena match.", player->GetGUID());
+                            creature->MonsterWhisper("The player you are trying to spectate is already spectating an arena match.", player->GetGUID());
                             return true;
 						}
 

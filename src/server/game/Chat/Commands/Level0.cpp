@@ -166,29 +166,29 @@ bool ChatHandler::HandleLeaveCommand(const char* /*args*/)
         return false;
  
     player->SetSpectator(false);
-    player->TeleportTo(player->m_recallMap, player->m_recallX, player->m_recallY, player->m_recallZ, player->m_recallO);
+    player->TeleportToBGEntryPoint();
     return true;
 }
 
 // Arena Spectator spectate command
 bool ChatHandler::HandleSpectateCommand(const char* /*args*/)
 {
-    Unit* unit = getSelectedUnit();
+    Unit* target = getSelectedUnit();
     Player* player = m_session->GetPlayer();
 
-    if (!unit)
+    if (!target)
         return false;
 
     if (!player->IsSpectator())
         return false;
 
-    if (unit->HasAuraType(SPELL_AURA_MOD_STEALTH) || unit->HasAuraType(SPELL_AURA_MOD_INVISIBILITY))
+    if (target->HasAuraType(SPELL_AURA_MOD_STEALTH) || target->HasAuraType(SPELL_AURA_MOD_INVISIBILITY))
         return false;
 
-    if (unit->isDead())
+    if (target == player)
         return false;
 
-    player->CastSpell(unit, 6277, true);
+    player->CastSpell(target, 6277, true);
     return true;
 }
 
@@ -197,9 +197,9 @@ bool ChatHandler::HandleUnSpectateCommand(const char* /*args*/)
 {
     Player* player = m_session->GetPlayer();
 
-    if (player->isPossessing())
+    if (!player->IsSpectator())
         return false;
 
-    player->StopCastingBindSight();
+    player->InterruptSpell(CURRENT_CHANNELED_SPELL);
     return true;
 }
