@@ -1059,24 +1059,27 @@ void Creature::UpdateDamagePhysical(WeaponAttackType attType)
 ########                         ########
 #######################################*/
 
+// Death Knight
+#define ENTRY_GHOUL              26125
+#define ENTRY_ARMYOFDEADGHOUL    24207
+#define ENTRY_BLOODWORM          28017
+#define ENTRY_GARGOYLE           27829
+// Shaman
+#define ENTRY_FIRE_ELEMENTAL     15438
+#define ENTRY_FERAL_SPIRIT       29264
+// Druid
+#define ENTRY_TREANT             1964
+// Priest
+#define ENTRY_SHADOWFIEND        19668
+// Mage
+#define ENTRY_WATER_ELEMENTAL    510
+#define ENTRY_MIRRORIMAGE        31216
 // Warlock
 #define ENTRY_IMP                416
 #define ENTRY_VOIDWALKER         1860
 #define ENTRY_SUCCUBUS           1863
 #define ENTRY_FELHUNTER          417
 #define ENTRY_FELGUARD           17252
-// Druid
-#define ENTRY_TREANT             1964
-// Shaman
-#define ENTRY_FIRE_ELEMENTAL     15438
-// Death Knight
-#define ENTRY_GHOUL              26125
-#define ENTRY_ARMYOFDEADGHOUL    24207
-// Priest
-#define ENTRY_SHADOWFIEND        19668
-// Mage
-#define ENTRY_WATER_ELEMENTAL    510
-#define ENTRY_MIRRORIMAGE        31216
 
 bool Guardian::UpdateStats(Stats stat)
 {
@@ -1233,15 +1236,23 @@ void Guardian::UpdateMaxHealth()
     float multiplicator;
     switch (GetEntry())
     {
+        // Death Knight
+        case ENTRY_ARMYOFDEADGHOUL:    multiplicator = 5.0f;   break;
+        case ENTRY_BLOODWORM:          multiplicator = 1.0f;   break;
+        case ENTRY_GARGOYLE:           multiplicator = 4.0f;   break;
+        // Shaman
+        case ENTRY_FERAL_SPIRIT:       multiplicator = 5.0f;   break;
+        // Priest
+        case ENTRY_SHADOWFIEND:        multiplicator = 7.2f;   break;
+        // Mage
+        case ENTRY_WATER_ELEMENTAL:    multiplicator = 6.0f;   break;
+        case ENTRY_MIRRORIMAGE:        multiplicator = 3.0f;   break;
+        // Warlock
         case ENTRY_IMP:                multiplicator = 10.0f;  break;
         case ENTRY_VOIDWALKER:         multiplicator = 14.0f;  break;
         case ENTRY_SUCCUBUS:           multiplicator = 10.0f;  break;
         case ENTRY_FELHUNTER:          multiplicator = 12.0f;  break;
         case ENTRY_FELGUARD:           multiplicator = 14.0f;  break;
-        case ENTRY_SHADOWFIEND:        multiplicator = 11.0f;  break;
-        case ENTRY_WATER_ELEMENTAL:    multiplicator = 6.0f;   break;
-        case ENTRY_MIRRORIMAGE:        multiplicator = 3.0f;   break;
-        case ENTRY_ARMYOFDEADGHOUL:    multiplicator = 0.0f;   break;
         default:                       multiplicator = 10.0f;  break;
     }
 
