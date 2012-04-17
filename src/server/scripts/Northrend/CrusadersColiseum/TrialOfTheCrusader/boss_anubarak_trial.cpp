@@ -582,34 +582,28 @@ class mob_frost_sphere : public CreatureScript
             {
                 if (me->GetHealth() <= damage)
                 {
-                    damage = 0;
-                    if (!_isFalling)
-                    {
-                        _isFalling = true;
-                        me->GetMotionMaster()->MoveIdle();
-                        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                        //At hit the ground
-                        me->HandleEmoteCommand(EMOTE_ONESHOT_FLYDEATH);
-                        me->GetMotionMaster()->MoveFall(POINT_FALL_GROUND);
-                    }
+                    m_bFall = true;
+                    me->GetMotionMaster()->MoveIdle();
+                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    //At hit the ground
+                    me->GetPosition(x, y, z);
+                    z = me->GetMap()->GetHeight(x, y, z, true, 50);
+                    me->HandleEmoteCommand(EMOTE_ONESHOT_FLYDEATH);
+                    me->GetMotionMaster()->MoveFall(z, 0);
+                    //me->FallGround(); //need correct vmap use (i believe it isn't working properly right now)
                 }
             }
 
             void MovementInform(uint32 type, uint32 pointId)
             {
-                if (type != EFFECT_MOTION_TYPE)
-                    return;
-
-                switch (pointId)
-                {
-                    case POINT_FALL_GROUND:
-                        me->RemoveAurasDueToSpell(SPELL_FROST_SPHERE);
-                        me->SetDisplayId(me->GetCreatureInfo()->Modelid1);
-                        DoCast(SPELL_PERMAFROST_VISUAL);
-                        DoCast(SPELL_PERMAFROST);
-                        me->SetFloatValue(OBJECT_FIELD_SCALE_X, 2.0f);
-                        break;
-                }
+                case 0:
+                    me->RemoveAurasDueToSpell(SPELL_FROST_SPHERE);
+                    me->SetDisplayId(11686);
+                    me->Relocate(x, y, z, me->GetOrientation());
+                    DoCast(SPELL_PERMAFROST_VISUAL);
+                    DoCast(SPELL_PERMAFROST);
+                    me->SetFloatValue(OBJECT_FIELD_SCALE_X, 2.0f);
+                    break;
             }
 
         private:

@@ -4778,7 +4778,11 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                     break;
                 case 46361:                                     // Reinforced Net
                     if (caster)
-                        target->GetMotionMaster()->MoveFall();
+                    {
+                        float currentGroundLevel = target->GetBaseMap()->GetHeight(target->GetPositionX(), target->GetPositionY(), MAX_HEIGHT);
+                        if (target->GetPositionZ() > currentGroundLevel)
+                            target->GetMotionMaster()->MoveFall(currentGroundLevel);
+                    }
                     break;
                 case 46699:                                     // Requires No Ammo
                     if (target->GetTypeId() == TYPEID_PLAYER)

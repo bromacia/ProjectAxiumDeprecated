@@ -196,8 +196,8 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellInfo const* spellproto,
         }
         case SPELLFAMILY_SHAMAN:
         {
-            // Earthbind Totem - Slow
-            if (spellproto->Id == 3600)
+            // Earthbind Totem - Earthgrab (Storm, Earth and Fire)
+            if (spellproto->Id == 64695)
                 return DIMINISHING_NONE;
         }
         default:

@@ -254,16 +254,22 @@ public:
                 if (Phase == SACRIFICING)
                     SetEquipmentSlots(false, EQUIP_UNEQUIP, EQUIP_NO_CHANGE, EQUIP_NO_CHANGE);
 
-                damage = 0;
-                Phase = SVALADEAD;
-                me->InterruptNonMeleeSpells(true);
-                me->RemoveAllAuras();
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                me->SetHealth(1);
+                me->GetPosition(x, y, z);
+                z = me->GetMap()->GetHeight(x, y, z, true, 50);
 
-                SetCombatMovement(false);
-                me->HandleEmoteCommand(EMOTE_ONESHOT_FLYDEATH);
-                me->GetMotionMaster()->MoveFall(POINT_FALL_GROUND);
+                if (me->GetPositionZ() > z)
+                {
+                    damage = 0;
+                    Phase = SVALADEAD;
+                    me->InterruptNonMeleeSpells(true);
+                    me->RemoveAllAuras();
+                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    me->SetHealth(1);
+
+                    SetCombatMovement(false);
+                    me->HandleEmoteCommand(EMOTE_ONESHOT_FLYDEATH);
+                    me->GetMotionMaster()->MoveFall(z, 1);
+                }
             }
         }
 
@@ -272,8 +278,11 @@ public:
             if (motionType != EFFECT_MOTION_TYPE)
                 return;
 
-            if (pointId == POINT_FALL_GROUND)
+            if (pointId == 1)
+            {
+                me->Relocate(x, y, z, me->GetOrientation());
                 me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+            }
         }
 
         void JustDied(Unit* /*killer*/)
