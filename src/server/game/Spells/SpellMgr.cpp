@@ -3580,6 +3580,12 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_DEATH_PERSISTENT;
                 break;
+			case 694: // Mocking Blow - Tempfix
+                spellInfo->Effect[0] = 0;
+                break;
+			case 453: // Mind Soothe
+                spellInfo->AttributesEx |= SPELL_ATTR1_CANT_BE_REFLECTED;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------
