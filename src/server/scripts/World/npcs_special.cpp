@@ -3324,12 +3324,6 @@ public:
                             return true;
                         }
 
-                        if (target->isGameMaster())
-                        {
-                            creature->MonsterWhisper("The player you are trying to spectate is a Gamemaster.", player->GetGUID());
-                            return true;
-                        }
-
                         // To prevent people spectating people who are already spectating
                         if (target->IsSpectator())
 						{
