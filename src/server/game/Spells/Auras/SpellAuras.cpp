@@ -1787,6 +1787,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
     }
     if (apply)
     {
+        // Ignore Drain Soul for now to prevent crash
         if (GetSpellInfo()->SpellFamilyFlags[0] & 0x00004000)
             return;
 
@@ -1795,8 +1796,13 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
             if (!GetSpellInfo()->Effects[i].Effect)
             continue;
 
+            // Periodic Damage Auras
             if (GetSpellInfo()->Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE || GetSpellInfo()->Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE_PERCENT)
                 GetEffect(i)->SetBonus(caster->SpellDamageBonus(target, m_spellInfo, GetEffect(i)->GetAmount(), DOT, GetStackAmount()) - GetEffect(i)->GetAmount());
+
+            // Periodic Healing Auras
+            if (GetSpellInfo()->Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_HEAL)
+                GetEffect(i)->SetBonus(caster->SpellHealingBonus(target, m_spellInfo, GetEffect(i)->GetAmount(), DOT, GetStackAmount()) - GetEffect(i)->GetAmount());
         }
     }
 }
