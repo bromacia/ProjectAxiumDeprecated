@@ -15,6 +15,7 @@ set(scripts_STAT_SRCS
   Custom/duel_reset.cpp
   Custom/npc_beastmaster.cpp
   Custom/cast_log.cpp
+  Custom/arena_team_ranks.cpp
 )
 
 message("  -> Prepared: Custom")

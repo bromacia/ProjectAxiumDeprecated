@@ -1235,6 +1235,7 @@ void AddBattlegroundScripts()
     void AddSC_DuelReset();
     void AddSC_npc_beastmaster();
     void AddSC_cast_log();
+    void AddSC_arena_team_ranks();
 #endif
 
 void AddCustomScripts()
@@ -1245,5 +1246,6 @@ void AddCustomScripts()
     AddSC_DuelReset();
     AddSC_npc_beastmaster();
     AddSC_cast_log();
+    AddSC_arena_team_ranks();
 #endif
 }
