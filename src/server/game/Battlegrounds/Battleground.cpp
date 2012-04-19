@@ -940,8 +940,7 @@ void Battleground::EndBattleground(uint32 winner)
     if (!PlList.isEmpty())
         for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
             if (Player* player = i->getSource())
-				// Dont check for IsSpectator() because players at the end of a battleground get revived
-                if (!player->IsVisible() && player->InArena())
+                if (player->IsSpectator())
                 {
                     player->SetSpectator(false);
                     player->TeleportToBGEntryPoint();
