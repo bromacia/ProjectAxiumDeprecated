@@ -3531,6 +3531,7 @@ void SpellMgr::LoadDbcDataCorrections()
 // ----------------------------------------------------------------------
             case 5171: // Slice and Dice (Rank 1)
             case 6774: // Slice and Dice (Rank 2)
+            case 52610: // Savage Roar
             case 49376: // Feral Charge - Cat
             case 50259: // Feral Charge - Cat (Daze)
             case 60946: // Nightmare (Rank 1)
@@ -3587,10 +3588,6 @@ void SpellMgr::LoadDbcDataCorrections()
                 break;
             case 453: // Mind Soothe
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_ONLY_TARGET_PLAYERS;
-                break;
-            case 52610: // Savage Roar
-                spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
-                spellInfo->Stances = 0x00000001; // Cat Form
                 break;
 // ------------------------------------
 // -----------Spell Delay--------------
