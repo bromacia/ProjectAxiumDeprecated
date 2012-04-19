@@ -3526,9 +3526,11 @@ void SpellMgr::LoadDbcDataCorrections()
             case 40166: // Introspection
             case 40167: // Introspection
                 spellInfo->Attributes |= SPELL_ATTR0_NEGATIVE_1;
+// ----------------------------------------------------------------------
+// -------------------------------Axium----------------------------------
+// ----------------------------------------------------------------------
             case 5171: // Slice and Dice (Rank 1)
             case 6774: // Slice and Dice (Rank 2)
-            case 52610: // Savage Roar
             case 49376: // Feral Charge - Cat
             case 50259: // Feral Charge - Cat (Daze)
             case 60946: // Nightmare (Rank 1)
@@ -3580,11 +3582,15 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_DEATH_PERSISTENT;
                 break;
-			case 694: // Mocking Blow - Tempfix
+            case 694: // Mocking Blow - Tempfix
                 spellInfo->Effect[0] = 0;
                 break;
-			case 453: // Mind Soothe
-                spellInfo->AttributesEx |= SPELL_ATTR1_CANT_BE_REFLECTED;
+            case 453: // Mind Soothe
+                spellInfo->AttributesEx3 |= SPELL_ATTR3_ONLY_TARGET_PLAYERS;
+                break;
+            case 52610: // Savage Roar
+                spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
+                spellInfo->Stances = 0x00000001; // Cat Form
                 break;
 // ------------------------------------
 // -----------Spell Delay--------------
