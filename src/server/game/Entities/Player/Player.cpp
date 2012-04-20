@@ -17249,6 +17249,10 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     if (HasAura(6277))
         RemoveAura(6277);
 
+    // Remove Demonic Circle aura
+    if (HasAura(48018))
+        RemoveAura(48018);
+
     // Revive Player
     ResurrectPlayer(1.0f);
     SpawnCorpseBones();
