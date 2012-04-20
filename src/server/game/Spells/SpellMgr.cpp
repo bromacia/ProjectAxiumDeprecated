@@ -3586,8 +3586,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 694: // Mocking Blow - Tempfix
                 spellInfo->Effect[0] = 0;
                 break;
-            case 453: // Mind Soothe
-                spellInfo->AttributesEx3 |= SPELL_ATTR3_ONLY_TARGET_PLAYERS;
+            case 73313: // Crimson Deathcharger
+            case 48778: // Acherus Deathcharger
+                spellInfo->SpellFamilyName = SPELLFAMILY_GENERIC;
                 break;
 // ------------------------------------
 // -----------Spell Delay--------------
