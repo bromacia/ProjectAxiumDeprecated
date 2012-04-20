@@ -44,8 +44,6 @@ if(SCRIPTS)
   include(World/CMakeLists.txt)
   include(OutdoorPvP/CMakeLists.txt)
   include(EasternKingdoms/CMakeLists.txt)
-  include(Kalimdor/CMakeLists.txt)
-  include(Outland/CMakeLists.txt)
   include(Northrend/CMakeLists.txt)
 endif()
 
