@@ -3552,9 +3552,6 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->AttributesEx |= SPELL_ATTR0_CASTABLE_WHILE_DEAD;
                 break;
-            case 44559: // Damage Hack (Pet Passive)
-                spellInfo->AttributesEx |= SPELL_ATTR0_CANT_CANCEL;
-                break;
             case 18754: // Improved succubus - problems with apply if target is pet 
                 spellInfo->EffectApplyAuraName[0] = SPELL_AURA_ADD_FLAT_MODIFIER; // it's affects duration of seduction, let's minimize affection 
                 spellInfo->EffectBasePoints[0] = -1.5*IN_MILLISECONDS*0.22; // reduce cast time of seduction by 22%
@@ -3589,6 +3586,10 @@ void SpellMgr::LoadDbcDataCorrections()
             case 73313: // Crimson Deathcharger
             case 48778: // Acherus Deathcharger
                 spellInfo->SpellFamilyName = SPELLFAMILY_GENERIC;
+                break;
+            case 44559: // Damage Reduction Buff (Pet Passive)
+                spellInfo->AttributesEx |= SPELL_ATTR0_CANT_CANCEL;
+                spellInfo->EffectBasePoints[0] = -13; // 13% Reduction
                 break;
 // ------------------------------------
 // -----------Spell Delay--------------
