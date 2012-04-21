@@ -98,7 +98,7 @@ bool WMORoot::open()
         */
         f.seek((int)nextpos);
     }
-    f.close ();
+    f.close();
     return true;
 }
 

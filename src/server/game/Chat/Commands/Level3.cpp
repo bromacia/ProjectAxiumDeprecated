@@ -3357,7 +3357,7 @@ bool ChatHandler::HandleBanListHelper(QueryResult result)
         {
             SendSysMessage("-------------------------------------------------------------------------------");
             Field* fields = result->Fetch();
-            uint32 account_id = fields[0].GetUInt32 ();
+            uint32 account_id = fields[0].GetUInt32();
 
             std::string account_name;
 

@@ -463,7 +463,7 @@ bool ChatHandler::HandleLookupAreaCommand(const char* args)
     std::string namepart = args;
     std::wstring wnamepart;
 
-    if (!Utf8toWStr (namepart, wnamepart))
+    if (!Utf8toWStr(namepart, wnamepart))
         return false;
 
     bool found = false;
@@ -471,32 +471,32 @@ bool ChatHandler::HandleLookupAreaCommand(const char* args)
     uint32 maxResults = sWorld->getIntConfig(CONFIG_MAX_RESULTS_LOOKUP_COMMANDS);
 
     // converting string that we try to find to lower case
-    wstrToLower (wnamepart);
+    wstrToLower(wnamepart);
 
     // Search in AreaTable.dbc
-    for (uint32 areaflag = 0; areaflag < sAreaStore.GetNumRows (); ++areaflag)
+    for (uint32 areaflag = 0; areaflag < sAreaStore.GetNumRows(); ++areaflag)
     {
-        AreaTableEntry const* areaEntry = sAreaStore.LookupEntry (areaflag);
+        AreaTableEntry const* areaEntry = sAreaStore.LookupEntry(areaflag);
         if (areaEntry)
         {
-            int loc = GetSessionDbcLocale ();
+            int loc = GetSessionDbcLocale();
             std::string name = areaEntry->area_name[loc];
             if (name.empty())
                 continue;
 
-            if (!Utf8FitTo (name, wnamepart))
+            if (!Utf8FitTo(name, wnamepart))
             {
                 loc = 0;
                 for (; loc < TOTAL_LOCALES; ++loc)
                 {
-                    if (loc == GetSessionDbcLocale ())
+                    if (loc == GetSessionDbcLocale())
                         continue;
 
                     name = areaEntry->area_name[loc];
-                    if (name.empty ())
+                    if (name.empty())
                         continue;
 
-                    if (Utf8FitTo (name, wnamepart))
+                    if (Utf8FitTo(name, wnamepart))
                         break;
                 }
             }
@@ -516,7 +516,7 @@ bool ChatHandler::HandleLookupAreaCommand(const char* args)
                 else
                     ss << areaEntry->ID << " - " << name << ' ' << localeNames[loc];
 
-                SendSysMessage (ss.str ().c_str());
+                SendSysMessage(ss.str().c_str());
 
                 if (!found)
                     found = true;
@@ -525,7 +525,7 @@ bool ChatHandler::HandleLookupAreaCommand(const char* args)
     }
 
     if (!found)
-        SendSysMessage (LANG_COMMAND_NOAREAFOUND);
+        SendSysMessage(LANG_COMMAND_NOAREAFOUND);
 
     return true;
 }

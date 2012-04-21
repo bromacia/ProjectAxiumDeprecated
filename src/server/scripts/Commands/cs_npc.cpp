@@ -1132,29 +1132,29 @@ public:
     //npc tame handling
     static bool HandleNpcTameCommand(ChatHandler* handler, const char* /*args*/)
     {
-        Creature* creatureTarget = handler->getSelectedCreature ();
-        if (!creatureTarget || creatureTarget->isPet ())
+        Creature* creatureTarget = handler->getSelectedCreature();
+        if (!creatureTarget || creatureTarget->isPet())
         {
-            handler->PSendSysMessage (LANG_SELECT_CREATURE);
-            handler->SetSentErrorMessage (true);
+            handler->PSendSysMessage(LANG_SELECT_CREATURE);
+            handler->SetSentErrorMessage(true);
             return false;
         }
 
-        Player* player = handler->GetSession()->GetPlayer ();
+        Player* player = handler->GetSession()->GetPlayer();
 
-        if (player->GetPetGUID ())
+        if (player->GetPetGUID())
         {
-            handler->SendSysMessage (LANG_YOU_ALREADY_HAVE_PET);
-            handler->SetSentErrorMessage (true);
+            handler->SendSysMessage(LANG_YOU_ALREADY_HAVE_PET);
+            handler->SetSentErrorMessage(true);
             return false;
         }
 
         CreatureTemplate const* cInfo = creatureTarget->GetCreatureInfo();
 
-        if (!cInfo->isTameable (player->CanTameExoticPets()))
+        if (!cInfo->isTameable(player->CanTameExoticPets()))
         {
-            handler->PSendSysMessage (LANG_CREATURE_NON_TAMEABLE, cInfo->Entry);
-            handler->SetSentErrorMessage (true);
+            handler->PSendSysMessage(LANG_CREATURE_NON_TAMEABLE, cInfo->Entry);
+            handler->SetSentErrorMessage(true);
             return false;
         }
 
@@ -1162,15 +1162,15 @@ public:
         Pet* pet = player->CreateTamedPetFrom(creatureTarget);
         if (!pet)
         {
-            handler->PSendSysMessage (LANG_CREATURE_NON_TAMEABLE, cInfo->Entry);
-            handler->SetSentErrorMessage (true);
+            handler->PSendSysMessage(LANG_CREATURE_NON_TAMEABLE, cInfo->Entry);
+            handler->SetSentErrorMessage(true);
             return false;
         }
 
         // place pet before player
         float x, y, z;
-        player->GetClosePoint (x, y, z, creatureTarget->GetObjectSize (), CONTACT_DISTANCE);
-        pet->Relocate (x, y, z, M_PI-player->GetOrientation ());
+        player->GetClosePoint(x, y, z, creatureTarget->GetObjectSize(), CONTACT_DISTANCE);
+        pet->Relocate(x, y, z, M_PI-player->GetOrientation());
 
         // set pet to defensive mode by default (some classes can't control controlled pets in fact).
         pet->SetReactState(REACT_DEFENSIVE);
