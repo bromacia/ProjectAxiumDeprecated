@@ -2595,7 +2595,7 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
                     {
                         case 46584: // Raise Dead
                         {
-                            if (WorldObject* result = FindCorpseUsing<Trinity::RaiseDeadObjectCheck> ())
+                            if (WorldObject* result = FindCorpseUsing<Trinity::RaiseDeadObjectCheck>())
                             {
                                 switch (result->GetTypeId())
                                 {
@@ -2623,7 +2623,7 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
                             {
                                 CleanupTargetList();
 
-                                WorldObject* result = FindCorpseUsing <Trinity::ExplodeCorpseObjectCheck> ();
+                                WorldObject* result = FindCorpseUsing<Trinity::ExplodeCorpseObjectCheck>();
 
                                 if (result)
                                 {

@@ -2900,9 +2900,7 @@ void Player::UninviteFromGroup()
     if (group->GetMembersCount() <= 1)                       // group has just 1 member => disband
     {
         if (group->IsCreated())
-        {
             group->Disband(true);
-        }
         else
         {
             group->RemoveAllInvites();
@@ -3153,7 +3151,7 @@ void Player::InitStatsForLevel(bool reapplyMods)
     // reset before any aura state sources (health set/aura apply)
     SetUInt32Value(UNIT_FIELD_AURASTATE, 0);
 
-    UpdateSkillsForLevel ();
+    UpdateSkillsForLevel();
 
     // set default cast time multiplier
     SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);
@@ -3321,7 +3319,7 @@ void Player::SendInitialSpells()
         data << uint32(itr->first);
         data << uint16(0);                                  // it's not slot id
 
-        spellCount +=1;
+        spellCount += 1;
     }
 
     data.put<uint16>(countPos, spellCount);                  // write real count value

@@ -116,13 +116,13 @@ WorldSession::~WorldSession()
 {
     ///- unload player if not unloaded
     if (_player)
-        LogoutPlayer (true);
+        LogoutPlayer(true);
 
     /// - If have unclosed socket, close it
     if (m_Socket)
     {
-        m_Socket->CloseSocket ();
-        m_Socket->RemoveReference ();
+        m_Socket->CloseSocket();
+        m_Socket->RemoveReference();
         m_Socket = NULL;
     }
 
@@ -195,8 +195,8 @@ void WorldSession::SendPacket(WorldPacket const* packet)
     }
 #endif                                                      // !TRINITY_DEBUG
 
-    if (m_Socket->SendPacket (*packet) == -1)
-        m_Socket->CloseSocket ();
+    if (m_Socket->SendPacket(*packet) == -1)
+        m_Socket->CloseSocket();
 }
 
 /// Add an incoming packet to the queue
