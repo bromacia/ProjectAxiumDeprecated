@@ -2435,6 +2435,17 @@ void Player::RegenerateAll()
     //    return;
 
     m_regenTimerCount += m_regenTimer;
+	
+   // Special case for Polymorph
+   /*if (m_regenTimerCount >= 1000)
+   {
+       if (IsPolymorphed())
+       {
+           RegenerateHealth();
+       }
+
+       m_regenTimerCount -= 1000;
+   }*/
 
     Regenerate(POWER_ENERGY);
 
@@ -2461,17 +2472,6 @@ void Player::RegenerateAll()
             Regenerate(POWER_RUNIC_POWER);
 
         m_regenTimerCount -= 2000;
-    }
-
-    // Special case for Polymorph
-    if (m_regenTimerCount >= 1000)
-    {
-        if (IsPolymorphed())
-        {
-            RegenerateHealth();
-        }
-
-        m_regenTimerCount -= 1000;
     }
 
     m_regenTimer = 0;
@@ -2611,7 +2611,8 @@ void Player::RegenerateHealth()
 
     // polymorphed case
     if (IsPolymorphed())
-        addvalue = (float)GetMaxHealth()/10;
+        //addvalue = (float)GetMaxHealth()/10;
+        addvalue = (float)GetMaxHealth()/3;
     // normal regen case (maybe partly in combat case)
     else if (!isInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT))
     {
@@ -21782,6 +21783,9 @@ void Player::SendComboPoints()
 void Player::AddComboPoints(Unit* target, int8 count, Spell* spell)
 {
     if (!count)
+        return;
+
+    if (target->isTotem())
         return;
 
     int8 * comboPoints = spell ? &spell->m_comboPointGain : &m_comboPoints;
