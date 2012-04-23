@@ -1785,30 +1785,6 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
             }
             break;
     }
-    if (apply)
-    {
-        // Prevent crashes
-        if (target->isTotem())
-            return;
-
-        // Health Funnel and Drain Soul are handled in SpellAuraEffects
-        if (GetSpellInfo()->SpellFamilyFlags[0] & 0x01000000 || GetSpellInfo()->SpellFamilyFlags[0] & 0x00004000)
-            return;
-
-        for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        {
-            if (!GetSpellInfo()->Effects[i].Effect)
-            continue;
-
-            // Periodic Damage Auras
-            if (GetSpellInfo()->Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE)
-                GetEffect(i)->SetBonus(caster->SpellDamageBonus(target, m_spellInfo, GetEffect(i)->GetAmount(), DOT, GetStackAmount()) - GetEffect(i)->GetAmount());
-
-            // Periodic Healing Auras
-            if (GetSpellInfo()->Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_HEAL)
-                GetEffect(i)->SetBonus(caster->SpellHealingBonus(target, m_spellInfo, GetEffect(i)->GetAmount(), DOT, GetStackAmount()) - GetEffect(i)->GetAmount());
-        }
-    }
 }
 
 bool Aura::CanBeAppliedOn(Unit* target)
