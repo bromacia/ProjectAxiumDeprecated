@@ -29,7 +29,6 @@ enum DeathKnightSpells
     DK_SPELL_RUNIC_POWER_ENERGIZE               = 49088,
     DK_SPELL_ANTI_MAGIC_SHELL_TALENT            = 51052,
     DK_SPELL_CORPSE_EXPLOSION_TRIGGERED         = 43999,
-    DK_SPELL_CORPSE_EXPLOSION_VISUAL            = 51270,
     DK_SPELL_GHOUL_EXPLODE                      = 47496,
     DK_SPELL_SCOURGE_STRIKE_TRIGGERED           = 70890,
     DK_SPELL_BLOOD_BOIL_TRIGGERED               = 65658,
@@ -208,8 +207,6 @@ class spell_dk_corpse_explosion : public SpellScriptLoader
                     return false;
                 if (!sSpellMgr->GetSpellInfo(DK_SPELL_GHOUL_EXPLODE))
                     return false;
-                if (!sSpellMgr->GetSpellInfo(DK_SPELL_CORPSE_EXPLOSION_VISUAL))
-                    return false;
                 return true;
             }
 
@@ -230,8 +227,6 @@ class spell_dk_corpse_explosion : public SpellScriptLoader
                         // Corpse Explosion (Suicide)
                         unitTarget->CastSpell(unitTarget, DK_SPELL_CORPSE_EXPLOSION_TRIGGERED, true);
                     }
-                    // Set corpse look
-                    GetCaster()->CastSpell(unitTarget, DK_SPELL_CORPSE_EXPLOSION_VISUAL, true);
                 }
             }
 
