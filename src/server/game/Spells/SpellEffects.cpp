@@ -987,8 +987,8 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                 // Shadowmeld
                 case 58984:
                 {
-                    /*m_caster->InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
-                    m_caster->InterruptSpell(CURRENT_CHANNELED_SPELL);*/
+                    m_caster->InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
+                    m_caster->InterruptSpell(CURRENT_CHANNELED_SPELL);
                     m_caster->AttackStop();
                     m_caster->CombatStop();
                     if (m_caster->ToPlayer())
