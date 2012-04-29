@@ -1440,10 +1440,16 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
 
         if (m_caster->_IsValidAttackTarget(unit, m_spellInfo))
         {
+            unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+            unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
+
             unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
             //TODO: This is a hack. But we do not know what types of stealth should be interrupted by CC
-            if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC) && unit->IsControlledByPlayer())
+            if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC) && unit->IsControlledByPlayer() // CC Spells
+				|| (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109)) // Faerie Fire
                 unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+                unit->RemoveAura(66);
+                unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
         }
         else if (m_caster->IsFriendlyTo(unit))
         {
