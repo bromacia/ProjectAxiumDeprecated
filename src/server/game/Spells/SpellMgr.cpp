@@ -3617,9 +3617,6 @@ void SpellMgr::LoadDbcDataCorrections()
 // Todo - update for every rank of each spell
                 // Rogue
             case 2094: // Blind
-                spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
-                spellInfo->speed = 200;
-                break;
             case 1833: // Cheap Shot
             case 8643: // Kidney Shot
             case 31224: // Cloak of Shadows
