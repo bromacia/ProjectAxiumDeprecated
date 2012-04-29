@@ -2277,10 +2277,10 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
                 case TARGET_DEST_CASTER_BACK_LEFT:
                 case TARGET_DEST_CASTER_BACK_RIGHT:
                 case TARGET_DEST_CASTER_FRONT_RIGHT:
-                    m_caster->GetFirstCollisionPosition(pos, dist, angle);
+                    m_caster->GetFirstCollisionPosition(pos, dist+2, angle);
                     break;
                 default:
-                    m_caster->GetNearPosition(pos, dist, angle);
+                    m_caster->GetNearPosition(pos, dist+2, angle);
                     break;
             }
             m_targets.SetDst(*m_caster);
