@@ -5271,7 +5271,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     target = this;
                     break;
                 }
-                // Mana Leech (Passive) (Priest Pet Aura)
+                // Mana Leech (Passive) (Shadowfiend Aura)
                 case 28305:
                 {
                     // Cast on owner
@@ -5279,7 +5279,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     if (!target)
                         return false;
 
-                    triggered_spell_id = 34650;
+                    triggered_spell_id = 34650; // Mana Leech Effect
                     break;
                 }
                 // Mark of Malice
@@ -14636,6 +14636,9 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* target, uint32 procFlag, u
             procExtra &= ~PROC_EX_INTERNAL_REQ_FAMILY;
         SpellInfo const* spellProto = itr->second->GetBase()->GetSpellInfo();
         if (!IsTriggeredAtSpellProcEvent(target, triggerData.aura, procSpell, procFlag, procExtra, attType, isVictim, active, triggerData.spellProcEvent))
+            continue;
+
+        if ((procExtra & PROC_EX_ABSORB) && isVictim && ((spellProto->SpellFamilyName == SPELLFAMILY_PRIEST && spellProto->SpellFamilyFlags[2] & 0x00000400) || (spellProto->SpellFamilyName == SPELLFAMILY_SHAMAN && (spellProto->SpellFamilyFlags[1] & 0x00000400 || spellProto->SpellFamilyFlags[1] & 0x00000020))))
             continue;
 
         // Triggered spells not triggering additional spells
