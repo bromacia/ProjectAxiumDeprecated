@@ -158,6 +158,9 @@ void PetAI::UpdateAI(const uint32 diff)
             if (me->GetCharmInfo() && me->GetCharmInfo()->GetGlobalCooldownMgr().HasGlobalCooldown(spellInfo))
                 continue;
 
+            if (me->HasSpellCooldown(spellInfo->Id))
+                continue;
+
             if (spellInfo->IsPositive())
             {
                 // non combat spells allowed
@@ -171,32 +174,56 @@ void PetAI::UpdateAI(const uint32 diff)
                         continue;
 
                     // allow only spell without cooldown > duration
-                    /*int32 cooldown = spellInfo->GetRecoveryTime();
+                    int32 cooldown = spellInfo->GetRecoveryTime();
                     if (cooldown >= 0 && duration >= 0 && cooldown > duration)
-                        continue;*/
-                    // Check spell cooldown
-                    if (me->HasSpellCooldown(spellInfo->Id))
+                        continue;
+						
+                    // Check if we're in combat or commanded to attack
+                    if (!me->isInCombat() && !me->GetCharmInfo()->IsCommandAttack())
                         continue;
                 }
 
                 Spell* spell = new Spell(me, spellInfo, TRIGGERED_NONE, 0);
-
                 bool spellUsed = false;
-                for (std::set<uint64>::const_iterator tar = m_AllySet.begin(); tar != m_AllySet.end(); ++tar)
+
+                // Some spells can target enemy or friendly (DK Ghoul's Leap)
+                // Check for enemy first (pet then owner)
+                if (Unit* target = me->getAttackerForHelper())
                 {
-                    Unit* target = ObjectAccessor::GetUnit(*me, *tar);
-
-                    //only buff targets that are in combat, unless the spell can only be cast while out of combat
-                    if (!target)
-                        continue;
-
-                    if (spell->CanAutoCast(target))
+                    if (CanAttack(target) && spell->CanAutoCast(target))
                     {
-                        targetSpellStore.push_back(std::make_pair<Unit*, Spell*>(target, spell));
+                        targetSpellStore.push_back(std::make_pair(target, spell));
                         spellUsed = true;
-                        break;
                     }
                 }
+                else if (Unit* target = me->GetCharmerOrOwner()->getAttackerForHelper())
+                {
+                    if (CanAttack(target) && spell->CanAutoCast(target))
+                    {
+                        targetSpellStore.push_back(std::make_pair(target, spell));
+                        spellUsed = true;
+                    }
+                }
+                // No enemy, check friendly
+                if (!spellUsed)
+                {
+                    for (std::set<uint64>::const_iterator tar = m_AllySet.begin(); tar != m_AllySet.end(); ++tar)
+                    {
+                        Unit* target = ObjectAccessor::GetUnit(*me, *tar);
+
+                        //only buff targets that are in combat, unless the spell can only be cast while out of combat
+                        if (!target)
+                            continue;
+
+                        if (spell->CanAutoCast(target))
+                        {
+                            targetSpellStore.push_back(std::make_pair(target, spell));
+                            spellUsed = true;
+                            break;
+                        }
+                    }
+                }
+                // No valid targets at all
                 if (!spellUsed)
                     delete spell;
             }
@@ -204,7 +231,7 @@ void PetAI::UpdateAI(const uint32 diff)
             {
                 Spell* spell = new Spell(me, spellInfo, TRIGGERED_NONE, 0);
                 if (spell->CanAutoCast(me->getVictim()))
-                    targetSpellStore.push_back(std::make_pair<Unit*, Spell*>(me->getVictim(), spell));
+                    targetSpellStore.push_back(std::make_pair(me->getVictim(), spell));
                 else
                     delete spell;
             }
