@@ -1438,7 +1438,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         if (m_spellInfo->Speed > 0.0f && unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
             return SPELL_MISS_EVADE;
 
-        if (m_caster->_IsValidAttackTarget(unit, m_spellInfo) && m_spellInfo->Id != 1725) // Ignore Distract
+        if (m_caster->_IsValidAttackTarget(unit, m_spellInfo) && m_spellInfo->Id != 1725 && m_spellInfo->SpellIconID != 2267) // Ignore Distract and Mass Dispel
         {
             unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
             unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
