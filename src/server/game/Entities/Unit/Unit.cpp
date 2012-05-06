@@ -5555,37 +5555,23 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     std::vector<uint32> RandomSpells;
                     switch (getClass())
                     {
-                        // 71484 Strength
-                        // 71485 Agility
-                        // 71486 AP
-                        // 71487 ArP
-                        // 71491 Crit
-                        // 71492 Haste
                         case CLASS_WARRIOR:
-                            RandomSpells.push_back(71484);
-                            RandomSpells.push_back(71486);
-                            break;
                         case CLASS_PALADIN:
-                            RandomSpells.push_back(71484);
-                            break;
                         case CLASS_DEATH_KNIGHT:
-                            RandomSpells.push_back(71484);
+                            RandomSpells.push_back(71484); // Strength
+                            RandomSpells.push_back(71486); // AP
+                            RandomSpells.push_back(71491); // Crit
                             break;
                         case CLASS_SHAMAN:
-                            RandomSpells.push_back(71486);
-                            break;
                         case CLASS_ROGUE:
-                            RandomSpells.push_back(71486);
-                            RandomSpells.push_back(71485);
+                            RandomSpells.push_back(71485); // Agility
+                            RandomSpells.push_back(71486); // AP
+                            RandomSpells.push_back(71492); // Haste
                             break;
                         case CLASS_DRUID:
-                            RandomSpells.push_back(71485);
-                            RandomSpells.push_back(71484);
-                            RandomSpells.push_back(71486);
-                            break;
                         case CLASS_HUNTER:
-                            RandomSpells.push_back(71486);
-                            RandomSpells.push_back(71485);
+                            RandomSpells.push_back(71485); // Agility
+                            RandomSpells.push_back(71486); // AP
                             break;
                         default:
                             return false;
@@ -5610,37 +5596,23 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     std::vector<uint32> RandomSpells;
                     switch (getClass())
                     {
-                        // 71556 Agility
-                        // 71557 ArP
-                        // 71558 AP
-                        // 71559 Crit
-                        // 71560 Haste
-                        // 71561 Strength
                         case CLASS_WARRIOR:
-                            RandomSpells.push_back(71558);
-                            RandomSpells.push_back(71561);
-                            break;
                         case CLASS_PALADIN:
-                            RandomSpells.push_back(71561);
-                            break;
                         case CLASS_DEATH_KNIGHT:
-                            RandomSpells.push_back(71561);
+                            RandomSpells.push_back(71558); // AP
+                            RandomSpells.push_back(71559); // Crit
+                            RandomSpells.push_back(71561); // Strength
                             break;
                         case CLASS_SHAMAN:
-                            RandomSpells.push_back(71558);
-                            break;
                         case CLASS_ROGUE:
-                            RandomSpells.push_back(71556);
-                            RandomSpells.push_back(71558);
+                            RandomSpells.push_back(71556); // Agility
+                            RandomSpells.push_back(71558); // AP
+                            RandomSpells.push_back(71560); // Haste
                             break;
                         case CLASS_DRUID:
-                            RandomSpells.push_back(71556);
-                            RandomSpells.push_back(71558);
-                            RandomSpells.push_back(71561);
-                            break;
                         case CLASS_HUNTER:
-                            RandomSpells.push_back(71558);
-                            RandomSpells.push_back(71556);
+                            RandomSpells.push_back(71556); // Agility
+                            RandomSpells.push_back(71558); // AP
                             break;
                         default:
                             return false;
