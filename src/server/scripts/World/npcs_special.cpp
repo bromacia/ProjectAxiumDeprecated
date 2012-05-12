@@ -1903,12 +1903,64 @@ public:
             Unit* owner = me->GetOwner();
             if (!owner)
                 return;
-            // Inherit Master's Threat List (not yet implemented)
             owner->CastSpell((Unit*)NULL, 58838, true);
-            // here mirror image casts on summoner spell (not present in client dbc) 49866
-            // here should be auras (not present in client dbc): 35657, 35658, 35659, 35660 selfcasted by mirror images (stats related?)
-            // Clone Me!
             owner->CastSpell(me, 45204, false);
+
+            if (owner->ToPlayer() && owner->ToPlayer()->GetSelectedUnit())
+                me->AI()->AttackStart(owner->ToPlayer()->GetSelectedUnit());
+        }
+
+        void EnterCombat(Unit *who)
+        {
+            if (spells.empty())
+                return;
+
+            for (SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr)
+            {
+                if (AISpellInfo[*itr].condition == AICOND_AGGRO)
+                    me->CastSpell(who, *itr, false);
+                else if (AISpellInfo[*itr].condition == AICOND_COMBAT)
+                {
+                    uint32 cooldown = GetAISpellInfo(*itr)->realCooldown;
+                    events.ScheduleEvent(*itr, cooldown);
+                }
+            }
+        }
+
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            events.Update(diff);
+
+            bool hasCC = false;
+            if (me->GetCharmerOrOwnerGUID() && me->getVictim())
+                hasCC = me->getVictim()->HasAuraType(SPELL_AURA_MOD_CONFUSE);
+
+            if (hasCC)
+            {
+                if (me->HasUnitState(UNIT_STATE_CASTING))
+                    me->CastStop();
+                me->AI()->EnterEvadeMode();
+                return;
+            }
+
+            if (me->HasUnitState(UNIT_STATE_CASTING))
+                return;
+
+            if (uint32 spellId = events.ExecuteEvent())
+            {
+                if (hasCC)
+                {
+                    events.ScheduleEvent(spellId, 500);
+                    return;
+                }
+                DoCast(spellId);
+                uint32 casttime = me->GetCurrentSpellCastTime(spellId);
+                events.ScheduleEvent(spellId, (casttime ? casttime : 500) + GetAISpellInfo(spellId)->realCooldown);
+            }
         }
 
         // Do not reload Creature templates on evade mode enter - prevent visual lost
@@ -3162,7 +3214,7 @@ class npc_arena_watcher : public CreatureScript
 {
 public:
     npc_arena_watcher() : CreatureScript("npc_arena_watcher") {}
-    
+
     bool OnGossipHello(Player* player, Creature* creature)
     {
         // Count all arenas
@@ -3188,7 +3240,7 @@ public:
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, gossip3.str(), GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, gossip5.str(), GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
         player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, "Observe a player.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4, "", 0, true);
-        
+
         player->PlayerTalkClass->SendGossipMenu(player->GetGossipTextId(creature), creature->GetGUID());
         return true;
     }
@@ -3326,10 +3378,10 @@ public:
 
                         // To prevent people spectating people who are already spectating
                         if (target->IsSpectator())
-						{
+                        {
                             creature->MonsterWhisper("The player you are trying to spectate is already spectating an arena match.", player->GetGUID());
                             return true;
-						}
+                        }
 
                         // If all checks are passed
                         player->SetBattlegroundId(target->GetBattleground()->GetInstanceID(), target->GetBattleground()->GetTypeID());
