@@ -135,19 +135,18 @@ void Totem::UnSummon()
 
 bool Totem::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) const
 {
-    // TODO: possibly all negative auras immune?
+	// This check should not apply to Grounding Totem
     if (GetEntry() == 5925)
         return false;
 
-    switch (spellInfo->Effects[index].ApplyAuraName)
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        case SPELL_AURA_PERIODIC_DAMAGE:
-        case SPELL_AURA_PERIODIC_LEECH:
-        case SPELL_AURA_MOD_FEAR:
-        case SPELL_AURA_TRANSFORM:
-            return true;
-        default:
-            break;
+        // Immunity for all negative auras
+        if (spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_AURA)
+        {
+            if (!spellInfo->IsPositiveEffect(i))
+                return true;
+        }
     }
 
     return Creature::IsImmunedToSpellEffect(spellInfo, index);
