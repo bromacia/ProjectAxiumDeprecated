@@ -556,7 +556,7 @@ void Unit::resetAttackTimer(WeaponAttackType type)
 
 bool Unit::IsWithinCombatRange(const Unit* obj, float dist2compare) const
 {
-    if (!obj || !IsInMap(obj) || !InSamePhase(obj)) 
+    if (!obj || !IsInMap(obj) || !InSamePhase(obj))
         return false;
 
     float dx = GetPositionX() - obj->GetPositionX();
@@ -572,7 +572,7 @@ bool Unit::IsWithinCombatRange(const Unit* obj, float dist2compare) const
 
 bool Unit::IsWithinMeleeRange(const Unit* obj, float dist) const
 {
-    if (!obj || !IsInMap(obj) || !InSamePhase(obj)) 
+    if (!obj || !IsInMap(obj) || !InSamePhase(obj))
         return false;
 
     float dx = GetPositionX() - obj->GetPositionX();
@@ -1636,6 +1636,8 @@ uint32 Unit::CalcArmorReducedDamage(Unit* victim, const uint32 damage, SpellInfo
         // Got the value, apply it
         armor -= std::min(armorPen, maxArmorPen);
     }
+    //todo: srsly fix pene armor in the proper way....
+    armor *= 1.0f - GetTotalAuraModifier(SPELL_AURA_MOD_ARMOR_PENETRATION_PCT) / 100.0f;
 
     if (armor < 0.0f)
         armor = 0.0f;
@@ -9597,7 +9599,7 @@ bool Unit::Attack(Unit* victim, bool meleeAttack)
     if (this->GetTypeId() == TYPEID_PLAYER)
     {
         Pet* playerPet = this->ToPlayer()->GetPet();
-        
+
         if (playerPet && playerPet->isAlive())
             playerPet->AI()->OwnerAttacked(victim);
     }
@@ -13081,7 +13083,7 @@ void Unit::setDeathState(DeathState s)
     {
         RemoveFlag (UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE); // clear skinnable for creature and player (at battleground)
     }
-    
+
     m_deathState = s;
 }
 
@@ -15193,7 +15195,7 @@ Unit* Unit::SelectNearbyTarget(Unit* exclude, float dist) const
     // remove current target
     if (getVictim())
         targets.remove(getVictim());
-        
+
     if (exclude)
         targets.remove(exclude);
 
