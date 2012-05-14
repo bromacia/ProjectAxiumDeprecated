@@ -6797,9 +6797,6 @@ void Spell::DoAllEffectOnLaunchTarget(TargetInfo& targetInfo, float* multiplier)
     // In case spell reflect from target, do all effect on caster (if hit)
     else if (targetInfo.missCondition == SPELL_MISS_REFLECT && targetInfo.reflectResult == SPELL_MISS_NONE)
         unit = m_caster;
-    // In case spell hit the totem, we probably need more check but for now we'll if it works
-    else if (targetInfo.missCondition == SPELL_MISS_NONE)
-        m_caster->ToCreature()->isTotem();
 
     if (!unit)
         return;

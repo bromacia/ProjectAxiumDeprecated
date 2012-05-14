@@ -10177,7 +10177,7 @@ Unit* Unit::SelectMagnetTarget(Unit* victim, SpellInfo const* spellInfo)
         Unit::AuraEffectList const& magnetAuras = victim->GetAuraEffectsByType(SPELL_AURA_SPELL_MAGNET);
         for (Unit::AuraEffectList::const_iterator itr = magnetAuras.begin(); itr != magnetAuras.end(); ++itr)
             if (Unit* magnet = (*itr)->GetBase()->GetUnitOwner())
-                if (magnet->isAlive() && IsWithinLOSInMap(magnet))
+                if (magnet->isAlive())
                 {
                     (*itr)->GetBase()->DropCharge(AURA_REMOVE_BY_EXPIRE);
                     return magnet;
@@ -10188,7 +10188,7 @@ Unit* Unit::SelectMagnetTarget(Unit* victim, SpellInfo const* spellInfo)
     {
         AuraEffectList const& hitTriggerAuras = victim->GetAuraEffectsByType(SPELL_AURA_ADD_CASTER_HIT_TRIGGER);
         for (AuraEffectList::const_iterator i = hitTriggerAuras.begin(); i != hitTriggerAuras.end(); ++i)
-            if (Unit* magnet = (*i)->GetBase()->GetCaster())
+            if (Unit* magnet = (*i)->GetBase()->GetUnitOwner())
                 if (magnet->isAlive() && magnet->IsWithinLOSInMap(this))
                     if (roll_chance_i((*i)->GetAmount()))
                     {

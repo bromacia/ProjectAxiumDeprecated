@@ -3611,6 +3611,9 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->AttributesEx |= SPELL_ATTR0_CANT_CANCEL;
                 spellInfo->EffectBasePoints[0] = -13; // 13% Reduction
                 break;
+            case 8178: // Grounding Totem
+                spellInfo->procFlags = 0;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------
