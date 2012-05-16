@@ -36,6 +36,10 @@ void AggressorAI::UpdateAI(const uint32 /*diff*/)
     if (!UpdateVictim())
         return;
 
+    Unit* owner = me->GetCharmerOrOwner();
+    if (owner && !owner->isInCombat())
+        owner->SetInCombatWith(me->getVictim());
+
     DoMeleeAttackIfReady();
 }
 
@@ -99,6 +103,7 @@ void CombatAI::UpdateAI(const uint32 diff)
 
     events.Update(diff);
 
+    Unit* owner = me->GetCharmerOrOwner();
     if (me->getVictim()->HasBreakableByDamageCrowdControlAura(me))
     {
         me->InterruptNonMeleeSpells(false);
@@ -107,6 +112,9 @@ void CombatAI::UpdateAI(const uint32 diff)
 
     if (me->HasUnitState(UNIT_STATE_CASTING))
         return;
+
+    if (owner && !owner->isInCombat())
+        owner->SetInCombatWith(me->getVictim());
 
     if (uint32 spellId = events.ExecuteEvent())
     {
@@ -164,6 +172,7 @@ void CasterAI::UpdateAI(const uint32 diff)
 
     events.Update(diff);
 
+    Unit* owner = me->GetCharmerOrOwner();
     if (me->getVictim()->HasBreakableByDamageCrowdControlAura(me))
     {
         me->InterruptNonMeleeSpells(false);
@@ -172,6 +181,9 @@ void CasterAI::UpdateAI(const uint32 diff)
 
     if (me->HasUnitState(UNIT_STATE_CASTING))
         return;
+
+    if (owner && !owner->isInCombat())
+        owner->SetInCombatWith(me->getVictim());
 
     if (uint32 spellId = events.ExecuteEvent())
     {
