@@ -13080,9 +13080,7 @@ void Unit::setDeathState(DeathState s)
             zoneScript->OnUnitDeath(this);
     }
     else if (s == JUST_ALIVED)
-    {
-        RemoveFlag (UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE); // clear skinnable for creature and player (at battleground)
-    }
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE); // clear skinnable for creature and player (at battleground)
 
     m_deathState = s;
 }
