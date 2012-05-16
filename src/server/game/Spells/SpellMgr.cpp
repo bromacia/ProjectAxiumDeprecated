@@ -3630,9 +3630,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 5246: // Intimidating Shout
             case 46968: // Shockwave
             case 12809: // Concussion Blow
-            case 12323: // Piercing Howl
-            case 47437: // Demoralizing Shout
-            case 47502: // Thunder Clap
 // ------------------------------------
                 // Paladin
             case 10308: // Hammer of Justice
