@@ -375,7 +375,7 @@ pAuraEffectHandler AuraEffectHandler[TOTAL_AURAS]=
 AuraEffect::AuraEffect(Aura* base, uint8 effIndex, int32 *baseAmount, Unit* caster):
 m_base(base), m_spellInfo(base->GetSpellInfo()), m_effIndex(effIndex),
 m_baseAmount(baseAmount ? *baseAmount : m_spellInfo->Effects[m_effIndex].BasePoints),
-m_canBeRecalculated(true), m_spellmod(NULL), m_isPeriodic(false), 
+m_canBeRecalculated(true), m_spellmod(NULL), m_isPeriodic(false),
 m_periodicTimer(0), m_tickNumber(0), m_amountDone(0)
 {
     CalculatePeriodic(caster, true, false);
@@ -5332,6 +5332,19 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
         {
             //if (!(mode & AURA_EFFECT_HANDLE_REAL))
             //    break;
+            break;
+        }
+        case SPELLFAMILY_HUNTER:
+        {
+            switch (GetId())
+            {
+                // Animal Handler rank 1 & 2
+                case 34453:
+                case 34454:
+                    if (Guardian* pet = target->ToPlayer()->GetGuardianPet())
+                        pet->UpdateAttackPowerAndDamage();
+                    break;
+            }
             break;
         }
     }
