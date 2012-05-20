@@ -15084,6 +15084,21 @@ void Unit::SetDisplayId(uint32 modelId)
     }
 }
 
+void Unit::SetNativeRaceDisplayId(uint32 modelId)
+{
+    SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, modelId);
+
+    if (GetTypeId() == TYPEID_UNIT && ToCreature()->isPet())
+    {
+        Pet* pet = ToPet();
+        if (!pet->isControlled())
+            return;
+        Unit* owner = GetOwner();
+        if (owner && (owner->GetTypeId() == TYPEID_PLAYER) && owner->ToPlayer()->GetGroup())
+            owner->ToPlayer()->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_MODEL_ID);
+    }
+}
+
 void Unit::RestoreDisplayId()
 {
     AuraEffect* handledAura = NULL;
