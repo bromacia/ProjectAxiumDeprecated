@@ -6335,6 +6335,9 @@ void Spell::EffectKnockBack(SpellEffIndex effIndex)
     if (!unitTarget)
         return;
 
+    if (unitTarget->HasAuraType(SPELL_AURA_MOD_ROOT))
+        return;
+
     if (Creature* creatureTarget = unitTarget->ToCreature())
         if (creatureTarget->isWorldBoss() || creatureTarget->IsDungeonBoss())
             return;
