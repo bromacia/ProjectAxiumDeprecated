@@ -238,6 +238,7 @@ void AddBattlegroundScripts()
     void AddSC_npc_beastmaster();
     void AddSC_cast_log();
     void AddSC_arena_team_ranks();
+    void AddSC_npc_enchant();
 #endif
 
 void AddCustomScripts()
@@ -249,5 +250,6 @@ void AddCustomScripts()
     AddSC_npc_beastmaster();
     AddSC_cast_log();
     AddSC_arena_team_ranks();
+    AddSC_npc_enchant();
 #endif
 }

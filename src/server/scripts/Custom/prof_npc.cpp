@@ -13,7 +13,7 @@ struct prof_npcAI : public ScriptedAI
         {
         }
 
-        
+
     };
 
     CreatureAI* GetAI(Creature* _creature) const
@@ -37,7 +37,7 @@ void MainMenu(Player *pPlayer, Creature* _creature)
 {
             pPlayer->ADD_GOSSIP_ITEM(9, "[Professions] ->", GOSSIP_SENDER_MAIN, 196);
             pPlayer->PlayerTalkClass->SendGossipMenu(907, _creature->GetGUID());
-       
+
 }
 
     bool PlayerHasItemOrSpell(const Player *plr, uint32 itemId, uint32 spellId) const
@@ -108,10 +108,10 @@ bool PlayerAlreadyHasTwoProfessions(const Player *pPlayer) const
         uint16 maxLevel = pPlayer->GetPureMaxSkillValue(SkillInfo->id);
         pPlayer->SetSkill(SkillInfo->id, pPlayer->GetSkillStep(SkillInfo->id), maxLevel, maxLevel);
         handler.PSendSysMessage(LANG_COMMAND_LEARN_ALL_RECIPES, skill_name);
-        
+
         return true;
     }
-    
+
     void LearnSkillRecipesHelper(Player *player, uint32 skill_id)
     {
         uint32 classmask = player->getClassMask();
@@ -161,14 +161,14 @@ bool PlayerAlreadyHasTwoProfessions(const Player *pPlayer) const
                 pCreature->MonsterWhisper("Internal error occured!", pPlayer->GetGUID());
         }
     }
-    
+
      bool OnGossipSelect(Player* pPlayer, Creature* _creature, uint32 uiSender, uint32 uiAction)
-{ 
+{
         pPlayer->PlayerTalkClass->ClearMenus();
-        
+
         if (uiSender == GOSSIP_SENDER_MAIN)
         {
-                
+
         switch (uiAction)
         {
                 case 196:
@@ -237,7 +237,7 @@ bool PlayerAlreadyHasTwoProfessions(const Player *pPlayer) const
                 break;
         }
 
-        
+
     }
      return true;
      }

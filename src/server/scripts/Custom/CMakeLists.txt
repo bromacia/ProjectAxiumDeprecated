@@ -16,6 +16,7 @@ set(scripts_STAT_SRCS
   Custom/npc_beastmaster.cpp
   Custom/cast_log.cpp
   Custom/arena_team_ranks.cpp
+  Custom/npc_enchant.cpp
 )
 
 message("  -> Prepared: Custom")
