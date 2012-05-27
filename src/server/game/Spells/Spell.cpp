@@ -1439,19 +1439,15 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         if (m_spellInfo->Speed > 0.0f && unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
             return SPELL_MISS_EVADE;
 
-        if (m_caster->_IsValidAttackTarget(unit, m_spellInfo) && m_spellInfo->Id != 1725 && m_spellInfo->SpellIconID != 2267) // Ignore Distract and Mass Dispel
-        {
+        unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
+
+        //TODO: This is a hack. But we do not know what types of stealth should be interrupted by CC
+        if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC) && unit->IsControlledByPlayer() // CC Spells
+            || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109)) // Faerie Fire
             unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+            unit->RemoveAura(66);
             unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
 
-            unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
-            //TODO: This is a hack. But we do not know what types of stealth should be interrupted by CC
-            if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC) && unit->IsControlledByPlayer() // CC Spells
-                || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109)) // Faerie Fire
-                unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
-                unit->RemoveAura(66);
-                unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
-        }
         else if (m_caster->IsFriendlyTo(unit))
         {
             // for delayed spells ignore negative spells (after duel end) for friendly targets
