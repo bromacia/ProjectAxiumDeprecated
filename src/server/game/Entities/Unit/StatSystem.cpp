@@ -1358,13 +1358,11 @@ void Guardian::UpdateAttackPowerAndDamage(bool ranged)
     float attPowerMod = GetModifierValue(unitMod, TOTAL_VALUE);
     float attPowerMultiplier = GetModifierValue(unitMod, TOTAL_PCT) - 1.0f;
 
-    // Animal Handler rank 1
-    if (owner->HasAura(34453))
-        base_attPower *= 1.05f;
-    // Animal Handler rank 2
-    else if (owner->HasAura(34454))
-        base_attPower *= 1.1f;
-
+    // Animal Handler rank 1 & 2
+    if (owner->HasAura(34453) || owner->HasAura(34454))
+        SpellInfo const* sProto = sSpellMgr->GetSpellInfo((owner->HasAura(34453)) ? 34453 : 34454);
+        attPowerMultiplier += ((float)sProto->Effects[EFFECT_1].CalcValue() / 100);
+        
     //UNIT_FIELD_(RANGED)_ATTACK_POWER field
     SetInt32Value(UNIT_FIELD_ATTACK_POWER, (int32)base_attPower);
     //UNIT_FIELD_(RANGED)_ATTACK_POWER_MODS field
