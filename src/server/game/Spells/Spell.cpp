@@ -1447,7 +1447,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             unit->RemoveAura(66);
             unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
 
-        else if (m_caster->IsFriendlyTo(unit))
+        if (m_caster->IsFriendlyTo(unit))
         {
             // for delayed spells ignore negative spells (after duel end) for friendly targets
             // TODO: this cause soul transfer bugged
