@@ -62,7 +62,7 @@ float baseMoveSpeed[MAX_MOVE_TYPE] =
 {
     2.5f,                  // MOVE_WALK
     7.0f,                  // MOVE_RUN
-    2.5f,                  // MOVE_RUN_BACK
+    4.5f,                  // MOVE_RUN_BACK
     4.722222f,             // MOVE_SWIM
     4.5f,                  // MOVE_SWIM_BACK
     3.141594f,             // MOVE_TURN_RATE
@@ -73,7 +73,7 @@ float baseMoveSpeed[MAX_MOVE_TYPE] =
 float playerBaseMoveSpeed[MAX_MOVE_TYPE] = {
     2.5f,                  // MOVE_WALK
     7.0f,                  // MOVE_RUN
-    2.5f,                  // MOVE_RUN_BACK
+    4.5f,                  // MOVE_RUN_BACK
     4.722222f,             // MOVE_SWIM
     4.5f,                  // MOVE_SWIM_BACK
     3.141594f,             // MOVE_TURN_RATE
@@ -15072,21 +15072,6 @@ bool Unit::IsPolymorphed() const
 void Unit::SetDisplayId(uint32 modelId)
 {
     SetUInt32Value(UNIT_FIELD_DISPLAYID, modelId);
-
-    if (GetTypeId() == TYPEID_UNIT && ToCreature()->isPet())
-    {
-        Pet* pet = ToPet();
-        if (!pet->isControlled())
-            return;
-        Unit* owner = GetOwner();
-        if (owner && (owner->GetTypeId() == TYPEID_PLAYER) && owner->ToPlayer()->GetGroup())
-            owner->ToPlayer()->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_MODEL_ID);
-    }
-}
-
-void Unit::SetNativeRaceDisplayId(uint32 modelId)
-{
-    SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, modelId);
 
     if (GetTypeId() == TYPEID_UNIT && ToCreature()->isPet())
     {
