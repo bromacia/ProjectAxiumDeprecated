@@ -80,9 +80,10 @@ ERR_ARENA_TEAM_LEVEL_TOO_LOW_I
 
 enum ArenaTeamTypes
 {
+    ARENA_TEAM_4v4      = 1,
     ARENA_TEAM_2v2      = 2,
     ARENA_TEAM_3v3      = 3,
-    ARENA_TEAM_5v5      = 5
+    ARENA_TEAM_5v5      = 4
 };
 
 struct ArenaTeamMember

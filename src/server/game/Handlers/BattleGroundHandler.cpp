@@ -634,12 +634,15 @@ void WorldSession::HandleBattlemasterJoinArena(WorldPacket & recv_data)
     switch (arenaslot)
     {
         case 0:
-            arenatype = ARENA_TYPE_2v2;
+            arenatype = ARENA_TYPE_4v4;
             break;
         case 1:
-            arenatype = ARENA_TYPE_3v3;
+            arenatype = ARENA_TYPE_2v2;
             break;
         case 2:
+            arenatype = ARENA_TYPE_3v3;
+            break;
+        case 3:
             arenatype = ARENA_TYPE_5v5;
             break;
         default:

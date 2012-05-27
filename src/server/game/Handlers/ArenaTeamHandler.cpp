@@ -369,10 +369,10 @@ void WorldSession::SendNotInArenaTeamPacket(uint8 type)
 /*
 +ERR_ARENA_NO_TEAM_II "You are not in a %dv%d arena team"
 
-+ERR_ARENA_TEAM_CREATE_S "%s created.  To disband, use /teamdisband [2v2, 3v3, 5v5]."
++ERR_ARENA_TEAM_CREATE_S "%s created.  To disband, use /teamdisband [2v2, 3v3, 4v4, 5v5]."
 +ERR_ARENA_TEAM_INVITE_SS "You have invited %s to join %s"
 +ERR_ARENA_TEAM_QUIT_S "You are no longer a member of %s"
-ERR_ARENA_TEAM_FOUNDER_S "Congratulations, you are a founding member of %s!  To leave, use /teamquit [2v2, 3v3, 5v5]."
+ERR_ARENA_TEAM_FOUNDER_S "Congratulations, you are a founding member of %s!  To leave, use /teamquit [2v2, 3v3, 4v4, 5v5]."
 
 +ERR_ARENA_TEAM_INTERNAL "Internal arena team error"
 +ERR_ALREADY_IN_ARENA_TEAM "You are already in an arena team of that size"
@@ -389,7 +389,7 @@ ERR_ARENA_TEAM_FOUNDER_S "Congratulations, you are a founding member of %s!  To 
 +ERR_ARENA_TEAM_NOT_ALLIED "You cannot invite players from the opposing alliance"
 
 +ERR_ARENA_TEAM_JOIN_SS "%s has joined %s"
-+ERR_ARENA_TEAM_YOU_JOIN_S "You have joined %s.  To leave, use /teamquit [2v2, 3v3, 5v5]."
++ERR_ARENA_TEAM_YOU_JOIN_S "You have joined %s.  To leave, use /teamquit [2v2, 3v3, 4v4, 5v5]."
 
 +ERR_ARENA_TEAM_LEAVE_SS "%s has left %s"
 

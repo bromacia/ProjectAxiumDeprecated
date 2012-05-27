@@ -45,7 +45,8 @@ enum CharterItemIDs
     GUILD_CHARTER                                 = 5863,
     ARENA_TEAM_CHARTER_2v2                        = 23560,
     ARENA_TEAM_CHARTER_3v3                        = 23561,
-    ARENA_TEAM_CHARTER_5v5                        = 23562
+    ARENA_TEAM_CHARTER_5v5                        = 23562,
+    ARENA_TEAM_CHARTER_4v4                        = 23559
 };
 
 enum CharterCosts
@@ -53,7 +54,8 @@ enum CharterCosts
     GUILD_CHARTER_COST                            = 1000,
     ARENA_TEAM_CHARTER_2v2_COST                   = 800000,
     ARENA_TEAM_CHARTER_3v3_COST                   = 1200000,
-    ARENA_TEAM_CHARTER_5v5_COST                   = 2000000
+    ARENA_TEAM_CHARTER_5v5_COST                   = 2000000,
+    ARENA_TEAM_CHARTER_4v4_COST                   = 3200000
 };
 
 void WorldSession::HandlePetitionBuyOpcode(WorldPacket & recv_data)
@@ -126,6 +128,11 @@ void WorldSession::HandlePetitionBuyOpcode(WorldPacket & recv_data)
 
         switch (clientIndex)                                 // arenaSlot+1 as received from client (1 from 3 case)
         {
+            case 0:
+                charterid = ARENA_TEAM_CHARTER_4v4;
+                cost = ARENA_TEAM_CHARTER_4v4_COST;
+                type = ARENA_TEAM_CHARTER_4v4_TYPE;
+                break;
             case 1:
                 charterid = ARENA_TEAM_CHARTER_2v2;
                 cost = ARENA_TEAM_CHARTER_2v2_COST;
@@ -909,6 +916,13 @@ void WorldSession::SendPetitionShowList(uint64 guid)
     else
     {
         data << uint8(3);                                   // count
+        // 4v4
+        data << uint32(0);                                  // index
+        data << uint32(ARENA_TEAM_CHARTER_4v4);             // charter entry
+        data << uint32(CHARTER_DISPLAY_ID);                 // charter display id
+        data << uint32(ARENA_TEAM_CHARTER_4v4_COST);        // charter cost
+        data << uint32(4);                                  // unknown
+        data << uint32(4);
         // 2v2
         data << uint32(1);                                  // index
         data << uint32(ARENA_TEAM_CHARTER_2v2);             // charter entry
