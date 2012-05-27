@@ -6213,19 +6213,6 @@ void AuraEffect::HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster) 
     {
         if (Unit* triggerCaster = triggeredSpellInfo->NeedsToBeTriggeredByCaster() ? caster : target)
         {
-
-        // Earthen Power
-        if (triggeredSpellInfo->Id == 3600   ) // if cast earthbind
-        {
-            Unit * casterOwner = triggerCaster->GetOwner();
-            if ( casterOwner && casterOwner->HasAura(51523))     //rank 1
-            {
-                if (urand (0, 10000) > 5000 ) caster->CastSpell(triggerCaster, 59566, true);
-            }
-            else if (casterOwner && casterOwner->HasAura(51524)) //rank 2
-                caster->CastSpell(triggerCaster, 59566, true);
-        }
-
             triggerCaster->CastSpell(target, triggeredSpellInfo, true, NULL, this);
             sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "AuraEffect::HandlePeriodicTriggerSpellAuraTick: Spell %u Trigger %u", GetId(), triggeredSpellInfo->Id);
         }
