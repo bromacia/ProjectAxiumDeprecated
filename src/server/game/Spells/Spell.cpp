@@ -5541,6 +5541,15 @@ SpellCastResult Spell::CheckCast(bool strict)
 
                 break;
             }
+            case SPELL_AURA_PERIODIC_HEAL:
+            {
+                if (m_spellInfo->AttributesEx2 & SPELL_ATTR2_HEALTH_FUNNEL)
+                    if (Player* playerCaster = m_caster->ToPlayer())
+                        if (Pet* playerPet = playerCaster->GetPet())
+                            if (!m_caster->IsWithinLOSInMap(playerPet))
+                                return SPELL_FAILED_LINE_OF_SIGHT;
+                break;
+            }
             default:
                 break;
         }
