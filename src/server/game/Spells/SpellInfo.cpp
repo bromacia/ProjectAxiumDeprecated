@@ -1602,6 +1602,15 @@ SpellCastResult SpellInfo::CheckTarget(Unit const* caster, Unit const* target, b
             return SPELL_FAILED_BAD_TARGETS;
     }
 
+    // check to see of the area source position is within LoS of the target
+    if ((Effects[0].TargetA.GetTarget() == TARGET_SRC_CASTER) & (Effects[0].TargetB.GetTarget() == TARGET_UNIT_SRC_AREA_ENEMY))
+        if (!caster->IsWithinLOSInMap(target))
+            return SPELL_FAILED_LINE_OF_SIGHT;
+    // Check to see if the cone source position is within LoS of the target
+    if (Effects[0].TargetA.GetTarget() == TARGET_UNIT_CONE_ENEMY_104)
+        if (!caster->IsWithinLOSInMap(target))
+            return SPELL_FAILED_LINE_OF_SIGHT;
+
     // check GM mode and GM invisibility - only for player casts (npc casts are controlled by AI) and negative spells
     if (target != caster && (caster->IsControlledByPlayer() || !IsPositive()) && target->GetTypeId() == TYPEID_PLAYER)
     {
