@@ -5548,6 +5548,11 @@ SpellCastResult Spell::CheckCast(bool strict)
                         if (Pet* playerPet = playerCaster->GetPet())
                             if (!m_caster->IsWithinLOSInMap(playerPet))
                                 return SPELL_FAILED_LINE_OF_SIGHT;
+
+                if (m_spellInfo->SpellIconID == 104 && m_spellInfo->Mechanic == MECHANIC_BANDAGE)
+                    if (Player* playerCaster = m_caster->ToPlayer())
+                        if (playerCaster->HasAura(11196))
+                            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
                 break;
             }
             default:
