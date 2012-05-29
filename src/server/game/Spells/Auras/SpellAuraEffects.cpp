@@ -552,8 +552,8 @@ int32 AuraEffect::CalculateAmount(Unit* caster)
                     // Sacred Shield
                     if (m_spellInfo->SpellFamilyFlags[1] & 0x80000)
                     {
-                        //+25.00% from sp bonus
-                        float bonus = 0.25f;
+                        //+60.00% from sp bonus
+                        float bonus = 0.60f;
 
                         DoneActualBenefit += caster->SpellBaseHealingBonusDone(m_spellInfo->GetSchoolMask()) * bonus;
                         // Divine Guardian is only applied at the spell healing bonus because it was already applied to the base value in CalculateSpellDamage
