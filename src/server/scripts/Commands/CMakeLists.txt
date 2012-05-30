@@ -29,6 +29,7 @@ set(scripts_STAT_SRCS
   Commands/cs_titles.cpp
   Commands/cs_wp.cpp
   Commands/cs_morph.cpp
+  Commands/cs_utility.cpp
 #  Commands/cs_character.cpp
 #  Commands/cs_list.cpp
 #  Commands/cs_lookup.cpp

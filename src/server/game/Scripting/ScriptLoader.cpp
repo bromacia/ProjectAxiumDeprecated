@@ -63,6 +63,7 @@ void AddSC_titles_commandscript();
 void AddSC_wp_commandscript();
 void AddSC_gps_commandscript();
 void AddSC_morph_commandscript();
+void AddSC_utility_commandscript();
 
 #ifdef SCRIPTS
 //world
@@ -164,6 +165,7 @@ void AddCommandScripts()
     AddSC_wp_commandscript();
     AddSC_gps_commandscript();
     AddSC_morph_commandscript();
+    AddSC_utility_commandscript();
 }
 
 void AddWorldScripts()
