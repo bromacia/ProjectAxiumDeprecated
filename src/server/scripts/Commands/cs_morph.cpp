@@ -7,7 +7,7 @@ public:
 
     ChatCommand* GetCommands() const
     {
-        static ChatCommand modifyCommandTable[] =
+        static ChatCommand morphCommandTable[] =
         {
             { "hum",             SEC_MODERATOR,      false, &HandleMorphHumanMaleCommand,            "", NULL },
             { "huf",             SEC_MODERATOR,      false, &HandleMorphHumanFemaleCommand,          "", NULL },
@@ -25,12 +25,12 @@ public:
             { "bef",             SEC_MODERATOR,      false, &HandleMorphBloodElfFemaleCommand,       "", NULL },
             { "gobm",            SEC_MODERATOR,      false, &HandleMorphGoblinMaleCommand,           "", NULL },
             { "gobf",            SEC_MODERATOR,      false, &HandleMorphGoblinFemaleCommand,         "", NULL },
-            { "normal",          SEC_MODERATOR,      false, &HandleMorphNormalCommand,               "", NULL },
+            { "demorph",         SEC_MODERATOR,      false, &HandleMorphDemorphCommand,              "", NULL },
             { NULL,              0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
         {
-            { "morph",           SEC_MODERATOR,      false, NULL,                      "", modifyCommandTable },
+            { "morph",           SEC_MODERATOR,      false, NULL,                       "", morphCommandTable },
             { NULL,              0,                  false, NULL,                                    "", NULL }
         };
         return commandTable;
@@ -59,6 +59,7 @@ public:
     static bool HandleMorphHumanMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(HUM);
         player->SetDisplayId(HUM);
         return true;
     }
@@ -66,6 +67,7 @@ public:
     static bool HandleMorphHumanFemaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(HUF);
         player->SetDisplayId(HUF);
         return true;
     }
@@ -73,6 +75,7 @@ public:
     static bool HandleMorphDwarfMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(DWM);
         player->SetDisplayId(DWM);
         return true;
     }
@@ -80,6 +83,7 @@ public:
     static bool HandleMorphNightElfMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(NEM);
         player->SetDisplayId(NEM);
         return true;
     }
@@ -87,6 +91,7 @@ public:
     static bool HandleMorphGnomeMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(GNM);
         player->SetDisplayId(GNM);
         return true;
     }
@@ -94,6 +99,7 @@ public:
     static bool HandleMorphGnomeFemaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(GNF);
         player->SetDisplayId(GNF);
         return true;
     }
@@ -101,6 +107,7 @@ public:
     static bool HandleMorphDraeneiFemaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(DRF);
         player->SetDisplayId(DRF);
         return true;
     }
@@ -108,6 +115,7 @@ public:
     static bool HandleMorphFelOrcMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(ORCM);
         player->SetDisplayId(ORCM);
         return true;
     }
@@ -115,6 +123,7 @@ public:
     static bool HandleMorphOrcFemaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(ORCF);
         player->SetDisplayId(ORCF);
         return true;
     }
@@ -122,6 +131,7 @@ public:
     static bool HandleMorphTaurenMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(TAM);
         player->SetDisplayId(TAM);
         return true;
     }
@@ -129,6 +139,7 @@ public:
     static bool HandleMorphTaurenFemaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(TAF);
         player->SetDisplayId(TAF);
         return true;
     }
@@ -136,6 +147,7 @@ public:
     static bool HandleMorphTrollMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(TRM);
         player->SetDisplayId(TRM);
         return true;
     }
@@ -143,6 +155,7 @@ public:
     static bool HandleMorphBloodElfMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(BEM);
         player->SetDisplayId(BEM);
         return true;
     }
@@ -150,6 +163,7 @@ public:
     static bool HandleMorphBloodElfFemaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(BEF);
         player->SetDisplayId(BEF);
         return true;
     }
@@ -157,6 +171,7 @@ public:
     static bool HandleMorphGoblinMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(GOBM);
         player->SetDisplayId(GOBM);
         return true;
     }
@@ -164,14 +179,21 @@ public:
     static bool HandleMorphGoblinFemaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
+        player->SetNativeDisplayId(GOBF);
         player->SetDisplayId(GOBF);
         return true;
     }
 
-    static bool HandleMorphNormalCommand(ChatHandler* handler, const char* /*args*/)
+    static bool HandleMorphDemorphCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
-        player->DeMorph();
+        if (player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT) || player->HasAuraType(SPELL_AURA_TRANSFORM))
+        {
+            handler->PSendSysMessage("You cannot demorph when you are transformed.");
+            return false;
+        }
+        else
+            player->InitDisplayIds();
         return true;
     }
 };
