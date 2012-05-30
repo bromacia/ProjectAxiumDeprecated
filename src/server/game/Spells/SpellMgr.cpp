@@ -3645,9 +3645,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 49203: // Hungering Cold
             case 47481: // Gnaw
 // ------------------------------------
-                // Shaman
-            case 8177: // Grounding Totem
-// ------------------------------------
                 // Mage
             case 44572: // Deep Freeze
             case 42945: // Blast Wave

@@ -2294,6 +2294,7 @@ bool SpellInfo::_IsPositiveEffect(uint8 effIndex, bool deep) const
                 case 61987: // Avenging Wrath Marker
                 case 61988: // Divine Shield exclude aura
                 case 62532: // Conservator's Grip
+                case 34709: // Shadow Sight
                     return false;
                 case 30877: // Tag Murloc
                 case 62344: // Fists of Stone
