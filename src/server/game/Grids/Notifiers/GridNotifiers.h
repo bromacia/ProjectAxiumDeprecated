@@ -914,13 +914,15 @@ namespace Trinity
     {
         public:
             AnyAoETargetUnitInObjectRangeCheck(WorldObject const* obj, Unit const* funit, float range)
-                : i_obj(obj), i_funit(funit), i_range(range)
+                : i_obj(obj), i_funit(funit), _spellInfo(NULL), i_range(range)
             {
                 Unit const* check = i_funit;
                 Unit const* owner = i_funit->GetOwner();
                 if (owner)
                     check = owner;
                 i_targetForPlayer = (check->GetTypeId() == TYPEID_PLAYER);
+                if (i_obj->GetTypeId() == TYPEID_DYNAMICOBJECT)
+                    _spellInfo = sSpellMgr->GetSpellInfo(((DynamicObject*)i_obj)->GetSpellId());
             }
             bool operator()(Unit* u)
             {
@@ -928,7 +930,7 @@ namespace Trinity
                 if (u->GetTypeId() == TYPEID_UNIT && ((Creature*)u)->isTotem())
                     return false;
 
-                if (i_funit->IsValidAttackTarget(u) && i_obj->IsWithinDistInMap(u, i_range))
+                if (i_funit->_IsValidAttackTarget(u, _spellInfo,i_obj->GetTypeId() == TYPEID_DYNAMICOBJECT ? i_obj : NULL) && i_obj->IsWithinDistInMap(u, i_range))
                     return true;
 
                 return false;
@@ -937,6 +939,7 @@ namespace Trinity
             bool i_targetForPlayer;
             WorldObject const* i_obj;
             Unit const* i_funit;
+            SpellInfo const* _spellInfo;
             float i_range;
     };
 
@@ -960,7 +963,7 @@ namespace Trinity
                     return;
 
                 // only if see assisted creature's enemy
-                if (!u->IsWithinLOSInMap(i_enemy))
+                if (!u->IsWithinDistInMap(i_funit, i_range))
                     return;
 
                 if (u->AI())
