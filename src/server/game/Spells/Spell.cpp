@@ -1438,20 +1438,22 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         if (m_spellInfo->Speed > 0.0f && unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
             return SPELL_MISS_EVADE;
 
-        unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
+		if (!unit->HasAura(32727))
+        {
+            unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
 
-        //TODO: This is a hack. But we do not know what types of stealth should be interrupted by CC
-        if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC) && unit->IsControlledByPlayer() || m_spellInfo->Id == 34709 // CC Spells and Shadow Sight
-            || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109)) // Faerie Fire
-            unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
-            unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
+            if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC) && unit->IsControlledByPlayer() || m_spellInfo->Id == 34709 // CC Spells and Shadow Sight
+                || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109)) // Faerie Fire
+                unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+                unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
 
-        if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174))
-            || (m_spellInfo->Mechanic == MECHANIC_CHARM || m_spellInfo->Mechanic == MECHANIC_DISORIENTED
-            || m_spellInfo->Mechanic == MECHANIC_FEAR || m_spellInfo->Mechanic == MECHANIC_SLEEP
-            || m_spellInfo->Mechanic == MECHANIC_STUN || m_spellInfo->Mechanic == MECHANIC_POLYMORPH
-            || m_spellInfo->Mechanic == MECHANIC_HORROR || m_spellInfo->Mechanic == MECHANIC_SAPPED))
-            unit->RemoveAura(66);
+            if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174))
+                || (m_spellInfo->Mechanic == MECHANIC_CHARM || m_spellInfo->Mechanic == MECHANIC_DISORIENTED
+                || m_spellInfo->Mechanic == MECHANIC_FEAR || m_spellInfo->Mechanic == MECHANIC_SLEEP
+                || m_spellInfo->Mechanic == MECHANIC_STUN || m_spellInfo->Mechanic == MECHANIC_POLYMORPH
+                || m_spellInfo->Mechanic == MECHANIC_HORROR || m_spellInfo->Mechanic == MECHANIC_SAPPED))
+                unit->RemoveAura(66);
+        }
 
         if (m_caster->IsFriendlyTo(unit))
         {
