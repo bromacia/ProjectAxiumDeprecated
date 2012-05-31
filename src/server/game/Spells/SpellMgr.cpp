@@ -3588,7 +3588,7 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER; 
                 break;
             case 24259: // Spell Lock
-                spellInfo->speed = 80;
+                spellInfo->speed = 1000;
                 break;
             case 63311: // Glyph of Shadowflame
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CONE_ENEMY_104;
