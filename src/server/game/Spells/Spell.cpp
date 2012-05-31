@@ -5544,15 +5544,17 @@ SpellCastResult Spell::CheckCast(bool strict)
             }
             case SPELL_AURA_PERIODIC_HEAL:
             {
+                // Dont allow health funnel to be casted if the pet isnt within LoS of the owner
                 if (m_spellInfo->AttributesEx2 & SPELL_ATTR2_HEALTH_FUNNEL)
                     if (Player* playerCaster = m_caster->ToPlayer())
                         if (Pet* playerPet = playerCaster->GetPet())
                             if (!m_caster->IsWithinLOSInMap(playerPet))
                                 return SPELL_FAILED_LINE_OF_SIGHT;
 
+                // Dont allow bandage to be casted if the caster or target has Recently Bandaged aura
                 if (m_spellInfo->SpellIconID == 104 && m_spellInfo->Mechanic == MECHANIC_BANDAGE)
-                    if (Player* playerCaster = m_caster->ToPlayer())
-                        if (playerCaster->HasAura(11196))
+                    if (Unit* target = m_targets.GetUnitTarget())
+                        if (target->HasAura(11196))
                             return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
                 break;
             }
