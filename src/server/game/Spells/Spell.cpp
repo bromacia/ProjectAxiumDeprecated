@@ -5561,6 +5561,15 @@ SpellCastResult Spell::CheckCast(bool strict)
         }
     }
 
+    for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
+    {
+        // Dont allow anything to be cast while in cyclone besides PvP Trinket or Ever Man for Himself
+        if (m_spellInfo->Id != 42292 && m_spellInfo->Id != 65547 && m_spellInfo->Id != 59752)
+            if (Player* playerCaster = m_caster->ToPlayer())
+                if (playerCaster->HasAura(33786))
+                    return SPELL_FAILED_DONT_REPORT;
+    }
+
     // check trade slot case (last, for allow catch any another cast problems)
     if (m_targets.GetTargetMask() & TARGET_FLAG_TRADE_ITEM)
     {
