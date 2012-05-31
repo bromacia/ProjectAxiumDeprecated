@@ -5570,6 +5570,12 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (Player* playerCaster = m_caster->ToPlayer())
                 if (playerCaster->HasAura(33786))
                     return SPELL_FAILED_DONT_REPORT;
+
+        // Dont allow anything to be casted if the target has Zangarmarsh Banish aura
+        if (Player* playerCaster = m_caster->ToPlayer())
+            if (playerCaster->HasAura(30231))
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+        break;
     }
 
     // check trade slot case (last, for allow catch any another cast problems)
