@@ -1070,7 +1070,7 @@ bool GridMap::loadData(char *filename)
             return false;
         }
         // loadup height data
-        if (header.heightMapOffset && !loadHeihgtData(in, header.heightMapOffset, header.heightMapSize))
+        if (header.heightMapOffset && !loadHeightData(in, header.heightMapOffset, header.heightMapSize))
         {
             sLog->outError("Error loading map height data\n");
             fclose(in);
