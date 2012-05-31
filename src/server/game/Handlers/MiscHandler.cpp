@@ -75,10 +75,25 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
         GetPlayer()->KillPlayer();
     }
 
-    //this is spirit release confirm?
-    GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
-    GetPlayer()->BuildPlayerRepop();
-    GetPlayer()->RepopAtGraveyard();
+    // Release Spirit
+    if (GetPlayer()->GetZoneId() == 3521) // If the player is in Zangarmarsh
+    {
+        if (GetPlayer()->GetTeam() == HORDE)
+            GetPlayer()->TeleportTo(530, 1004.06f, 7362.67f, 36.3775f, 1.5);
+        if (GetPlayer()->GetTeam() == ALLIANCE)
+            GetPlayer()->TeleportTo(530, -212.567f, 5491.5f, 21.6723f, 1.5);
+
+        GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
+        GetPlayer()->ResurrectPlayer(1.0f);
+        GetPlayer()->SpawnCorpseBones();
+        GetPlayer()->CastSpell(GetPlayer(), 30231, true);
+    }
+    if (GetPlayer()->GetZoneId() != 3521)
+    {
+        GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
+        GetPlayer()->BuildPlayerRepop();
+        GetPlayer()->RepopAtGraveyard();
+    }
 }
 
 void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket & recv_data)

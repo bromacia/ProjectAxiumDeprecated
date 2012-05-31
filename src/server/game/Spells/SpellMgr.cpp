@@ -3614,6 +3614,20 @@ void SpellMgr::LoadDbcDataCorrections()
             case 8178: // Grounding Totem
                 spellInfo->procFlags = 0;
                 break;
+            case 30231: // Zangarmarsh Banish
+				spellInfo->Mechanic = 0;
+                spellInfo->DurationIndex = 9;
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
+                spellInfo->Effect[1] = SPELL_EFFECT_APPLY_AURA;
+                spellInfo->EffectBasePoints[1] = 1;
+                spellInfo->EffectApplyAuraName[1] = SPELL_AURA_MOD_UNATTACKABLE;
+                spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_TARGET_ANY;
+                spellInfo->Effect[2] = SPELL_EFFECT_APPLY_AURA;
+                spellInfo->EffectBasePoints[2] = 99999;
+                spellInfo->EffectApplyAuraName[2] = SPELL_AURA_MOD_STEALTH;
+                spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_CASTER;
+                spellInfo->AttributesEx |= SPELL_ATTR0_CANT_CANCEL;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------
