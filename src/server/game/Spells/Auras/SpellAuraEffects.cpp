@@ -5031,7 +5031,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                         if (caster)
                         {
                             // Restore mana should not occur if the target is Cycloned or Banished
-                            if (caster->HasAura(33786 || 710 || 18647))
+                            if (caster->HasAura(33786) || caster->HasAura(710) || caster->HasAura(18647))
                                 return;
 
                             int32 returnmana = CalculatePctU(caster->GetCreateMana(), GetSpellInfo()->ManaCostPercentage) * stack / 2;
