@@ -3546,6 +3546,7 @@ void SpellMgr::LoadDbcDataCorrections()
             case 40166: // Introspection
             case 40167: // Introspection
                 spellInfo->Attributes |= SPELL_ATTR0_NEGATIVE_1;
+                break;
 // ----------------------------------------------------------------------
 // -------------------------------Axium----------------------------------
 // ----------------------------------------------------------------------
@@ -3615,7 +3616,7 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->procFlags = 0;
                 break;
             case 30231: // Zangarmarsh Banish
-				spellInfo->Mechanic = 0;
+                spellInfo->Mechanic = 0;
                 spellInfo->DurationIndex = 9;
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
                 spellInfo->Effect[1] = SPELL_EFFECT_APPLY_AURA;
@@ -3627,6 +3628,9 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectApplyAuraName[2] = SPELL_AURA_MOD_STEALTH;
                 spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_CASTER;
                 spellInfo->AttributesEx |= SPELL_ATTR0_CANT_CANCEL;
+                break;
+            case 45524: // Chains of Ice
+                spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_TARGET_ENEMY;
                 break;
 // ------------------------------------
 // -----------Spell Delay--------------
