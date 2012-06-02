@@ -241,6 +241,7 @@ void AddBattlegroundScripts()
     void AddSC_cast_log();
     void AddSC_arena_team_ranks();
     void AddSC_npc_enchant();
+    void AddSC_npc_arena_spectator();
 #endif
 
 void AddCustomScripts()
@@ -253,5 +254,6 @@ void AddCustomScripts()
     AddSC_cast_log();
     AddSC_arena_team_ranks();
     AddSC_npc_enchant();
+    AddSC_npc_arena_spectator();
 #endif
 }

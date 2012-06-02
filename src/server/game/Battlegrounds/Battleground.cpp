@@ -936,7 +936,6 @@ void Battleground::EndBattleground(uint32 winner)
     // Arena Spectator
     // teleport spectators to recall position and remove spectator state
     Map::PlayerList const &PlList = m_Map->GetPlayers();
-
     if (!PlList.isEmpty())
         for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
             if (Player* player = i->getSource())
@@ -944,6 +943,10 @@ void Battleground::EndBattleground(uint32 winner)
                 {
                     player->SetSpectator(false);
                     player->TeleportToBGEntryPoint();
+                }
+                else
+                {
+                    player->SetSpectator(false);
                 }
 }
 
@@ -1135,6 +1138,9 @@ void Battleground::StartBattleground()
 
 void Battleground::AddPlayer(Player* player)
 {
+    // Arena Spectator
+    player->SetSpectator(false);
+
     // remove afk from player
     if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_AFK))
         player->ToggleAFK();

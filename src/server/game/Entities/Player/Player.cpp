@@ -22522,6 +22522,9 @@ void Player::SummonIfPossible(bool agree)
 
     GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_ACCEPTED_SUMMONINGS, 1);
 
+    // Arena Spectator
+    SetSpectator(false);
+
     TeleportTo(m_summon_mapid, m_summon_x, m_summon_y, m_summon_z, GetOrientation());
 }
 

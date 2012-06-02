@@ -17,6 +17,7 @@ set(scripts_STAT_SRCS
   Custom/cast_log.cpp
   Custom/arena_team_ranks.cpp
   Custom/npc_enchant.cpp
+  Custom/npc_arena_spectator.cpp
 )
 
 message("  -> Prepared: Custom")
