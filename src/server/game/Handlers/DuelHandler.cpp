@@ -51,6 +51,8 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 
     player->SendDuelCountdown(3000);
     plTarget->SendDuelCountdown(3000);
+    if (player->GetZoneId() == 3521 || plTarget->GetZoneId() == 3521)
+        return;
     player->RemoveAura(41425); // Remove Hypothermia Debuff
     plTarget->RemoveAura(41425);
     player->RemoveAura(25771); // Remove Forbearance Debuff
@@ -71,6 +73,10 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     plTarget->SetPower(POWER_RAGE, 0);
     player->RemoveArenaSpellCooldowns();
     plTarget->RemoveArenaSpellCooldowns();
+    if (player->getClass() == CLASS_WARLOCK && !player->HasItemCount(36892, 1, true))
+        player->AddItem(36892, 1);
+    if (plTarget->getClass() == CLASS_WARLOCK && !plTarget->HasItemCount(36892, 1, true))
+        plTarget->AddItem(36892, 1);
 }
 
 void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recvPacket)

@@ -7,32 +7,37 @@ class Reset_OnDuelEnd : public PlayerScript
     public:
         Reset_OnDuelEnd() : PlayerScript("Reset_OnDuelEnd") {}
 
-    void OnDuelEnd(Player *winner, Player *looser, DuelCompleteType type)
+    void OnDuelEnd(Player* winner, Player* loser, DuelCompleteType type)
     {
         // reset cooldowns
         if (sWorld->getBoolConfig(CONFIG_DUEL_RESET_COOLDOWN) && type == DUEL_WON)
         {
+            if (winner->GetZoneId() == 3521 || loser->GetZoneId() == 3521)
+                return;
             winner->RemoveAura(41425); // Remove Hypothermia Debuff
-            looser->RemoveAura(41425);
+            loser->RemoveAura(41425);
             winner->RemoveAura(25771); // Remove Forbearance Debuff
-            looser->RemoveAura(25771);
+            loser->RemoveAura(25771);
             winner->RemoveAura(57724); // Remove Sated Debuff
-            looser->RemoveAura(57724);
+            loser->RemoveAura(57724);
             winner->RemoveAura(57723); // Remove Exhaustion Debuff
-            looser->RemoveAura(57723);
+            loser->RemoveAura(57723);
             winner->RemoveAura(66233); // Remove Ardent Defender Debuff
-            looser->RemoveAura(66233);
+            loser->RemoveAura(66233);
             winner->RemoveAura(11196); // Remove Recently Bandaged Debuff
-            looser->RemoveAura(11196);
+            loser->RemoveAura(11196);
             winner->SetHealth(winner->GetMaxHealth());
-            looser->SetHealth(looser->GetMaxHealth());
+            loser->SetHealth(loser->GetMaxHealth());
             if (winner->getPowerType() == POWER_MANA) 
                 winner->SetPower(POWER_MANA, winner->GetMaxPower(POWER_MANA));
-            if (looser->getPowerType() == POWER_MANA) 
-                looser->SetPower(POWER_MANA, looser->GetMaxPower(POWER_MANA));
+            if (loser->getPowerType() == POWER_MANA) 
+                loser->SetPower(POWER_MANA, loser->GetMaxPower(POWER_MANA));
             winner->RemoveArenaSpellCooldowns();
-            looser->RemoveArenaSpellCooldowns();
-
+            loser->RemoveArenaSpellCooldowns();
+            if (winner->getClass() == CLASS_WARLOCK && !winner->HasItemCount(36892, 1, true))
+                winner->AddItem(36892, 1);
+            if (loser->getClass() == CLASS_WARLOCK && !loser->HasItemCount(36892, 1, true))
+                loser->AddItem(36892, 1);
         }
     }
 };
