@@ -5218,18 +5218,8 @@ SpellCastResult Spell::CheckCast(bool strict)
                 switch (SummonProperties->Category)
                 {
                     case SUMMON_CATEGORY_PET:
-                        if (m_caster->GetPetGUID())
-                            // todo: make a check for mages and warlocks to see if cold snap
-                            // or fel dom is on cooldown and unsommon the pet even if its alive
-                            // if they are on cooldown
-                            if (m_caster->GetGuardianPet()->isAlive())
-                                return SPELL_FAILED_ALREADY_HAVE_SUMMON;
-                            else
-                            // unsummon pet if its dead
-                            {
-                                m_caster->GetGuardianPet()->DespawnOrUnsummon();
-                                break;
-                            }
+                        m_caster->RemoveAllMinionsByEntry(m_spellInfo->Effects[i].MiscValue);
+                        break;
                     case SUMMON_CATEGORY_PUPPET:
                         if (m_caster->GetCharmGUID())
                             return SPELL_FAILED_ALREADY_HAVE_CHARM;
