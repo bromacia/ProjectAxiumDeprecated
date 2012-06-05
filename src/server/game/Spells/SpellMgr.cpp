@@ -3620,9 +3620,10 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->DurationIndex = 9;
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
                 spellInfo->Effect[1] = SPELL_EFFECT_APPLY_AURA;
-                spellInfo->EffectBasePoints[1] = 1;
-                spellInfo->EffectApplyAuraName[1] = SPELL_AURA_MOD_UNATTACKABLE;
-                spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_TARGET_ANY;
+                spellInfo->EffectBasePoints[1] = 0;
+                spellInfo->EffectApplyAuraName[1] = SPELL_AURA_MOD_FACTION;
+                spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
+				spellInfo->EffectMiscValue[1] = 35;
                 spellInfo->Effect[2] = SPELL_EFFECT_APPLY_AURA;
                 spellInfo->EffectBasePoints[2] = 99999;
                 spellInfo->EffectApplyAuraName[2] = SPELL_AURA_MOD_STEALTH;
