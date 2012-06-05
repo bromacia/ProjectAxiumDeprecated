@@ -1034,6 +1034,8 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_ARENA_START_MATCHMAKER_RATING]              = ConfigMgr::GetIntDefault ("Arena.ArenaStartMatchmakerRating", 1500);
     m_bool_configs[CONFIG_ARENA_SEASON_IN_PROGRESS]                  = ConfigMgr::GetBoolDefault("Arena.ArenaSeason.InProgress", true);
     m_bool_configs[CONFIG_ARENA_LOG_EXTENDED_INFO]                   = ConfigMgr::GetBoolDefault("ArenaLog.ExtendedInfo", false);
+    m_int_configs[CONFIG_ARENA_PROGRESSIVE_MMR_TIMER]                = ConfigMgr::GetIntDefault ("Arena.ProgressiveMMRTimer", 30000);
+    m_int_configs[CONFIG_ARENA_PROGRESSIVE_MMR_STEPSIZE]             = ConfigMgr::GetIntDefault ("Arena.ProgressiveMMRStepSize", 50);
 
     m_bool_configs[CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN]            = ConfigMgr::GetBoolDefault("OffhandCheckAtSpellUnlearn", true);
 
@@ -1171,7 +1173,7 @@ void World::LoadConfigSettings(bool reload)
     m_bool_configs[CONFIG_CHATLOG_PUBLIC] = ConfigMgr::GetBoolDefault("ChatLogs.Public", false);
     m_bool_configs[CONFIG_CHATLOG_ADDON] = ConfigMgr::GetBoolDefault("ChatLogs.Addon", false);
     m_bool_configs[CONFIG_CHATLOG_BGROUND] = ConfigMgr::GetBoolDefault("ChatLogs.Battleground", false);
-    
+
     // IP logging
     m_bool_configs[CONFIG_IP_LOG_ENABLED]              = ConfigMgr::GetBoolDefault("IPHistoryLog", true);
 
