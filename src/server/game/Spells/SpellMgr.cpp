@@ -3633,6 +3633,21 @@ void SpellMgr::LoadDbcDataCorrections()
             case 45524: // Chains of Ice
                 spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_TARGET_ENEMY;
                 break;
+            case 12281: // Sword Spec (Rank 1)
+				spellInfo->procChance = 6;
+                break;
+            case 12812: // Sword Spec (Rank 2)
+				spellInfo->procChance = 12;
+                break;
+            case 12813: // Sword Spec (Rank 3)
+				spellInfo->procChance = 18;
+                break;
+            case 12814: // Sword Spec (Rank 4)
+				spellInfo->procChance = 24;
+                break;
+            case 12815: // Sword Spec (Rank 5)
+				spellInfo->procChance = 30;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------
