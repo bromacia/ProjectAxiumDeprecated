@@ -6558,6 +6558,37 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster) const
             damage += addition;
         }
 
+        // Gift of the Naaru
+        else if (m_spellInfo->SpellIconID == 329 && m_spellInfo->SpellFamilyFlags[2] & 0x80000000)
+        {
+            float heal = 0.0f;
+            switch (GetSpellInfo()->SpellFamilyName)
+            {
+                case SPELLFAMILY_MAGE:
+                case SPELLFAMILY_WARLOCK:
+                case SPELLFAMILY_PRIEST:
+                    heal = 1.885f * float(caster->SpellBaseDamageBonusDone(GetSpellInfo()->GetSchoolMask()));
+                    break;
+                case SPELLFAMILY_PALADIN:
+                case SPELLFAMILY_SHAMAN:
+                    heal = std::max(1.885f * float(caster->SpellBaseDamageBonusDone(GetSpellInfo()->GetSchoolMask())), 1.1f * float(caster->GetTotalAttackPowerValue(BASE_ATTACK)));
+                    break;
+                case SPELLFAMILY_WARRIOR:
+                case SPELLFAMILY_HUNTER:
+                case SPELLFAMILY_DEATHKNIGHT:
+                    heal = 1.1f * float(std::max(caster->GetTotalAttackPowerValue(BASE_ATTACK), caster->GetTotalAttackPowerValue(RANGED_ATTACK)));
+                    break;
+                case SPELLFAMILY_GENERIC:
+                default:
+                    break;
+            }
+
+            int32 healTick = floor(heal / GetTotalTicks());
+            damage += (healTick > 0 ? healTick : 0);
+        }
+        else
+            damage = caster->SpellHealingBonusDone(target, GetSpellInfo(), damage, DOT, GetBase()->GetStackAmount());
+
         if (!m_amountDone)
             m_amountDone = caster->SpellDamageBonusDone(target, GetSpellInfo(), damage, DOT, GetBase()->GetStackAmount());
 
