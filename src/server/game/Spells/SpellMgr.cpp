@@ -90,7 +90,7 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellInfo const* spellproto,
                 return DIMINISHING_ROOT;
             // Shattered Barrier
             else if (spellproto->SpellVisual[0] == 12297)
-                return DIMINISHING_ROOT;
+                return DIMINISHING_SHATTERED_BARRIER;
             // Deep Freeze
             else if (spellproto->SpellIconID == 2939 && spellproto->SpellVisual[0] == 9963)
                 return DIMINISHING_CONTROLLED_STUN;
