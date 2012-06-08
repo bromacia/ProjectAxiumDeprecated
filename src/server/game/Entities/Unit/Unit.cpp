@@ -8233,6 +8233,12 @@ bool Unit::HandleAuraProc(Unit* victim, uint32 damage, Aura* triggeredByAura, Sp
                     CastCustomSpell(this, 70845, &basepoints0, NULL, NULL, true);
                     break;
                 }
+                // Recklessness
+                case 1719:
+                {
+                    *handled = true;
+                    break;
+                }
                 default:
                     break;
             }
