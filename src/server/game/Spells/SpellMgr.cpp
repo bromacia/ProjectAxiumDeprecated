@@ -3601,9 +3601,6 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_DEATH_PERSISTENT;
                 break;
-            case 694: // Mocking Blow - Tempfix
-                spellInfo->Effect[0] = 0;
-                break;
             case 73313: // Crimson Deathcharger
             case 48778: // Acherus Deathcharger
                 spellInfo->SpellFamilyName = SPELLFAMILY_GENERIC;

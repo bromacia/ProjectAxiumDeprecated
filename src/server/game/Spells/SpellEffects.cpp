@@ -4122,6 +4122,15 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
                     fixed_bonus += (aur->GetStackAmount() - 1) * CalculateDamage(2, unitTarget);
                 }
             }
+            // Mocking Blow
+            if (m_spellInfo->SpellFamilyFlags[0] & 0x8000000)
+            {
+                if (unitTarget->IsImmunedToSpellEffect(m_spellInfo,EFFECT_1) || unitTarget->GetTypeId() == TYPEID_PLAYER)
+                {
+                    m_damage = 0;
+                    return;
+                }
+            }
             break;
         }
         case SPELLFAMILY_ROGUE:
