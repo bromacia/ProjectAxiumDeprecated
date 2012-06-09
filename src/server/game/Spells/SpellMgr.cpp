@@ -3645,6 +3645,24 @@ void SpellMgr::LoadDbcDataCorrections()
             case 12815: // Sword Spec (Rank 5)
 				spellInfo->procChance = 30;
                 break;
+            case 12323: // Piercing Howl
+            case 1160: // Demoralizing Shout (Rank 1)
+            case 6190: // Demoralizing Shout (Rank 2)
+            case 11554: // Demoralizing Shout (Rank 3)
+            case 11555: // Demoralizing Shout (Rank 4)
+            case 11556: // Demoralizing Shout (Rank 5)
+            case 25202: // Demoralizing Shout (Rank 6)
+            case 25203: // Demoralizing Shout (Rank 7)
+            case 47437: // Demoralizing Shout (Rank 8)
+                spellInfo->DmgClass = 0;
+                break;
+            case 1130: // Hunter's Mark (Rank 1)
+            case 14323: // Hunter's Mark (Rank 2)
+            case 14324: // Hunter's Mark (Rank 3)
+            case 14325: // Hunter's Mark (Rank 4)
+            case 53338: // Hunter's Mark (Rank 5)
+                spellInfo->DmgClass = 1;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------
@@ -3653,7 +3671,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 2094: // Blind
             case 1833: // Cheap Shot
             case 8643: // Kidney Shot
-            case 31224: // Cloak of Shadows
             case 1776: // Gouge
             case 51724: // Sap
 // ------------------------------------
