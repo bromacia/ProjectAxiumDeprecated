@@ -5578,6 +5578,12 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (Unit* target = m_targets.GetUnitTarget())
                 if (target->HasAuraType(SPELL_AURA_MOD_ROOT))
                     return SPELL_FAILED_DONT_REPORT;
+
+        // Dont allow Mind Soothe to be casted on players
+        if (m_spellInfo->Id == 453)
+            if (Unit* target = m_targets.GetUnitTarget())
+				if (target->GetTypeId() == TYPEID_PLAYER)
+                    return SPELL_FAILED_BAD_TARGETS;
         break;
     }
 

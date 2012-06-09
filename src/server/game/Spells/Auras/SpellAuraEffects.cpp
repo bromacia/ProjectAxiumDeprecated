@@ -3424,8 +3424,8 @@ void AuraEffect::HandleModStateImmunityMask(AuraApplication const* aurApp, uint8
     {
         target->ApplySpellImmune(GetId(), IMMUNITY_ID, 51514, apply);   // Hex
         target->ApplySpellImmune(GetId(), IMMUNITY_ID, 13810, apply);   // Frost Trap
-        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 55741, apply);   // Desecration Rank 1
-        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 68766, apply);   // Desecration Rank 2
+        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 55741, apply);   // Desecration (Rank 1)
+        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 68766, apply);   // Desecration (Rank 2)
         target->ApplySpellImmune(GetId(), IMMUNITY_ID, 605, apply);     // Mind Control
         target->ApplySpellImmune(GetId(), IMMUNITY_STATE, SPELL_AURA_TRANSFORM, apply);
         target->ApplySpellImmune(GetId(), IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, apply);
