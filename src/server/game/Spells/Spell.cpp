@@ -5572,6 +5572,12 @@ SpellCastResult Spell::CheckCast(bool strict)
         if (Player* playerCaster = m_caster->ToPlayer())
             if (playerCaster->HasAura(30231))
                 return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+        // Dont allow any procs from Frostbite if the target is already frozen
+        if (m_spellInfo->Id == 12494)
+            if (Unit* target = m_targets.GetUnitTarget())
+                if (target->HasAuraType(SPELL_AURA_MOD_ROOT))
+                    return SPELL_FAILED_DONT_REPORT;
         break;
     }
 
