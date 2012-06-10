@@ -3663,6 +3663,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 53338: // Hunter's Mark (Rank 5)
                 spellInfo->DmgClass = 1;
                 break;
+            case 58861: // Spirit Wolf Bash
+                spellInfo->AttributesEx |= SPELL_ATTR1_UNAUTOCASTABLE_BY_PET;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------
