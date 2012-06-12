@@ -2435,7 +2435,7 @@ void Player::RegenerateAll()
     //    return;
 
     m_regenTimerCount += m_regenTimer;
-	
+
    // Special case for Polymorph
    /*if (m_regenTimerCount >= 1000)
    {
@@ -14715,6 +14715,18 @@ bool Player::CanCompleteQuest(uint32 quest_id)
         if (!qInfo->IsRepeatable() && m_RewardedQuests.find(quest_id) != m_RewardedQuests.end())
             return false;                                   // not allow re-complete quest
 
+        QuestStatus status = GetQuestStatus(quest_id);
+        if (status == QUEST_STATUS_NONE)
+        {
+            for (uint32 i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
+            {
+                if (qInfo->ReqItemCount[i] != 0 && GetItemCount(qInfo->ReqItemId[i]) < qInfo->ReqItemCount[i])
+                {
+                    return false;
+                }
+            }
+        }
+
         // auto complete quest
         if ((qInfo->IsAutoComplete() || qInfo->GetFlags() & QUEST_FLAGS_AUTOCOMPLETE) && CanTakeQuest(qInfo, false))
             return true;
@@ -14874,7 +14886,7 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
     uint16 log_slot = FindQuestSlot(0);
 
     if (log_slot >= MAX_QUEST_LOG_SIZE) // Player does not have any free slot in the quest log
-        return; 
+        return;
 
     uint32 quest_id = quest->GetQuestId();
 
