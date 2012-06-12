@@ -3120,6 +3120,7 @@ enum DiminishingGroup
     DIMINISHING_LIMITONLY           = 19,
     DIMINISHING_DRAGONS_BREATH      = 20,
     DIMINISHING_GRENADE             = 21,
+    DIMINISHING_SHATTERED_BARRIER   = 22,
 };
 
 enum SummonCategory

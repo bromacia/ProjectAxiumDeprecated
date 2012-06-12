@@ -3419,6 +3419,19 @@ void AuraEffect::HandleModStateImmunityMask(AuraApplication const* aurApp, uint8
         target->RemoveAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
     }
 
+    // Bladestorm and Killing Spree
+    if (GetId() == 46924 || 51690)
+    {
+        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 51514, apply);   // Hex
+        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 13810, apply);   // Frost Trap
+        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 55741, apply);   // Desecration (Rank 1)
+        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 68766, apply);   // Desecration (Rank 2)
+        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 605, apply);     // Mind Control
+        target->ApplySpellImmune(GetId(), IMMUNITY_STATE, SPELL_AURA_TRANSFORM, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK, apply);
+    }
+
     if (apply && GetSpellInfo()->AttributesEx & SPELL_ATTR1_DISPEL_AURAS_ON_IMMUNITY)
         for (std::list <AuraType>::iterator iter = immunity_list.begin(); iter != immunity_list.end(); ++iter)
             target->RemoveAurasByType(*iter);
@@ -3467,34 +3480,6 @@ void AuraEffect::HandleModMechanicImmunity(AuraApplication const* aurApp, uint8 
             target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_FREEZE, apply);
             target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_TURN, apply);
             break;
-       case 46924: // Bladestorm
-       case 51690: // Killing Spree
-            mechanic = (1 << MECHANIC_SNARE) | (1 << MECHANIC_ROOT)
-               | (1 << MECHANIC_FEAR) | (1 << MECHANIC_STUN)
-               | (1 << MECHANIC_SLEEP) | (1 << MECHANIC_CHARM)
-               | (1 << MECHANIC_SAPPED) | (1 << MECHANIC_HORROR)
-               | (1 << MECHANIC_POLYMORPH) | (1 << MECHANIC_DISORIENTED)
-               | (1 << MECHANIC_FREEZE) | (1 << MECHANIC_TURN) | (1 << MECHANIC_KNOCKOUT);
-
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_SNARE, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_ROOT, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_FEAR, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_STUN, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_SLEEP, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_CHARM, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_SAPPED, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_HORROR, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_POLYMORPH, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_DISORIENTED, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_FREEZE, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_TURN, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_KNOCKOUT, apply);
-           target->ApplySpellImmune(GetId(), IMMUNITY_ID, 33786, apply);   // Bladestorm cannot be cycloned
-           target->ApplySpellImmune(GetId(), IMMUNITY_ID, 13810, apply);   // Frost Trap
-           target->ApplySpellImmune(GetId(), IMMUNITY_ID, 55741, apply);   // Desecration Rank 1
-           target->ApplySpellImmune(GetId(), IMMUNITY_ID, 68766, apply);   // Desecration Rank 2
-           target->ApplySpellImmune(GetId(), IMMUNITY_ID, 605, apply);     // Mind Control
-           break;
         default:
             if (GetMiscValue() < 1)
                 return;
@@ -5901,7 +5886,7 @@ void AuraEffect::HandlePeriodicDummyAuraTick(Unit* target, Unit* caster) const
             if (GetSpellInfo()->SpellFamilyFlags[0] & 0x20)
             {
                 if (caster)
-                    caster->CastCustomSpell(target, 52212, &m_amount, NULL, NULL, true, 0, this);
+                    target->CastCustomSpell(target, 52212, &m_amount, NULL, NULL, true, 0, this, caster->GetGUID());
                 break;
             }
             // Blood of the North
@@ -6557,6 +6542,37 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster) const
 
             damage += addition;
         }
+
+        // Gift of the Naaru
+        else if (m_spellInfo->SpellIconID == 329 && m_spellInfo->SpellFamilyFlags[2] & 0x80000000)
+        {
+            float heal = 0.0f;
+            switch (GetSpellInfo()->SpellFamilyName)
+            {
+                case SPELLFAMILY_MAGE:
+                case SPELLFAMILY_WARLOCK:
+                case SPELLFAMILY_PRIEST:
+                    heal = 1.885f * float(caster->SpellBaseDamageBonusDone(GetSpellInfo()->GetSchoolMask()));
+                    break;
+                case SPELLFAMILY_PALADIN:
+                case SPELLFAMILY_SHAMAN:
+                    heal = std::max(1.885f * float(caster->SpellBaseDamageBonusDone(GetSpellInfo()->GetSchoolMask())), 1.1f * float(caster->GetTotalAttackPowerValue(BASE_ATTACK)));
+                    break;
+                case SPELLFAMILY_WARRIOR:
+                case SPELLFAMILY_HUNTER:
+                case SPELLFAMILY_DEATHKNIGHT:
+                    heal = 1.1f * float(std::max(caster->GetTotalAttackPowerValue(BASE_ATTACK), caster->GetTotalAttackPowerValue(RANGED_ATTACK)));
+                    break;
+                case SPELLFAMILY_GENERIC:
+                default:
+                    break;
+            }
+
+            int32 healTick = floor(heal / GetTotalTicks());
+            damage += (healTick > 0 ? healTick : 0);
+        }
+        else
+            damage = caster->SpellHealingBonusDone(target, GetSpellInfo(), damage, DOT, GetBase()->GetStackAmount());
 
         if (!m_amountDone)
             m_amountDone = caster->SpellDamageBonusDone(target, GetSpellInfo(), damage, DOT, GetBase()->GetStackAmount());

@@ -292,29 +292,9 @@ public:
             }
         }
 
-        SpellCastResult CheckCast()
-        {
-            Player* caster = GetCaster()->ToPlayer();
-            if (Unit* target = GetTargetUnit())
-            {
-                if (!caster->IsFriendlyTo(target))
-                {
-                    if (!caster->IsValidAttackTarget(target))
-                        return SPELL_FAILED_BAD_TARGETS;
-
-                    if (!caster->isInFront(target,0))
-                        return SPELL_FAILED_UNIT_NOT_INFRONT;
-                    }
-            }
-                else
-                    return SPELL_FAILED_BAD_TARGETS;
-                return SPELL_CAST_OK;
-        }
-
         void Register()
         {
             // add dummy effect spell handler to Holy Shock
-            OnCheckCast += SpellCheckCastFn(spell_pal_holy_shock_SpellScript::CheckCast);
             OnEffectHitTarget += SpellEffectFn(spell_pal_holy_shock_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
         }
     };

@@ -143,9 +143,9 @@ bool Totem::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) con
     {
         // Immunity for all negative auras
         if (spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_AURA
-            && (!spellInfo->Effects[i].Effect == SPELL_EFFECT_NORMALIZED_WEAPON_DMG
-            || !spellInfo->Effects[i].Effect == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE
-            || !spellInfo->Effects[i].Effect == SPELL_EFFECT_SCHOOL_DAMAGE))
+            && (spellInfo->Effects[i].Effect != SPELL_EFFECT_NORMALIZED_WEAPON_DMG
+            || spellInfo->Effects[i].Effect != SPELL_EFFECT_WEAPON_PERCENT_DAMAGE
+            || spellInfo->Effects[i].Effect != SPELL_EFFECT_SCHOOL_DAMAGE))
         {
             if (!spellInfo->IsPositiveEffect(i))
                 return true;

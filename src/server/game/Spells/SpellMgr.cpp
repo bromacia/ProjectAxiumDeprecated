@@ -90,7 +90,7 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellInfo const* spellproto,
                 return DIMINISHING_ROOT;
             // Shattered Barrier
             else if (spellproto->SpellVisual[0] == 12297)
-                return DIMINISHING_ROOT;
+                return DIMINISHING_SHATTERED_BARRIER;
             // Deep Freeze
             else if (spellproto->SpellIconID == 2939 && spellproto->SpellVisual[0] == 9963)
                 return DIMINISHING_CONTROLLED_STUN;
@@ -3601,9 +3601,6 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_DEATH_PERSISTENT;
                 break;
-            case 694: // Mocking Blow - Tempfix
-                spellInfo->Effect[0] = 0;
-                break;
             case 73313: // Crimson Deathcharger
             case 48778: // Acherus Deathcharger
                 spellInfo->SpellFamilyName = SPELLFAMILY_GENERIC;
@@ -3620,9 +3617,10 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->DurationIndex = 9;
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
                 spellInfo->Effect[1] = SPELL_EFFECT_APPLY_AURA;
-                spellInfo->EffectBasePoints[1] = 1;
-                spellInfo->EffectApplyAuraName[1] = SPELL_AURA_MOD_UNATTACKABLE;
-                spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_TARGET_ANY;
+                spellInfo->EffectBasePoints[1] = 0;
+                spellInfo->EffectApplyAuraName[1] = SPELL_AURA_MOD_FACTION;
+                spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
+				spellInfo->EffectMiscValue[1] = 35;
                 spellInfo->Effect[2] = SPELL_EFFECT_APPLY_AURA;
                 spellInfo->EffectBasePoints[2] = 99999;
                 spellInfo->EffectApplyAuraName[2] = SPELL_AURA_MOD_STEALTH;
@@ -3632,6 +3630,42 @@ void SpellMgr::LoadDbcDataCorrections()
             case 45524: // Chains of Ice
                 spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_TARGET_ENEMY;
                 break;
+            case 12281: // Sword Spec (Rank 1)
+				spellInfo->procChance = 6;
+                break;
+            case 12812: // Sword Spec (Rank 2)
+				spellInfo->procChance = 12;
+                break;
+            case 12813: // Sword Spec (Rank 3)
+				spellInfo->procChance = 18;
+                break;
+            case 12814: // Sword Spec (Rank 4)
+				spellInfo->procChance = 24;
+                break;
+            case 12815: // Sword Spec (Rank 5)
+				spellInfo->procChance = 30;
+                break;
+            case 12323: // Piercing Howl
+            case 1160: // Demoralizing Shout (Rank 1)
+            case 6190: // Demoralizing Shout (Rank 2)
+            case 11554: // Demoralizing Shout (Rank 3)
+            case 11555: // Demoralizing Shout (Rank 4)
+            case 11556: // Demoralizing Shout (Rank 5)
+            case 25202: // Demoralizing Shout (Rank 6)
+            case 25203: // Demoralizing Shout (Rank 7)
+            case 47437: // Demoralizing Shout (Rank 8)
+                spellInfo->DmgClass = 0;
+                break;
+            case 1130: // Hunter's Mark (Rank 1)
+            case 14323: // Hunter's Mark (Rank 2)
+            case 14324: // Hunter's Mark (Rank 3)
+            case 14325: // Hunter's Mark (Rank 4)
+            case 53338: // Hunter's Mark (Rank 5)
+                spellInfo->DmgClass = 1;
+                break;
+            case 58861: // Spirit Wolf Bash
+                spellInfo->AttributesEx |= SPELL_ATTR1_UNAUTOCASTABLE_BY_PET;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------
@@ -3640,7 +3674,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 2094: // Blind
             case 1833: // Cheap Shot
             case 8643: // Kidney Shot
-            case 31224: // Cloak of Shadows
             case 1776: // Gouge
             case 51724: // Sap
 // ------------------------------------

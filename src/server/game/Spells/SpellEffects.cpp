@@ -1511,8 +1511,8 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     // Corpse not found - take reagents (only not triggered cast can take them)
                     triggered = false;
                 }
-                // Remove cooldown - summon spellls have category
-                m_caster->ToPlayer()->RemoveSpellCooldown(m_spellInfo->Id, true);
+                // Remove cooldown - summon spells have category
+                m_caster->ToPlayer()->RemoveSpellCooldown(46584, true);
                 spell_id = 48289;
                 break;
             // Raise dead - take reagents and trigger summon spells
@@ -4120,6 +4120,15 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
                     if (int32 num = (needCast ? 0 : 1) + (m_caster->HasAura(58388) ? 1 : 0))
                         aur->ModStackAmount(num);
                     fixed_bonus += (aur->GetStackAmount() - 1) * CalculateDamage(2, unitTarget);
+                }
+            }
+            // Mocking Blow
+            if (m_spellInfo->SpellFamilyFlags[0] & 0x8000000)
+            {
+                if (unitTarget->IsImmunedToSpellEffect(m_spellInfo,EFFECT_1) || unitTarget->GetTypeId() == TYPEID_PLAYER)
+                {
+                    m_damage = 0;
+                    return;
                 }
             }
             break;

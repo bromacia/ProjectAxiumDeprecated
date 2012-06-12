@@ -4937,6 +4937,13 @@ SpellCastResult Spell::CheckCast(bool strict)
                     if (m_caster->IsInWater())
                         return SPELL_FAILED_ONLY_ABOVEWATER;
                 }
+                else if (m_spellInfo->SpellIconID == 156)    // Holy Shock
+                {
+                    // spell different for friends and enemies
+                    // hurt version required facing
+                    if (m_targets.GetUnitTarget() && !m_caster->IsFriendlyTo(m_targets.GetUnitTarget()) && !m_caster->HasInArc(static_cast<float>(M_PI), m_targets.GetUnitTarget()))
+                        return SPELL_FAILED_UNIT_NOT_INFRONT;
+                }
                 else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->SpellFamilyFlags[0] == 0x2000) // Death Coil (DeathKnight)
                 {
                     Unit* target = m_targets.GetUnitTarget();
@@ -5565,6 +5572,18 @@ SpellCastResult Spell::CheckCast(bool strict)
         if (Player* playerCaster = m_caster->ToPlayer())
             if (playerCaster->HasAura(30231))
                 return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+        // Dont allow any procs from Frostbite if the target is already frozen
+        if (m_spellInfo->Id == 12494)
+            if (Unit* target = m_targets.GetUnitTarget())
+                if (target->HasAuraType(SPELL_AURA_MOD_ROOT))
+                    return SPELL_FAILED_DONT_REPORT;
+
+        // Dont allow Mind Soothe to be casted on players
+        if (m_spellInfo->Id == 453)
+            if (Unit* target = m_targets.GetUnitTarget())
+				if (target->GetTypeId() == TYPEID_PLAYER)
+                    return SPELL_FAILED_BAD_TARGETS;
         break;
     }
 
