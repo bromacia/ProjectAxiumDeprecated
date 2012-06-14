@@ -3666,6 +3666,12 @@ void SpellMgr::LoadDbcDataCorrections()
             case 58861: // Spirit Wolf Bash
                 spellInfo->AttributesEx |= SPELL_ATTR1_UNAUTOCASTABLE_BY_PET;
                 break;
+            case 58600: // Restricted Flight Area
+                spellInfo->DurationIndex = 27;
+                break;
+            case 58601: // Remove Flight Auras
+                spellInfo->Effect[2] = 0;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------

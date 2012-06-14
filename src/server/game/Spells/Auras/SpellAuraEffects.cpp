@@ -4965,7 +4965,16 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                             break;
                         case 58600: // Restricted Flight Area
                             if (aurApp->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
-                                target->CastSpell(target, 58601, true);
+                                if (caster->ToPlayer()->GetMapId() == 530)
+                                {
+                                    if (caster->ToPlayer()->GetTeam() == HORDE)
+                                        caster->ToPlayer()->TeleportTo(530, 1004.06f, 7362.67f, 36.3775f, 1.5);
+                                    if (caster->ToPlayer()->GetTeam() == ALLIANCE)
+                                        caster->ToPlayer()->TeleportTo(530, -212.567f, 5491.5f, 21.6723f, 1.5);
+                                    caster->ToPlayer()->CastSpell(caster->ToPlayer(), 58601, true, NULL, this);
+                                }
+                                if (caster->ToPlayer()->GetMapId() != 530)
+                                    caster->ToPlayer()->CastSpell(caster->ToPlayer(), 58601, true, NULL, this);
                             break;
                     }
                     break;
