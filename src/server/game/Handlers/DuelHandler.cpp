@@ -51,7 +51,7 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 
     player->SendDuelCountdown(3000);
     plTarget->SendDuelCountdown(3000);
-    if (player->GetZoneId() == 3521 || plTarget->GetZoneId() == 3521)
+    if (player->GetMapId() == 530 || plTarget->GetMapId() == 530)
         return;
     player->RemoveAura(41425); // Remove Hypothermia Debuff
     plTarget->RemoveAura(41425);

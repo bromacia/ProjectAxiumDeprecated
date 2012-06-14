@@ -12,7 +12,7 @@ class Reset_OnDuelEnd : public PlayerScript
         // reset cooldowns
         if (sWorld->getBoolConfig(CONFIG_DUEL_RESET_COOLDOWN) && type == DUEL_WON)
         {
-            if (winner->GetZoneId() == 3521 || loser->GetZoneId() == 3521)
+            if (winner->GetMapId() == 530 || loser->GetMapId() == 530)
                 return;
             winner->RemoveAura(41425); // Remove Hypothermia Debuff
             loser->RemoveAura(41425);
