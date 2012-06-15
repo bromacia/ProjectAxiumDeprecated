@@ -1438,7 +1438,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         if (m_spellInfo->Speed > 0.0f && unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
             return SPELL_MISS_EVADE;
 
-		if (!unit->HasAura(32727))
+        if (!unit->HasAura(32727))
         {
             unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
 
@@ -5582,7 +5582,7 @@ SpellCastResult Spell::CheckCast(bool strict)
         // Dont allow Mind Soothe to be casted on players
         if (m_spellInfo->Id == 453)
             if (Unit* target = m_targets.GetUnitTarget())
-				if (target->GetTypeId() == TYPEID_PLAYER)
+                if (target->GetTypeId() == TYPEID_PLAYER)
                     return SPELL_FAILED_BAD_TARGETS;
         break;
     }

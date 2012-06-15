@@ -73,6 +73,8 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     plTarget->SetPower(POWER_RAGE, 0);
     player->RemoveArenaSpellCooldowns();
     plTarget->RemoveArenaSpellCooldowns();
+    player->AddAura(80864, player);
+    plTarget->AddAura(80864, plTarget);
     if (player->getClass() == CLASS_WARLOCK && !player->HasItemCount(36892, 1, true))
         player->AddItem(36892, 1);
     if (plTarget->getClass() == CLASS_WARLOCK && !plTarget->HasItemCount(36892, 1, true))

@@ -3672,6 +3672,23 @@ void SpellMgr::LoadDbcDataCorrections()
             case 58601: // Remove Flight Auras
                 spellInfo->Effect[2] = 0;
                 break;
+            case 80864: // Duel Cooldown
+                spellInfo->Category = 0;
+                spellInfo->Attributes |= SPELL_ATTR0_HIDDEN_CLIENTSIDE;
+                spellInfo->Attributes |= SPELL_ATTR0_CASTABLE_WHILE_DEAD;
+                spellInfo->Attributes |= SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY;
+                spellInfo->Attributes |= SPELL_ATTR0_CANT_CANCEL;
+                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_DEAD;
+                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
+                spellInfo->AttributesEx3 |= SPELL_ATTR3_DEATH_PERSISTENT;
+                spellInfo->DurationIndex = 4;
+                spellInfo->CategoryRecoveryTime = 0;
+                spellInfo->Effect[0] = SPELL_EFFECT_APPLY_AURA;
+                spellInfo->EffectBasePoints[0] = 1;
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
+                spellInfo->EffectImplicitTargetB[0] = 0;
+                spellInfo->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------

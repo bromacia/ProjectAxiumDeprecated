@@ -135,13 +135,6 @@ public:
 bool OnGossipHello(Player *player, Creature *creature)
 {
     PageC(player) = PageD(player) = Cat(player) = 0;
-
-    if(player->isInCombat())
-    {
-        player->CLOSE_GOSSIP_MENU();
-        creature->MonsterWhisper("You are in combat. Come back later", player->GetGUID());
-        return true;
-    }
     AffichCat(player, creature);
     return true;
 }
@@ -149,6 +142,21 @@ bool OnGossipHello(Player *player, Creature *creature)
 bool OnGossipSelect(Player *player, Creature *creature, uint32 sender, uint32 param)
 {
     player->PlayerTalkClass->ClearMenus();
+
+    if (player->isInCombat())
+    {
+        player->CLOSE_GOSSIP_MENU();
+        creature->MonsterWhisper("You cant do that while your in combat.", player->GetGUID());
+        return true;
+    }
+
+    if (player->HasAura(80864))
+    {
+        player->CLOSE_GOSSIP_MENU();
+        creature->MonsterWhisper("You cant do that if you have recently dueled.", player->GetGUID());
+        return true;
+    }
+
     switch(sender)
     {
       // Display destinations
