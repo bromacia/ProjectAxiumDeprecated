@@ -99,6 +99,9 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
         GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
         GetPlayer()->BuildPlayerRepop();
         GetPlayer()->RepopAtGraveyard();
+        GetPlayer()->ResurrectPlayer(1.0f);
+        GetPlayer()->SpawnCorpseBones();
+        GetPlayer()->SaveToDB();
     }
 }
 
