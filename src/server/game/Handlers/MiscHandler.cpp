@@ -76,7 +76,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
     }
 
     // Release Spirit
-    if (GetPlayer()->GetZoneId() == 3521) // If the player is in Zangarmarsh
+    if (GetPlayer()->GetZoneId() == 3521) // Zangarmarsh
     {
         if (GetPlayer()->GetTeam() == HORDE)
             GetPlayer()->TeleportTo(530, 1004.06f, 7362.67f, 36.3775f, 1.5);
@@ -88,7 +88,13 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
         GetPlayer()->SpawnCorpseBones();
         GetPlayer()->CastSpell(GetPlayer(), 30231, true);
     }
-    if (GetPlayer()->GetZoneId() != 3521)
+    if (GetPlayer()->GetZoneId() == 406) // Stonetalon Mountains (Duel Area)
+    {
+        GetPlayer()->ResurrectPlayer(1.0f);
+        GetPlayer()->SpawnCorpseBones();
+        GetPlayer()->SaveToDB();
+    }
+    if (GetPlayer()->GetZoneId() != 3521 && GetPlayer()->GetZoneId() != 406)
     {
         GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
         GetPlayer()->BuildPlayerRepop();
