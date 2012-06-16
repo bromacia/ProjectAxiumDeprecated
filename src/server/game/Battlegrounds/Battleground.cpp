@@ -1180,7 +1180,6 @@ void Battleground::AddPlayer(Player* player)
     {
         // Remove any morphs before entering arena
         player->InitDisplayIds();
-        player->RemoveArenaEnchantments(TEMP_ENCHANTMENT_SLOT);
         if (team == ALLIANCE)                                // gold
         {
             if (player->GetTeam() == HORDE)
