@@ -3605,9 +3605,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 48778: // Acherus Deathcharger
                 spellInfo->SpellFamilyName = SPELLFAMILY_GENERIC;
                 break;
-            case 44559: // Damage Reduction Buff (Pet Passive)
+            case 44559: // Pet Passive (DND) - Global Damage Reduction Aura
                 spellInfo->AttributesEx |= SPELL_ATTR0_CANT_CANCEL;
-                spellInfo->EffectBasePoints[0] = -13; // 13% Reduction
+                spellInfo->EffectBasePoints[0] = -10;
                 break;
             case 8178: // Grounding Totem
                 spellInfo->procFlags = 0;
