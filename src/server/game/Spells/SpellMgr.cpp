@@ -3708,7 +3708,6 @@ void SpellMgr::LoadDbcDataCorrections()
                 // Paladin
             case 10308: // Hammer of Justice
             case 20066: // Repentance
-            case 642: // Divine Shield
 // ------------------------------------
                 // Priest
             case 10890: // Psychic Scream
@@ -3746,11 +3745,7 @@ void SpellMgr::LoadDbcDataCorrections()
             case 33786: // Cyclone
 // ------------------------------------
                 // Misc
-            case 7744: // Will of the Forsaken
             case 20549: // War Stomp
-            case 20589: // Escape Artist
-            case 42292: // Pvp Trinket
-            case 59752: // Every Man For Himself
                 spellInfo->speed = 200;
                 break;
 // ------------------------------------
