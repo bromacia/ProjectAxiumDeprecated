@@ -1442,8 +1442,9 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         {
             unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
 
-            if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC) && unit->IsControlledByPlayer() || m_spellInfo->Id == 34709 // CC Spells and Shadow Sight
-                || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109)) // Faerie Fire
+            if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC) && unit->IsControlledByPlayer() || m_spellInfo->Id == 34709
+                || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109)
+                || m_spellInfo->Mechanic == MECHANIC_SILENCE)
                 unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
                 unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
 

@@ -3561,6 +3561,12 @@ void SpellMgr::LoadDbcDataCorrections()
             case 57934: // Tricks of the Trade - Trigger
             case 57933: // Tricks of the Trade - Damage
             case 59628: // Tricks of the Trade - Threat
+            case 25046: // Arcane Torrent
+            case 25048: // Arcane Torrent
+            case 28730: // Arcane Torrent
+            case 28733: // Arcane Torrent
+            case 50613: // Arcane Torrent
+            case 50615: // Arcane Torrent
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
                 break;
             case 2825: // Bloodlust
