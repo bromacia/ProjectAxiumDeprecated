@@ -28,10 +28,10 @@ class Reset_OnDuelEnd : public PlayerScript
             loser->RemoveAura(11196);
             winner->SetHealth(winner->GetMaxHealth());
             loser->SetHealth(loser->GetMaxHealth());
-            if (winner->getPowerType() == POWER_MANA) 
-                winner->SetPower(POWER_MANA, winner->GetMaxPower(POWER_MANA));
-            if (loser->getPowerType() == POWER_MANA) 
-                loser->SetPower(POWER_MANA, loser->GetMaxPower(POWER_MANA));
+            winner->SetPower(POWER_MANA, winner->GetMaxPower(POWER_MANA));
+            loser->SetPower(POWER_MANA,  loser->GetMaxPower(POWER_MANA));
+            winner->SetPower(POWER_RAGE, 0);
+            loser->SetPower(POWER_RAGE, 0);
             winner->RemoveArenaSpellCooldowns();
             loser->RemoveArenaSpellCooldowns();
             if (winner->getClass() == CLASS_WARLOCK && !winner->HasItemCount(36892, 1, true))

@@ -97,8 +97,6 @@ void PetAI::UpdateAI(const uint32 diff)
             me->InterruptNonMeleeSpells(false);
             me->getHostileRefManager().deleteReferences();
             me->AttackStop();
-            me->GetCharmInfo()->SetIsCommandAttack(false);
-            HandleReturnMovement();
             return;
         }
 
