@@ -76,7 +76,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
     }
 
     // Release Spirit
-    if (GetPlayer()->GetZoneId() == 3521) // Zangarmarsh
+    if (GetPlayer()->GetZoneId() == 3521)
     {
         if (GetPlayer()->GetTeam() == HORDE)
             GetPlayer()->TeleportTo(530, 1004.06f, 7362.67f, 36.3775f, 1.5);
@@ -87,14 +87,23 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
         GetPlayer()->ResurrectPlayer(1.0f);
         GetPlayer()->SpawnCorpseBones();
         GetPlayer()->CastSpell(GetPlayer(), 30231, true);
+        return;
     }
-    if (GetPlayer()->GetZoneId() == 406) // Stonetalon Mountains (Duel Area)
+    if (GetPlayer()->GetAreaId() == 85 || GetPlayer()->GetAreaId() == 2402)
     {
+        GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
         GetPlayer()->ResurrectPlayer(1.0f);
         GetPlayer()->SpawnCorpseBones();
-        GetPlayer()->SaveToDB();
+        return;
     }
-    if (GetPlayer()->GetZoneId() != 3521 && GetPlayer()->GetZoneId() != 406)
+    if (GetPlayer()->InBattleground() || GetPlayer()->InArena())
+    {
+        GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
+        GetPlayer()->BuildPlayerRepop();
+        GetPlayer()->RepopAtGraveyard();
+        return;
+    }
+    else
     {
         GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
         GetPlayer()->BuildPlayerRepop();
@@ -102,6 +111,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
         GetPlayer()->ResurrectPlayer(1.0f);
         GetPlayer()->SpawnCorpseBones();
         GetPlayer()->SaveToDB();
+        return;
     }
 }
 
