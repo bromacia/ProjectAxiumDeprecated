@@ -79,9 +79,9 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
     if (GetPlayer()->GetZoneId() == 3521)
     {
         if (GetPlayer()->GetTeam() == HORDE)
-            GetPlayer()->TeleportTo(530, 1004.06f, 7362.67f, 36.3775f, 1.5);
+            GetPlayer()->TeleportTo(530, 1004.06f, 7362.67f, 36.3775f, 1.5f);
         if (GetPlayer()->GetTeam() == ALLIANCE)
-            GetPlayer()->TeleportTo(530, -212.567f, 5491.5f, 21.6723f, 1.5);
+            GetPlayer()->TeleportTo(530, -212.567f, 5491.5f, 21.6723f, 1.5f);
 
         GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
         GetPlayer()->ResurrectPlayer(1.0f);
@@ -89,8 +89,21 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
         GetPlayer()->CastSpell(GetPlayer(), 30231, true);
         return;
     }
-    if (GetPlayer()->GetAreaId() == 85 || GetPlayer()->GetAreaId() == 2402)
+    if (GetPlayer()->GetAreaId() == 85)
     {
+        if (GetPlayer()->GetTeam() == ALLIANCE)
+            GetPlayer()->TeleportTo(0, -7527.65f, -4901.59f, 131.4f, 1.72f);
+
+        GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
+        GetPlayer()->ResurrectPlayer(1.0f);
+        GetPlayer()->SpawnCorpseBones();
+        return;
+    }
+    if (GetPlayer()->GetAreaId() == 2402)
+    {
+        if (GetPlayer()->GetTeam() == HORDE)
+            GetPlayer()->TeleportTo(0, 1976.65f, 2546.17f, 131.25f, 4.73f);
+
         GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
         GetPlayer()->ResurrectPlayer(1.0f);
         GetPlayer()->SpawnCorpseBones();
