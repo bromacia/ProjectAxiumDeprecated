@@ -34,10 +34,6 @@ class Reset_OnDuelEnd : public PlayerScript
             loser->SetPower(POWER_RAGE, 0);
             winner->RemoveArenaSpellCooldowns();
             loser->RemoveArenaSpellCooldowns();
-            if (winner->getClass() == CLASS_WARLOCK && !winner->HasItemCount(36892, 1, true))
-                winner->AddItem(36892, 1);
-            if (loser->getClass() == CLASS_WARLOCK && !loser->HasItemCount(36892, 1, true))
-                loser->AddItem(36892, 1);
         }
     }
 };
