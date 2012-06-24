@@ -4025,6 +4025,8 @@ void Unit::RemoveMovementImpairingAuras()
 
 void Unit::RemoveAurasWithMechanic(uint32 mechanic_mask, AuraRemoveMode removemode, uint32 except)
 {
+    bool movementImparing = (mechanic_mask == ((1<<MECHANIC_SNARE)|(1<<MECHANIC_ROOT)));
+
     for (AuraApplicationMap::iterator iter = m_appliedAuras.begin(); iter != m_appliedAuras.end();)
     {
         Aura const* aura = iter->second->GetBase();
@@ -4032,7 +4034,17 @@ void Unit::RemoveAurasWithMechanic(uint32 mechanic_mask, AuraRemoveMode removemo
         {
             if (aura->GetSpellInfo()->GetAllEffectsMechanicMask() & mechanic_mask)
             {
-                RemoveAura(iter, removemode);
+                if (movementImparing && (aura->GetSpellInfo()->Id == 44614 || aura->GetSpellInfo()->Id == 47610))
+                {
+                    if (AuraEffect *eff = aura->GetEffect(0))
+                    {
+                        eff->SetAmount(0);
+                        eff->HandleEffect(iter->second, AURA_REMOVE_BY_DEFAULT, false);
+                    }
+                    ++iter;
+                }
+                else
+                    RemoveAura(iter, removemode);
                 continue;
             }
         }
