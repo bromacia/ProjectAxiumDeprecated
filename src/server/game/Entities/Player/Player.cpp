@@ -12335,7 +12335,18 @@ void Player::SetVisibleItemSlot(uint8 slot, Item* pItem)
 {
     if (pItem)
     {
-        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->GetEntry());
+        if(pItem->TransmogEntry && pItem->TransmogOwner == GetGUIDLow())
+            SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->TransmogEntry);
+        else
+        {
+            if(pItem->TransmogEntry || pItem->TransmogOwner)
+            {
+                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = 0, TransmogOwner = 0 WHERE guid = %u", pItem->GetGUIDLow());
+                pItem->TransmogEntry = NULL;
+                pItem->TransmogOwner = NULL;
+            }
+            SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->GetEntry());
+        }
         SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 0, pItem->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
         SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 1, pItem->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT));
     }
@@ -17501,6 +17512,8 @@ void Player::_LoadInventory(PreparedQueryResult result, uint32 timeDiff)
             {
                 uint32 bagGuid  = fields[11].GetUInt32();
                 uint8  slot     = fields[12].GetUInt8();
+                item->TransmogEntry = fields[15].GetUInt32();
+                item->TransmogOwner = fields[16].GetUInt32();
 
                 uint8 err = EQUIP_ERR_OK;
                 // Item is not in bag

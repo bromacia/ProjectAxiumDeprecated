@@ -1891,6 +1891,9 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
             trans->PAppend("UPDATE `character_reputation` SET faction = '%u' where faction = '%u' AND guid = '%u'",
                 team == BG_TEAM_ALLIANCE ? reputation_alliance : reputation_horde, team == BG_TEAM_ALLIANCE ? reputation_horde : reputation_alliance, lowGuid);
         }
+
+        // Remove All Transmogrifications
+        trans->PAppend("UPDATE item_instance SET TransmogEntry = 0, TransmogOwner = 0 WHERE owner_guid = %u", lowGuid);
     }
 
     CharacterDatabase.CommitTransaction(trans);

@@ -242,6 +242,7 @@ void AddBattlegroundScripts()
     void AddSC_arena_team_ranks();
     void AddSC_npc_enchant();
     void AddSC_npc_arena_spectator();
+    void AddSC_npc_transmog();
 #endif
 
 void AddCustomScripts()
@@ -255,5 +256,6 @@ void AddCustomScripts()
     AddSC_arena_team_ranks();
     AddSC_npc_enchant();
     AddSC_npc_arena_spectator();
+    AddSC_npc_transmog();
 #endif
 }

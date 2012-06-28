@@ -18,6 +18,7 @@ set(scripts_STAT_SRCS
   Custom/arena_team_ranks.cpp
   Custom/npc_enchant.cpp
   Custom/npc_arena_spectator.cpp
+  Custom/npc_transmog.cpp
 )
 
 message("  -> Prepared: Custom")

@@ -358,6 +358,9 @@ class Item : public Object
 
         void BuildUpdate(UpdateDataMapType&);
 
+        uint32 TransmogEntry;
+        uint32 TransmogOwner;
+
         uint32 GetScriptId() const { return GetTemplate()->ScriptId; }
     private:
         std::string m_text;
