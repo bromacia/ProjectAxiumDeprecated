@@ -278,7 +278,7 @@ void GameObject::Update(uint32 diff)
                         m_cooldownTime = time(NULL) + 10;   // Hardcoded tooltip value
                     else if (Unit* owner = GetOwner())
                     {
-                        if (owner->isInCombat())
+                        if (owner->getClass() == CLASS_HUNTER)
                             m_cooldownTime = time(NULL) + goInfo->trap.cooldown;
                     }
                     m_lootState = GO_READY;
