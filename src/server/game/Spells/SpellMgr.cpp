@@ -3702,6 +3702,7 @@ void SpellMgr::LoadDbcDataCorrections()
             case 1543:  // Flare
                 spellInfo->EffectRadiusIndex[0] = EFFECT_RADIUS_10_YARDS;
                 spellInfo->EffectRadiusIndex[1] = EFFECT_RADIUS_10_YARDS;
+				spellInfo->speed = 20;
                 break;
             case 64962: // Sigil of the Vengeful Heart
                 spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
