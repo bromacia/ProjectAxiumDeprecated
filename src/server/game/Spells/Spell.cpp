@@ -1456,6 +1456,13 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                 unit->RemoveAura(66);
         }
 
+        if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252)
+            unit->RemoveAura(1130);
+            unit->RemoveAura(14323);
+            unit->RemoveAura(14324);
+            unit->RemoveAura(14325);
+            unit->RemoveAura(53338);
+
         if (m_caster->IsFriendlyTo(unit))
         {
             // for delayed spells ignore negative spells (after duel end) for friendly targets
