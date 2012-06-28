@@ -3699,6 +3699,10 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectImplicitTargetB[0] = 0;
                 spellInfo->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
                 break;
+            case 1543:  // Flare
+                spellInfo->EffectRadiusIndex[0] = EFFECT_RADIUS_10_YARDS;
+                spellInfo->EffectRadiusIndex[1] = EFFECT_RADIUS_10_YARDS;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------
