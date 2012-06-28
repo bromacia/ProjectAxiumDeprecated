@@ -1483,6 +1483,10 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
             }
             switch (m_spellInfo->Id)
             {
+            case 45524: // Chains of Ice
+                if (m_caster->HasAura(62459)) // DK PvP Gloves - 5 Bonus RP
+                    m_caster->CastSpell(m_caster, 62458, true); // such a bad hack makes me sad :<
+                break;
             case 49560: // Death Grip
                 Position pos;
                 GetSummonPosition(effIndex, pos);
@@ -1512,7 +1516,7 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     triggered = false;
                 }
                 // Remove cooldown - summon spells have category
-                m_caster->ToPlayer()->RemoveSpellCooldown(46584, true);
+                m_caster->ToPlayer()->RemoveSpellCooldown(48289, true);
                 spell_id = 48289;
                 break;
             // Raise dead - take reagents and trigger summon spells
