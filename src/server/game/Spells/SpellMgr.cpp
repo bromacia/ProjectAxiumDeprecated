@@ -3630,7 +3630,7 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectBasePoints[1] = 0;
                 spellInfo->EffectApplyAuraName[1] = SPELL_AURA_MOD_FACTION;
                 spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
-				spellInfo->EffectMiscValue[1] = 35;
+                spellInfo->EffectMiscValue[1] = 35;
                 spellInfo->Effect[2] = SPELL_EFFECT_APPLY_AURA;
                 spellInfo->EffectBasePoints[2] = 99999;
                 spellInfo->EffectApplyAuraName[2] = SPELL_AURA_MOD_STEALTH;
@@ -3641,19 +3641,19 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_TARGET_ENEMY;
                 break;
             case 12281: // Sword Spec (Rank 1)
-				spellInfo->procChance = 6;
+                spellInfo->procChance = 6;
                 break;
             case 12812: // Sword Spec (Rank 2)
-				spellInfo->procChance = 12;
+                spellInfo->procChance = 12;
                 break;
             case 12813: // Sword Spec (Rank 3)
-				spellInfo->procChance = 18;
+                spellInfo->procChance = 18;
                 break;
             case 12814: // Sword Spec (Rank 4)
-				spellInfo->procChance = 24;
+                spellInfo->procChance = 24;
                 break;
             case 12815: // Sword Spec (Rank 5)
-				spellInfo->procChance = 30;
+                spellInfo->procChance = 30;
                 break;
             case 12323: // Piercing Howl
             case 1160: // Demoralizing Shout (Rank 1)
@@ -3702,6 +3702,12 @@ void SpellMgr::LoadDbcDataCorrections()
             case 1543:  // Flare
                 spellInfo->EffectRadiusIndex[0] = EFFECT_RADIUS_10_YARDS;
                 spellInfo->EffectRadiusIndex[1] = EFFECT_RADIUS_10_YARDS;
+                break;
+            case 64962: // Sigil of the Vengeful Heart
+                spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
+                spellInfo->EffectApplyAuraName[1] = SPELL_AURA_ADD_FLAT_MODIFIER;
+                spellInfo->EffectMiscValue[1] = 3;
+                spellInfo->EffectSpellClassMask[1] = flag96(0x00002000, 0x00000000, 0x00000000);
                 break;
 // ------------------------------------
 // -----------Spell Delay--------------

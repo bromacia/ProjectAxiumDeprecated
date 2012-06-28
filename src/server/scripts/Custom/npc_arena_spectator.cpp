@@ -4,7 +4,7 @@
 #include "ArenaTeamMgr.h"
 #include "ArenaTeam.h"
 
-enum EspectadorData
+enum SpectatorData
 {
     GOSSIP_OFFSET = GOSSIP_ACTION_INFO_DEF + 5,
 };
