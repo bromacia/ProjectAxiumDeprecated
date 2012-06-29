@@ -1449,10 +1449,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                 unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
 
             if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174))
-                || (m_spellInfo->Mechanic == MECHANIC_CHARM || m_spellInfo->Mechanic == MECHANIC_DISORIENTED
-                || m_spellInfo->Mechanic == MECHANIC_FEAR || m_spellInfo->Mechanic == MECHANIC_SLEEP
-                || m_spellInfo->Mechanic == MECHANIC_STUN || m_spellInfo->Mechanic == MECHANIC_POLYMORPH
-                || m_spellInfo->Mechanic == MECHANIC_HORROR || m_spellInfo->Mechanic == MECHANIC_SAPPED))
+                || (m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC))
                 unit->RemoveAura(66);
         }
 
