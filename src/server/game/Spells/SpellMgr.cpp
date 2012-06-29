@@ -3740,6 +3740,11 @@ void SpellMgr::LoadDbcDataCorrections()
                 // Priest
             case 10890: // Psychic Scream
             case 64044: // Psychic Horror
+                spellInfo->speed = 200;
+                break;
+			case 64058: // Psychic Horror - Disarm
+                spellInfo->speed = 500;
+                break;
             case 48158: // Shadow Word: Death
 // ------------------------------------
                 // Death Knight
