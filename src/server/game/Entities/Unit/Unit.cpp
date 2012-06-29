@@ -626,7 +626,7 @@ bool Unit::HasBreakableByDamageAuraType(AuraType type, uint32 excludeAura) const
 {
     AuraEffectList const& auras = GetAuraEffectsByType(type);
     for (AuraEffectList::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
-        if ((!excludeAura || excludeAura != (*itr)->GetSpellInfo()->Id) && //Avoid self interrupt of channeled Crowd Control spells like Seduction
+        if ((!excludeAura || excludeAura != (*itr)->GetSpellInfo()->Id) &&
             ((*itr)->GetSpellInfo()->Attributes & SPELL_ATTR0_BREAKABLE_BY_DAMAGE || (*itr)->GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_FLAG_TAKE_DAMAGE))
             return true;
     return false;
@@ -643,6 +643,17 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
             || HasBreakableByDamageAuraType(SPELL_AURA_MOD_STUN, excludeAura)
             || HasBreakableByDamageAuraType(SPELL_AURA_MOD_ROOT, excludeAura)
             || HasBreakableByDamageAuraType(SPELL_AURA_TRANSFORM, excludeAura));
+}
+
+bool Unit::IsCrowdControlled() const
+{
+    return (HasAuraType(SPELL_AURA_MOD_POSSESS)
+        || HasAuraType(SPELL_AURA_MOD_CONFUSE)
+        || HasAuraType(SPELL_AURA_MOD_CHARM)
+        || HasAuraType(SPELL_AURA_AOE_CHARM)
+        || HasAuraType(SPELL_AURA_MOD_FEAR)
+        || HasAuraType(SPELL_AURA_MOD_STUN)
+        || HasAuraType(SPELL_AURA_MOD_ROOT));
 }
 
 void Unit::DealDamageMods(Unit* victim, uint32 &damage, uint32* absorb)
@@ -5957,6 +5968,9 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
             // Retaliation
             if (dummySpell->SpellFamilyFlags[1] & 0x8)
             {
+                Player* player = ToPlayer();
+                if (player->IsCrowdControlled())
+                    return false;
                 // check attack comes not from behind
                 if (!HasInArc(M_PI, victim))
                     return false;
