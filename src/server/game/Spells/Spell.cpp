@@ -1443,22 +1443,26 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
 
             if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC) && unit->IsControlledByPlayer() || m_spellInfo->Id == 34709
-                || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109)
-                || m_spellInfo->Mechanic == MECHANIC_SILENCE)
+            || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109)
+            || m_spellInfo->Mechanic == MECHANIC_SILENCE)
+            {
                 unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
                 unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
+            }
 
             if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174))
-                || (m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC))
+            || (m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC))
                 unit->RemoveAura(66);
         }
 
         if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252)
+        {
             unit->RemoveAura(1130);
             unit->RemoveAura(14323);
             unit->RemoveAura(14324);
             unit->RemoveAura(14325);
             unit->RemoveAura(53338);
+        }
 
         if (m_caster->IsFriendlyTo(unit))
         {
@@ -5564,7 +5568,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 break;
         }
     }
-    // Custom Checks
+    // Axium
     for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
     {
         // Dont allow anything to be cast while in cyclone besides PvP Trinket or Ever Man for Himself
@@ -5589,11 +5593,20 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (Unit* target = m_targets.GetUnitTarget())
                 if (target->GetTypeId() == TYPEID_PLAYER)
                     return SPELL_FAILED_BAD_TARGETS;
+
         // Dont allow Master's Call to be cast if the hunter's pet is dead
         if (m_spellInfo->Id == 53271)
-			if (Unit* pet = m_caster->ToPlayer()->GetPet())
+            if (Unit* pet = m_caster->ToPlayer()->GetPet())
                 if (pet->isDead())
                     return SPELL_FAILED_TARGETS_DEAD;
+
+        // Dont allow Stealth or Invisibility to be casted while the target is Flared
+        if (m_spellInfo->Id == 1784 || m_spellInfo->Id == 66
+            || (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252)
+            || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 103))
+            if (Player* playerCaster = m_caster->ToPlayer())
+                if (playerCaster->HasAura(1543))
+                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
         break;
     }
 

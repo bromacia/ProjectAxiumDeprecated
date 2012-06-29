@@ -3699,7 +3699,7 @@ void SpellMgr::LoadDbcDataCorrections()
             case 1543:  // Flare
                 spellInfo->EffectRadiusIndex[0] = EFFECT_RADIUS_10_YARDS;
                 spellInfo->EffectRadiusIndex[1] = EFFECT_RADIUS_10_YARDS;
-				spellInfo->speed = 20;
+                spellInfo->speed = 20;
                 break;
             case 64962: // Sigil of the Vengeful Heart
                 spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
@@ -3739,7 +3739,7 @@ void SpellMgr::LoadDbcDataCorrections()
             case 64044: // Psychic Horror
                 spellInfo->speed = 200;
                 break;
-			case 64058: // Psychic Horror - Disarm
+            case 64058: // Psychic Horror - Disarm
                 spellInfo->speed = 500;
                 break;
             case 48158: // Shadow Word: Death
