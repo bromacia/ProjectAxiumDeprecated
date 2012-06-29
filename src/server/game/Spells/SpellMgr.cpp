@@ -75,9 +75,6 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellInfo const* spellproto,
             // Gnaw
             else if (spellproto->Id == 47481)
                 return DIMINISHING_CONTROLLED_STUN;
-            // Cobalt Frag Bomb Effect
-            else if (spellproto->Id == 67769)
-                return DIMINISHING_GRENADE;
             break;
         }
         // Event spells
