@@ -285,6 +285,9 @@ class spell_hun_masters_call : public SpellScriptLoader
                 if (Unit* target = GetHitUnit())
                 {
                     // Cannot be processed while pet is dead
+                    Unit* pet = GetCaster()->ToPlayer()->GetPet();
+                    if (pet->isDead())
+                        return;
                     TriggerCastFlags castMask = TriggerCastFlags(TRIGGERED_FULL_MASK & ~TRIGGERED_IGNORE_CASTER_AURASTATE);
                     target->CastSpell(target, GetEffectValue(), castMask);
                     target->CastSpell(target, HUNTER_SPELL_MASTERS_CALL_TRIGGERED, castMask);

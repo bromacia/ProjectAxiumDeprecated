@@ -5567,7 +5567,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 break;
         }
     }
-
+    // Custom Checks
     for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
     {
         // Dont allow anything to be cast while in cyclone besides PvP Trinket or Ever Man for Himself
@@ -5592,6 +5592,11 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (Unit* target = m_targets.GetUnitTarget())
                 if (target->GetTypeId() == TYPEID_PLAYER)
                     return SPELL_FAILED_BAD_TARGETS;
+        // Dont allow Master's Call to be cast if the hunter's pet is dead
+        if (m_spellInfo->Id == 53271)
+			if (Unit* pet = m_caster->ToPlayer()->GetPet())
+                if (pet->isDead())
+                    return SPELL_FAILED_TARGETS_DEAD;
         break;
     }
 
