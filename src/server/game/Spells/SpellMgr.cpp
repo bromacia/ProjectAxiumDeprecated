@@ -3710,6 +3710,10 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectMiscValue[1] = 3;
                 spellInfo->EffectSpellClassMask[1] = flag96(0x00002000, 0x00000000, 0x00000000);
                 break;
+            case 67769: // Cobalt Frag Bomb
+            case 67890: // Frag Belt
+                spellInfo->DmgClass = 0;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------
