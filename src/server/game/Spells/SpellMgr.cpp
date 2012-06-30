@@ -3576,7 +3576,9 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->DurationIndex = 9;
                 break;
-            case 55362: // Living Bomb Final Tic
+            case 44461: // Living Bomb Final Tic (Rank 1)
+            case 55361: // Living Bomb Final Tic (Rank 2)
+            case 55362: // Living Bomb Final Tic (Rank 3)
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->AttributesEx |= SPELL_ATTR0_CASTABLE_WHILE_DEAD;
                 break;

@@ -5607,6 +5607,12 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (Player* playerCaster = m_caster->ToPlayer())
                 if (playerCaster->HasAura(1543))
                     return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+        // Dont allow Heroism or Bloodlust to be casted if the caster has Exhaustion or Sated
+        if (m_spellInfo->Id == 32182 || m_spellInfo->Id == 2825)
+            if (Player* playerCaster = m_caster->ToPlayer())
+                if (playerCaster->HasAura(57723) || playerCaster->HasAura(57724))
+                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
         break;
     }
 
