@@ -11514,6 +11514,13 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, ui
         DoneTotal += int32(DoneAdvertisedBenefit * coeff * factorMod);
     }
 
+    // Beacon of Light
+    if (spellProto->SpellFamilyName == SPELLFAMILY_PALADIN && spellProto->SpellFamilyFlags[1] == 0x1000000)
+    {
+        DoneTotal = 0;
+        DoneTotalMod = 1.0f;
+    }
+
     // use float as more appropriate for negative values and percent applying
     float heal = (int32(healamount) + DoneTotal) * DoneTotalMod;
     // apply spellmod to Done amount
@@ -11666,6 +11673,13 @@ uint32 Unit::SpellHealingBonusTaken(Unit *pCaster, SpellInfo const *spellProto, 
         factorMod *= CalculateLevelPenalty(spellProto) * int32(stack);
 
         TakenTotal += int32(TakenAdvertisedBenefit * coeff * factorMod);
+    }
+
+    // Beacon of Light
+    if (spellProto->SpellFamilyName == SPELLFAMILY_PALADIN && spellProto->SpellFamilyFlags[1] == 0x1000000)
+    {
+        TakenTotal = 0;
+        TakenTotalMod = 1.0f;
     }
 
     AuraEffectList const& mHealingGet= GetAuraEffectsByType(SPELL_AURA_MOD_HEALING_RECEIVED);
