@@ -340,6 +340,17 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         plMover->SetInWater(!plMover->IsInWater() || plMover->GetBaseMap()->IsUnderWater(movementInfo.pos.GetPositionX(), movementInfo.pos.GetPositionY(), movementInfo.pos.GetPositionZ()));
     }
 
+    if (opcode == MSG_MOVE_SET_WALK_MODE && plMover && plMover->HasAura(605))
+    {
+        WorldPacket data(MSG_MOVE_SET_RUN_MODE, recv_data.size());
+        movementInfo.guid = plMover->GetGUID();
+        movementInfo.flags &= ~uint32(MOVEMENTFLAG_WALKING);
+        movementInfo.time = getMSTime();
+        WriteMovementInfo(&data, &movementInfo);
+        plMover->SendMessageToSet(&data, true);
+        return;
+    }
+
     /*----------------------*/
 
     /* process position-change */
