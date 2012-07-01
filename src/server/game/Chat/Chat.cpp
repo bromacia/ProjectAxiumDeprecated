@@ -423,6 +423,8 @@ ChatCommand* ChatHandler::getCommandTable()
         { "unspectate",       SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleUnSpectateCommand>,        "", NULL },
         { "warp",             SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleWarpCommand>,              "", NULL },
         { "prepare",          SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandlePrepareCommand>,           "", NULL },
+        { "groupfreeze",      SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandleGroupFreezeCommand>,       "", NULL },
+        { "groupunfreeze",    SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandleGroupUnFreezeCommand>,     "", NULL },
         { NULL,               0,                  false, NULL,                                                     "", NULL }
     };
 

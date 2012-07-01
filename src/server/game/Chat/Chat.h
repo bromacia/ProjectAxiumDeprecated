@@ -310,6 +310,9 @@ class ChatHandler
 
         bool HandlePrepareCommand(const char * args);
 
+        bool HandleGroupFreezeCommand(const char * args);
+        bool HandleGroupUnFreezeCommand(const char * args);
+
         bool HandleGroupLeaderCommand(const char* args);
         bool HandleGroupDisbandCommand(const char* args);
         bool HandleGroupRemoveCommand(const char* args);
