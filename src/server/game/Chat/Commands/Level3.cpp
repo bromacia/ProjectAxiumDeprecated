@@ -4880,3 +4880,25 @@ bool ChatHandler::HandleWarpCommand(const char* args)
     }
     return true;
 }
+
+bool ChatHandler::HandlePrepareCommand(const char* args)
+{
+    Player* target;
+    uint64 target_guid;
+    if (!extractPlayerTarget((char*)args, &target, &target_guid))
+        return false;
+
+    if (target)
+    {
+        target->ResurrectPlayer(1.0f);
+        target->SpawnCorpseBones();
+        target->SaveToDB();
+		target->RemoveAllSpellCooldown();
+		target->RemoveAllNegativeAuras();
+    }
+    else
+        // will resurrected at login without corpse
+        sObjectAccessor->ConvertCorpseForPlayer(target_guid);
+
+    return true;
+}

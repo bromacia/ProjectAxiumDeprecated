@@ -308,6 +308,8 @@ class ChatHandler
 
         bool HandleWarpCommand(const char * args);
 
+        bool HandlePrepareCommand(const char * args);
+
         bool HandleGroupLeaderCommand(const char* args);
         bool HandleGroupDisbandCommand(const char* args);
         bool HandleGroupRemoveCommand(const char* args);

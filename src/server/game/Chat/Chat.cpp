@@ -422,6 +422,7 @@ ChatCommand* ChatHandler::getCommandTable()
         { "spectate",         SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleSpectateCommand>,          "", NULL },
         { "unspectate",       SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleUnSpectateCommand>,        "", NULL },
         { "warp",             SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleWarpCommand>,              "", NULL },
+        { "prepare",          SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandlePrepareCommand>,           "", NULL },
         { NULL,               0,                  false, NULL,                                                     "", NULL }
     };
 
