@@ -53,18 +53,8 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     plTarget->SendDuelCountdown(3000);
     if (player->GetMapId() == 530 || plTarget->GetMapId() == 530)
         return;
-    player->RemoveAura(41425); // Remove Hypothermia Debuff
-    plTarget->RemoveAura(41425);
-    player->RemoveAura(25771); // Remove Forbearance Debuff
-    plTarget->RemoveAura(25771);
-    player->RemoveAura(57724); // Remove Sated Debuff
-    plTarget->RemoveAura(57724);
-    player->RemoveAura(57723); // Remove Exhaustion Debuff
-    plTarget->RemoveAura(57723);
-    player->RemoveAura(66233); // Remove Ardent Defender Debuff
-    plTarget->RemoveAura(66233);
-    player->RemoveAura(11196); // Remove Recently Bandaged Debuff
-    plTarget->RemoveAura(11196);
+    player->RemoveAllNegativeAuras();
+    plTarget->RemoveAllNegativeAuras();
     player->SetHealth(player->GetMaxHealth());
     player->SetPower(POWER_MANA, player->GetMaxPower(POWER_MANA));
     plTarget->SetHealth(plTarget->GetMaxHealth());

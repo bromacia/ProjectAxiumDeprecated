@@ -14,18 +14,8 @@ class Reset_OnDuelEnd : public PlayerScript
         {
             if (winner->GetMapId() == 530 || loser->GetMapId() == 530)
                 return;
-            winner->RemoveAura(41425); // Remove Hypothermia Debuff
-            loser->RemoveAura(41425);
-            winner->RemoveAura(25771); // Remove Forbearance Debuff
-            loser->RemoveAura(25771);
-            winner->RemoveAura(57724); // Remove Sated Debuff
-            loser->RemoveAura(57724);
-            winner->RemoveAura(57723); // Remove Exhaustion Debuff
-            loser->RemoveAura(57723);
-            winner->RemoveAura(66233); // Remove Ardent Defender Debuff
-            loser->RemoveAura(66233);
-            winner->RemoveAura(11196); // Remove Recently Bandaged Debuff
-            loser->RemoveAura(11196);
+            winner->RemoveAllNegativeAuras();
+            loser->RemoveAllNegativeAuras();
             winner->SetHealth(winner->GetMaxHealth());
             loser->SetHealth(loser->GetMaxHealth());
             winner->SetPower(POWER_MANA, winner->GetMaxPower(POWER_MANA));

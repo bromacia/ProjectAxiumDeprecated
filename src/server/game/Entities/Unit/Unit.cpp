@@ -4129,6 +4129,21 @@ void Unit::RemoveArenaAuras()
     }
 }
 
+void Unit::RemoveAllNegativeAuras()
+{
+    for (AuraApplicationMap::iterator iter = m_appliedAuras.begin(); iter != m_appliedAuras.end();)
+    {
+        AuraApplication const* aurApp = iter->second;
+        Aura const* aura = aurApp->GetBase();
+        if ((!(aura->GetSpellInfo()->AttributesEx4 & SPELL_ATTR4_UNK21) && !aura->IsPassive()
+            && (!aurApp->IsPositive() || !(aura->GetSpellInfo()->AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT)))
+            && !aurApp->IsPositive() && aura->GetSpellInfo()->Id != 80864)
+            RemoveAura(iter);
+        else
+            ++iter;
+    }
+}
+
 void Unit::RemoveAllAurasOnDeath()
 {
     // used just after dieing to remove all visible auras
