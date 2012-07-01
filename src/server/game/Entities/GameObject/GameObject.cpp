@@ -277,10 +277,7 @@ void GameObject::Update(uint32 diff)
                     if (goInfo->trap.type == 2)
                         m_cooldownTime = time(NULL) + 10;   // Hardcoded tooltip value
                     else if (Unit* owner = GetOwner())
-                    {
-                        if (owner->getClass() == CLASS_HUNTER)
-                            m_cooldownTime = time(NULL) + goInfo->trap.cooldown;
-                    }
+                        m_cooldownTime = time(NULL) + 1;
                     m_lootState = GO_READY;
                     break;
                 }
