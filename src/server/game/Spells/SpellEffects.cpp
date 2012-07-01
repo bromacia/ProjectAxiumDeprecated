@@ -1517,6 +1517,7 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                 }
                 // Remove cooldown - summon spells have category
                 m_caster->ToPlayer()->RemoveSpellCooldown(48289, true);
+                m_caster->ToPlayer()->RemoveSpellCooldown(46584, true);
                 spell_id = 48289;
                 break;
             // Raise dead - take reagents and trigger summon spells
