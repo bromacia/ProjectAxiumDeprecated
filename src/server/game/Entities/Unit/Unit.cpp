@@ -11690,13 +11690,6 @@ uint32 Unit::SpellHealingBonusTaken(Unit *pCaster, SpellInfo const *spellProto, 
         TakenTotal += int32(TakenAdvertisedBenefit * coeff * factorMod);
     }
 
-    // Beacon of Light
-    if (spellProto->SpellFamilyName == SPELLFAMILY_PALADIN && spellProto->SpellFamilyFlags[1] == 0x1000000)
-    {
-        TakenTotal = 0;
-        TakenTotalMod = 1.0f;
-    }
-
     AuraEffectList const& mHealingGet= GetAuraEffectsByType(SPELL_AURA_MOD_HEALING_RECEIVED);
     for (AuraEffectList::const_iterator i = mHealingGet.begin(); i != mHealingGet.end(); ++i)
         if (GetGUID() == (*i)->GetCasterGUID() && (*i)->IsAffectedOnSpell(spellProto))
