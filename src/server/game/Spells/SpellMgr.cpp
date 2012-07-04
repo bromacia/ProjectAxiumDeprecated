@@ -3713,6 +3713,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 67890: // Frag Belt
                 spellInfo->DmgClass = 0;
                 break;
+            case 1953: // Blink
+                spellInfo->DurationIndex = 407;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------
