@@ -3420,8 +3420,9 @@ void AuraEffect::HandleModStateImmunityMask(AuraApplication const* aurApp, uint8
     }
 
     // Bladestorm and Killing Spree
-    if (GetId() == 46924 || 51690)
+    if (GetId() == 46924 || GetId() == 51690)
     {
+        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 33786, apply);   // Cyclone
         target->ApplySpellImmune(GetId(), IMMUNITY_ID, 51514, apply);   // Hex
         target->ApplySpellImmune(GetId(), IMMUNITY_ID, 13810, apply);   // Frost Trap
         target->ApplySpellImmune(GetId(), IMMUNITY_ID, 55741, apply);   // Desecration (Rank 1)
