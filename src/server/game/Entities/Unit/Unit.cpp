@@ -652,8 +652,7 @@ bool Unit::IsCrowdControlled() const
         || HasAuraType(SPELL_AURA_MOD_CHARM)
         || HasAuraType(SPELL_AURA_AOE_CHARM)
         || HasAuraType(SPELL_AURA_MOD_FEAR)
-        || HasAuraType(SPELL_AURA_MOD_STUN)
-        || HasAuraType(SPELL_AURA_MOD_ROOT));
+        || HasAuraType(SPELL_AURA_MOD_STUN));
 }
 
 void Unit::DealDamageMods(Unit* victim, uint32 &damage, uint32* absorb)
