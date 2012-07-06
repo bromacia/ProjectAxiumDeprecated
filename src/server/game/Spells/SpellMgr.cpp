@@ -3716,6 +3716,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 1953: // Blink
                 spellInfo->DurationIndex = 407;
                 break;
+            case 56651: // Master's Call
+                spellInfo->Effect[0] = 0;
+                break;
 // ------------------------------------
 // -----------Spell Delay--------------
 // ------------------------------------
@@ -3770,7 +3773,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 47847: // Shadowfury
             case 17928: // Howl of Terror
             case 6358: // Seduction
-            case 61290: // Shadowflame
             case 6215: // Fear
 // ------------------------------------
                 // Druid

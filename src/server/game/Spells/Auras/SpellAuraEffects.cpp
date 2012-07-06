@@ -3601,8 +3601,6 @@ void AuraEffect::HandleModStateImmunityMask(AuraApplication const* aurApp, uint8
                 aura_immunity_list.push_back(SPELL_AURA_MOD_STUN);
             if (miscVal & (1<<1))
                 aura_immunity_list.push_back(SPELL_AURA_TRANSFORM);
-
-            // These flag can be recognized wrong:
             if (miscVal & (1<<6))
                 aura_immunity_list.push_back(SPELL_AURA_MOD_DECREASE_SPEED);
             if (miscVal & (1<<0))
@@ -3611,7 +3609,7 @@ void AuraEffect::HandleModStateImmunityMask(AuraApplication const* aurApp, uint8
                 aura_immunity_list.push_back(SPELL_AURA_MOD_CONFUSE);
             if (miscVal & (1<<9))
                 aura_immunity_list.push_back(SPELL_AURA_MOD_FEAR);
-            if (miscVal & (1<<7))
+            if (miscVal & (1<<7) && (GetId() != 46924))
                 aura_immunity_list.push_back(SPELL_AURA_MOD_DISARM);
     }
 
@@ -3624,6 +3622,9 @@ void AuraEffect::HandleModStateImmunityMask(AuraApplication const* aurApp, uint8
         target->ApplySpellImmune(GetId(), IMMUNITY_ID, 55741, apply);   // Desecration (Rank 1)
         target->ApplySpellImmune(GetId(), IMMUNITY_ID, 68766, apply);   // Desecration (Rank 2)
         target->ApplySpellImmune(GetId(), IMMUNITY_ID, 605, apply);     // Mind Control
+        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 3355, apply);    // Freezing Trap Effect (Rank 1)
+        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 14308, apply);   // Freezing Trap Effect (Rank 2)
+        target->ApplySpellImmune(GetId(), IMMUNITY_ID, 14309, apply);   // Freezing Trap Effect (Rank 3)
         target->ApplySpellImmune(GetId(), IMMUNITY_STATE, SPELL_AURA_TRANSFORM, apply);
         target->ApplySpellImmune(GetId(), IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, apply);
         target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK, apply);
