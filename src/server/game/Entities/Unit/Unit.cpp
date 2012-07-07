@@ -11089,12 +11089,13 @@ bool Unit::isSpellCrit(Unit* victim, SpellInfo const* spellProto, SpellSchoolMas
     switch (spellProto->DmgClass)
     {
         case SPELL_DAMAGE_CLASS_NONE:
-            // We need more spells to find a general way (if there is any)
             switch (spellProto->Id)
             {
                 case 379:   // Earth Shield
                 case 33778: // Lifebloom Final Bloom
                 case 64844: // Divine Hymn
+                case 71607: // Bauble of True Blood (Normal)
+                case 71646: // Bauble of True Blood (Heroic)
                     break;
                 default:
                     return false;
