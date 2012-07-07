@@ -91,19 +91,6 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
     }
     if (GetPlayer()->GetAreaId() == 85)
     {
-        if (GetPlayer()->GetTeam() == ALLIANCE)
-            GetPlayer()->TeleportTo(0, -7527.65f, -4901.59f, 131.4f, 1.72f);
-
-        GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
-        GetPlayer()->ResurrectPlayer(1.0f);
-        GetPlayer()->SpawnCorpseBones();
-        return;
-    }
-    if (GetPlayer()->GetAreaId() == 2402)
-    {
-        if (GetPlayer()->GetTeam() == HORDE)
-            GetPlayer()->TeleportTo(0, 1976.65f, 2546.17f, 131.25f, 4.73f);
-
         GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
         GetPlayer()->ResurrectPlayer(1.0f);
         GetPlayer()->SpawnCorpseBones();
