@@ -3005,9 +3005,15 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
         m_caster->ToPlayer()->SetSpellModTakingSpell(this, false);
 
-    // Arena Preparation
-    if (m_caster->HasAura(32727))
-        m_casttime = 0;
+    // Instant cast spells
+    for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
+    {
+        if ((m_spellInfo->Effects[i].Effect == SPELL_EFFECT_ENCHANT_ITEM || // Enchants
+            m_spellInfo->Effects[i].Effect == SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC || // Enhancements
+            m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH) || // Glyphs
+            m_caster->HasAura(32727)) // Arena Preparation
+            m_casttime = 0;
+    }
 
     // don't allow channeled spells / spells with cast time to be casted while moving
     // (even if they are interrupted on moving, spells with almost immediate effect get to have their effect processed before movement interrupter kicks in)
