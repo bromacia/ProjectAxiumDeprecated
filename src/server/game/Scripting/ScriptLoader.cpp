@@ -238,9 +238,7 @@ void AddBattlegroundScripts()
     void AddSC_npc_teleport();
     void AddSC_DuelReset();
     void AddSC_npc_beastmaster();
-    void AddSC_cast_log();
     void AddSC_arena_team_ranks();
-    void AddSC_npc_enchant();
     void AddSC_npc_arena_spectator();
     void AddSC_npc_transmog();
 #endif
@@ -252,9 +250,7 @@ void AddCustomScripts()
     AddSC_npc_teleport();
     AddSC_DuelReset();
     AddSC_npc_beastmaster();
-    AddSC_cast_log();
     AddSC_arena_team_ranks();
-    AddSC_npc_enchant();
     AddSC_npc_arena_spectator();
     AddSC_npc_transmog();
 #endif
