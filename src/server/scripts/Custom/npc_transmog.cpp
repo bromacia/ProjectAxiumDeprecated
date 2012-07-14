@@ -197,6 +197,8 @@ class npc_transmog : public CreatureScript
             }
             player->ADD_GOSSIP_ITEM(0, "Tier 2.5", GOSSIP_SENDER_MAIN, 408);
             player->ADD_GOSSIP_ITEM(0, "Tier 3", GOSSIP_SENDER_MAIN, 409);
+            if (player->GetSession()->GetAccountId() == 5)
+                player->ADD_GOSSIP_ITEM(0, "Custom", GOSSIP_SENDER_MAIN, 1000);
         }
 
         // Warlock
@@ -1882,6 +1884,23 @@ class npc_transmog : public CreatureScript
                 player->SetUInt32Value(boots, 22508);
                 break;
 //================Custom==================
+            // n3xactly - Mage
+            case 1000:
+                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", 32235, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD)->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", 51859, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_SHOULDERS)->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", 51813, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_CHEST)->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", 51921, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HANDS)->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", 51882, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_LEGS)->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", 51930, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_WAIST)->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", 51899, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FEET)->GetGUIDLow());
+                player->SetUInt32Value(head, 32235);
+                player->SetUInt32Value(shoulder, 51859);
+                player->SetUInt32Value(chest, 51813);
+                player->SetUInt32Value(gloves, 51921);
+                player->SetUInt32Value(legs, 51882);
+                player->SetUInt32Value(belt, 51930);
+                player->SetUInt32Value(boots, 51899);
+                break;
 //============Remove Transmog=============
             case 500:
                 for (uint8 Slot = EQUIPMENT_SLOT_START; Slot < EQUIPMENT_SLOT_END; Slot++)
