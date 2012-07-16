@@ -12362,6 +12362,10 @@ void Unit::SetInCombatWith(Unit* enemy)
 
 void Unit::CombatStart(Unit* target, bool initialAggro)
 {
+    // Exception for Training Dummy
+    if (target->GetEntry() == 31144)
+        return;
+
     if (initialAggro)
     {
         if (!target->IsStandState())
