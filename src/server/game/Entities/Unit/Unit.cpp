@@ -16982,7 +16982,8 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form)
                     case 7: // Violet
                     case 8:
                         return 29405;
-                    case 3: // Light Blue
+                    case 3: // Light Teal
+                    case 5: // Light Blue
                         return 29406;
                     case 0: // Green
                     case 1: // Light Green
@@ -17059,15 +17060,17 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form)
                 uint8 hairColor = GetByteValue(PLAYER_BYTES, 3);
                 switch (hairColor)
                 {
+                    // 29415 UNUSED
                     case 0: // Green
                     case 1: // Light Green
                     case 2: // Dark Green
-                        return 29413; // 29415?
+                        return 29413;
                     case 6: // Dark Blue
                         return 29414;
                     case 4: // White
                         return 29416;
-                    case 3: // Light Blue
+                    case 3: // Light Teal
+                    case 5: // Light Blue
                         return 29417;
                     default: // original - Violet
                         return 2281;
