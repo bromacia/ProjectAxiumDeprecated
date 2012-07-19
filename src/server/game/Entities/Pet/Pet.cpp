@@ -78,6 +78,8 @@ void Pet::AddToWorld()
         GetCharmInfo()->SetIsReturning(false);
     }
 
+    RemoveAllPositiveAuras();
+    RemoveAllNegativeAuras();
 }
 
 void Pet::RemoveFromWorld()
@@ -86,6 +88,8 @@ void Pet::RemoveFromWorld()
     if (IsInWorld())
     {
         ///- Don't call the function for Creature, normal mobs + totems go in a different storage
+        RemoveAllPositiveAuras();
+        RemoveAllNegativeAuras();
         Unit::RemoveFromWorld();
         sObjectAccessor->RemoveObject(this);
     }
