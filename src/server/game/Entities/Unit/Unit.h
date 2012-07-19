@@ -1811,6 +1811,7 @@ class Unit : public WorldObject
         void RemoveAreaAurasDueToLeaveWorld();
         void RemoveAllAuras();
         void RemoveArenaAuras();
+        void RemoveAllPositiveAuras();
         void RemoveAllNegativeAuras();
         void RemoveAllAurasOnDeath();
         void RemoveAllAurasRequiringDeadTarget();
