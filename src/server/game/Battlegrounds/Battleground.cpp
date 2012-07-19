@@ -1197,6 +1197,8 @@ void Battleground::AddPlayer(Player* player)
 
         player->DestroyConjuredItems(true);
         player->UnsummonPetTemporaryIfAny();
+        player->ClearDiminishings();
+        player->ClearComboPoints();
 
         if (GetStatus() == STATUS_WAIT_JOIN)                 // not started yet
         {
