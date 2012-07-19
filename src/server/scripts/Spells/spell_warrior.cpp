@@ -148,9 +148,72 @@ public:
     }
 };
 
+enum DeepWounds
+{
+    SPELL_DEEP_WOUNDS_RANK_1         = 12162,
+    SPELL_DEEP_WOUNDS_RANK_2         = 12850,
+    SPELL_DEEP_WOUNDS_RANK_3         = 12868,
+    SPELL_DEEP_WOUNDS_RANK_PERIODIC  = 12721,
+};
+
+class spell_warr_deep_wounds : public SpellScriptLoader
+{
+    public:
+        spell_warr_deep_wounds() : SpellScriptLoader("spell_warr_deep_wounds") { }
+
+        class spell_warr_deep_wounds_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_warr_deep_wounds_SpellScript);
+
+            bool Validate(SpellInfo const* /*SpellEntry*/)
+            {
+                if (!sSpellMgr->GetSpellInfo(SPELL_DEEP_WOUNDS_RANK_1) || !sSpellMgr->GetSpellInfo(SPELL_DEEP_WOUNDS_RANK_2) || !sSpellMgr->GetSpellInfo(SPELL_DEEP_WOUNDS_RANK_3))
+                    return false;
+                return true;
+            }
+
+            void HandleDummy(SpellEffIndex /* effIndex */)
+            {
+                int32 damage = GetEffectValue();
+                Unit* caster = GetCaster();
+                if (Unit* target = GetHitUnit())
+                {
+                    // apply percent damage mods
+                    damage = caster->SpellDamageBonusDone(target, GetSpellInfo(), damage, SPELL_DIRECT_DAMAGE);
+
+                    ApplyPctN(damage, 16 * sSpellMgr->GetSpellRank(GetSpellInfo()->Id));
+
+                    damage = target->SpellDamageBonusTaken(caster, GetSpellInfo(), damage, SPELL_DIRECT_DAMAGE);
+
+                    SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(SPELL_DEEP_WOUNDS_RANK_PERIODIC);
+                    uint32 ticks = spellInfo->GetDuration() / spellInfo->Effects[EFFECT_0].Amplitude;
+
+                    // Add remaining ticks to damage done
+                    if (AuraEffect const* aurEff = target->GetAuraEffect(SPELL_DEEP_WOUNDS_RANK_PERIODIC, EFFECT_0, caster->GetGUID()))
+                        damage += aurEff->GetAmount() * (ticks - aurEff->GetTickNumber());
+
+                    damage = damage / ticks;
+
+                    caster->CastCustomSpell(target, SPELL_DEEP_WOUNDS_RANK_PERIODIC, &damage, NULL, NULL, true);
+                }
+            }
+
+            void Register()
+            {
+                OnEffectHitTarget += SpellEffectFn(spell_warr_deep_wounds_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+            }
+        };
+
+        SpellScript* GetSpellScript() const
+        {
+            return new spell_warr_deep_wounds_SpellScript();
+        }
+};
+
 void AddSC_warrior_spell_scripts()
 {
     new spell_warr_last_stand();
     new spell_warr_improved_spell_reflection();
     new spell_warr_vigilance();
+    new spell_warr_deep_wounds();
 }

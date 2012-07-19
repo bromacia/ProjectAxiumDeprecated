@@ -767,40 +767,6 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     unitTarget->ToCreature()->setDeathState(JUST_ALIVED);
                     return;
                 }
-                case 12162:                                 // Deep wounds
-                case 12850:                                 // (now good common check for this spells)
-                case 12868:
-                {
-                    if (!unitTarget)
-                        return;
-
-                    // apply percent damage mods
-                    damage = m_caster->SpellDamageBonusDone(unitTarget, GetSpellInfo(), damage, SPELL_DIRECT_DAMAGE);
-
-                    switch (m_spellInfo->Id)
-                    {
-                        case 12162: ApplyPctN(damage, 16); break; // Rank 1
-                        case 12850: ApplyPctN(damage, 32); break; // Rank 2
-                        case 12868: ApplyPctN(damage, 48); break; // Rank 3
-                        default:
-                            sLog->outError("Spell::EffectDummy: Spell %u not handled in DW", m_spellInfo->Id);
-                            return;
-                    }
-
-                    SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(12721);
-                    uint32 ticks = spellInfo->GetDuration() / spellInfo->Effects[EFFECT_0].Amplitude;
-
-                    // Add remaining ticks to damage done
-                    if (AuraEffect const* aurEff = unitTarget->GetAuraEffect(12721, EFFECT_0, m_caster->GetGUID()))
-                        damage += aurEff->GetAmount() * (ticks - aurEff->GetTickNumber());
-
-                    damage = damage / ticks;
-
-                    damage = unitTarget->SpellDamageBonusTaken(m_caster, GetSpellInfo(), damage, SPELL_DIRECT_DAMAGE);
-
-                    m_caster->CastCustomSpell(unitTarget, 12721, &damage, NULL, NULL, true);
-                    return;
-                }
                 case 13567:                                 // Dummy Trigger
                 {
                     // can be used for different aura triggering, so select by aura
@@ -1426,7 +1392,7 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     if (AuraEffect const* aurEff = owner->GetAuraEffect(55456, EFFECT_0))
                         AddPctN(damage, aurEff->GetAmount());
 
-                    damage = int32(unitTarget->SpellHealingBonusTaken(owner, m_triggeredByAuraSpell, damage, HEAL));
+                    damage = int32(unitTarget->SpellHealingBonusTaken(m_caster, m_triggeredByAuraSpell, damage, HEAL));
                 }
                 m_caster->CastCustomSpell(unitTarget, 52042, &damage, 0, 0, true, 0, 0, m_originalCasterGUID);
                 return;
@@ -2307,10 +2273,8 @@ void Spell::EffectHeal(SpellEffIndex /*effIndex*/)
 
             int32 tickheal = targetAura->GetAmount();
             if (Unit* auraCaster = targetAura->GetCaster())
-            {
                 tickheal = auraCaster->SpellHealingBonusDone(unitTarget, targetAura->GetSpellInfo(), tickheal, DOT);
-                tickheal = unitTarget->SpellHealingBonusTaken(auraCaster, targetAura->GetSpellInfo(), tickheal, DOT);
-            }
+
             //int32 tickheal = targetAura->GetSpellInfo()->EffectBasePoints[idx] + 1;
             //It is said that talent bonus should not be included
 
@@ -2331,12 +2295,12 @@ void Spell::EffectHeal(SpellEffIndex /*effIndex*/)
             //addhealth += tickheal * tickcount;
             //addhealth = caster->SpellHealingBonus(m_spellInfo, addhealth, HEAL, unitTarget);
         }
-        // Glyph of Nourish
+        // Nourish
         else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] & 0x2000000)
         {
             addhealth = caster->SpellHealingBonusDone(unitTarget, m_spellInfo, addhealth, HEAL);
-            addhealth = unitTarget->SpellHealingBonusTaken(caster, m_spellInfo, addhealth, HEAL);
 
+            // Glyph of Nourish
             if (AuraEffect const* aurEff = m_caster->GetAuraEffect(62971, 0))
             {
                 Unit::AuraEffectList const& Periodic = unitTarget->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL);
@@ -2410,7 +2374,7 @@ void Spell::EffectHealMechanical(SpellEffIndex /*effIndex*/)
 
     uint32 heal = m_originalCaster->SpellHealingBonusDone(unitTarget, m_spellInfo, uint32(damage), HEAL);
 
-    m_healing += unitTarget->SpellHealingBonusTaken(m_originalCaster, m_spellInfo, heal, HEAL);;
+   m_healing += unitTarget->SpellHealingBonusTaken(m_originalCaster, m_spellInfo, heal, HEAL);
 }
 
 void Spell::EffectHealthLeech(SpellEffIndex effIndex)
@@ -2436,7 +2400,6 @@ void Spell::EffectHealthLeech(SpellEffIndex effIndex)
     {
         healthGain = m_caster->SpellHealingBonusDone(m_caster, m_spellInfo, healthGain, HEAL);
         healthGain = m_caster->SpellHealingBonusTaken(m_caster, m_spellInfo, healthGain, HEAL);
-
         m_caster->HealBySpell(m_caster, m_spellInfo, uint32(healthGain));
     }
 }
@@ -4357,8 +4320,8 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
 
     // Add melee damage bonuses (also check for negative)
     uint32 damage = m_caster->MeleeDamageBonusDone(unitTarget, eff_damage, m_attackType, m_spellInfo);
-    
-    m_damage += unitTarget->MeleeDamageBonusTaken(damage, m_attackType, m_spellInfo);
+   
+    m_damage += unitTarget->MeleeDamageBonusTaken(m_caster, damage, m_attackType, m_spellInfo);
 }
 
 void Spell::EffectThreat(SpellEffIndex /*effIndex*/)
@@ -4383,7 +4346,7 @@ void Spell::EffectHealMaxHealth(SpellEffIndex /*effIndex*/)
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    int32 addhealth;
+    int32 addhealth = 0;
     if (m_spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN) // Lay on Hands
     {
         if (m_caster->GetGUID() == unitTarget->GetGUID())
@@ -4400,11 +4363,7 @@ void Spell::EffectHealMaxHealth(SpellEffIndex /*effIndex*/)
     else
         addhealth = unitTarget->GetMaxHealth() - unitTarget->GetHealth();
 
-    if (m_originalCaster)
-    {
-        uint32 heal = m_originalCaster->SpellHealingBonusDone(unitTarget, m_spellInfo, addhealth, HEAL);
-        m_healing +=  unitTarget->SpellHealingBonusTaken(m_originalCaster, m_spellInfo, heal, HEAL);
-    }
+    m_healing += addhealth;
 }
 
 void Spell::EffectInterruptCast(SpellEffIndex effIndex)
