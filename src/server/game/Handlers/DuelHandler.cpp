@@ -65,6 +65,10 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     plTarget->RemoveArenaSpellCooldowns();
     player->AddAura(80864, player);
     plTarget->AddAura(80864, plTarget);
+    player->ClearDiminishings();
+    plTarget->ClearDiminishings();
+    player->ClearComboPoints();
+    plTarget->ClearComboPoints();
 }
 
 void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recvPacket)

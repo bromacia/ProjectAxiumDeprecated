@@ -24,6 +24,10 @@ class Reset_OnDuelEnd : public PlayerScript
             loser->SetPower(POWER_RAGE, 0);
             winner->RemoveArenaSpellCooldowns();
             loser->RemoveArenaSpellCooldowns();
+            winner->ClearDiminishings();
+            loser->ClearDiminishings();
+            winner->ClearComboPoints();
+            loser->ClearComboPoints();
         }
     }
 };
