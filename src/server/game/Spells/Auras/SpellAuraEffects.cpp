@@ -6510,9 +6510,10 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
                 damage += (damage+1)/2;           // +1 prevent 0.5 damage possible lost at 1..4 ticks
             // 5..8 ticks have normal tick damage
         }
-        // There is a Chance to make a Soul Shard when Drain soul does damage
+        // Drain Soul
         if (GetSpellInfo()->SpellFamilyName == SPELLFAMILY_WARLOCK && (GetSpellInfo()->SpellFamilyFlags[0] & 0x00004000))
         {
+            // There is a chance to create a Soul Shard when Drain Soul does damage
             if (caster->GetTypeId() == TYPEID_PLAYER && caster->ToPlayer()->isHonorOrXPTarget(target))
             {
                 if (roll_chance_i(20))
@@ -6524,6 +6525,9 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
                             caster->CastSpell(caster, 58068, true, 0, aur);
                 }
             }
+            // If the target is below 25% health Drain Soul does 4x normal damage
+            if (!target->HealthAbovePct(25))
+                damage = damage * 4;
         }
         if (GetSpellInfo()->SpellFamilyName == SPELLFAMILY_GENERIC)
         {
