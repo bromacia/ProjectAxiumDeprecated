@@ -28,6 +28,8 @@ class Reset_OnDuelEnd : public PlayerScript
             loser->ClearDiminishings();
             winner->ClearComboPoints();
             loser->ClearComboPoints();
+            winner->ClearInCombat();
+            loser->ClearInCombat();
         }
     }
 };

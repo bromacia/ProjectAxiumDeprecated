@@ -69,6 +69,8 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     plTarget->ClearDiminishings();
     player->ClearComboPoints();
     plTarget->ClearComboPoints();
+    player->ClearInCombat();
+    plTarget->ClearInCombat();
 }
 
 void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recvPacket)
