@@ -4897,6 +4897,7 @@ bool ChatHandler::HandlePrepareCommand(const char* args)
         target->RemoveAllNegativeAuras();
         target->ClearDiminishings();
         target->ClearComboPoints();
+        target->ClearInCombat();
     }
     else
         // will resurrected at login without corpse
