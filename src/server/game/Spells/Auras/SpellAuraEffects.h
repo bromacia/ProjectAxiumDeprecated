@@ -99,6 +99,9 @@ class AuraEffect
         int32 const m_baseAmount;
 
         int32 m_amount;
+
+        int32 mutable m_amountDone;
+
         bool m_canBeRecalculated;
 
         SpellModifier* m_spellmod;
