@@ -34,7 +34,7 @@
 #include "RealmAcceptor.h"
 
 #ifndef _TRINITY_REALM_CONFIG
-# define _TRINITY_REALM_CONFIG  "authserver.conf"
+#define _TRINITY_REALM_CONFIG  "authserver.conf"
 #endif
 
 bool StartDB();
@@ -52,10 +52,10 @@ public:
     {
         switch (SigNum)
         {
-        case SIGINT:
-        case SIGTERM:
-            stopEvent = true;
-            break;
+            case SIGINT:
+            case SIGTERM:
+                stopEvent = true;
+                break;
         }
     }
 };
@@ -99,7 +99,7 @@ extern int main(int argc, char **argv)
     }
     sLog->Initialize();
 
-    sLog->outString("%s (authserver)", _FULLVERSION);
+    sLog->outString("Axium-Core (authserver)");
     sLog->outString("<Ctrl-C> to stop.\n");
     sLog->outString("Using configuration file %s.", cfg_file);
 

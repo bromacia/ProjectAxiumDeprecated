@@ -365,7 +365,7 @@ bool AuthSocket::_HandleLogonChallenge()
     if (result)
     {
         pkt << (uint8)WOW_FAIL_BANNED;
-        sLog->outBasic("'%s:%d' [AuthChallenge] Banned ip tries to login!",socket().getRemoteAddress().c_str(), socket().getRemotePort());
+        sLog->outBasic("'%s:%d' [AuthChallenge] Banned ip tried to login!",socket().getRemoteAddress().c_str(), socket().getRemotePort());
     }
     else
     {
@@ -412,12 +412,12 @@ bool AuthSocket::_HandleLogonChallenge()
                     if ((*banresult)[0].GetUInt64() == (*banresult)[1].GetUInt64())
                     {
                         pkt << (uint8)WOW_FAIL_BANNED;
-                        sLog->outBasic("'%s:%d' [AuthChallenge] Banned account %s tried to login!", socket().getRemoteAddress().c_str(), socket().getRemotePort(), _login.c_str ());
+                        sLog->outBasic("'%s:%d' [AuthChallenge] Banned account %s tried to login!", socket().getRemoteAddress().c_str(), socket().getRemotePort(), _login.c_str());
                     }
                     else
                     {
                         pkt << (uint8)WOW_FAIL_SUSPENDED;
-                        sLog->outBasic("'%s:%d' [AuthChallenge] Temporarily banned account %s tried to login!", socket().getRemoteAddress().c_str(), socket().getRemotePort(), _login.c_str ());
+                        sLog->outBasic("'%s:%d' [AuthChallenge] Temporarily banned account %s tried to login!", socket().getRemoteAddress().c_str(), socket().getRemotePort(), _login.c_str());
                     }
                 }
                 else
@@ -489,7 +489,7 @@ bool AuthSocket::_HandleLogonChallenge()
                         _localizationName[i] = ch->country[4-i-1];
 
                     sLog->outBasic("'%s:%d' [AuthChallenge] account %s is using '%c%c%c%c' locale (%u)", socket().getRemoteAddress().c_str(), socket().getRemotePort(),
-                            _login.c_str (), ch->country[3], ch->country[2], ch->country[1], ch->country[0], GetLocaleByName(_localizationName)
+                            _login.c_str(), ch->country[3], ch->country[2], ch->country[1], ch->country[0], GetLocaleByName(_localizationName)
                         );
                 }
             }
@@ -509,7 +509,7 @@ bool AuthSocket::_HandleLogonProof()
     // Read the packet
     sAuthLogonProof_C lp;
 
-    if (!socket().recv((char *)&lp, sizeof(sAuthLogonProof_C)))
+    if (!socket().recv((char*)&lp, sizeof(sAuthLogonProof_C)))
         return false;
 
     // If the client has no valid version
@@ -604,7 +604,7 @@ bool AuthSocket::_HandleLogonProof()
 
         // Update the sessionkey, last_ip, last login time and reset number of failed logins in the account table for this account
         // No SQL injection (escaped user name) and IP address as received by socket
-        const char *K_hex = K.AsHexStr();
+        const char* K_hex = K.AsHexStr();
 
         PreparedStatement *stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_LOGONPROOF);
         stmt->setString(0, K_hex);
@@ -630,7 +630,7 @@ bool AuthSocket::_HandleLogonProof()
             proof.unk1 = 0x00800000;    // Accountflags. 0x01 = GM, 0x08 = Trial, 0x00800000 = Pro pass (arena tournament)
             proof.unk2 = 0x00;          // SurveyId
             proof.unk3 = 0x00;
-            socket().send((char *)&proof, sizeof(proof));
+            socket().send((char*)&proof, sizeof(proof));
         }
         else
         {
@@ -639,7 +639,7 @@ bool AuthSocket::_HandleLogonProof()
             proof.cmd = AUTH_LOGON_PROOF;
             proof.error = 0;
             proof.unk2 = 0x00;
-            socket().send((char *)&proof, sizeof(proof));
+            socket().send((char*)&proof, sizeof(proof));
         }
 
         _authed = true;
@@ -649,7 +649,7 @@ bool AuthSocket::_HandleLogonProof()
         char data[4] = { AUTH_LOGON_PROOF, WOW_FAIL_UNKNOWN_ACCOUNT, 3, 0 };
         socket().send(data, sizeof(data));
 
-        sLog->outBasic("'%s:%d' [AuthChallenge] account %s tried to login with invalid password!", socket().getRemoteAddress().c_str(), socket().getRemotePort(), _login.c_str ());
+        sLog->outBasic("'%s:%d' [AuthChallenge] account %s tried to login with invalid password!", socket().getRemoteAddress().c_str(), socket().getRemotePort(), _login.c_str());
 
         uint32 MaxWrongPassCount = ConfigMgr::GetIntDefault("WrongPass.MaxCount", 0);
         if (MaxWrongPassCount > 0)
@@ -711,13 +711,13 @@ bool AuthSocket::_HandleReconnectChallenge()
     std::vector<uint8> buf;
     buf.resize(4);
 
-    socket().recv((char *)&buf[0], 4);
+    socket().recv((char*)&buf[0], 4);
 
 #if TRINITY_ENDIAN == TRINITY_BIGENDIAN
     EndianConvert(*((uint16*)(buf[0])));
 #endif
 
-    uint16 remaining = ((sAuthLogonChallenge_C *)&buf[0])->size;
+    uint16 remaining = ((sAuthLogonChallenge_C*)&buf[0])->size;
     sLog->outStaticDebug("[ReconnectChallenge] got header, body is %#04x bytes", remaining);
 
     if ((remaining < sizeof(sAuthLogonChallenge_C) - buf.size()) || (socket().recv_len() < remaining))
@@ -729,7 +729,7 @@ bool AuthSocket::_HandleReconnectChallenge()
     sAuthLogonChallenge_C *ch = (sAuthLogonChallenge_C*)&buf[0];
 
     // Read the remaining of the packet
-    socket().recv((char *)&buf[4], remaining);
+    socket().recv((char*)&buf[4], remaining);
     sLog->outStaticDebug("[ReconnectChallenge] got full packet, %#04x bytes", ch->size);
     sLog->outStaticDebug("[ReconnectChallenge] name(%d): '%s'", ch->I_len, ch->I);
 
@@ -762,7 +762,7 @@ bool AuthSocket::_HandleReconnectChallenge()
     uint8 secLevel = fields[2].GetUInt8();
     _accountSecurityLevel = secLevel <= SEC_ADMINISTRATOR ? AccountTypes(secLevel) : SEC_ADMINISTRATOR;
 
-    K.SetHexStr ((*result)[0].GetCString());
+    K.SetHexStr((*result)[0].GetCString());
 
     // Sending response
     ByteBuffer pkt;
@@ -781,7 +781,7 @@ bool AuthSocket::_HandleReconnectProof()
     sLog->outStaticDebug("Entering _HandleReconnectProof");
     // Read the packet
     sAuthReconnectProof_C lp;
-    if (!socket().recv((char *)&lp, sizeof(sAuthReconnectProof_C)))
+    if (!socket().recv((char*)&lp, sizeof(sAuthReconnectProof_C)))
         return false;
 
     if (_login.empty() || !_reconnectProof.GetNumBytes() || !K.GetNumBytes())
@@ -852,7 +852,7 @@ bool AuthSocket::_HandleRealmList()
         if ((_expversion & POST_BC_EXP_FLAG) && i->second.gamebuild != _build)
             continue;
         else if ((_expversion & PRE_BC_EXP_FLAG) && !AuthHelper::IsPreBCAcceptedClientBuild(i->second.gamebuild))
-                continue;
+            continue;
 
         uint8 AmountOfCharacters;
 
@@ -1068,11 +1068,13 @@ void Patcher::LoadPatchMD5(char *szFileName)
 bool Patcher::GetHash(char * pat, uint8 mymd5[16])
 {
     for (Patches::iterator i = _patches.begin(); i != _patches.end(); ++i)
+    {
         if (!stricmp(pat, i->first.c_str()))
         {
             memcpy(mymd5, i->second->md5, 16);
             return true;
         }
+    }
 
     return false;
 }
