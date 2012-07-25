@@ -1585,8 +1585,8 @@ SpellCastResult SpellInfo::CheckTarget(Unit const* caster, Unit const* target, b
        return SPELL_FAILED_BAD_TARGETS;
 
     // check visibility - ignore stealth for implicit (area) targets
-    if (!(AttributesEx6 & SPELL_ATTR6_CAN_TARGET_INVISIBLE) && !caster->canSeeOrDetect(target, implicit))
-        return SPELL_FAILED_BAD_TARGETS;
+    /*if (!(AttributesEx6 & SPELL_ATTR6_CAN_TARGET_INVISIBLE) && !caster->canSeeOrDetect(target, implicit))
+        return SPELL_FAILED_BAD_TARGETS;*/
 
     // checked in Unit::IsValidAttack/AssistTarget, shouldn't be checked for ENTRY targets
     //if (!(AttributesEx6 & SPELL_ATTR6_CAN_TARGET_UNTARGETABLE) && target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))
@@ -1606,7 +1606,7 @@ SpellCastResult SpellInfo::CheckTarget(Unit const* caster, Unit const* target, b
     if ((Effects[0].TargetA.GetTarget() == TARGET_SRC_CASTER) & (Effects[0].TargetB.GetTarget() == TARGET_UNIT_SRC_AREA_ENEMY))
         if (!caster->IsWithinLOSInMap(target))
             return SPELL_FAILED_LINE_OF_SIGHT;
-    // Check to see if the cone source position is within LoS of the target
+    // check to see if the cone source position is within LoS of the target
     if (Effects[0].TargetA.GetTarget() == TARGET_UNIT_CONE_ENEMY_104)
         if (!caster->IsWithinLOSInMap(target))
             return SPELL_FAILED_LINE_OF_SIGHT;
