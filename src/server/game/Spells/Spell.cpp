@@ -1017,6 +1017,22 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
         if (m_delayMoment == 0 || m_delayMoment > targetInfo.timeDelay)
             m_delayMoment = targetInfo.timeDelay;
     }
+    else if (SpellDelaySpell())
+    {
+        targetInfo.timeDelay = 200;
+        m_delayMoment = targetInfo.timeDelay;
+    }
+    // NYI
+    /*else if (VisibilityDelaySpell())
+    {
+        targetInfo.timeDelay = 150;
+        m_delayMoment = targetInfo.timeDelay;
+    }
+    else if (MovementDelaySpell())
+    {
+        targetInfo.timeDelay = 30;
+        m_delayMoment = targetInfo.timeDelay;
+    }*/
     else
         targetInfo.timeDelay = 0LL;
 
@@ -3274,7 +3290,7 @@ void Spell::cast(bool skipCheck)
     SendSpellGo();
 
     // Okay, everything is prepared. Now we need to distinguish between immediate and evented delayed spells
-    if ((m_spellInfo->Speed > 0.0f && !m_spellInfo->IsChanneled()) || m_spellInfo->Id == 14157)
+    if ((m_spellInfo->Speed > 0.0f && !m_spellInfo->IsChanneled()) || m_spellInfo->Id == 14157 || SpellDelaySpell())
     {
         // Remove used for cast item if need (it can be already NULL after TakeReagents call
         // in case delayed spell remove item at cast delay start
@@ -7499,4 +7515,109 @@ void Spell::CancelGlobalCooldown()
         m_caster->GetCharmInfo()->GetGlobalCooldownMgr().CancelGlobalCooldown(m_spellInfo);
     else if (m_caster->GetTypeId() == TYPEID_PLAYER)
         m_caster->ToPlayer()->GetGlobalCooldownMgr().CancelGlobalCooldown(m_spellInfo);
+}
+
+bool Spell::SpellDelaySpell() const
+{
+//------------Generic--------------
+    // War Stomp
+    return m_spellInfo->Id == 20549 ||
+//------------Warrior--------------
+    // Charge Stun
+    m_spellInfo->Id == 7922 ||
+    // Intercept Stun
+    m_spellInfo->Id == 20253 ||
+    // Intimidating Shout
+    m_spellInfo->Id == 5246 ||
+    // Shockwave
+    m_spellInfo->Id == 46968 ||
+    // Concussion Blow
+    m_spellInfo->Id == 12809 ||
+//------------Paladin--------------
+    // Hammer of Justice
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN && m_spellInfo->SpellFamilyFlags[0] == 0x800) ||
+    // Repentance
+    m_spellInfo->Id == 20066 ||
+//---------Death Knight------------
+    // Gnaw
+    m_spellInfo->Id == 47481 ||
+    // Hungering Cold
+    m_spellInfo->Id == 49203 ||
+    // Death Grip
+    m_spellInfo->Id == 49576 ||
+//------------Shaman---------------
+    // Spirit Wolf Bash
+    m_spellInfo->Id == 58861 ||
+//------------Rogue----------------
+    // Blind
+    m_spellInfo->Id == 2094 ||
+    // Cheap Shot
+    m_spellInfo->Id == 1833 ||
+    // Kidney Shot
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[0] == 0x200000) ||
+    // Gouge
+    m_spellInfo->Id == 1776 ||
+    // Sap
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[0] == 0x80) ||
+//------------Druid----------------
+    // Cyclone
+    m_spellInfo->Id == 33786 ||
+    // Bash
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[0] == 0x2000) ||
+    // Pounce
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[0] == 0x20000) ||
+    // Maim
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] == 0x80) ||
+//------------Priest---------------
+    // Psychic Scream
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && m_spellInfo->SpellFamilyFlags[0] == 0x10000) ||
+    // Psychic Horror
+    m_spellInfo->Id == 64044 ||
+    // Shadow Word Death
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && m_spellInfo->SpellFamilyFlags[1] == 0x2) ||
+//------------Mage-----------------
+    // Polymorph
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags[0] == 0x1000000) ||
+    // Deep Freeze
+    m_spellInfo->Id == 44572 ||
+    // Dragon's Breath
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags[0] == 0x800000) ||
+    // Impact
+    (m_spellInfo->SpellIconID == 45 || m_spellInfo->Mechanic == MECHANIC_STUN) ||
+    // Fire Blast
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags[0] == 0x2) ||
+//----------Warlock----------------
+    // Fear
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x400) ||
+    // Howl of Terror
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x8) ||
+    // Seduction
+    m_spellInfo->Id == 6358 ||
+    // Shadowfury
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x1000);
+}
+
+bool Spell::VisibilityDelaySpell() const
+{
+//------------Rogue----------------
+    // Stealth
+    return m_spellInfo->Id == 1784 ||
+    // Vanish
+    m_spellInfo->Id == 11327 || 11329 || 26888 ||
+//------------Druid----------------
+    // Prowl
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[0] == 0x4000) ||
+//------------Mage-----------------
+    // Invisibility
+    m_spellInfo->Id == 32612;
+}
+
+bool Spell::MovementDelaySpell() const
+{
+//------------Rogue----------------
+    // Shadowstep
+    return m_spellInfo->Id == 36563 ||
+//------------Mage-----------------
+    // Blink
+    m_spellInfo->Id == 1953;
 }

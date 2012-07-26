@@ -3543,6 +3543,7 @@ void SpellMgr::LoadDbcDataCorrections()
 // ----------------------------------------------------------------------
 // -------------------------------Axium----------------------------------
 // ----------------------------------------------------------------------
+            case 2094: // Blind
             case 5171: // Slice and Dice (Rank 1)
             case 6774: // Slice and Dice (Rank 2)
             case 52610: // Savage Roar
@@ -3715,75 +3716,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 56651: // Master's Call
                 spellInfo->Effect[0] = 0;
                 break;
-// ------------------------------------
-// -----------Spell Delay--------------
-// ------------------------------------
-// Todo - update for every rank of each spell
-                // Rogue
-            case 2094: // Blind
-                spellInfo->speed = 200;
-                spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
-                break;
-            case 1833: // Cheap Shot
-            case 8643: // Kidney Shot
-            case 1776: // Gouge
-            case 51724: // Sap
-// ------------------------------------
-                // Warrior
-            case 5246: // Intimidating Shout
-            case 46968: // Shockwave
-            case 12809: // Concussion Blow
-// ------------------------------------
-                // Paladin
-            case 10308: // Hammer of Justice
-            case 20066: // Repentance
-// ------------------------------------
-                // Priest
-            case 10890: // Psychic Scream
-            case 64044: // Psychic Horror
-                spellInfo->speed = 200;
-                break;
-            case 64058: // Psychic Horror - Disarm
-                spellInfo->speed = 500;
-                break;
-            case 48158: // Shadow Word: Death
-// ------------------------------------
-                // Death Knight
-            case 49203: // Hungering Cold
-            case 47481: // Gnaw
-// ------------------------------------
-                // Mage
-            case 44572: // Deep Freeze
-            case 42945: // Blast Wave
-            case 42950: // Dragon's Breath
-            case 12826: // Polymorph
-            case 28271: // Polymorph Turtle
-            case 28272: // Polymorph Pig
-            case 61025: // Polymorph Serpent
-            case 61305: // Polymorph Black Cat
-            case 61721: // Polymorph Rabbit
-            case 61780: // Polymorph Turkey
-            case 42873: // Fire Blast
-// ------------------------------------
-                // Warlock
-            case 47847: // Shadowfury
-            case 17928: // Howl of Terror
-            case 6358: // Seduction
-            case 6215: // Fear
-// ------------------------------------
-                // Druid
-            case 49802: // Maim
-            case 49803: // Pounce
-            case 8983: // Bash
-            case 33786: // Cyclone
-// ------------------------------------
-                // Misc
-            case 20549: // War Stomp
-                spellInfo->speed = 200;
-                break;
-// ------------------------------------
-// ---------End Spell Delay------------
-// ------------------------------------
             default:
                 break;
         }

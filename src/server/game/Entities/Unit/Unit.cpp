@@ -2705,9 +2705,7 @@ SpellMissInfo Unit::SpellHitResult(Unit* victim, SpellInfo const* spell, bool Ca
             if ((*i)->GetMiscValue() & spell->GetSchoolMask())
                 reflectchance += (*i)->GetAmount();
         if (reflectchance > 0 && roll_chance_i(reflectchance))
-        {
             return SPELL_MISS_REFLECT;
-        }
     }
 
     switch (spell->DmgClass)
