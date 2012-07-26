@@ -7568,6 +7568,8 @@ bool Spell::SpellDelaySpell() const
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[0] == 0x20000) ||
     // Maim
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] == 0x80) ||
+    // Faerie Fire
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109) ||
 //------------Priest---------------
     // Psychic Scream
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && m_spellInfo->SpellFamilyFlags[0] == 0x10000) ||
