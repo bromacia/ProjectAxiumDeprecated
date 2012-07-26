@@ -5639,6 +5639,12 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (Player* playerCaster = m_caster->ToPlayer())
                 if (playerCaster->HasAura(57723) || playerCaster->HasAura(57724))
                     return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+        // Dont allow Bloodrage or Berserk Rage to be casted if the caster has Enraged Regeneration
+        if (m_spellInfo->Id == 2687 || m_spellInfo->Id == 18499)
+            if (Player* playerCaster = m_caster->ToPlayer())
+                if (playerCaster->HasAura(55694))
+                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
         break;
     }
 
