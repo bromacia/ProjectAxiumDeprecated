@@ -31,7 +31,7 @@
 template<class T>
 void ConfusedMovementGenerator<T>::Initialize(T &unit)
 {
-    float const wanderDistance = 4;
+    float const wanderDistance = 3;
     float x, y, z;
     x = unit.GetPositionX();
     y = unit.GetPositionY();
@@ -39,7 +39,7 @@ void ConfusedMovementGenerator<T>::Initialize(T &unit)
 
     Map const* map = unit.GetBaseMap();
 
-    i_nextMove = 1;
+    i_nextMove = urand(1, MAX_CONF_WAYPOINTS);
 
     bool is_water_ok, is_land_ok;
     _InitSpecific(unit, is_water_ok, is_land_ok);
@@ -136,7 +136,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 diff)
                 unit.ClearUnitState(UNIT_STATE_MOVE);
 
                 i_nextMove = urand(1, MAX_CONF_WAYPOINTS);
-                i_nextMoveTime.Reset(urand(100, 1000));
+                i_nextMoveTime.Reset(100);
             }
         }
     }
