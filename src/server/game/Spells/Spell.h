@@ -382,6 +382,7 @@ class Spell
         bool SpellDelaySpell() const;
         bool VisibilityDelaySpell() const;
         bool MovementDelaySpell() const;
+        bool SilenceDelaySpell() const;
 
         // handlers
         void handle_immediate();

@@ -1019,20 +1019,24 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
     }
     else if (SpellDelaySpell())
     {
-        targetInfo.timeDelay = 200;
+        targetInfo.timeDelay = 150;
         m_delayMoment = targetInfo.timeDelay;
     }
-    // NYI
-    /*else if (VisibilityDelaySpell())
+    else if (VisibilityDelaySpell())
     {
-        targetInfo.timeDelay = 150;
+        targetInfo.timeDelay = 100;
         m_delayMoment = targetInfo.timeDelay;
     }
     else if (MovementDelaySpell())
     {
         targetInfo.timeDelay = 30;
         m_delayMoment = targetInfo.timeDelay;
-    }*/
+    }
+    else if (SilenceDelaySpell())
+    {
+        targetInfo.timeDelay = 50;
+        m_delayMoment = targetInfo.timeDelay;
+    }
     else
         targetInfo.timeDelay = 0LL;
 
@@ -3290,7 +3294,8 @@ void Spell::cast(bool skipCheck)
     SendSpellGo();
 
     // Okay, everything is prepared. Now we need to distinguish between immediate and evented delayed spells
-    if ((m_spellInfo->Speed > 0.0f && !m_spellInfo->IsChanneled()) || m_spellInfo->Id == 14157 || SpellDelaySpell())
+    if ((m_spellInfo->Speed > 0.0f && !m_spellInfo->IsChanneled()) || m_spellInfo->Id == 14157
+    || SpellDelaySpell() || VisibilityDelaySpell() || MovementDelaySpell() || SilenceDelaySpell())
     {
         // Remove used for cast item if need (it can be already NULL after TakeReagents call
         // in case delayed spell remove item at cast delay start
@@ -7579,8 +7584,10 @@ bool Spell::SpellDelaySpell() const
 //------------Priest---------------
     // Psychic Scream
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && m_spellInfo->SpellFamilyFlags[0] == 0x10000) ||
-    // Psychic Horror
+    // Psychic Horror - Trigger and Stun
     m_spellInfo->Id == 64044 ||
+    // Psychic Horror - Disarm
+    m_spellInfo->Id == 64058 ||
     // Shadow Word Death
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && m_spellInfo->SpellFamilyFlags[1] == 0x2) ||
 //------------Mage-----------------
@@ -7590,10 +7597,10 @@ bool Spell::SpellDelaySpell() const
     m_spellInfo->Id == 44572 ||
     // Dragon's Breath
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags[0] == 0x800000) ||
-    // Impact
-    (m_spellInfo->SpellIconID == 45 || m_spellInfo->Mechanic == MECHANIC_STUN) ||
     // Fire Blast
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags[0] == 0x2) ||
+	// Burning Determination
+    m_spellInfo->Id == 54748 ||
 //----------Warlock----------------
     // Fear
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x400) ||
@@ -7607,11 +7614,18 @@ bool Spell::SpellDelaySpell() const
 
 bool Spell::VisibilityDelaySpell() const
 {
+//------------Generic--------------
+    // Shadowmeld
+    return m_spellInfo->Id == 58984 ||
 //------------Rogue----------------
     // Stealth
-    return m_spellInfo->Id == 1784 ||
-    // Vanish
-    m_spellInfo->Id == 11327 || 11329 || 26888 ||
+    m_spellInfo->Id == 1784 ||
+    // Vanish (Rank 1)
+    m_spellInfo->Id == 11327 ||
+    // Vanish (Rank 2)
+    m_spellInfo->Id == 11329 ||
+    // Vanish (Rank 3)
+    m_spellInfo->Id == 26888 ||
 //------------Druid----------------
     // Prowl
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[0] == 0x4000) ||
@@ -7627,5 +7641,46 @@ bool Spell::MovementDelaySpell() const
     return m_spellInfo->Id == 36563 ||
 //------------Mage-----------------
     // Blink
-    m_spellInfo->Id == 1953;
+    m_spellInfo->Id == 1953 ||
+//------------Druid----------------
+    // Feral Charge - Bear
+    m_spellInfo->Id == 16979 ||
+    // Feral Charge - Cat
+    m_spellInfo->Id == 49376 ||
+//----------Warlock----------------
+    // Demonic Circle: Teleport
+    m_spellInfo->Id == 48020;
+}
+
+bool Spell::SilenceDelaySpell() const
+{
+//------------Generic--------------
+    // Arcane Torrent - Mana
+    return m_spellInfo->Id == 28730 ||
+    // Arcane Torrent - Energy
+    m_spellInfo->Id == 25046 ||
+    // Arcane Torrent - Runic Power
+    m_spellInfo->Id == 50613 ||
+//------------Warrior--------------
+    // Pummel
+    m_spellInfo->Id == 6552 ||
+    // Shield Bash
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARRIOR && m_spellInfo->SpellFamilyFlags[0] == 0x800) ||
+//---------Death Knight------------
+    // Mind Freeze
+    m_spellInfo->Id == 47528 ||
+    // Strangulate
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->SpellFamilyFlags[0] == 0x200) ||
+//------------Shaman---------------
+    // Wind Shear
+    m_spellInfo->Id == 57994 ||
+//------------Rogue----------------
+    // Kick
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[0] == 0x10) ||
+//------------Priest---------------
+    // Silence
+    m_spellInfo->Id == 15487 ||
+//------------Mage-----------------
+    // Counterspell
+    m_spellInfo->Id == 2139;
 }
