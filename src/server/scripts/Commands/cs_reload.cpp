@@ -157,6 +157,7 @@ public:
             { "waypoint_data",                SEC_ADMINISTRATOR, true,  &HandleReloadWpCommand,                         "", NULL },
             { "vehicle_accessory",            SEC_ADMINISTRATOR, true,  &HandleReloadVehicleAccessoryCommand,           "", NULL },
             { "vehicle_template_accessory",   SEC_ADMINISTRATOR, true,  &HandleReloadVehicleTemplateAccessoryCommand,   "", NULL },
+            { "transmog_armor_sets",          SEC_ADMINISTRATOR, true,  &HandleReloadTransmogArmorSetsCommand,          "", NULL },
             { NULL,                           0,                 false, NULL,                                           "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -198,6 +199,8 @@ public:
 
         HandleReloadVehicleAccessoryCommand(handler, "");
         HandleReloadVehicleTemplateAccessoryCommand(handler, "");
+
+        HandleReloadTransmogArmorSetsCommand(handler, "");
 
         HandleReloadAutobroadcastCommand(handler, "");
         return true;
@@ -1290,6 +1293,14 @@ public:
         sLog->outString("Reloading vehicle_template_accessory table...");
         sObjectMgr->LoadVehicleTemplateAccessories();
         handler->SendGlobalGMSysMessage("Vehicle template accessories reloaded.");
+        return true;
+    }
+
+    static bool HandleReloadTransmogArmorSetsCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        sLog->outString("Reloading transmog_armory_sets table...");
+        sObjectMgr->LoadTransmogSets();
+        handler->SendGlobalGMSysMessage("Transmog Armor Sets reloaded.");
         return true;
     }
 };

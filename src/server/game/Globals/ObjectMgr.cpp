@@ -421,7 +421,6 @@ void ObjectMgr::LoadCreatureTemplates()
 
         uint32 entry = fields[0].GetUInt32();
 
-
         CreatureTemplate& creatureTemplate = CreatureTemplateStore[entry];
 
         creatureTemplate.Entry = entry;
@@ -7869,7 +7868,6 @@ void ObjectMgr::LoadFishingBaseSkillLevel()
 
     do
     {
-
         Field* fields = result->Fetch();
         uint32 entry  = fields[0].GetUInt32();
         int32 skill   = fields[1].GetInt32();
@@ -7978,7 +7976,6 @@ void ObjectMgr::LoadGameTele()
 
     do
     {
-
         Field* fields = result->Fetch();
 
         uint32 id         = fields[0].GetUInt32();
@@ -8254,7 +8251,7 @@ void ObjectMgr::LoadTrainerSpell()
 
     if (!result)
     {
-        sLog->outErrorDb(">>  Loaded 0 Trainers. DB table `npc_trainer` is empty!");
+        sLog->outErrorDb(">> Loaded 0 Trainers. DB table `npc_trainer` is empty!");
         sLog->outString();
         return;
     }
@@ -8263,7 +8260,6 @@ void ObjectMgr::LoadTrainerSpell()
 
     do
     {
-
         Field* fields = result->Fetch();
 
         uint32 entry         = fields[0].GetUInt32();
@@ -8275,8 +8271,7 @@ void ObjectMgr::LoadTrainerSpell()
 
         AddSpellToTrainer(entry, spell, spellCost, reqSkill, reqSkillValue, reqLevel);
 
-        count++;
-
+        ++count;
     }
     while (result->NextRow());
 
@@ -8316,7 +8311,8 @@ int ObjectMgr::LoadReferenceVendor(int32 vendor, int32 item, std::set<uint32> *s
             ++count;
         }
 
-    } while (result->NextRow());
+    }
+    while (result->NextRow());
 
     return count;
 }
@@ -8336,7 +8332,7 @@ void ObjectMgr::LoadVendors()
     if (!result)
     {
         sLog->outString();
-        sLog->outErrorDb(">>  Loaded 0 Vendors. DB table `npc_vendor` is empty!");
+        sLog->outErrorDb(">> Loaded 0 Vendors. DB table `npc_vendor` is empty!");
         return;
     }
 
@@ -8346,7 +8342,7 @@ void ObjectMgr::LoadVendors()
     {
         Field* fields = result->Fetch();
 
-        uint32 entry        = fields[0].GetUInt32();
+        uint32 entry       = fields[0].GetUInt32();
         int32 item_id      = fields[1].GetInt32();
 
         // if item is a negative, its a reference
@@ -8366,7 +8362,6 @@ void ObjectMgr::LoadVendors()
             vList.AddItem(item_id, maxcount, incrtime, ExtendedCost);
             ++count;
         }
-
     }
     while (result->NextRow());
 
@@ -8384,7 +8379,7 @@ void ObjectMgr::LoadGossipMenu()
 
     if (!result)
     {
-        sLog->outErrorDb(">> Loaded 0  gossip_menu entries. DB table `gossip_menu` is empty!");
+        sLog->outErrorDb(">> Loaded 0 gossip_menu entries. DB table `gossip_menu` is empty!");
         sLog->outString();
         return;
     }
@@ -8393,7 +8388,6 @@ void ObjectMgr::LoadGossipMenu()
 
     do
     {
-
         Field* fields = result->Fetch();
 
         GossipMenus gMenu;
@@ -8476,6 +8470,54 @@ void ObjectMgr::LoadGossipMenuItems()
     while (result->NextRow());
 
     sLog->outString(">> Loaded %u gossip_menu_option entries in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    sLog->outString();
+}
+
+void ObjectMgr::LoadTransmogSets()
+{
+    uint32 oldMSTime = getMSTime();
+
+    mTransmog.clear();
+
+    QueryResult result = WorldDatabase.Query("SELECT id, account_id, class, faction, head_id, shoulder_id, chest_id, gloves_id, belt_id, legs_id, boots_id, option_name FROM transmog_armor_sets");
+
+    if (!result)
+    {
+        sLog->outErrorDb(">> Loaded 0 transmog sets. DB table `transmog_armor_sets` is empty!");
+        sLog->outString();
+        return;
+    }
+
+    uint32 count = 0;
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint32 id = fields[0].GetUInt32();
+
+        TransmogSets transmog;
+
+        transmog.id             = id;
+        transmog.account_id     = fields[1].GetUInt32();
+        transmog.transmog_class = fields[2].GetUInt8();
+        transmog.faction        = fields[3].GetUInt8();
+        transmog.head_id        = fields[4].GetUInt8();
+        transmog.shoulder_id    = fields[5].GetUInt32();
+        transmog.chest_id       = fields[6].GetUInt32();
+        transmog.gloves_id      = fields[7].GetUInt32();
+        transmog.belt_id        = fields[8].GetUInt32();
+        transmog.legs_id        = fields[9].GetUInt32();
+        transmog.boots_id       = fields[10].GetUInt32();
+        transmog.option_name    = fields[11].GetString();
+
+        mTransmog[id] = transmog;
+
+        ++count;
+    }
+    while (result->NextRow());
+
+    sLog->outString(">> Loaded %u transmog sets in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     sLog->outString();
 }
 

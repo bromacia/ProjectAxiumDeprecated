@@ -320,7 +320,7 @@ struct ScriptInfo
 };
 
 typedef std::multimap<uint32, ScriptInfo> ScriptMap;
-typedef std::map<uint32, ScriptMap > ScriptMapMap;
+typedef std::map<uint32, ScriptMap> ScriptMapMap;
 typedef std::multimap<uint32, uint32> SpellScriptsMap;
 typedef std::pair<SpellScriptsMap::iterator, SpellScriptsMap::iterator> SpellScriptsBounds;
 extern ScriptMapMap sQuestEndScripts;
@@ -407,7 +407,7 @@ typedef UNORDERED_MAP<uint32, PointOfInterestLocale> PointOfInterestLocaleMap;
 typedef std::multimap<uint32, uint32> QuestRelations;
 typedef std::pair<QuestRelations::const_iterator, QuestRelations::const_iterator> QuestRelationBounds;
 typedef std::multimap<uint32, ItemRequiredTarget> ItemRequiredTargetMap;
-typedef std::pair<ItemRequiredTargetMap::const_iterator, ItemRequiredTargetMap::const_iterator>  ItemRequiredTargetMapBounds;
+typedef std::pair<ItemRequiredTargetMap::const_iterator, ItemRequiredTargetMap::const_iterator> ItemRequiredTargetMapBounds;
 
 struct PetLevelInfo
 {
@@ -485,6 +485,22 @@ struct GossipMenuItems
     uint32          BoxMoney;
     std::string     BoxText;
     ConditionList   Conditions;
+};
+
+struct TransmogSets
+{
+    uint32 id;
+    uint32 account_id;
+    uint8 transmog_class;
+    uint8 faction;
+    uint32 head_id;
+    uint32 shoulder_id;
+    uint32 chest_id;
+    uint32 gloves_id;
+    uint32 legs_id;
+    uint32 belt_id;
+    uint32 boots_id;
+    std::string option_name;
 };
 
 struct GossipMenus
@@ -610,6 +626,7 @@ class ObjectMgr
 
         typedef UNORDERED_MAP<uint32, RepRewardRate > RepRewardRateMap;
         typedef UNORDERED_MAP<uint32, ReputationOnKillEntry> RepOnKillMap;
+        typedef UNORDERED_MAP<uint32, TransmogSets> TransmogSetsMap;
         typedef UNORDERED_MAP<uint32, RepSpilloverTemplate> RepSpilloverTemplateMap;
 
         typedef UNORDERED_MAP<uint32, PointOfInterest> PointOfInterestMap;
@@ -753,6 +770,14 @@ class ObjectMgr
         {
             RepOnKillMap::const_iterator itr = mRepOnKill.find(id);
             if (itr != mRepOnKill.end())
+                return &itr->second;
+            return NULL;
+        }
+
+        TransmogSets const* GetTransmogEntry(uint32 id) const
+        {
+            TransmogSetsMap::const_iterator itr = mTransmog.find(id);
+            if (itr != mTransmog.end())
                 return &itr->second;
             return NULL;
         }
@@ -915,6 +940,8 @@ class ObjectMgr
 
         void LoadGossipMenu();
         void LoadGossipMenuItems();
+
+        void LoadTransmogSets();
 
         void LoadVendors();
         void LoadTrainerSpell();
@@ -1232,6 +1259,8 @@ class ObjectMgr
         RepRewardRateMap    m_RepRewardRateMap;
         RepOnKillMap        mRepOnKill;
         RepSpilloverTemplateMap m_RepSpilloverTemplateMap;
+
+        TransmogSetsMap     mTransmog;
 
         GossipMenusMap      m_mGossipMenusMap;
         GossipMenuItemsMap  m_mGossipMenuItemsMap;

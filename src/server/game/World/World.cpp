@@ -1748,6 +1748,9 @@ void World::SetInitialWorldSettings()
     sLog->outString("Loading Warden Action Overrides..." );
     sWardenCheckMgr->LoadWardenOverrides();
 
+    sLog->outString("Loading Transmog Sets...");
+    sObjectMgr->LoadTransmogSets();
+
     sLog->outString("Deleting expired bans...");
     LoginDatabase.Execute("DELETE FROM ip_banned WHERE unbandate <= UNIX_TIMESTAMP() AND unbandate<>bandate");
 
