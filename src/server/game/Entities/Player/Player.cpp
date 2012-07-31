@@ -11448,7 +11448,7 @@ InventoryResult Player::CanEquipItem(uint8 slot, uint16 &dest, Item* pItem, bool
                             return EQUIP_ERR_NOT_DURING_ARENA_MATCH;
                 }
 
-                if (isInCombat()&& (pProto->Class == ITEM_CLASS_WEAPON || pProto->InventoryType == INVTYPE_RELIC) && m_weaponChangeTimer != 0)
+                if (isInCombat() && (pProto->Class == ITEM_CLASS_WEAPON || pProto->InventoryType == INVTYPE_RELIC) && m_weaponChangeTimer != 0)
                     return EQUIP_ERR_CANT_DO_RIGHT_NOW;         // maybe exist better err
 
                 if (IsNonMeleeSpellCasted(false))
@@ -12334,11 +12334,11 @@ void Player::SetVisibleItemSlot(uint8 slot, Item* pItem)
 {
     if (pItem)
     {
-        if(pItem->TransmogEntry && pItem->TransmogOwner == GetGUIDLow())
+        if (pItem->TransmogEntry && pItem->TransmogOwner == GetGUIDLow())
             SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->TransmogEntry);
         else
         {
-            if(pItem->TransmogEntry || pItem->TransmogOwner)
+            if (pItem->TransmogEntry || pItem->TransmogOwner)
             {
                 CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = 0, TransmogOwner = 0 WHERE guid = %u", pItem->GetGUIDLow());
                 pItem->TransmogEntry = NULL;

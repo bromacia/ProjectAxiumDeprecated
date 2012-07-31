@@ -487,12 +487,9 @@ struct GossipMenuItems
     ConditionList   Conditions;
 };
 
-struct TransmogSets
+struct TransmogArmor
 {
     uint32 id;
-    uint32 account_id;
-    uint8 transmog_class;
-    uint8 faction;
     uint32 head_id;
     uint32 shoulder_id;
     uint32 chest_id;
@@ -500,7 +497,14 @@ struct TransmogSets
     uint32 legs_id;
     uint32 belt_id;
     uint32 boots_id;
-    std::string option_name;
+};
+
+struct TransmogWeapon
+{
+    uint32 id;
+    uint32 mainhand_id;
+    uint32 offhand_id;
+    uint32 ranged_id;
 };
 
 struct GossipMenus
@@ -626,7 +630,8 @@ class ObjectMgr
 
         typedef UNORDERED_MAP<uint32, RepRewardRate > RepRewardRateMap;
         typedef UNORDERED_MAP<uint32, ReputationOnKillEntry> RepOnKillMap;
-        typedef UNORDERED_MAP<uint32, TransmogSets> TransmogSetsMap;
+        typedef UNORDERED_MAP<uint32, TransmogArmor> TransmogArmorMap;
+        typedef UNORDERED_MAP<uint32, TransmogWeapon> TransmogWeaponMap;
         typedef UNORDERED_MAP<uint32, RepSpilloverTemplate> RepSpilloverTemplateMap;
 
         typedef UNORDERED_MAP<uint32, PointOfInterest> PointOfInterestMap;
@@ -774,10 +779,18 @@ class ObjectMgr
             return NULL;
         }
 
-        TransmogSets const* GetTransmogEntry(uint32 id) const
+        TransmogArmor const* GetTransmogArmorEntry(uint32 id) const
         {
-            TransmogSetsMap::const_iterator itr = mTransmog.find(id);
-            if (itr != mTransmog.end())
+            TransmogArmorMap::const_iterator itr = mTransmogArmor.find(id);
+            if (itr != mTransmogArmor.end())
+                return &itr->second;
+            return NULL;
+        }
+
+        TransmogWeapon const* GetTransmogWeaponEntry(uint32 id) const
+        {
+            TransmogWeaponMap::const_iterator itr = mTransmogWeapon.find(id);
+            if (itr != mTransmogWeapon.end())
                 return &itr->second;
             return NULL;
         }
@@ -941,7 +954,8 @@ class ObjectMgr
         void LoadGossipMenu();
         void LoadGossipMenuItems();
 
-        void LoadTransmogSets();
+        void LoadArmorTransmogs();
+        void LoadWeaponTransmogs();
 
         void LoadVendors();
         void LoadTrainerSpell();
@@ -1260,7 +1274,8 @@ class ObjectMgr
         RepOnKillMap        mRepOnKill;
         RepSpilloverTemplateMap m_RepSpilloverTemplateMap;
 
-        TransmogSetsMap     mTransmog;
+        TransmogArmorMap     mTransmogArmor;
+        TransmogWeaponMap    mTransmogWeapon;
 
         GossipMenusMap      m_mGossipMenusMap;
         GossipMenuItemsMap  m_mGossipMenuItemsMap;

@@ -158,6 +158,7 @@ public:
             { "vehicle_accessory",            SEC_ADMINISTRATOR, true,  &HandleReloadVehicleAccessoryCommand,           "", NULL },
             { "vehicle_template_accessory",   SEC_ADMINISTRATOR, true,  &HandleReloadVehicleTemplateAccessoryCommand,   "", NULL },
             { "transmog_armor_sets",          SEC_ADMINISTRATOR, true,  &HandleReloadTransmogArmorSetsCommand,          "", NULL },
+            { "transmog_weapons",             SEC_ADMINISTRATOR, true,  &HandleReloadTransmogWeaponsCommand,            "", NULL },
             { NULL,                           0,                 false, NULL,                                           "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -201,6 +202,7 @@ public:
         HandleReloadVehicleTemplateAccessoryCommand(handler, "");
 
         HandleReloadTransmogArmorSetsCommand(handler, "");
+        HandleReloadTransmogWeaponsCommand(handler, "");
 
         HandleReloadAutobroadcastCommand(handler, "");
         return true;
@@ -1299,8 +1301,16 @@ public:
     static bool HandleReloadTransmogArmorSetsCommand(ChatHandler* handler, const char* /*args*/)
     {
         sLog->outString("Reloading transmog_armory_sets table...");
-        sObjectMgr->LoadTransmogSets();
+        sObjectMgr->LoadArmorTransmogs();
         handler->SendGlobalGMSysMessage("Transmog Armor Sets reloaded.");
+        return true;
+    }
+
+    static bool HandleReloadTransmogWeaponsCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        sLog->outString("Reloading transmog_weapons table...");
+        sObjectMgr->LoadWeaponTransmogs();
+        handler->SendGlobalGMSysMessage("Weapon Transmogs reloaded.");
         return true;
     }
 };

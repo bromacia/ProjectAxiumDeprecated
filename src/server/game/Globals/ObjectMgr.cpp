@@ -8473,17 +8473,17 @@ void ObjectMgr::LoadGossipMenuItems()
     sLog->outString();
 }
 
-void ObjectMgr::LoadTransmogSets()
+void ObjectMgr::LoadArmorTransmogs()
 {
     uint32 oldMSTime = getMSTime();
 
-    mTransmog.clear();
+    mTransmogArmor.clear();
 
-    QueryResult result = WorldDatabase.Query("SELECT id, account_id, class, faction, head_id, shoulder_id, chest_id, gloves_id, belt_id, legs_id, boots_id, option_name FROM transmog_armor_sets");
+    QueryResult result = WorldDatabase.Query("SELECT id, head_id, shoulder_id, chest_id, gloves_id, belt_id, legs_id, boots_id FROM transmog_armor_sets");
 
     if (!result)
     {
-        sLog->outErrorDb(">> Loaded 0 transmog sets. DB table `transmog_armor_sets` is empty!");
+        sLog->outErrorDb(">> Loaded 0 transmog armor sets. DB table `transmog_armor_sets` is empty!");
         sLog->outString();
         return;
     }
@@ -8496,28 +8496,64 @@ void ObjectMgr::LoadTransmogSets()
 
         uint32 id = fields[0].GetUInt32();
 
-        TransmogSets transmog;
+        TransmogArmor transmog;
 
         transmog.id             = id;
-        transmog.account_id     = fields[1].GetUInt32();
-        transmog.transmog_class = fields[2].GetUInt8();
-        transmog.faction        = fields[3].GetUInt8();
-        transmog.head_id        = fields[4].GetUInt8();
-        transmog.shoulder_id    = fields[5].GetUInt32();
-        transmog.chest_id       = fields[6].GetUInt32();
-        transmog.gloves_id      = fields[7].GetUInt32();
-        transmog.belt_id        = fields[8].GetUInt32();
-        transmog.legs_id        = fields[9].GetUInt32();
-        transmog.boots_id       = fields[10].GetUInt32();
-        transmog.option_name    = fields[11].GetString();
+        transmog.head_id        = fields[1].GetUInt32();
+        transmog.shoulder_id    = fields[2].GetUInt32();
+        transmog.chest_id       = fields[3].GetUInt32();
+        transmog.gloves_id      = fields[4].GetUInt32();
+        transmog.belt_id        = fields[5].GetUInt32();
+        transmog.legs_id        = fields[6].GetUInt32();
+        transmog.boots_id       = fields[7].GetUInt32();
 
-        mTransmog[id] = transmog;
+        mTransmogArmor[id] = transmog;
 
         ++count;
     }
     while (result->NextRow());
 
-    sLog->outString(">> Loaded %u transmog sets in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    sLog->outString(">> Loaded %u transmog armor sets in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    sLog->outString();
+}
+
+void ObjectMgr::LoadWeaponTransmogs()
+{
+    uint32 oldMSTime = getMSTime();
+
+    mTransmogWeapon.clear();
+
+    QueryResult result = WorldDatabase.Query("SELECT id, mainhand_id, offhand_id, ranged_id FROM transmog_weapons");
+
+    if (!result)
+    {
+        sLog->outErrorDb(">> Loaded 0 transmog weapons. DB table `transmog_weapons` is empty!");
+        sLog->outString();
+        return;
+    }
+
+    uint32 count = 0;
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint32 id = fields[0].GetUInt32();
+
+        TransmogWeapon transmog;
+
+        transmog.id                 = id;
+        transmog.mainhand_id        = fields[1].GetUInt32();
+        transmog.offhand_id         = fields[2].GetUInt32();
+        transmog.ranged_id          = fields[3].GetUInt32();
+
+        mTransmogWeapon[id] = transmog;
+
+        ++count;
+    }
+    while (result->NextRow());
+
+    sLog->outString(">> Loaded %u transmog weapons in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     sLog->outString();
 }
 
