@@ -15,7 +15,6 @@ set(scripts_STAT_SRCS
   Custom/duel_reset.cpp
   Custom/npc_beastmaster.cpp
   Custom/arena_team_ranks.cpp
-  Custom/npc_arena_spectator.cpp
   Custom/npc_transmog.cpp
 )
 

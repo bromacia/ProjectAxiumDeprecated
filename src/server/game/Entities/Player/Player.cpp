@@ -17274,13 +17274,6 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     _LoadEquipmentSets(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS));
 
-    // Arena Spectator
-    SetSpectator(false);
-
-    // In case player has bind sight for some reason, remove it
-    if (HasAura(6277))
-        RemoveAura(6277);
-
     // Remove Demonic Circle aura
     if (HasAura(48018))
         RemoveAura(48018);
@@ -22546,9 +22539,6 @@ void Player::SummonIfPossible(bool agree)
 
     GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_ACCEPTED_SUMMONINGS, 1);
 
-    // Arena Spectator
-    SetSpectator(false);
-
     TeleportTo(m_summon_mapid, m_summon_x, m_summon_y, m_summon_z, GetOrientation());
 }
 
@@ -25231,32 +25221,6 @@ void Player::_SaveInstanceTimeRestrictions(SQLTransaction& trans)
         stmt->setUInt32(1, itr->first);
         stmt->setUInt64(2, itr->second);
         trans->Append(stmt);
-    }
-}
-
-// Arena Spectator
-bool Player::IsSpectator() const
-{
-    if (!IsVisible() && isDead())
-        return true;
-    else
-        return false;
-}
-
-void Player::SetSpectator(bool x)
-{
-    if (IsSpectator())
-        return;
-
-    if (!x)
-    {
-        setDeathState(ALIVE);
-        SetVisible(true);
-    }
-    else
-    {
-        setDeathState(DEAD);
-        SetVisible(false);
     }
 }
 

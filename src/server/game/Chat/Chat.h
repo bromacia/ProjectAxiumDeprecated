@@ -298,13 +298,8 @@ class ChatHandler
         bool HandleCreatePetCommand(const char* args);
 
         // Custom Commands
-        bool HandleLeaveCommand(const char* args);
-
         bool HandlePersonalQueueCommand(const char* args);
         bool HandleAddPersonalQueueCommand(const char* args);
-
-        bool HandleSpectateCommand(const char* args);
-        bool HandleUnSpectateCommand(const char* args);
 
         bool HandleWarpCommand(const char * args);
 

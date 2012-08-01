@@ -935,22 +935,6 @@ void Battleground::EndBattleground(uint32 winner)
 
     if (winmsg_id)
         SendMessageToAll(winmsg_id, CHAT_MSG_BG_SYSTEM_NEUTRAL);
-
-    // Arena Spectator
-    // teleport spectators to recall position and remove spectator state
-    Map::PlayerList const &PlList = m_Map->GetPlayers();
-    if (!PlList.isEmpty())
-        for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
-            if (Player* player = i->getSource())
-                if (player->IsSpectator())
-                {
-                    player->SetSpectator(false);
-                    player->TeleportToBGEntryPoint();
-                }
-                else
-                {
-                    player->SetSpectator(false);
-                }
 }
 
 uint32 Battleground::GetBonusHonorFromKill(uint32 kills) const
@@ -1141,9 +1125,6 @@ void Battleground::StartBattleground()
 
 void Battleground::AddPlayer(Player* player)
 {
-    // Arena Spectator
-    player->SetSpectator(false);
-
     // remove afk from player
     if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_AFK))
         player->ToggleAFK();
@@ -1296,13 +1277,6 @@ void Battleground::EventPlayerLoggedOut(Player* player)
     m_Players[guid].OfflineRemoveTime = sWorld->GetGameTime() + MAX_OFFLINE_TIME;
     if (GetStatus() == STATUS_IN_PROGRESS)
     {
-        if (player->IsSpectator())
-        {
-            player->SetSpectator(false);
-            player->TeleportToBGEntryPoint();
-            return;
-        }
-
         // drop flag and handle other cleanups
         RemovePlayer(player, guid, GetPlayerTeam(guid));
 

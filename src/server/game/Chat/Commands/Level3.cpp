@@ -1942,7 +1942,6 @@ bool ChatHandler::HandleReviveCommand(const char* args)
         target->ResurrectPlayer(1.0f);
         target->SpawnCorpseBones();
         target->SaveToDB();
-        target->SetSpectator(false);
     }
     else
         // will resurrected at login without corpse

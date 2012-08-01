@@ -239,7 +239,6 @@ void AddBattlegroundScripts()
     void AddSC_DuelReset();
     void AddSC_npc_beastmaster();
     void AddSC_arena_team_ranks();
-    void AddSC_npc_arena_spectator();
     void AddSC_npc_transmog();
 #endif
 
@@ -251,7 +250,6 @@ void AddCustomScripts()
     AddSC_DuelReset();
     AddSC_npc_beastmaster();
     AddSC_arena_team_ranks();
-    AddSC_npc_arena_spectator();
     AddSC_npc_transmog();
 #endif
 }

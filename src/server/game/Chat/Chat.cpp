@@ -416,11 +416,8 @@ ChatCommand* ChatHandler::getCommandTable()
         { "playall",        SEC_GAMEMASTER,  false, OldHandler<&ChatHandler::HandlePlayAllCommand>,             "", NULL },
 
         // Custom
-        { "leave",            SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleLeaveCommand>,             "", NULL },
         { "personalqueue",    SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandlePersonalQueueCommand>,     "", NULL },
         { "addpersonalqueue", SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleAddPersonalQueueCommand>,  "", NULL },
-        { "spectate",         SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleSpectateCommand>,          "", NULL },
-        { "unspectate",       SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleUnSpectateCommand>,        "", NULL },
         { "warp",             SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleWarpCommand>,              "", NULL },
         { "prepare",          SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandlePrepareCommand>,           "", NULL },
         { "groupfreeze",      SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandleGroupFreezeCommand>,       "", NULL },
