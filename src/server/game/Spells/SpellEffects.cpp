@@ -1454,13 +1454,19 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     m_caster->CastSpell(m_caster, 62458, true); // such a bad hack makes me sad :<
                 break;
             case 49560: // Death Grip
-                Position pos;
-                GetSummonPosition(effIndex, pos);
-                if (Unit* unit = unitTarget->GetVehicleBase()) // what is this for?
-                    unit->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), damage, true);
-                else if (!unitTarget->HasAuraType(SPELL_AURA_DEFLECT_SPELLS)) // Deterrence
-                    unitTarget->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), damage, true);
-                return;
+                if (unitTarget->HasAuraType(SPELL_AURA_REFLECT_SPELLS))
+                {
+                    if (!unitTarget->HasAuraType(SPELL_AURA_DEFLECT_SPELLS))
+                        m_caster->CastSpell(unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ(), damage, true);
+                }
+                else
+                {
+                    if (Unit* unit = unitTarget->GetVehicleBase())
+                        unit->CastSpell(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), damage, true);
+                    else if (!unitTarget->HasAuraType(SPELL_AURA_DEFLECT_SPELLS))
+                        unitTarget->CastSpell(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), damage, true);
+                }
+                break;
             case 46584: // Raise Dead
                 if (m_caster->GetTypeId() != TYPEID_PLAYER)
                     return;
