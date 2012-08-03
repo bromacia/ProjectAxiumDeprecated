@@ -4897,6 +4897,7 @@ bool ChatHandler::HandlePrepareCommand(const char* args)
         target->ClearDiminishings();
         target->ClearComboPoints();
         target->ClearInCombat();
+        target->getHostileRefManager().deleteReferences();
     }
     else
         // will resurrected at login without corpse
