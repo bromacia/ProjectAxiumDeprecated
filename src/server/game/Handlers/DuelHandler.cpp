@@ -27,16 +27,14 @@
 void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 {
     uint64 guid;
-    Player* player;
-    Player* plTarget;
 
     recvPacket >> guid;
 
-    if (!GetPlayer()->duel)                                  // ignore accept from duel-sender
+    if (!GetPlayer()->duel)
         return;
 
-    player       = GetPlayer();
-    plTarget = player->duel->opponent;
+    Player* player = GetPlayer();
+    Player* plTarget = GetPlayer()->duel->opponent;
 
     if (player == player->duel->initiator || !plTarget || player == plTarget || player->duel->startTime != 0 || plTarget->duel->startTime != 0)
         return;
@@ -51,7 +49,7 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 
     player->SendDuelCountdown(3000);
     plTarget->SendDuelCountdown(3000);
-    if (player->GetMapId() == 530 || plTarget->GetMapId() == 530)
+    if (player->GetAreaId() != 85 || plTarget->GetAreaId() != 85)
         return;
     player->RemoveAllNegativeAuras();
     plTarget->RemoveAllNegativeAuras();
@@ -71,6 +69,8 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     plTarget->ClearComboPoints();
     player->ClearInCombat();
     plTarget->ClearInCombat();
+    player->getHostileRefManager().deleteReferences();
+    plTarget->getHostileRefManager().deleteReferences();
 }
 
 void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recvPacket)
@@ -90,7 +90,7 @@ void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recvPacket)
         if (GetPlayer()->duel->opponent)
             GetPlayer()->duel->opponent->CombatStopWithPets(true);
 
-        GetPlayer()->CastSpell(GetPlayer(), 7267, true);    // beg
+        GetPlayer()->CastSpell(GetPlayer(), 7267, true); // Grovel
         GetPlayer()->DuelComplete(DUEL_WON);
         return;
     }

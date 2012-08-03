@@ -12,7 +12,7 @@ class Reset_OnDuelEnd : public PlayerScript
         // reset cooldowns
         if (sWorld->getBoolConfig(CONFIG_DUEL_RESET_COOLDOWN) && type == DUEL_WON)
         {
-            if (winner->GetMapId() == 530 || loser->GetMapId() == 530)
+            if (winner->GetAreaId() != 85 || loser->GetAreaId() != 85)
                 return;
             winner->RemoveAllNegativeAuras();
             loser->RemoveAllNegativeAuras();
@@ -30,6 +30,8 @@ class Reset_OnDuelEnd : public PlayerScript
             loser->ClearComboPoints();
             winner->ClearInCombat();
             loser->ClearInCombat();
+            winner->getHostileRefManager().deleteReferences();
+            loser->getHostileRefManager().deleteReferences();
         }
     }
 };
