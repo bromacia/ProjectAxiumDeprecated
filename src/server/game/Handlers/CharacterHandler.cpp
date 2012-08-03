@@ -1893,7 +1893,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
         }
 
         // Remove All Transmogrifications
-        trans->PAppend("UPDATE item_instance SET TransmogEntry = 0, TransmogOwner = 0 WHERE owner_guid = %u", lowGuid);
+        trans->PAppend("UPDATE item_instance SET TransmogEntry = 0 WHERE owner_guid = %u", lowGuid);
     }
 
     CharacterDatabase.CommitTransaction(trans);

@@ -5,17 +5,23 @@ enum Slots
     head     = PLAYER_VISIBLE_ITEM_1_ENTRYID,
     shoulder = PLAYER_VISIBLE_ITEM_3_ENTRYID,
     chest    = PLAYER_VISIBLE_ITEM_5_ENTRYID,
-    shirt    = PLAYER_VISIBLE_ITEM_4_ENTRYID, //unused
-    tabard   = PLAYER_VISIBLE_ITEM_19_ENTRYID, //unused
-    wrist    = PLAYER_VISIBLE_ITEM_9_ENTRYID, //unused
+    shirt    = PLAYER_VISIBLE_ITEM_4_ENTRYID,
+    tabard   = PLAYER_VISIBLE_ITEM_19_ENTRYID,
+    wrist    = PLAYER_VISIBLE_ITEM_9_ENTRYID,
     gloves   = PLAYER_VISIBLE_ITEM_10_ENTRYID,
     belt     = PLAYER_VISIBLE_ITEM_6_ENTRYID,
     legs     = PLAYER_VISIBLE_ITEM_7_ENTRYID,
     boots    = PLAYER_VISIBLE_ITEM_8_ENTRYID,
-    back     = PLAYER_VISIBLE_ITEM_15_ENTRYID, //unused
+    back     = PLAYER_VISIBLE_ITEM_15_ENTRYID,
     mainhand = PLAYER_VISIBLE_ITEM_16_ENTRYID,
     offhand  = PLAYER_VISIBLE_ITEM_17_ENTRYID,
     ranged   = PLAYER_VISIBLE_ITEM_18_ENTRYID,
+};
+
+enum TransmogTeam
+{
+    Alliance            = 469,
+    Horde               = 67,
 };
 
 class npc_transmog : public CreatureScript
@@ -35,9 +41,9 @@ class npc_transmog : public CreatureScript
     bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
     {
         player->PlayerTalkClass->ClearMenus();
-        if (action == 1) // Armor
+        if (action == 1) // Armor Sets
         {
-            QueryResult result = WorldDatabase.PQuery("SELECT option_name, id, faction, account_id FROM transmog_armor_sets WHERE class='%d' OR class='0'", player->getClass());
+            QueryResult result = WorldDatabase.PQuery("SELECT option_name, id, team_id, account_id FROM transmog_armor_sets WHERE class='%d' OR class='0' ORDER BY id ASC", player->getClass());
 
             if (!result)
             {
@@ -49,12 +55,9 @@ class npc_transmog : public CreatureScript
             do
             {
                 Field* fields = result->Fetch();
-                if (fields[2].GetUInt32() == player->getFaction()
-                    || fields[2].GetUInt32() == 0
-                    || fields[3].GetUInt32() == player->GetSession()->GetAccountId())
-                {
-                    player->ADD_GOSSIP_ITEM(4, fields[0].GetString(), 1, fields[1].GetUInt32());
-                }
+                if (fields[2].GetUInt32() == player->GetTeam() || fields[2].GetUInt32() == 0)
+                    if (fields[3].GetUInt32() == player->GetSession()->GetAccountId() || fields[3].GetUInt32() == 0)
+                        player->ADD_GOSSIP_ITEM(4, fields[0].GetString(), 1, fields[1].GetUInt32());
             }
             while (result->NextRow());
 
@@ -66,7 +69,7 @@ class npc_transmog : public CreatureScript
         }
         else if (action == 2) // Weapons
         {
-            QueryResult result = WorldDatabase.PQuery("SELECT option_name, id, faction, account_id, mainhand_id, offhand_id, ranged_id FROM transmog_weapons WHERE class='%d' OR class='0'", player->getClass());
+            QueryResult result = WorldDatabase.PQuery("SELECT option_name, id, team_id, account_id, mainhand_id, offhand_id, ranged_id FROM transmog_weapons WHERE class='%d' OR class='0' ORDER BY id ASC", player->getClass());
 
             if (!result)
             {
@@ -78,12 +81,9 @@ class npc_transmog : public CreatureScript
             do
             {
                 Field* fields = result->Fetch();
-                if (fields[2].GetUInt32() == player->getFaction()
-                    || fields[2].GetUInt32() == 0
-                    || fields[3].GetUInt32() == player->GetSession()->GetAccountId())
-                {
-                    player->ADD_GOSSIP_ITEM(4, fields[0].GetString(), 2, fields[1].GetUInt32());
-                }
+                if (fields[2].GetUInt32() == player->GetTeam() || fields[2].GetUInt32() == 0)
+                    if (fields[3].GetUInt32() == player->GetSession()->GetAccountId() || fields[3].GetUInt32() == 0)
+                        player->ADD_GOSSIP_ITEM(4, fields[0].GetString(), 2, fields[1].GetUInt32());
             }
             while (result->NextRow());
 
@@ -93,13 +93,13 @@ class npc_transmog : public CreatureScript
             player->SEND_GOSSIP_MENU(50055, creature->GetGUID());
             return true;
         }
-        else if (action == 3) // OnGossipHello()
+        else if (action == 3)
         {
             OnGossipHello(player, creature);
         }
         else
         {
-            if (sender == 1) // Armor
+            if (sender == 1) // Armor Sets
             {
                 if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD) == 0
                     || player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_SHOULDERS) == 0
@@ -124,9 +124,8 @@ class npc_transmog : public CreatureScript
                                 && Slot != EQUIPMENT_SLOT_OFFHAND
                                 && Slot != EQUIPMENT_SLOT_RANGED)
                             {
-                                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = 0, TransmogOwner = 0 WHERE guid = %u", item->GetGUIDLow());
-                                item->TransmogEntry = NULL;
-                                item->TransmogOwner = NULL;
+                                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = 0 WHERE guid = %u", item->GetGUIDLow());
+                                item->TransmogEntry = 0;
                                 player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (Slot * 2), item->GetEntry());
                             }
                         }
@@ -146,44 +145,44 @@ class npc_transmog : public CreatureScript
 
                 if (transmog->head_id != 0)
                 {
-                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", transmog->head_id, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD)->GetGUIDLow());
+                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->head_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD)->GetGUIDLow());
                     player->SetUInt32Value(head, transmog->head_id);
                 }
                 if (transmog->shoulder_id != 0)
                 {
-                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", transmog->shoulder_id, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_SHOULDERS)->GetGUIDLow());
+                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->shoulder_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_SHOULDERS)->GetGUIDLow());
                     player->SetUInt32Value(shoulder, transmog->shoulder_id);
                 }
                 if (transmog->chest_id != 0)
                 {
-                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", transmog->chest_id, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_CHEST)->GetGUIDLow());
+                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->chest_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_CHEST)->GetGUIDLow());
                     player->SetUInt32Value(chest, transmog->chest_id);
                 }
                 if (transmog->gloves_id != 0)
                 {
-                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", transmog->gloves_id, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HANDS)->GetGUIDLow());
+                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->gloves_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HANDS)->GetGUIDLow());
                     player->SetUInt32Value(gloves, transmog->gloves_id);
                 }
                 if (transmog->legs_id != 0)
                 {
-                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", transmog->legs_id, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_LEGS)->GetGUIDLow());
+                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->legs_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_LEGS)->GetGUIDLow());
                     player->SetUInt32Value(legs, transmog->legs_id);
                 }
                 if (transmog->belt_id != 0)
                 {
-                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", transmog->belt_id, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_WAIST)->GetGUIDLow());
+                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->belt_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_WAIST)->GetGUIDLow());
                     player->SetUInt32Value(belt, transmog->belt_id);
                 }
                 if (transmog->boots_id != 0)
                 {
-                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", transmog->boots_id, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FEET)->GetGUIDLow());
+                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->boots_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FEET)->GetGUIDLow());
                     player->SetUInt32Value(boots, transmog->boots_id);
                 }
 
                 player->CLOSE_GOSSIP_MENU();
                 return true;
             }
-            else if (sender == 2) // Weapon
+            else if (sender == 2) // Weapons
             {
                 if (action == 100001)
                 {
@@ -199,9 +198,8 @@ class npc_transmog : public CreatureScript
                                 && Slot != EQUIPMENT_SLOT_WAIST
                                 && Slot != EQUIPMENT_SLOT_FEET)
                             {
-                                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = 0, TransmogOwner = 0 WHERE guid = %u", item->GetGUIDLow());
-                                item->TransmogEntry = NULL;
-                                item->TransmogOwner = NULL;
+                                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = 0 WHERE guid = %u", item->GetGUIDLow());
+                                item->TransmogEntry = 0;
                                 player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (Slot * 2), item->GetEntry());
                             }
                         }
@@ -237,7 +235,7 @@ class npc_transmog : public CreatureScript
                     {
                         if (item->SubClass == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate()->SubClass)
                         {
-                            CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", transmog->mainhand_id, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetGUIDLow());
+                            CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->mainhand_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetGUIDLow());
                             player->SetUInt32Value(mainhand, transmog->mainhand_id);
                         }
                         else
@@ -261,7 +259,7 @@ class npc_transmog : public CreatureScript
                     {
                         if (item->SubClass == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetTemplate()->SubClass)
                         {
-                            CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", transmog->offhand_id, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetGUIDLow());
+                            CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->offhand_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetGUIDLow());
                             player->SetUInt32Value(offhand, transmog->offhand_id);
                         }
                         else
@@ -285,7 +283,7 @@ class npc_transmog : public CreatureScript
                     {
                         if (item->SubClass == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetTemplate()->SubClass)
                         {
-                            CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u, TransmogOwner = %u WHERE guid = %u", transmog->ranged_id, player->GetGUIDLow(), player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetGUIDLow());
+                            CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->ranged_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetGUIDLow());
                             player->SetUInt32Value(ranged, transmog->ranged_id);
                         }
                         else

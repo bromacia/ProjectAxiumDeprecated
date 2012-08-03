@@ -356,10 +356,9 @@ class Item : public Object
         void ClearSoulboundTradeable(Player* currentOwner);
         bool CheckSoulboundTradeExpire();
 
-        void BuildUpdate(UpdateDataMapType&);
-
         uint32 TransmogEntry;
-        uint32 TransmogOwner;
+
+        void BuildUpdate(UpdateDataMapType&);
 
         uint32 GetScriptId() const { return GetTemplate()->ScriptId; }
     private:
