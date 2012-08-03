@@ -145,37 +145,51 @@ class npc_transmog : public CreatureScript
 
                 if (transmog->head_id != 0)
                 {
+                    Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD);
                     CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->head_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD)->GetGUIDLow());
+                    item->TransmogEntry = transmog->head_id;
                     player->SetUInt32Value(head, transmog->head_id);
                 }
                 if (transmog->shoulder_id != 0)
                 {
+                    Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_SHOULDERS);
                     CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->shoulder_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_SHOULDERS)->GetGUIDLow());
+                    item->TransmogEntry = transmog->shoulder_id;
                     player->SetUInt32Value(shoulder, transmog->shoulder_id);
                 }
                 if (transmog->chest_id != 0)
                 {
+                    Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_CHEST);
                     CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->chest_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_CHEST)->GetGUIDLow());
+                    item->TransmogEntry = transmog->chest_id;
                     player->SetUInt32Value(chest, transmog->chest_id);
                 }
                 if (transmog->gloves_id != 0)
                 {
+                    Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HANDS);
                     CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->gloves_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HANDS)->GetGUIDLow());
+                    item->TransmogEntry = transmog->gloves_id;
                     player->SetUInt32Value(gloves, transmog->gloves_id);
                 }
                 if (transmog->legs_id != 0)
                 {
+                    Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_LEGS);
                     CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->legs_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_LEGS)->GetGUIDLow());
+                    item->TransmogEntry = transmog->legs_id;
                     player->SetUInt32Value(legs, transmog->legs_id);
                 }
                 if (transmog->belt_id != 0)
                 {
+                    Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_WAIST);
                     CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->belt_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_WAIST)->GetGUIDLow());
+                    item->TransmogEntry = transmog->belt_id;
                     player->SetUInt32Value(belt, transmog->belt_id);
                 }
                 if (transmog->boots_id != 0)
                 {
+                    Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FEET);
                     CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->boots_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FEET)->GetGUIDLow());
+                    item->TransmogEntry = transmog->boots_id;
                     player->SetUInt32Value(boots, transmog->boots_id);
                 }
 
@@ -235,7 +249,9 @@ class npc_transmog : public CreatureScript
                     {
                         if (item->SubClass == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate()->SubClass)
                         {
+                            Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
                             CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->mainhand_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetGUIDLow());
+                            item->TransmogEntry = transmog->mainhand_id;
                             player->SetUInt32Value(mainhand, transmog->mainhand_id);
                         }
                         else
@@ -259,7 +275,9 @@ class npc_transmog : public CreatureScript
                     {
                         if (item->SubClass == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetTemplate()->SubClass)
                         {
+                            Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
                             CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->offhand_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetGUIDLow());
+                            item->TransmogEntry = transmog->offhand_id;
                             player->SetUInt32Value(offhand, transmog->offhand_id);
                         }
                         else
@@ -283,7 +301,9 @@ class npc_transmog : public CreatureScript
                     {
                         if (item->SubClass == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetTemplate()->SubClass)
                         {
+                            Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
                             CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->ranged_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetGUIDLow());
+                            item->TransmogEntry = transmog->ranged_id;
                             player->SetUInt32Value(ranged, transmog->ranged_id);
                         }
                         else
