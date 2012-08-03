@@ -1034,7 +1034,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
     }
     else if (SilenceDelaySpell())
     {
-        targetInfo.timeDelay = 50;
+        targetInfo.timeDelay = 20;
         m_delayMoment = targetInfo.timeDelay;
     }
     else
@@ -1195,7 +1195,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         return;
 
     if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastSanctuaryTime)
-        return;                                             // No missinfo in that case
+        return;
 
     // Get original caster (if exist) and calculate damage/healing from him data
     Unit* caster = m_originalCaster ? m_originalCaster : m_caster;
@@ -5628,7 +5628,7 @@ SpellCastResult Spell::CheckCast(bool strict)
         // Dont allow Master's Call to be cast if the hunter's pet is dead
         if (m_spellInfo->Id == 53271)
             if (Unit* pet = m_caster->ToPlayer()->GetPet())
-				if (pet->isDead() || pet->IsCrowdControlled())
+                if (pet->isDead() || pet->IsCrowdControlled())
                     return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
         // Dont allow Stealth or Invisibility to be casted while the target is Flared
@@ -7599,7 +7599,7 @@ bool Spell::SpellDelaySpell() const
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags[0] == 0x800000) ||
     // Fire Blast
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags[0] == 0x2) ||
-	// Burning Determination
+    // Burning Determination
     m_spellInfo->Id == 54748 ||
 //----------Warlock----------------
     // Fear
@@ -7682,5 +7682,10 @@ bool Spell::SilenceDelaySpell() const
     m_spellInfo->Id == 15487 ||
 //------------Mage-----------------
     // Counterspell
-    m_spellInfo->Id == 2139;
+    m_spellInfo->Id == 2139 ||
+//----------Warlock----------------
+    // Spell Lock (Rank 1)
+    m_spellInfo->Id == 19244 ||
+    // Spell Lock (Rank 2)
+    m_spellInfo->Id == 19247;
 }
