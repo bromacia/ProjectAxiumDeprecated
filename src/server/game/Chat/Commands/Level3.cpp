@@ -4995,3 +4995,18 @@ bool ChatHandler::HandleGroupUnFreezeCommand(const char* args)
 
     return true;
 }
+
+bool ChatHandler::HandleBarbershopCommand(const char* args)
+{
+    Player* player = m_session->GetPlayer();
+    if (player->InBattleground() || player->InArena())
+    {
+        PSendSysMessage("You cant do that while in a battleground.");
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    WorldPacket data(SMSG_ENABLE_BARBER_SHOP, 0);
+    player->GetSession()->SendPacket(&data);
+    return true;
+}

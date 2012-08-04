@@ -300,13 +300,11 @@ class ChatHandler
         // Custom Commands
         bool HandlePersonalQueueCommand(const char* args);
         bool HandleAddPersonalQueueCommand(const char* args);
-
         bool HandleWarpCommand(const char * args);
-
         bool HandlePrepareCommand(const char * args);
-
         bool HandleGroupFreezeCommand(const char * args);
         bool HandleGroupUnFreezeCommand(const char * args);
+        bool HandleBarbershopCommand(const char * args);
 
         bool HandleGroupLeaderCommand(const char* args);
         bool HandleGroupDisbandCommand(const char* args);
