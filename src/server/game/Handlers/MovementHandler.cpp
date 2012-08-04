@@ -375,7 +375,24 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     {
         plMover->UpdateFallInformationIfNeed(movementInfo, opcode);
 
-        if (movementInfo.pos.GetPositionZ() < -500.0f)
+        float UnderMapValueZ;
+        switch (plMover->GetMapId())
+        {
+            case 559: // Nagrand Arena
+                UnderMapValueZ = 5.0f;
+                break;
+            case 562: // Blade's Edge Arena
+                UnderMapValueZ = -5.0f;
+                break;
+            case 572: // Ruins of Lordaeron
+                UnderMapValueZ = 5.0f;
+                break;
+            default:
+                UnderMapValueZ = -500.0f;
+                break;
+        }
+
+        if (movementInfo.pos.GetPositionZ() < UnderMapValueZ)
         {
             if (!(plMover->InBattleground()
                 && plMover->GetBattleground()
