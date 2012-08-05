@@ -252,6 +252,8 @@ Item::Item()
     m_refundRecipient = 0;
     m_paidMoney = 0;
     m_paidExtendedCost = 0;
+
+    TransmogEntry = 0;
 }
 
 bool Item::Create(uint32 guidlow, uint32 itemid, Player const* owner)
@@ -284,6 +286,8 @@ bool Item::Create(uint32 guidlow, uint32 itemid, Player const* owner)
             return true;
         GetOwner()->CreateWowarmoryFeed(2, itemid, guidlow, itemProto->Quality);
     }
+
+    TransmogEntry = 0;
     return true;
 }
 
