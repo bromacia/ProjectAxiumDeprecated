@@ -78,15 +78,11 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
     // Release Spirit
     if (GetPlayer()->GetZoneId() == 3521)
     {
-        if (GetPlayer()->GetTeam() == HORDE)
-            GetPlayer()->TeleportTo(530, 1004.06f, 7362.67f, 36.3775f, 1.5f);
-        if (GetPlayer()->GetTeam() == ALLIANCE)
-            GetPlayer()->TeleportTo(530, -212.567f, 5491.5f, 21.6723f, 1.5f);
-
         GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
         GetPlayer()->ResurrectPlayer(1.0f);
         GetPlayer()->SpawnCorpseBones();
         GetPlayer()->CastSpell(GetPlayer(), 30231, true);
+        GetPlayer()->TeleportTo(530, -388.62f, 7257.59f, 54.77f, 6.2f);
         return;
     }
     if (GetPlayer()->GetAreaId() == 85)
