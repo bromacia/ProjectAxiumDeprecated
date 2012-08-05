@@ -1195,7 +1195,15 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         return;
 
     if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastSanctuaryTime)
+    {
+        if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC) && m_spellInfo->Speed == 0)
+        {
+            m_targets.GetUnitTarget()->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+            m_targets.GetUnitTarget()->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
+            return;
+        }
         return;
+    }
 
     // Get original caster (if exist) and calculate damage/healing from him data
     Unit* caster = m_originalCaster ? m_originalCaster : m_caster;
