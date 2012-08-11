@@ -985,6 +985,8 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
             player->ResurrectPlayer(1.0f);
             player->SpawnCorpseBones();
         }
+
+        player->RemoveAllNegativeAuras();
     }
 
     RemovePlayer(player, guid, team);                           // BG subclass specific code
