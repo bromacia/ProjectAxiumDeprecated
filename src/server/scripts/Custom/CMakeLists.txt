@@ -10,11 +10,11 @@
 
 set(scripts_STAT_SRCS
   ${scripts_STAT_SRCS}
-  Custom/prof_npc.cpp
+  Custom/reset_onduelend.cpp
   Custom/npc_teleport.cpp
-  Custom/duel_reset.cpp
+  Custom/npc_prof.cpp
   Custom/npc_beastmaster.cpp
-  Custom/arena_team_ranks.cpp
+  Custom/npc_arena_ranks.cpp
   Custom/npc_transmog.cpp
 )
 

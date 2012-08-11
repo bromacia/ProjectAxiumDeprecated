@@ -234,22 +234,22 @@ void AddBattlegroundScripts()
 
 // Custom
 #ifdef SCRIPTS
-    void AddSC_prof_npc();
+    void AddSC_Reset_OnDuelEnd();
     void AddSC_npc_teleport();
-    void AddSC_DuelReset();
+    void AddSC_npc_prof();
     void AddSC_npc_beastmaster();
-    void AddSC_arena_team_ranks();
+    void AddSC_npc_arena_ranks();
     void AddSC_npc_transmog();
 #endif
 
 void AddCustomScripts()
 {
 #ifdef SCRIPTS
-    AddSC_prof_npc();
+    AddSC_Reset_OnDuelEnd();
     AddSC_npc_teleport();
-    AddSC_DuelReset();
+    AddSC_npc_prof();
     AddSC_npc_beastmaster();
-    AddSC_arena_team_ranks();
+    AddSC_npc_arena_ranks();
     AddSC_npc_transmog();
 #endif
 }
