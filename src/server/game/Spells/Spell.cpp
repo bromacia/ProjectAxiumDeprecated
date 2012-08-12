@@ -1791,14 +1791,6 @@ bool Spell::UpdateChanneledTargetList()
             if (!unit)
                 continue;
 
-            if (!m_spellInfo->IsPositive())
-            {
-                m_caster->SetInCombatState(true, unit);
-                unit->SetInCombatState(true, m_caster);
-            }
-            else if (unit->isInCombat())
-                m_caster->SetInCombatState(true, unit);
-
             if (IsValidDeadOrAliveTarget(unit))
             {
                 if (channelAuraMask & ihit->effectMask)
