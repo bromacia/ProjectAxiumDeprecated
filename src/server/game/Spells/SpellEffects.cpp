@@ -2278,28 +2278,54 @@ void Spell::EffectHeal(SpellEffIndex /*effIndex*/)
             }
 
             int32 tickheal = targetAura->GetAmount();
-            if (Unit* auraCaster = targetAura->GetCaster())
-                tickheal = auraCaster->SpellHealingBonusDone(unitTarget, targetAura->GetSpellInfo(), tickheal, DOT);
-
-            //int32 tickheal = targetAura->GetSpellInfo()->EffectBasePoints[idx] + 1;
-            //It is said that talent bonus should not be included
-
             int32 tickcount = 0;
             // Rejuvenation
             if (targetAura->GetSpellInfo()->SpellFamilyFlags[0] & 0x10)
+            {
                 tickcount = 4;
+                tickheal += (m_caster->ToPlayer()->GetUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS) * 0.1305);
+                tickheal = targetAura->GetCaster()->SpellHealingBonusDone(unitTarget, targetAura->GetSpellInfo(), tickheal, DOT);
+                if (caster->HasAura(17111))
+                    tickheal += tickheal * 0.05;
+                else if (caster->HasAura(17112))
+                    tickheal += tickheal * 0.10;
+                else if (caster->HasAura(17113))
+                    tickheal += tickheal * 0.15;
+                if (caster->HasAura(17104))
+                    tickheal += tickheal * 0.02;
+                else if (caster->HasAura(24943))
+                    tickheal += tickheal * 0.04;
+                else if (caster->HasAura(24944))
+                    tickheal += tickheal * 0.06;
+                else if (caster->HasAura(24945))
+                    tickheal += tickheal * 0.08;
+                else if (caster->HasAura(24946))
+                    tickheal += tickheal * 0.10;
+            }
             // Regrowth
-            else // if (targetAura->GetSpellInfo()->SpellFamilyFlags[0] & 0x40)
+            else if (targetAura->GetSpellInfo()->SpellFamilyFlags[0] & 0x40)
+            {
                 tickcount = 6;
+                tickheal += 55;
+                tickheal += (m_caster->ToPlayer()->GetUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS) * 0.09);
+                tickheal = targetAura->GetCaster()->SpellHealingBonusDone(unitTarget, targetAura->GetSpellInfo(), tickheal, DOT);
+                if (caster->HasAura(17104))
+                    tickheal += tickheal * 0.02;
+                else if (caster->HasAura(24943))
+                    tickheal += tickheal * 0.04;
+                else if (caster->HasAura(24944))
+                    tickheal += tickheal * 0.06;
+                else if (caster->HasAura(24945))
+                    tickheal += tickheal * 0.08;
+                else if (caster->HasAura(24946))
+                    tickheal += tickheal * 0.10;
+            }
 
             addhealth += tickheal * tickcount;
 
             // Glyph of Swiftmend
             if (!caster->HasAura(54824))
                 unitTarget->RemoveAura(targetAura->GetId(), targetAura->GetCasterGUID());
-
-            //addhealth += tickheal * tickcount;
-            //addhealth = caster->SpellHealingBonus(m_spellInfo, addhealth, HEAL, unitTarget);
         }
         // Nourish
         else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] & 0x2000000)
