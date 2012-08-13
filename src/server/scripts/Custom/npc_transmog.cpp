@@ -240,18 +240,28 @@ class npc_transmog : public CreatureScript
                     return false;
                 }
 
-                if (transmog->mainhand_id != 0)
+                if (transmog->mainhand_id != 0)   // Main hand
                 {
-                    ItemTemplate const* item = sObjectMgr->GetItemTemplate(transmog->mainhand_id);
-                    if (item->InventoryType == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate()->InventoryType
-                        || item->InventoryType == 13 && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate()->InventoryType == 21
-                        || item->InventoryType == 21 && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate()->InventoryType == 13)
+                    ItemTemplate const* transmogItem = sObjectMgr->GetItemTemplate(transmog->mainhand_id);
+                    ItemTemplate const* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate();
+                    if (transmogItem->InventoryType == inventoryItem->InventoryType
+                        || (transmogItem->InventoryType == INVTYPE_WEAPON && inventoryItem->InventoryType == INVTYPE_WEAPONMAINHAND && inventoryItem->SubClass != ITEM_SUBCLASS_WEAPON_DAGGER)
+                        || (transmogItem->InventoryType == INVTYPE_WEAPONMAINHAND && inventoryItem->InventoryType == INVTYPE_WEAPON && inventoryItem->SubClass != ITEM_SUBCLASS_WEAPON_DAGGER))
                     {
-                        if (item->SubClass == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate()->SubClass)
+                        if (transmogItem->SubClass == inventoryItem->SubClass
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_AXE2 && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_AXE2)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_MACE2 && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_MACE2)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_SWORD2 && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_SWORD2)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_POLEARM && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_POLEARM)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_AXE && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_AXE)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_MACE && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_MACE)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_SWORD && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_SWORD)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_FIST && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_FIST)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_DAGGER && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_DAGGER)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_STAFF && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_STAFF))
                         {
-                            Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
                             CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->mainhand_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetGUIDLow());
-                            item->TransmogEntry = transmog->mainhand_id;
+                            player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->TransmogEntry = transmog->mainhand_id;
                             player->SetUInt32Value(mainhand, transmog->mainhand_id);
                         }
                         else
@@ -268,16 +278,25 @@ class npc_transmog : public CreatureScript
                         return false;
                     }
                 }
-                if (transmog->offhand_id != 0)
+                if (transmog->offhand_id != 0)   // Off hand
                 {
-                    ItemTemplate const* item = sObjectMgr->GetItemTemplate(transmog->offhand_id);
-                    if (item->InventoryType == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetTemplate()->InventoryType)
+                    ItemTemplate const* transmogItem = sObjectMgr->GetItemTemplate(transmog->offhand_id);
+                    ItemTemplate const* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetTemplate();
+                    if (transmogItem->InventoryType == inventoryItem->InventoryType
+                        || transmogItem->InventoryType == INVTYPE_WEAPON && inventoryItem->InventoryType == INVTYPE_WEAPONOFFHAND
+                        || transmogItem->InventoryType == INVTYPE_WEAPONOFFHAND && inventoryItem->InventoryType == INVTYPE_WEAPON)
                     {
-                        if (item->SubClass == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetTemplate()->SubClass)
+                        if (transmogItem->SubClass == inventoryItem->SubClass
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_AXE && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_AXE)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_MACE && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_MACE)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_SWORD && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_SWORD)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_FIST && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_FIST)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_DAGGER && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_DAGGER)
+                            || (transmogItem->InventoryType == INVTYPE_SHIELD && inventoryItem->InventoryType == INVTYPE_SHIELD)
+                            || (transmogItem->InventoryType == INVTYPE_HOLDABLE && inventoryItem->InventoryType == INVTYPE_HOLDABLE))
                         {
-                            Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
                             CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->offhand_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetGUIDLow());
-                            item->TransmogEntry = transmog->offhand_id;
+                            player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->TransmogEntry = transmog->offhand_id;
                             player->SetUInt32Value(offhand, transmog->offhand_id);
                         }
                         else
@@ -294,16 +313,21 @@ class npc_transmog : public CreatureScript
                         return false;
                     }
                 }
-                if (transmog->ranged_id != 0)
+                if (transmog->ranged_id != 0)   // Ranged
                 {
-                    ItemTemplate const* item = sObjectMgr->GetItemTemplate(transmog->ranged_id);
-                    if (item->InventoryType == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetTemplate()->InventoryType)
+                    ItemTemplate const* transmogItem = sObjectMgr->GetItemTemplate(transmog->ranged_id);
+                    ItemTemplate const* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetTemplate();
+                    if (transmogItem->InventoryType == inventoryItem->InventoryType)
                     {
-                        if (item->SubClass == player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetTemplate()->SubClass)
+                        if (transmogItem->SubClass == inventoryItem->SubClass
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_BOW && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_BOW)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_GUN && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_GUN)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_CROSSBOW && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_CROSSBOW)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_THROWN && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_THROWN)
+                            || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_WAND && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_WAND))
                         {
-                            Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
                             CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", transmog->ranged_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetGUIDLow());
-                            item->TransmogEntry = transmog->ranged_id;
+                            player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->TransmogEntry = transmog->ranged_id;
                             player->SetUInt32Value(ranged, transmog->ranged_id);
                         }
                         else
