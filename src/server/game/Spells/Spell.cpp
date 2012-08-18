@@ -7581,6 +7581,12 @@ bool Spell::SpellDelaySpell() const
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] == 0x80) ||
     // Faerie Fire
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109) ||
+    // Hibernate (Rank 1)
+    m_spellInfo->Id == 2637 ||
+    // Hibernate (Rank 2)
+    m_spellInfo->Id == 18657 ||
+    // Hibernate (Rank 3)
+    m_spellInfo->Id == 18658 ||
 //------------Priest---------------
     // Psychic Scream
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && m_spellInfo->SpellFamilyFlags[0] == 0x10000) ||
