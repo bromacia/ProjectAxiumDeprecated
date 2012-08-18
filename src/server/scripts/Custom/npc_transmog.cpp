@@ -31,8 +31,8 @@ class npc_transmog : public CreatureScript
 
     bool OnGossipHello(Player* player, Creature* creature)
     {
-        player->ADD_GOSSIP_ITEM(8, "Armor Sets", GOSSIP_SENDER_MAIN, 1);
-        player->ADD_GOSSIP_ITEM(9, "Weapons", GOSSIP_SENDER_MAIN, 2);
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "Armor Sets", GOSSIP_SENDER_MAIN, 1);
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "Weapons", GOSSIP_SENDER_MAIN, 2);
 
         player->SEND_GOSSIP_MENU(50055, creature->GetGUID());
         return true;
@@ -57,12 +57,12 @@ class npc_transmog : public CreatureScript
                 Field* fields = result->Fetch();
                 if (fields[2].GetUInt32() == player->GetTeam() || fields[2].GetUInt32() == 0)
                     if (fields[3].GetUInt32() == player->GetSession()->GetAccountId() || fields[3].GetUInt32() == 0)
-                        player->ADD_GOSSIP_ITEM(4, fields[0].GetString(), 1, fields[1].GetUInt32());
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, fields[0].GetString(), 1, fields[1].GetUInt32());
             }
             while (result->NextRow());
 
-            player->ADD_GOSSIP_ITEM(4, "Remove Transmogrifications", GOSSIP_SENDER_MAIN, 100000);
-            player->ADD_GOSSIP_ITEM(7, "Back", GOSSIP_SENDER_MAIN, 3);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "Remove Armor Transmogrifications", GOSSIP_SENDER_MAIN, 100000);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, 3);
 
             player->SEND_GOSSIP_MENU(50055, creature->GetGUID());
             return true;
@@ -83,12 +83,12 @@ class npc_transmog : public CreatureScript
                 Field* fields = result->Fetch();
                 if (fields[2].GetUInt32() == player->GetTeam() || fields[2].GetUInt32() == 0)
                     if (fields[3].GetUInt32() == player->GetSession()->GetAccountId() || fields[3].GetUInt32() == 0)
-                        player->ADD_GOSSIP_ITEM(4, fields[0].GetString(), 2, fields[1].GetUInt32());
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, fields[0].GetString(), 2, fields[1].GetUInt32());
             }
             while (result->NextRow());
 
-            player->ADD_GOSSIP_ITEM(4, "Remove Transmogrifications", 2, 100001);
-            player->ADD_GOSSIP_ITEM(7, "Back", GOSSIP_SENDER_MAIN, 3);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "Remove Weapon Transmogrifications", 2, 100001);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, 3);
 
             player->SEND_GOSSIP_MENU(50055, creature->GetGUID());
             return true;
@@ -245,8 +245,10 @@ class npc_transmog : public CreatureScript
                     ItemTemplate const* transmogItem = sObjectMgr->GetItemTemplate(transmog->mainhand_id);
                     ItemTemplate const* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate();
                     if (transmogItem->InventoryType == inventoryItem->InventoryType
-                        || (transmogItem->InventoryType == INVTYPE_WEAPON && inventoryItem->InventoryType == INVTYPE_WEAPONMAINHAND && inventoryItem->SubClass != ITEM_SUBCLASS_WEAPON_DAGGER)
-                        || (transmogItem->InventoryType == INVTYPE_WEAPONMAINHAND && inventoryItem->InventoryType == INVTYPE_WEAPON && inventoryItem->SubClass != ITEM_SUBCLASS_WEAPON_DAGGER))
+                        || (transmogItem->InventoryType == INVTYPE_WEAPON && inventoryItem->InventoryType == INVTYPE_WEAPONMAINHAND
+                        && inventoryItem->SubClass != ITEM_SUBCLASS_WEAPON_DAGGER && inventoryItem->SubClass != ITEM_SUBCLASS_WEAPON_MACE)
+                        || (transmogItem->InventoryType == INVTYPE_WEAPONMAINHAND && inventoryItem->InventoryType == INVTYPE_WEAPON
+                        && inventoryItem->SubClass != ITEM_SUBCLASS_WEAPON_DAGGER && inventoryItem->SubClass != ITEM_SUBCLASS_WEAPON_MACE))
                     {
                         if (transmogItem->SubClass == inventoryItem->SubClass
                             || (transmogItem->SubClass == ITEM_SUBCLASS_WEAPON_AXE2 && inventoryItem->SubClass == ITEM_SUBCLASS_WEAPON_AXE2)
@@ -267,14 +269,14 @@ class npc_transmog : public CreatureScript
                         else
                         {
                             player->CLOSE_GOSSIP_MENU();
-                            ChatHandler(player).PSendSysMessage("Your weapon class does not match the transmogs weapons class.");
+                            ChatHandler(player).PSendSysMessage("Your main hand weapon's class does not match the transmog weapon's class.");
                             return false;
                         }
                     }
                     else
                     {
                         player->CLOSE_GOSSIP_MENU();
-                        ChatHandler(player).PSendSysMessage("Your weapon type does not match the transmog weapons type.");
+                        ChatHandler(player).PSendSysMessage("Your main hand weapon's type does not match the transmog weapon's type.");
                         return false;
                     }
                 }
@@ -302,14 +304,14 @@ class npc_transmog : public CreatureScript
                         else
                         {
                             player->CLOSE_GOSSIP_MENU();
-                            ChatHandler(player).PSendSysMessage("Your weapon class does not match the transmogs weapons class.");
+                            ChatHandler(player).PSendSysMessage("Your off hand weapon's class does not match the transmog weapon's class.");
                             return false;
                         }
                     }
                     else
                     {
                         player->CLOSE_GOSSIP_MENU();
-                        ChatHandler(player).PSendSysMessage("Your weapon type does not match the transmog weapons type.");
+                        ChatHandler(player).PSendSysMessage("Your off hand weapon's type does not match the transmog weapon's type.");
                         return false;
                     }
                 }
@@ -333,14 +335,14 @@ class npc_transmog : public CreatureScript
                         else
                         {
                             player->CLOSE_GOSSIP_MENU();
-                            ChatHandler(player).PSendSysMessage("Your weapon class does not match the transmogs weapons class.");
+                            ChatHandler(player).PSendSysMessage("Your ranged weapon's class does not match the transmog weapon's class.");
                             return false;
                         }
                     }
                     else
                     {
                         player->CLOSE_GOSSIP_MENU();
-                        ChatHandler(player).PSendSysMessage("Your weapon type does not match the transmog weapons type.");
+                        ChatHandler(player).PSendSysMessage("Your ranged weapon's type does not match the transmog weapon's type.");
                         return false;
                     }
                 }
