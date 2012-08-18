@@ -38,6 +38,22 @@
 #include "Timer.h"
 #include <list>
 
+enum DeathbringersWillSpells
+{
+    DBW_PROC_STR_NORMAL   = 71484,
+    DBW_PROC_AP_NORMAL    = 71486,
+    DBW_PROC_AGI_NORMAL   = 71485,
+    DBW_PROC_HASTE_NORMAL = 71492,
+    DBW_PROC_CRIT_NORMAL  = 71491,
+    DBW_PROC_ARP_NORMAL   = 71487,
+    DBW_PROC_STR_HEROIC   = 71561,
+    DBW_PROC_AP_HEROIC    = 71558,
+    DBW_PROC_AGI_HEROIC   = 71556,
+    DBW_PROC_HASTE_HEROIC = 71560,
+    DBW_PROC_CRIT_HEROIC  = 71559,
+    DBW_PROC_ARP_HEROIC   = 71557 
+};
+
 #define WORLD_TRIGGER   12999
 
 enum SpellInterruptFlags

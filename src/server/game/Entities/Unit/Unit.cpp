@@ -5620,20 +5620,25 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                         case CLASS_WARRIOR:
                         case CLASS_PALADIN:
                         case CLASS_DEATH_KNIGHT:
-                            RandomSpells.push_back(71484); // Strength
-                            RandomSpells.push_back(71486); // AP
-                            RandomSpells.push_back(71491); // Crit
+                            RandomSpells.push_back(DBW_PROC_STR_NORMAL);
+                            RandomSpells.push_back(DBW_PROC_CRIT_NORMAL);
+                            RandomSpells.push_back(DBW_PROC_HASTE_NORMAL);
                             break;
                         case CLASS_SHAMAN:
                         case CLASS_ROGUE:
-                            RandomSpells.push_back(71485); // Agility
-                            RandomSpells.push_back(71486); // AP
-                            RandomSpells.push_back(71492); // Haste
+                            RandomSpells.push_back(DBW_PROC_AP_NORMAL);
+                            RandomSpells.push_back(DBW_PROC_AGI_NORMAL);
+                            RandomSpells.push_back(DBW_PROC_HASTE_NORMAL);
                             break;
                         case CLASS_DRUID:
+                            RandomSpells.push_back(DBW_PROC_STR_NORMAL);
+                            RandomSpells.push_back(DBW_PROC_AGI_NORMAL);
+                            RandomSpells.push_back(DBW_PROC_AP_NORMAL);
+                            break;
                         case CLASS_HUNTER:
-                            RandomSpells.push_back(71485); // Agility
-                            RandomSpells.push_back(71486); // AP
+                            RandomSpells.push_back(DBW_PROC_AP_NORMAL);
+                            RandomSpells.push_back(DBW_PROC_CRIT_NORMAL);
+                            RandomSpells.push_back(DBW_PROC_AGI_NORMAL);
                             break;
                         default:
                             return false;
@@ -5661,20 +5666,25 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                         case CLASS_WARRIOR:
                         case CLASS_PALADIN:
                         case CLASS_DEATH_KNIGHT:
-                            RandomSpells.push_back(71558); // AP
-                            RandomSpells.push_back(71559); // Crit
-                            RandomSpells.push_back(71561); // Strength
+                            RandomSpells.push_back(DBW_PROC_STR_HEROIC);
+                            RandomSpells.push_back(DBW_PROC_CRIT_HEROIC);
+                            RandomSpells.push_back(DBW_PROC_HASTE_HEROIC);
                             break;
                         case CLASS_SHAMAN:
                         case CLASS_ROGUE:
-                            RandomSpells.push_back(71556); // Agility
-                            RandomSpells.push_back(71558); // AP
-                            RandomSpells.push_back(71560); // Haste
+                            RandomSpells.push_back(DBW_PROC_AP_HEROIC);
+                            RandomSpells.push_back(DBW_PROC_AGI_HEROIC);
+                            RandomSpells.push_back(DBW_PROC_HASTE_HEROIC);
                             break;
                         case CLASS_DRUID:
+                            RandomSpells.push_back(DBW_PROC_STR_HEROIC);
+                            RandomSpells.push_back(DBW_PROC_AGI_HEROIC);
+                            RandomSpells.push_back(DBW_PROC_AP_HEROIC);
+                            break;
                         case CLASS_HUNTER:
-                            RandomSpells.push_back(71556); // Agility
-                            RandomSpells.push_back(71558); // AP
+                            RandomSpells.push_back(DBW_PROC_AP_HEROIC);
+                            RandomSpells.push_back(DBW_PROC_CRIT_HEROIC);
+                            RandomSpells.push_back(DBW_PROC_AGI_HEROIC);
                             break;
                         default:
                             return false;
