@@ -49,12 +49,13 @@ enum CreatureFlagsExtra
     CREATURE_FLAG_EXTRA_TRIGGER         = 0x00000080,       // trigger creature
     CREATURE_FLAG_EXTRA_NO_TAUNT        = 0x00000100,       // creature is immune to taunt auras and effect attack me
     CREATURE_FLAG_EXTRA_WORLDEVENT      = 0x00004000,       // custom flag for world event creatures (left room for merging)
-    CREATURE_FLAG_EXTRA_GUARD           = 0x00008000,       // Creature is guard
+    CREATURE_FLAG_EXTRA_GUARD           = 0x00008000,       // creature is guard
     CREATURE_FLAG_EXTRA_NO_CRIT         = 0x00020000,       // creature can't do critical strikes
     CREATURE_FLAG_EXTRA_NO_SKILLGAIN    = 0x00040000,       // creature won't increase weapon skills
-    CREATURE_FLAG_EXTRA_TAUNT_DIMINISH  = 0x00080000,       // Taunt is a subject to diminishing returns on this creautre
-    CREATURE_FLAG_EXTRA_ALL_DIMINISH    = 0x00100000,       // Creature is subject to all diminishing returns as player are
-    CREATURE_FLAG_EXTRA_DUNGEON_BOSS    = 0x10000000,       // creature is a dungeon boss (SET DYNAMICALLY, DO NOT ADD IN DB)
+    CREATURE_FLAG_EXTRA_TAUNT_DIMINISH  = 0x00080000,       // taunt is a subject to diminishing returns on this creautre
+    CREATURE_FLAG_EXTRA_ALL_DIMINISH    = 0x00100000,       // creature is subject to all diminishing returns as player are
+    CREATURE_FLAG_EXTRA_DUNGEON_BOSS    = 0x00200000,       // creature is a dungeon boss (SET DYNAMICALLY, DO NOT ADD IN DB)
+    CREATURE_FLAG_EXTRA_VIP_VENDOR      = 0x00400000,       // creature is a VIP vendor and items will have no extended or gold cost
 };
 
 #define CREATURE_FLAG_EXTRA_DB_ALLOWED (CREATURE_FLAG_EXTRA_INSTANCE_BIND | CREATURE_FLAG_EXTRA_CIVILIAN | \
@@ -468,6 +469,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapCreature
         bool canWalk() const { return GetCreatureInfo()->InhabitType & INHABIT_GROUND; }
         bool canSwim() const { return GetCreatureInfo()->InhabitType & INHABIT_WATER; }
         //bool canFly()  const { return GetCreatureInfo()->InhabitType & INHABIT_AIR; }
+        bool IsVipVendor() const;
 
         void SetReactState(ReactStates st) { m_reactState = st; }
         ReactStates GetReactState() { return m_reactState; }

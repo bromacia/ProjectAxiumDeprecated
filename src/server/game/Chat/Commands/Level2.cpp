@@ -327,9 +327,10 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
     std::string email = GetTrinityString(LANG_ERROR);
     std::string last_ip = GetTrinityString(LANG_ERROR);
     uint32 security = 0;
+    uint8 vip = 0;
     std::string last_login = GetTrinityString(LANG_ERROR);
 
-    QueryResult result = LoginDatabase.PQuery("SELECT a.username, aa.gmlevel, a.email, a.last_ip, a.last_login, a.mutetime "
+    QueryResult result = LoginDatabase.PQuery("SELECT a.username, aa.gmlevel, a.email, a.last_ip, a.last_login, a.mutetime, a.vip "
                                                 "FROM account a "
                                                 "LEFT JOIN account_access aa "
                                                 "ON (a.id = aa.id AND (aa.RealmID = -1 OR aa.RealmID = %u)) "
@@ -341,6 +342,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         security = fields[1].GetUInt32();
         email = fields[2].GetString();
         muteTime = fields[5].GetUInt64();
+        vip = fields[6].GetUInt8();
 
         if (email.empty())
             email = "-";
@@ -359,7 +361,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
 
     std::string nameLink = playerLink(target_name);
 
-    PSendSysMessage(LANG_PINFO_ACCOUNT, (target?"":GetTrinityString(LANG_OFFLINE)), nameLink.c_str(), GUID_LOPART(target_guid), username.c_str(), accId, email.c_str(), security, last_ip.c_str(), last_login.c_str(), latency);
+    PSendSysMessage(LANG_PINFO_ACCOUNT, (target?"":GetTrinityString(LANG_OFFLINE)), nameLink.c_str(), GUID_LOPART(target_guid), username.c_str(), accId, email.c_str(), security, vip, last_ip.c_str(), last_login.c_str(), latency);
 
     std::string bannedby = "unknown";
     std::string banreason = "";
