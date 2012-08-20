@@ -1346,6 +1346,8 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                     case 66: // Invisibility
                         if (removeMode != AURA_REMOVE_BY_EXPIRE)
                             break;
+                        if (target->IsCrowdControlled())
+                            break;
                         target->CastSpell(target, 32612, true, NULL, GetEffect(1));
                         target->CombatStop();
                         break;
