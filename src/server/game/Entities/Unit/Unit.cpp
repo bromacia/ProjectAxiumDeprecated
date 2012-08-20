@@ -10993,6 +10993,10 @@ bool Unit::isSpellCrit(Unit* victim, SpellInfo const* spellProto, SpellSchoolMas
     if ((spellProto->AttributesEx2 & SPELL_ATTR2_CANT_CRIT))
         return false;
 
+    // Roar of Sacrifice
+    if (victim->HasAura(53480))
+        return false;
+
     float crit_chance = 0.0f;
     switch (spellProto->DmgClass)
     {
