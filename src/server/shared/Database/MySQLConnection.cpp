@@ -63,9 +63,7 @@ MySQLConnection::~MySQLConnection()
         delete m_stmts[i];
 
     for (PreparedStatementMap::const_iterator itr = m_queries.begin(); itr != m_queries.end(); ++itr)
-    {
         free((void *)m_queries[itr->first].first);
-    }
 
     mysql_close(m_Mysql);
     Unlock();   /// Unlock while we die, how ironic
@@ -129,8 +127,6 @@ bool MySQLConnection::Open()
         {
             sLog->outSQLDriver("MySQL client library: %s", mysql_get_client_info());
             sLog->outSQLDriver("MySQL server ver: %s ", mysql_get_server_info(m_Mysql));
-            if (mysql_get_server_version(m_Mysql) != mysql_get_client_version())
-                sLog->outSQLDriver("[WARNING] MySQL client/server version mismatch; may conflict with behaviour of prepared statements.");
         }
 
         sLog->outDetail("Connected to MySQL database at %s", m_connectionInfo.host.c_str());
@@ -180,9 +176,7 @@ bool MySQLConnection::Execute(const char* sql)
             return false;
         }
         else if (sLog->GetSQLDriverQueryLogging())
-        {
             sLog->outSQLDriver("[%u ms] SQL: %s", getMSTimeDiff(_s, getMSTime()), sql);
-        }
     }
 
     return true;
@@ -297,7 +291,6 @@ bool MySQLConnection::_Query(PreparedStatement* stmt, MYSQL_RES **pResult, uint6
         *pFieldCount = mysql_stmt_field_count(msql_STMT);
 
         return true;
-
     }
 }
 
@@ -339,16 +332,14 @@ bool MySQLConnection::_Query(const char *sql, MYSQL_RES **pResult, MYSQL_FIELD *
             return false;
         }
         else if (sLog->GetSQLDriverQueryLogging())
-        {
             sLog->outSQLDriver("[%u ms] SQL: %s", getMSTimeDiff(_s, getMSTime()), sql);
-        }
 
         *pResult = mysql_store_result(m_Mysql);
         *pRowCount = mysql_affected_rows(m_Mysql);
         *pFieldCount = mysql_field_count(m_Mysql);
     }
 
-    if (!*pResult )
+    if (!*pResult)
         return false;
 
     if (!*pRowCount)
@@ -487,9 +478,8 @@ PreparedResultSet* MySQLConnection::Query(PreparedStatement* stmt)
         return NULL;
 
     if (mysql_more_results(m_Mysql))
-    {
         mysql_next_result(m_Mysql);
-    }
+
     return new PreparedResultSet(stmt->m_stmt->GetSTMT(), result, rowCount, fieldCount);
 }
 
