@@ -1696,6 +1696,8 @@ class Unit : public WorldObject
         DeathState getDeathState() { return m_deathState; };
         virtual void setDeathState(DeathState s);           // overwrited in Creature/Player/Pet
 
+        bool IsJumping() const { return m_isJumping; }
+
         uint64 GetOwnerGUID() const { return  GetUInt64Value(UNIT_FIELD_SUMMONEDBY); }
         uint64 GetCreatorGUID() const { return GetUInt64Value(UNIT_FIELD_CREATEDBY); }
         void SetCreatorGUID(uint64 creator) { SetUInt64Value(UNIT_FIELD_CREATEDBY, creator); }
@@ -2300,6 +2302,8 @@ class Unit : public WorldObject
         Unit* m_attacking;
 
         DeathState m_deathState;
+
+        bool m_isJumping;
 
         int32 m_procDeep;
 
