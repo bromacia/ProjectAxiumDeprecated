@@ -5640,6 +5640,13 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (Player* playerCaster = m_caster->ToPlayer())
                 if (playerCaster->HasAura(55694))
                     return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+        // Dont allow levitate to be casted if the player is mounted
+        if (m_spellInfo->Id == 1706)
+            if (Unit* target = m_targets.GetUnitTarget())
+                if (target->IsMounted())
+                    return SPELL_FAILED_NO_MOUNTS_ALLOWED;
+
         break;
     }
 
