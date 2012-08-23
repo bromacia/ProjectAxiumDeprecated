@@ -293,6 +293,10 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                 return;
             }
 
+            if (Unit* owner = pet->GetOwner())
+                if (spellInfo->Id == 58867 && !owner->IsValidAttackTarget(unit_target)) // Spirit wolf leap
+                    return;
+
             if (spellInfo->StartRecoveryCategory > 0)
                 if (pet->GetCharmInfo() && pet->GetCharmInfo()->GetGlobalCooldownMgr().HasGlobalCooldown(spellInfo))
                     return;
