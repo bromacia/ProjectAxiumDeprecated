@@ -350,6 +350,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         plMover->HandleFall(movementInfo);
     }
 
+    if (opcode == MSG_MOVE_START_SWIM && plMover)
+        plMover->m_isJumping = false;
+
     if (plMover && ((movementInfo.flags & MOVEMENTFLAG_SWIMMING) != 0) != plMover->IsInWater())
     {
         // now client not include swimming flag in case jumping under water
