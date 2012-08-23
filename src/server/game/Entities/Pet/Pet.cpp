@@ -999,9 +999,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
                 case 24207: // Army of the Dead Ghoul
                 {
                     if (!pInfo)
-                    {
                         SetCreateHealth(28 + 30*petlevel);
-                    }
                     break;
                 }
             }
