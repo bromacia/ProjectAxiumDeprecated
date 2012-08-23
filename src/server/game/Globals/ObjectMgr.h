@@ -1234,6 +1234,8 @@ class ObjectMgr
         void LoadFactionChangeItems();
         void LoadFactionChangeSpells();
         void LoadFactionChangeReputations();
+        
+        void LoadMailQueue();
 
     private:
         // first free id for selected id type

@@ -1213,6 +1213,9 @@ void World::LoadConfigSettings(bool reload)
     // Duel Script
     m_bool_configs[CONFIG_DUEL_RESET_COOLDOWN] = ConfigMgr::GetBoolDefault("DuelReset.Cooldown", false);
 
+    // Mail queue
+    m_int_configs[CONFIG_MAIL_QUEUE_TIMER] = ConfigMgr::GetIntDefault("MailQueue.Timer", 2);
+
     sScriptMgr->OnConfigLoad(reload);
 }
 
@@ -1691,6 +1694,8 @@ void World::SetInitialWorldSettings()
 
     m_timers[WUPDATE_PINGDB].SetInterval(getIntConfig(CONFIG_DB_PING_INTERVAL)*MINUTE*IN_MILLISECONDS);    // Mysql ping time in minutes
 
+    m_timers[WUPDATE_MAILQUEUE].SetInterval(getIntConfig(CONFIG_MAIL_QUEUE_TIMER)*MINUTE*IN_MILLISECONDS);
+
     //to set mailtimer to return mails every day between 4 and 5 am
     //mailtimer is increased when updating auctions
     //one second is 1000 -(tested on win system)
@@ -1874,7 +1879,6 @@ void World::LoadAutobroadcasts()
 
     do
     {
-
         Field* fields = result->Fetch();
         std::string message = fields[0].GetString();
 
@@ -2054,6 +2058,14 @@ void World::Update(uint32 diff)
         CharacterDatabase.KeepAlive();
         LoginDatabase.KeepAlive();
         WorldDatabase.KeepAlive();
+    }
+
+    ///- Mail queue
+    if (m_timers[WUPDATE_MAILQUEUE].Passed())
+    {
+        m_timers[WUPDATE_MAILQUEUE].Reset();
+        sLog->outDetail("Pulling mail queue");
+        sObjectMgr->LoadMailQueue();
     }
 
     // update the instance reset times

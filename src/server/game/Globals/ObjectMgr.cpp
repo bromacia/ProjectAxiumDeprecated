@@ -9033,6 +9033,53 @@ void ObjectMgr::LoadFactionChangeReputations()
     sLog->outString();
 }
 
+void ObjectMgr::LoadMailQueue()
+{
+    QueryResult result = CharacterDatabase.Query("SELECT id, subject, body, has_items, receiver_id, item FROM mailqueue");
+
+    if (!result)
+        return;
+
+    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint32 id = fields[0].GetUInt32();
+        std::string subject = fields[1].GetString();
+        std::string body = fields[2].GetString();
+        uint8 has_items = fields[3].GetUInt8();
+        uint32 receiver_id = fields[4].GetUInt32();
+        uint32 item = fields[5].GetUInt32();
+
+        Player* receiver = GetPlayerByLowGUID(receiver_id);
+
+        MailSender sender(MAIL_NORMAL, 0, MAIL_STATIONERY_GM);
+
+        if (has_items)
+        {
+            ItemTemplate const* item_proto = sObjectMgr->GetItemTemplate(item);
+            if (!item_proto)
+                continue;
+
+            Item* item_sent = Item::CreateItem(item, 1, receiver);
+
+            MailDraft(subject, body)
+                .AddItem(item_sent)
+                .SendMailTo(trans, MailReceiver(receiver), sender);
+        }
+        else
+            MailDraft(subject, body)
+                .SendMailTo(trans, MailReceiver(receiver), sender);
+    }
+    while (result->NextRow());
+
+    CharacterDatabase.CommitTransaction(trans);
+
+    CharacterDatabase.Execute("DELETE FROM mailqueue");
+}
+
 GameObjectTemplate const* ObjectMgr::GetGameObjectTemplate(uint32 entry)
 {
     GameObjectTemplateContainer::const_iterator itr = GameObjectTemplateStore.find(entry);
