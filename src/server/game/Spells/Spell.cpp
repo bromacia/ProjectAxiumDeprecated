@@ -1606,14 +1606,14 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                              if (durationadd)
                              {
                                  switch (m_diminishLevel)
-                                {
-                                        case DIMINISHING_LEVEL_1: break;
+                                 {
+                                     case DIMINISHING_LEVEL_1: break;
                                      // lol, we lost 1 second here
                                      case DIMINISHING_LEVEL_2: duration += 1000; mod = 0.5f; break;
                                      case DIMINISHING_LEVEL_3: duration += 1000; mod = 0.25f; break;
                                      case DIMINISHING_LEVEL_IMMUNE: { m_spellAura->Remove(); return SPELL_MISS_IMMUNE; }
                                      default: break;
-                                }
+                                 }
                                  durationadd *= mod;
                                  duration += int32(durationadd);
                              }
@@ -2239,7 +2239,6 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
                 if (m_targets.GetUnitTarget() != target)
                     m_targets.SetUnitTarget((Unit*)target);
             }
-
             break;
         }
 
@@ -3105,7 +3104,6 @@ void Spell::cancel()
             SendInterrupted(0);
             SendCastResult(SPELL_FAILED_INTERRUPTED);
             break;
-
         case SPELL_STATE_CASTING:
             for (std::list<TargetInfo>::const_iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
                 if ((*ihit).missCondition == SPELL_MISS_NONE)
@@ -3122,7 +3120,6 @@ void Spell::cancel()
 
             m_appliedMods.clear();
             break;
-
         default:
             break;
     }
@@ -3293,7 +3290,7 @@ void Spell::cast(bool skipCheck)
     SendSpellGo();
 
     // Okay, everything is prepared. Now we need to distinguish between immediate and evented delayed spells
-    if ((m_spellInfo->Speed > 0.0f && !m_spellInfo->IsChanneled()) || m_spellInfo->Id == 14157
+    if ((m_spellInfo->Speed > 0.0f && !m_spellInfo->IsChanneled()) || m_spellInfo->Id == 14157 // 14157: Ruthlessness (Neeeded?)
     || SpellDelaySpell() || VisibilityDelaySpell() || MovementDelaySpell() || SilenceDelaySpell())
     {
         // Remove used for cast item if need (it can be already NULL after TakeReagents call
@@ -3815,7 +3812,7 @@ void Spell::SendCastResult(Player* caster, SpellInfo const* spellInfo, uint8 cas
         case SPELL_FAILED_TOO_MANY_OF_ITEM:
         {
              uint32 item = 0;
-             for (int8 x = 0; x < 3; x++)
+             for (int8 x = 0; x < 3; ++x)
                  if (spellInfo->Effects[x].ItemType)
                      item = spellInfo->Effects[x].ItemType;
              ItemTemplate const* pProto = sObjectMgr->GetItemTemplate(item);
@@ -3981,9 +3978,7 @@ void Spell::SendSpellGo()
     }
 
     if (m_targets.GetTargetMask() & TARGET_FLAG_DEST_LOCATION)
-    {
         data << uint8(0);
-    }
 
     m_caster->SendMessageToSet(&data, true);
 }
@@ -4352,8 +4347,11 @@ void Spell::TakePower()
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
     {
         if (powerType == POWER_RAGE || powerType == POWER_ENERGY || powerType == POWER_RUNE)
+        {
             if (uint64 targetGUID = m_targets.GetUnitTargetGUID())
+            {
                 for (std::list<TargetInfo>::iterator ihit= m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
+                {
                     if (ihit->targetGUID == targetGUID)
                     {
                         if (ihit->missCondition != SPELL_MISS_NONE)
@@ -4365,6 +4363,9 @@ void Spell::TakePower()
                         }
                         break;
                     }
+                }
+            }
+        }
     }
 
     if (powerType == POWER_RUNE)
@@ -4658,9 +4659,7 @@ void Spell::HandleEffects(Unit* pUnitTarget, Item* pItemTarget, GameObject* pGOT
     bool preventDefault = CallScriptEffectHandlers((SpellEffIndex)i, mode);
 
     if (!preventDefault && eff < TOTAL_SPELL_EFFECTS)
-    {
         (this->*SpellEffects[eff])((SpellEffIndex)i);
-    }
 }
 
 SpellCastResult Spell::CheckCast(bool strict)
@@ -4988,17 +4987,6 @@ SpellCastResult Spell::CheckCast(bool strict)
                     Unit* target = m_targets.GetUnitTarget();
                     if (!target || (target->IsFriendlyTo(m_caster) && target->GetCreatureType() != CREATURE_TYPE_UNDEAD))
                         return SPELL_FAILED_BAD_TARGETS;
-                }
-                else if (m_spellInfo->Id == 19938)          // Awaken Peon
-                {
-                    Unit* unit = m_targets.GetUnitTarget();
-                    if (!unit || !unit->HasAura(17743))
-                        return SPELL_FAILED_BAD_TARGETS;
-                }
-                else if (m_spellInfo->Id == 52264)          // Deliver Stolen Horse
-                {
-                    if (!m_caster->FindNearestCreature(28653, 5))
-                        return SPELL_FAILED_OUT_OF_RANGE;
                 }
                 else if (m_spellInfo->Id == 31789)          // Righteous Defense
                 {
@@ -5429,10 +5417,12 @@ SpellCastResult Spell::CheckCast(bool strict)
                             return SPELL_FAILED_BAD_TARGETS;
                         break;
                     }
+                    // Survival Instincts
                     case 61336:
                         if (m_caster->GetTypeId() != TYPEID_PLAYER || !m_caster->ToPlayer()->IsInFeralForm())
                             return SPELL_FAILED_ONLY_SHAPESHIFT;
                         break;
+                    // Tame Beast
                     case 1515:
                     {
                         if (m_caster->GetTypeId() != TYPEID_PLAYER)
@@ -5599,6 +5589,7 @@ SpellCastResult Spell::CheckCast(bool strict)
         }
     }
     // Axium
+    //Todo: Don't need to constantly redeclare caster or target, its already being declared, and this loop should be uint8, not an int
     for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
     {
         // Dont allow anything to be cast while in cyclone besides PvP Trinket or Ever Man for Himself
@@ -6014,7 +6005,7 @@ SpellCastResult Spell::CheckItems()
         {
             // such items should only fail if there is no suitable effect at all - see Rejuvenation Potions for example
             SpellCastResult failReason = SPELL_CAST_OK;
-            for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
+            for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
                     // skip check, pet not required like checks, and for TARGET_UNIT_PET m_targets.GetUnitTarget() is not the real target but the caster
                     if (m_spellInfo->Effects[i].TargetA.GetTarget() == TARGET_UNIT_PET)
@@ -6127,7 +6118,7 @@ SpellCastResult Spell::CheckItems()
                     ItemTemplate const* proto = m_CastItem->GetTemplate();
                     if (!proto)
                         return SPELL_FAILED_ITEM_NOT_READY;
-                    for (int s=0; s < MAX_ITEM_PROTO_SPELLS; ++s)
+                    for (int s = 0; s < MAX_ITEM_PROTO_SPELLS; ++s)
                     {
                         // CastItem will be used up and does not count as reagent
                         int32 charges = m_CastItem->GetSpellCharges(s);
@@ -6145,7 +6136,7 @@ SpellCastResult Spell::CheckItems()
 
         // check totem-item requirements (items presence in inventory)
         uint32 totems = 2;
-        for (int i = 0; i < 2 ; ++i)
+        for (int i = 0; i < 2; ++i)
         {
             if (m_spellInfo->Totem[i] != 0)
             {
@@ -6154,15 +6145,16 @@ SpellCastResult Spell::CheckItems()
                     totems -= 1;
                     continue;
                 }
-            }else
-            totems -= 1;
+            }
+            else
+                totems -= 1;
         }
         if (totems != 0)
             return SPELL_FAILED_TOTEMS;                         //0x7C
 
         // Check items for TotemCategory  (items presence in inventory)
         uint32 TotemCategory = 2;
-        for (int i= 0; i < 2; ++i)
+        for (int i = 0; i < 2; ++i)
         {
             if (m_spellInfo->TotemCategory[i] != 0)
             {
@@ -6455,7 +6447,7 @@ SpellCastResult Spell::CheckItems()
     }
 
     // check weapon presence in slots for main/offhand weapons
-    if (m_spellInfo->EquippedItemClass >=0)
+    if (m_spellInfo->EquippedItemClass >= 0)
     {
         // main hand weapon required
         if (m_spellInfo->AttributesEx3 & SPELL_ATTR3_MAIN_HAND)
@@ -6709,9 +6701,7 @@ SpellEvent::~SpellEvent()
         m_Spell->cancel();
 
     if (m_Spell->IsDeletable())
-    {
         delete m_Spell;
-    }
     else
     {
         sLog->outError("~SpellEvent: %s %u tried to delete non-deletable spell %u. Was not deleted, causes memory leak.",
@@ -6848,10 +6838,8 @@ void Spell::HandleLaunchPhase()
     bool usesAmmo = m_spellInfo->AttributesCu & SPELL_ATTR0_CU_DIRECT_DAMAGE;
     Unit::AuraEffectList const& Auras = m_caster->GetAuraEffectsByType(SPELL_AURA_ABILITY_CONSUME_NO_AMMO);
     for (Unit::AuraEffectList::const_iterator j = Auras.begin(); j != Auras.end(); ++j)
-    {
         if ((*j)->IsAffectedOnSpell(m_spellInfo))
             usesAmmo=false;
-    }
 
     for (std::list<TargetInfo>::iterator ihit= m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
     {
@@ -6868,7 +6856,7 @@ void Spell::HandleLaunchPhase()
         if (usesAmmo)
         {
             bool ammoTaken = false;
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
                 if (!(mask & 1<<i))
                     continue;

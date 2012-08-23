@@ -84,10 +84,8 @@ bool Player::UpdateStats(Stats stat)
             UpdateAllSpellCritChances();
             UpdateArmor();                                  //SPELL_AURA_MOD_RESISTANCE_OF_INTELLECT_PERCENT, only armor currently
             break;
-
         case STAT_SPIRIT:
             break;
-
         default:
             break;
     }
@@ -848,9 +846,7 @@ void Player::UpdateManaRegen()
     // Get bonus from SPELL_AURA_MOD_MANA_REGEN_FROM_STAT aura
     AuraEffectList const& regenAura = GetAuraEffectsByType(SPELL_AURA_MOD_MANA_REGEN_FROM_STAT);
     for (AuraEffectList::const_iterator i = regenAura.begin(); i != regenAura.end(); ++i)
-    {
         power_regen_mp5 += GetStat(Stats((*i)->GetMiscValue())) * (*i)->GetAmount() / 500.0f;
-    }
 
     // Set regen rate in cast state apply only on spirit based regen
     int32 modManaRegenInterrupt = GetTotalAuraModifier(SPELL_AURA_MOD_MANA_REGEN_INTERRUPT);
@@ -869,11 +865,13 @@ void Player::UpdateRuneRegen(RuneType rune)
     uint32 cooldown = 0;
 
     for (uint32 i = 0; i < MAX_RUNES; ++i)
+    {
         if (GetBaseRune(i) == rune)
         {
             cooldown = GetRuneBaseCooldown(i);
             break;
         }
+    }
 
     if (cooldown <= 0)
         return;
@@ -1441,8 +1439,8 @@ void Guardian::UpdateDamagePhysical(WeaponAttackType attType)
     {
         switch ((*itr)->GetSpellInfo()->Id)
         {
-            case 61682:
-            case 61683:
+            case 61682: // Cobra Reflexes rank 1
+            case 61683: // Cobra Reflexes rank 2
                 AddPctN(mindamage, -(*itr)->GetAmount());
                 AddPctN(maxdamage, -(*itr)->GetAmount());
                 break;
