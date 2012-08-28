@@ -3037,10 +3037,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 53313: // Entangling Roots (Rank 8) -- Nature's Grasp Proc
                 spellInfo->CastingTimeIndex = 1;
                 break;
-            case 72376: // Raise Dead
-                spellInfo->MaxAffectedTargets = 3;
-                spellInfo->EffectRadiusIndex[0] = EFFECT_RADIUS_50000_YARDS;   // 50000yd
-                break;
 // ----------------------------------------------------------------------
 // -------------------------------Axium----------------------------------
 // ----------------------------------------------------------------------
@@ -3080,20 +3076,20 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->AttributesEx |= SPELL_ATTR0_CASTABLE_WHILE_DEAD;
                 break;
-            case 18754: // Improved succubus - problems with apply if target is pet 
-                spellInfo->EffectApplyAuraName[0] = SPELL_AURA_ADD_FLAT_MODIFIER; // it's affects duration of seduction, let's minimize affection 
-                spellInfo->EffectBasePoints[0] = -1.5*IN_MILLISECONDS*0.22; // reduce cast time of seduction by 22%
-                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER; 
-                break; 
-            case 18755: 
-                spellInfo->EffectApplyAuraName[0] = SPELL_AURA_ADD_FLAT_MODIFIER; 
-                spellInfo->EffectBasePoints[0] = -1.5*IN_MILLISECONDS*0.44; // reduce cast time of seduction by 44% 
-                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER; 
-                break; 
-            case 18756: 
-                spellInfo->EffectApplyAuraName[0] = SPELL_AURA_ADD_FLAT_MODIFIER; 
-                spellInfo->EffectBasePoints[0] = -1.5*IN_MILLISECONDS*0.66; // reduce cast time of seduction by 66% 
-                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER; 
+            case 18754: // Improved Succubus (Rank 1)
+                spellInfo->EffectApplyAuraName[0] = SPELL_AURA_ADD_FLAT_MODIFIER;
+                spellInfo->EffectBasePoints[0] = -1.5*IN_MILLISECONDS*0.22;
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
+                break;
+            case 18755: // Improved Succubus (Rank 2)
+                spellInfo->EffectApplyAuraName[0] = SPELL_AURA_ADD_FLAT_MODIFIER;
+                spellInfo->EffectBasePoints[0] = -1.5*IN_MILLISECONDS*0.44;
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
+                break;
+            case 18756: // Improved Succubus (Rank 3)
+                spellInfo->EffectApplyAuraName[0] = SPELL_AURA_ADD_FLAT_MODIFIER;
+                spellInfo->EffectBasePoints[0] = -1.5*IN_MILLISECONDS*0.66;
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
                 break;
             case 24259: // Spell Lock
                 spellInfo->speed = 1000;
@@ -3111,10 +3107,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 73313: // Crimson Deathcharger
             case 48778: // Acherus Deathcharger
                 spellInfo->SpellFamilyName = SPELLFAMILY_GENERIC;
-                break;
-            case 44559: // Pet Passive (DND) - Global Damage Reduction Aura
-                spellInfo->AttributesEx |= SPELL_ATTR0_CANT_CANCEL;
-                spellInfo->EffectBasePoints[0] = -10;
                 break;
             case 8178: // Grounding Totem
                 spellInfo->procFlags = 0;
@@ -3216,6 +3208,9 @@ void SpellMgr::LoadDbcDataCorrections()
                 break;
             case 56651: // Master's Call
                 spellInfo->Effect[0] = 0;
+                break;
+            case 6358: // Seduction
+                spellInfo->speed = 200;
                 break;
             default:
                 break;
