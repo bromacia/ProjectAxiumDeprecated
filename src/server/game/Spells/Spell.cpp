@@ -1483,6 +1483,10 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             unit->RemoveAura(53338);
         }
 
+        if (m_spellInfo->Mechanic == MECHANIC_ROOT)
+            if (unit->HasAura(46924))
+                return SPELL_MISS_IMMUNE;
+
         if (m_caster->IsFriendlyTo(unit))
         {
             // for delayed spells ignore negative spells (after duel end) for friendly targets
@@ -1610,13 +1614,18 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                                     case DIMINISHING_LEVEL_1:
                                         break;
                                     case DIMINISHING_LEVEL_2:
-                                        duration += 1000; mod = 0.5f;
+                                        duration += 1000;
+                                        mod = 0.5f;
                                         break;
                                     case DIMINISHING_LEVEL_3:
-                                        duration += 1000; mod = 0.25f;
+                                        duration += 1000;
+                                        mod = 0.25f;
                                         break;
                                     case DIMINISHING_LEVEL_IMMUNE:
-                                        { m_spellAura->Remove(); return SPELL_MISS_IMMUNE; }
+                                    {
+                                        m_spellAura->Remove();
+                                        return SPELL_MISS_IMMUNE;
+                                    }
                                     default:
                                         break;
                                 }
