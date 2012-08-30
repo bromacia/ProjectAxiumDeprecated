@@ -6625,7 +6625,7 @@ void AuraEffect::HandleRaidProcFromChargeAuraProc(AuraApplication* aurApp, ProcE
 {
     Unit* target = aurApp->GetTarget();
 
-    uint32 triggerSpellId;
+    uint32 triggerSpellId = GetSpellInfo()->Effects[m_effIndex].TriggerSpell;
 
     int32 jumps = GetBase()->GetCharges();
 
