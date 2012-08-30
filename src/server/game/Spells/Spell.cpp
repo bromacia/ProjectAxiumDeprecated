@@ -5660,7 +5660,7 @@ SpellCastResult Spell::CheckCast(bool strict)
         if (m_spellInfo->Id == 1706)
             if (Unit* target = m_targets.GetUnitTarget())
                 if (target->IsMounted())
-                    return SPELL_FAILED_NO_MOUNTS_ALLOWED;
+                    return SPELL_FAILED_NOT_ON_MOUNTED;
 
         break;
     }
