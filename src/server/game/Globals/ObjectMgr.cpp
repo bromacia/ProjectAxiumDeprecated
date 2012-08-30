@@ -9067,11 +9067,11 @@ void ObjectMgr::LoadMailQueue()
 
             MailDraft(subject, body)
                 .AddItem(item_sent)
-                .SendMailTo(trans, MailReceiver(receiver), sender);
+                .SendMailTo(trans, MailReceiver(receiver, GUID_LOPART(receiver_id)), sender);
         }
         else
             MailDraft(subject, body)
-                .SendMailTo(trans, MailReceiver(receiver), sender);
+                .SendMailTo(trans, MailReceiver(receiver, GUID_LOPART(receiver_id)), sender);
     }
     while (result->NextRow());
 
