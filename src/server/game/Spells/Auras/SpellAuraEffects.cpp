@@ -4990,8 +4990,9 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                     break;
                 case 52916: // Honor Among Thieves
                     if (target->GetTypeId() == TYPEID_PLAYER)
-                        if (Unit* spellTarget = ObjectAccessor::GetUnit(*target, target->ToPlayer()->GetComboTarget()))
-                            target->CastSpell(spellTarget, 51699, true);
+                        if (Unit* spellTarget = target->ToPlayer()->GetSelectedUnit())
+                            if (target->IsValidAttackTarget(spellTarget))
+                                target->CastSpell(spellTarget, 51699, true);
                    break;
                 case 71563: // Deadly Precision
                     if (Aura* newAura = target->AddAura(71564, target))
