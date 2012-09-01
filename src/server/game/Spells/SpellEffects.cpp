@@ -5217,13 +5217,40 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                     // Prevent stacking of mounts and client crashes upon dismounting
                     unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
 
-                    // Triggered spell id dependent on riding skill
-                    if (uint16 skillval = unitTarget->ToPlayer()->GetSkillValue(SKILL_RIDING))
+                    // Triggered spell id dependent on riding skill and zone
+                    bool canFly = true;
+                    uint32 v_map = GetVirtualMapForMapAndZone(unitTarget->GetMapId(), unitTarget->GetZoneId());
+                    if (v_map != 530 && v_map != 571)
+                        canFly = false;
+
+                    if (canFly && v_map == 571 && !unitTarget->ToPlayer()->HasSpell(54197))
+                        canFly = false;
+
+                    float x, y, z;
+                    unitTarget->GetPosition(x, y, z);
+                    uint32 areaFlag = unitTarget->GetBaseMap()->GetAreaFlag(x, y, z);
+                    AreaTableEntry const* pArea = sAreaStore.LookupEntry(areaFlag);
+                    if (!pArea || (canFly && (pArea->flags & AREA_FLAG_NO_FLY_ZONE)))
+                        canFly = false;
+
+                    switch (unitTarget->ToPlayer()->GetBaseSkillValue(SKILL_RIDING))
                     {
-                        if (skillval >= 300)
-                            unitTarget->CastSpell(unitTarget, 74855, true);
-                        else
-                            unitTarget->CastSpell(unitTarget, 74854, true);
+                        case 225:
+                            {
+                                if (canFly)
+                                    unitTarget->CastSpell(unitTarget, 74854, true);
+                                else
+                                    return;
+                            }
+                            break;
+                        case 300:
+                            {
+                                if (canFly)
+                                    unitTarget->CastSpell(unitTarget, 74855, true);
+                                else
+                                    return;
+                            }
+                            break;
                     }
                     return;
                 }
