@@ -3049,6 +3049,7 @@ void SpellMgr::LoadDbcDataCorrections()
             case 60946: // Nightmare (Rank 1)
             case 60947: // Nightmare (Rank 2)
             case 51699: // Honor Among Thieves
+            case 52916: // Honor Among Thieves
             case 57934: // Tricks of the Trade - Trigger
             case 57933: // Tricks of the Trade - Damage
             case 59628: // Tricks of the Trade - Threat
