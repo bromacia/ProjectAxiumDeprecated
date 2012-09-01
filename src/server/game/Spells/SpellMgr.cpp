@@ -3213,6 +3213,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 6358: // Seduction
                 spellInfo->speed = 200;
                 break;
+            case 3714: // Path of Frost
+                spellInfo->AuraInterruptFlags = 0x00000002;
+                break;
             default:
                 break;
         }
