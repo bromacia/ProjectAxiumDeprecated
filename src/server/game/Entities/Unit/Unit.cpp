@@ -145,7 +145,7 @@ _hitMask(hitMask), _spell(spell), _damageInfo(damageInfo), _healInfo(healInfo)
 #pragma warning(disable:4355)
 #endif
 Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
-m_movedPlayer(NULL), m_lastSanctuaryTime(0), IsAIEnabled(false), NeedChangeAI(false),
+m_movedPlayer(NULL), m_lastSanctuaryTime(0), m_lastBlinkTime(0), IsAIEnabled(false), NeedChangeAI(false),
 m_ControlledByPlayer(false), i_AI(NULL), i_disabledAI(NULL), m_procDeep(0),
 m_removedAurasCount(0), i_motionMaster(this), m_ThreatManager(this), m_vehicle(NULL),
 m_vehicleKit(NULL), m_unitTypeMask(UNIT_MASK_NONE), m_HostileRefManager(this)
@@ -16809,11 +16809,11 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form)
                     case 7: // Violet
                     case 8:
                         return 29405;
-                    case 3: // Light Blue
+                    case 3: // Light Teal
                         return 29406;
                     case 0: // Green
-                    case 1: // Light Green
-                    case 2: // Dark Green
+                    case 1: // Teal
+                    case 2: // Dark Teal
                         return 29407;
                     case 4: // White
                         return 29408;
@@ -16887,15 +16887,15 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form)
                 switch (hairColor)
                 {
                     case 0: // Green
-                    case 1: // Light Green
-                    case 2: // Dark Green
+                    case 1: // Teal
+                    case 2: // Dark Teal
                         return 29413;
                     case 5: // Light Blue
                     case 6: // Dark Blue
                         return 29414;
                     case 4: // White
                         return 29416;
-                    case 3: // Light Blue
+                    case 3: // Light Teal
                         return 29417;
                     default: // original - Violet
                         return 2281;

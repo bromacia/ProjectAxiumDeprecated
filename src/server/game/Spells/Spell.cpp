@@ -1197,6 +1197,10 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
     if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastSanctuaryTime)
         return;
 
+    if (m_spellInfo->Mechanic == MECHANIC_STUN)
+        if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastBlinkTime)
+            return;
+
     // Get original caster (if exist) and calculate damage/healing from him data
     Unit* caster = m_originalCaster ? m_originalCaster : m_caster;
 

@@ -2011,6 +2011,7 @@ class Unit : public WorldObject
 
         SpellImmuneList m_spellImmune[MAX_SPELL_IMMUNITY];
         uint32 m_lastSanctuaryTime;
+        uint32 m_lastBlinkTime;
 
         // Threat related methods
         bool CanHaveThreatList() const;
