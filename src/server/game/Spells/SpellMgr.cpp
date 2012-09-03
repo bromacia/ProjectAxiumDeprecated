@@ -3216,6 +3216,15 @@ void SpellMgr::LoadDbcDataCorrections()
             case 3714: // Path of Frost
                 spellInfo->AuraInterruptFlags = 0x00000002;
                 break;
+            case 11071: // Frostbite (Rank 1)
+                spellInfo->procChance = 3;
+                break;
+            case 12496: // Frostbite (Rank 2)
+                spellInfo->procChance = 6;
+                break;
+            case 12497: // Frostbite (Rank 3)
+                spellInfo->procChance = 9;
+                break;
             default:
                 break;
         }
