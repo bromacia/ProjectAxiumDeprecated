@@ -257,18 +257,10 @@ class npc_transmog : public CreatureScript
                             player->SetUInt32Value(mainhand, transmog->mainhand_id);
                         }
                         else
-                        {
-                            player->CLOSE_GOSSIP_MENU();
                             ChatHandler(player).PSendSysMessage("Your main hand weapon's class does not match the transmog weapon's class.");
-                            return false;
-                        }
                     }
                     else
-                    {
-                        player->CLOSE_GOSSIP_MENU();
                         ChatHandler(player).PSendSysMessage("Your main hand weapon's type does not match the transmog weapon's type.");
-                        return false;
-                    }
                 }
                 if (transmog->offhand_id != 0)   // Off hand
                 {
@@ -285,18 +277,10 @@ class npc_transmog : public CreatureScript
                             player->SetUInt32Value(offhand, transmog->offhand_id);
                         }
                         else
-                        {
-                            player->CLOSE_GOSSIP_MENU();
                             ChatHandler(player).PSendSysMessage("Your off hand weapon's class does not match the transmog weapon's class.");
-                            return false;
-                        }
                     }
                     else
-                    {
-                        player->CLOSE_GOSSIP_MENU();
                         ChatHandler(player).PSendSysMessage("Your off hand weapon's type does not match the transmog weapon's type.");
-                        return false;
-                    }
                 }
                 if (transmog->ranged_id != 0)   // Ranged
                 {
@@ -311,18 +295,10 @@ class npc_transmog : public CreatureScript
                             player->SetUInt32Value(ranged, transmog->ranged_id);
                         }
                         else
-                        {
-                            player->CLOSE_GOSSIP_MENU();
                             ChatHandler(player).PSendSysMessage("Your ranged weapon's class does not match the transmog weapon's class.");
-                            return false;
-                        }
                     }
                     else
-                    {
-                        player->CLOSE_GOSSIP_MENU();
                         ChatHandler(player).PSendSysMessage("Your ranged weapon's type does not match the transmog weapon's type.");
-                        return false;
-                    }
                 }
 
                 player->CLOSE_GOSSIP_MENU();
