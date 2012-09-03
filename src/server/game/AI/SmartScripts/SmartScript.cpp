@@ -1064,7 +1064,6 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_SUMMON_CREATURE:
         {
-            float x, y, z, o;
             ObjectList* targets = GetTargets(e, unit);
             if (targets)
             {
@@ -1073,6 +1072,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                     if (!IsUnit(*itr))
                         continue;
 
+                    float x, y, z, o;
                     (*itr)->GetPosition(x, y, z, o);
                     if (Creature* summon = GetBaseObject()->SummonCreature(e.action.summonCreature.creature, x, y, z, o, (TempSummonType)e.action.summonCreature.type, e.action.summonCreature.duration))
                         if (unit && e.action.summonCreature.attackInvoker)
@@ -1095,7 +1095,6 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             if (!GetBaseObject())
                 break;
 
-            float x, y, z, o;
             ObjectList* targets = GetTargets(e, unit);
             if (targets)
             {
@@ -1104,6 +1103,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                     if (!IsUnit(*itr))
                         continue;
 
+                    float x, y, z, o;
                     (*itr)->GetPosition(x, y, z, o);
                     GetBaseObject()->SummonGameObject(e.action.summonGO.entry, x, y, z, o, 0, 0, 0, 0, e.action.summonGO.despawnTime);
                 }

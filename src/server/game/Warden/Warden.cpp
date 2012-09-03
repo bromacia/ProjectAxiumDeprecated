@@ -117,9 +117,7 @@ void Warden::Update()
         else
         {
             if (diff >= _checkTimer)
-            {
                 RequestData();
-            }
             else
                 _checkTimer -= diff;
         }
@@ -174,28 +172,24 @@ std::string Warden::Penalty(WardenCheck* check /*= NULL*/)
 
     switch (action)
     {
-    case WARDEN_ACTION_LOG:
-        return "None";
-        break;
-    case WARDEN_ACTION_KICK:
-        _session->KickPlayer();
-        return "Kick";
-        break;
-    case WARDEN_ACTION_BAN:
-        {
-            std::stringstream duration;
-            duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION) << "s";
-            std::string accountName;
-            AccountMgr::GetName(_session->GetAccountId(), accountName);
-            std::stringstream banReason;
-            banReason << "Warden Anticheat Violation: " << check->Comment << " (CheckId: " << check->CheckId << ")";
-            sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), banReason.str(),"Server");
-
-            return "Ban";
+        case WARDEN_ACTION_LOG:
+            return "None";
+        case WARDEN_ACTION_KICK:
+            _session->KickPlayer();
+            return "Kick";
+        case WARDEN_ACTION_BAN:
+            {
+                std::stringstream duration;
+                duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION) << "s";
+                std::string accountName;
+                AccountMgr::GetName(_session->GetAccountId(), accountName);
+                std::stringstream banReason;
+                banReason << "Warden Anticheat Violation: " << check->Comment << " (CheckId: " << check->CheckId << ")";
+                sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), banReason.str(),"Server");
+                return "Ban";
+            }
+        default:
             break;
-        }
-    default:
-        break;
     }
     return "Undefined";
 }
@@ -208,7 +202,7 @@ void WorldSession::HandleWardenDataOpcode(WorldPacket& recvData)
     sLog->outDebug(LOG_FILTER_WARDEN, "Got packet, opcode %02X, size %u", opcode, uint32(recvData.size()));
     recvData.hexlike();
 
-    switch(opcode)
+    switch (opcode)
     {
         case WARDEN_CMSG_MODULE_MISSING:
             _warden->SendModuleToClient();

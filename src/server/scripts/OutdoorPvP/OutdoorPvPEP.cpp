@@ -83,13 +83,9 @@ void OPvPCapturePointEP_EWT::ChangeState()
     GameObject* flag = HashMapHolder<GameObject>::Find(m_capturePointGUID);
     GameObject* flag2 = HashMapHolder<GameObject>::Find(m_Objects[EP_EWT_FLAGS]);
     if (flag)
-    {
         flag->SetGoArtKit(artkit);
-    }
     if (flag2)
-    {
         flag2->SetGoArtKit(artkit);
-    }
 
     UpdateTowerState();
 

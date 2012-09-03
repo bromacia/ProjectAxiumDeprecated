@@ -67,7 +67,6 @@ enum ShutdownExitCode
 /// Timers for different object refresh rates
 enum WorldTimers
 {
-    WUPDATE_AUCTIONS,
     WUPDATE_WEATHERS,
     WUPDATE_UPTIME,
     WUPDATE_CORPSES,
@@ -747,12 +746,6 @@ class World
         void LoadAutobroadcasts();
 
         void UpdateAreaDependentAuras();
-
-        void ProcessStartEvent();
-        void ProcessStopEvent();
-        bool GetEventKill() const { return isEventKillStart; }
-
-        bool isEventKillStart;
 
         CharacterNameData const* GetCharacterNameData(uint32 guid) const;
         void AddCharacterNameData(uint32 guid, std::string const& name, uint8 gender, uint8 race, uint8 playerClass);

@@ -24,7 +24,6 @@
 #include "ObjectMgr.h"
 #include "ArenaTeamMgr.h"
 #include "GuildMgr.h"
-#include "AuctionHouseMgr.h"
 #include "AccountMgr.h"
 #include "PlayerDump.h"
 #include "SpellMgr.h"
@@ -513,41 +512,6 @@ bool ChatHandler::HandleListItemCommand(const char* args)
             count = 0;
     }
 
-    // auction case
-    uint32 auc_count = 0;
-    result=CharacterDatabase.PQuery("SELECT COUNT(itemEntry) FROM auctionhouse ah INNER JOIN item_instance ii ON ii.guid = ah.itemguid WHERE itemEntry = '%u'", item_id);
-    if (result)
-        auc_count = (*result)[0].GetUInt32();
-
-    if (count > 0)
-    {
-        result = CharacterDatabase.PQuery(
-        //           0            1             2          3
-            "SELECT  ah.itemguid, ah.itemowner, c.account, c.name FROM auctionhouse ah "
-            "INNER JOIN characters c ON c.guid = ah.itemowner "
-            "INNER JOIN item_instance ii ON ii.guid = ah.itemguid "
-            "WHERE ii.itemEntry = '%u' LIMIT %u", item_id, count);
-    }
-    else
-        result = QueryResult(NULL);
-
-    if (result)
-    {
-        do
-        {
-            Field* fields = result->Fetch();
-            uint32 item_guid       = fields[0].GetUInt32();
-            uint32 owner           = fields[1].GetUInt32();
-            uint32 owner_acc       = fields[2].GetUInt32();
-            std::string owner_name = fields[3].GetString();
-
-            char const* item_pos = "[in auction]";
-
-            PSendSysMessage(LANG_ITEMLIST_AUCTION, item_guid, owner_name.c_str(), owner, owner_acc, item_pos);
-        }
-        while (result->NextRow());
-    }
-
     // guild bank case
     uint32 guild_count = 0;
     result = CharacterDatabase.PQuery("SELECT COUNT(itemEntry) FROM guild_bank_item gbi INNER JOIN item_instance ii ON ii.guid = gbi.item_guid WHERE itemEntry = '%u'", item_id);
@@ -585,14 +549,14 @@ bool ChatHandler::HandleListItemCommand(const char* args)
             count = 0;
     }
 
-    if (inv_count + mail_count + auc_count + guild_count == 0)
+    if (inv_count + mail_count + guild_count == 0)
     {
         SendSysMessage(LANG_COMMAND_NOITEMFOUND);
         SetSentErrorMessage(true);
         return false;
     }
 
-    PSendSysMessage(LANG_COMMAND_LISTITEMMESSAGE, item_id, inv_count + mail_count + auc_count + guild_count, inv_count, mail_count, auc_count, guild_count);
+    PSendSysMessage(LANG_COMMAND_LISTITEMMESSAGE, item_id, inv_count + mail_count + guild_count, inv_count, mail_count, guild_count);
     return true;
 }
 

@@ -30,7 +30,6 @@
 #include "MapManager.h"
 #include "ObjectMgr.h"
 #include "Group.h"
-#include "LFGMgr.h"
 
 union u_map_magic
 {
@@ -2243,10 +2242,6 @@ bool InstanceMap::AddPlayerToMap(Player* player)
         {
             Group* group = player->GetGroup();
 
-            // increase current instances (hourly limit)
-            if (!group || !group->isLFGGroup())
-                player->AddInstanceEnterTime(GetInstanceId(), time(NULL));
-
             // get or create an instance save for the map
             InstanceSave* mapSave = sInstanceSaveMgr->GetInstanceSave(GetInstanceId());
             if (!mapSave)
@@ -2322,13 +2317,6 @@ bool InstanceMap::AddPlayerToMap(Player* player)
                         ASSERT(playerBind->save == mapSave);
                 }
             }
-
-            if (group && group->isLFGGroup())
-                if (uint32 dungeonId = sLFGMgr->GetDungeon(group->GetGUID(), true))
-                    if (LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId))
-                        if (LFGDungeonEntry const* randomDungeon = sLFGDungeonStore.LookupEntry(*(sLFGMgr->GetSelectedDungeons(player->GetGUID()).begin())))
-                            if (dungeon->map == GetId() && dungeon->difficulty == GetDifficulty() && randomDungeon->type == LFG_TYPE_RANDOM)
-                                player->CastSpell(player, LFG_SPELL_LUCK_OF_THE_DRAW, true);
         }
 
         // for normal instances cancel the reset schedule when the

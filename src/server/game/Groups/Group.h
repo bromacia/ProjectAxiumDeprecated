@@ -197,12 +197,10 @@ class Group
         void   SetLooterGuid(uint64 guid);
         void   UpdateLooterGuid(WorldObject* pLootedObject, bool ifneed = false);
         void   SetLootThreshold(ItemQualities threshold);
-        void   Disband(bool hideDestroy=false);
-        void   SetLfgRoles(uint64 guid, const uint8 roles);
+        void   Disband(bool hideDestroy = false);
 
         // properties accessories
         bool IsFull() const;
-        bool isLFGGroup()  const;
         bool isRaidGroup() const;
         bool isBGGroup()   const;
         bool IsCreated()   const;
@@ -235,7 +233,6 @@ class Group
         uint32 GetMembersCount() const;
         uint8 GetMemberGroup(uint64 guid) const;
 
-        void ConvertToLFG();
         void ConvertToRaid();
 
         void SetBattlegroundGroup(Battleground* bg);

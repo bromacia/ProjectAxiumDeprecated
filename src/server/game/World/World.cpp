@@ -35,7 +35,6 @@
 #include "World.h"
 #include "AccountMgr.h"
 #include "AchievementMgr.h"
-#include "AuctionHouseMgr.h"
 #include "ObjectMgr.h"
 #include "ArenaTeamMgr.h"
 #include "GuildMgr.h"
@@ -65,7 +64,6 @@
 #include "Transport.h"
 #include "ScriptMgr.h"
 #include "AddonMgr.h"
-#include "LFGMgr.h"
 #include "ConditionMgr.h"
 #include "DisableMgr.h"
 #include "CharacterDatabaseCleaner.h"
@@ -1464,9 +1462,6 @@ void World::SetInitialWorldSettings()
     sLog->outString("Loading Dungeon boss data...");
     sObjectMgr->LoadInstanceEncounters();
 
-    sLog->outString("Loading LFG rewards...");
-    sLFGMgr->LoadRewards();
-
     sLog->outString("Loading SpellArea Data...");                // must be after quest load
     sSpellMgr->LoadSpellAreas();
 
@@ -1548,16 +1543,7 @@ void World::SetInitialWorldSettings()
     sLog->outString("Loading Completed Achievements...");
     sAchievementMgr->LoadCompletedAchievements();
 
-    // Delete expired auctions before loading
-    sLog->outString("Deleting expired auctions...");
-    sAuctionMgr->DeleteExpiredAuctionsAtStartup();
-
     ///- Load dynamic data tables from the database
-    sLog->outString("Loading Item Auctions...");
-    sAuctionMgr->LoadAuctionItems();
-    sLog->outString("Loading Auctions...");
-    sAuctionMgr->LoadAuctions();
-
     sGuildMgr->LoadGuilds();
 
     sLog->outString("Loading ArenaTeams...");
@@ -1682,7 +1668,6 @@ void World::SetInitialWorldSettings()
                             realmID, uint64(m_startTime), isoDate, "Axium-Core");       // One-time query
 
     m_timers[WUPDATE_WEATHERS].SetInterval(1*IN_MILLISECONDS);
-    m_timers[WUPDATE_AUCTIONS].SetInterval(MINUTE*IN_MILLISECONDS);
     m_timers[WUPDATE_UPTIME].SetInterval(m_int_configs[CONFIG_UPTIME_UPDATE]*MINUTE*IN_MILLISECONDS);
                                                             //Update "uptime" table based on configuration entry in minutes.
     m_timers[WUPDATE_CORPSES].SetInterval(20 * MINUTE * IN_MILLISECONDS);
@@ -1695,15 +1680,6 @@ void World::SetInitialWorldSettings()
     m_timers[WUPDATE_PINGDB].SetInterval(getIntConfig(CONFIG_DB_PING_INTERVAL)*MINUTE*IN_MILLISECONDS);    // Mysql ping time in minutes
 
     m_timers[WUPDATE_MAILQUEUE].SetInterval(getIntConfig(CONFIG_MAIL_QUEUE_TIMER)*MINUTE*IN_MILLISECONDS);
-
-    //to set mailtimer to return mails every day between 4 and 5 am
-    //mailtimer is increased when updating auctions
-    //one second is 1000 -(tested on win system)
-    //TODO: Get rid of magic numbers
-    mail_timer = ((((localtime(&m_gameTime)->tm_hour + 20) % 24)* HOUR * IN_MILLISECONDS) / m_timers[WUPDATE_AUCTIONS].GetInterval());
-                                                            //1440
-    mail_timer_expires = ((DAY * IN_MILLISECONDS) / (m_timers[WUPDATE_AUCTIONS].GetInterval()));
-    sLog->outDetail("Mail timer set to: " UI64FMTD ", mail return is called every " UI64FMTD " minutes", uint64(mail_timer), uint64(mail_timer_expires));
 
     ///- Initilize static helper structures
     AIRegistry::Initialize();
@@ -1936,23 +1912,6 @@ void World::Update(uint32 diff)
     if (m_gameTime > m_NextRandomBGReset)
         ResetRandomBG();
 
-    /// <ul><li> Handle auctions when the timer has passed
-    if (m_timers[WUPDATE_AUCTIONS].Passed())
-    {
-        m_timers[WUPDATE_AUCTIONS].Reset();
-
-        ///- Update mails (return old mails with item, or delete them)
-        //(tested... works on win)
-        if (++mail_timer > mail_timer_expires)
-        {
-            mail_timer = 0;
-            sObjectMgr->ReturnOrDeleteOldMails(true);
-        }
-
-        ///- Handle expired auctions
-        sAuctionMgr->Update();
-    }
-
     /// <li> Handle session updates when the timer has passed
     RecordTimeDiff(NULL);
     UpdateSessions(diff);
@@ -2026,9 +1985,6 @@ void World::Update(uint32 diff)
         m_timers[WUPDATE_DELETECHARS].Reset();
         Player::DeleteOldCharacters();
     }
-
-    sLFGMgr->Update(diff);
-    RecordTimeDiff("UpdateLFGMgr");
 
     // execute callbacks from sql queries that were queued recently
     ProcessQueryCallbacks();
@@ -2844,16 +2800,6 @@ void World::LoadDBVersion()
 
     if (m_DBVersion.empty())
         m_DBVersion = "Unknown world database.";
-}
-
-void World::ProcessStartEvent()
-{
-    isEventKillStart = true;
-}
-
-void World::ProcessStopEvent()
-{
-    isEventKillStart = false;
 }
 
 void World::UpdateAreaDependentAuras()

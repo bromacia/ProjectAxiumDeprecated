@@ -27,7 +27,6 @@
 #include "SkillDiscovery.h"
 #include "GridNotifiers.h"
 #include "Group.h"
-#include "LFGMgr.h"
 #include "VMapFactory.h"
 
 class spell_gen_absorb0_hitlimit1 : public SpellScriptLoader
@@ -857,47 +856,6 @@ class spell_gen_parachute_ic : public SpellScriptLoader
         }
 };
 
-class spell_gen_dungeon_credit : public SpellScriptLoader
-{
-    public:
-        spell_gen_dungeon_credit() : SpellScriptLoader("spell_gen_dungeon_credit") { }
-
-        class spell_gen_dungeon_credit_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_gen_dungeon_credit_SpellScript);
-
-            bool Load()
-            {
-                _handled = false;
-                return true;
-            }
-
-            void CreditEncounter()
-            {
-                // This hook is executed for every target, make sure we only credit instance once
-                if (_handled)
-                    return;
-
-                _handled = true;
-                if (GetCaster()->GetTypeId() == TYPEID_UNIT)
-                    if (InstanceScript* instance = GetCaster()->GetInstanceScript())
-                        instance->UpdateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, GetSpellInfo()->Id, GetCaster());
-            }
-
-            void Register()
-            {
-                AfterHit += SpellHitFn(spell_gen_dungeon_credit_SpellScript::CreditEncounter);
-            }
-
-            bool _handled;
-        };
-
-        SpellScript* GetSpellScript() const
-        {
-            return new spell_gen_dungeon_credit_SpellScript();
-        }
-};
-
 class spell_gen_profession_research : public SpellScriptLoader
 {
     public:
@@ -1485,63 +1443,6 @@ public:
     }
 };
 
-class spell_gen_luck_of_the_draw : public SpellScriptLoader
-{
-    public:
-        spell_gen_luck_of_the_draw() : SpellScriptLoader("spell_gen_luck_of_the_draw") { }
-
-        class spell_gen_luck_of_the_draw_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_gen_luck_of_the_draw_AuraScript);
-
-            // cheap hax to make it have update calls
-            void CalcPeriodic(AuraEffect const* /*effect*/, bool& isPeriodic, int32& amplitude)
-            {
-                isPeriodic = true;
-                amplitude = 5 * IN_MILLISECONDS;
-            }
-
-            void Update(AuraEffect* /*effect*/)
-            {
-                if (GetUnitOwner()->GetTypeId() != TYPEID_PLAYER)
-                    return;
-
-                const LfgDungeonSet dungeons = sLFGMgr->GetSelectedDungeons(GetUnitOwner()->GetGUID());
-                LfgDungeonSet::const_iterator itr = dungeons.begin();
-                
-                if (itr == dungeons.end())
-                {
-                    Remove(AURA_REMOVE_BY_DEFAULT);
-                    return;
-                }
-
-
-                LFGDungeonEntry const* randomDungeon = sLFGDungeonStore.LookupEntry(*itr);
-                Group* group = GetUnitOwner()->ToPlayer()->GetGroup();
-                Map const* map = GetUnitOwner()->GetMap();
-                if (group && group->isLFGGroup())
-                    if (uint32 dungeonId = sLFGMgr->GetDungeon(group->GetGUID(), true))
-                        if (LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId))
-                            if (dungeon->map == map->GetId() && dungeon->difficulty == map->GetDifficulty())
-                                if (randomDungeon && randomDungeon->type == LFG_TYPE_RANDOM)
-                                    return; // in correct dungeon
-
-                Remove(AURA_REMOVE_BY_DEFAULT);
-            }
-
-            void Register()
-            {
-                DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_gen_luck_of_the_draw_AuraScript::CalcPeriodic, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE);
-                OnEffectUpdatePeriodic += AuraEffectUpdatePeriodicFn(spell_gen_luck_of_the_draw_AuraScript::Update, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE);
-            }
-        };
-
-        AuraScript* GetAuraScript() const
-        {
-            return new spell_gen_luck_of_the_draw_AuraScript();
-        }
-};
-
 enum DalaranDisguiseSpells
 {
     SPELL_SUNREAVER_DISGUISE_TRIGGER       = 69672,
@@ -1693,16 +1594,18 @@ class spell_gen_break_shield: public SpellScriptLoader
                         Unit::AuraApplicationMap const& auras = target->GetAppliedAuras();
                         for (Unit::AuraApplicationMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
                         {
-                            Aura* aura = itr->second->GetBase();
-                            SpellInfo const* auraInfo = aura->GetSpellInfo();
-                            if (aura && auraInfo->SpellIconID == 2007 && aura->HasEffectType(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN))
+                            if (Aura* aura = itr->second->GetBase())
                             {
-                                aura->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
-                                // Remove dummys from rider (Necessary for updating visual shields)
-                                if (Unit* rider = target->GetCharmer())
-                                    if (Aura* defend = rider->GetAura(aura->GetId()))
-                                        defend->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
-                                break;
+                                SpellInfo const* auraInfo = aura->GetSpellInfo();
+                                if (auraInfo && auraInfo->SpellIconID == 2007 && aura->HasEffectType(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN))
+                                {
+                                    aura->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
+                                    // Remove dummys from rider (Necessary for updating visual shields)
+                                    if (Unit* rider = target->GetCharmer())
+                                        if (Aura* defend = rider->GetAura(aura->GetId()))
+                                            defend->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
+                                    break;
+                                }
                             }
                         }
                         break;
@@ -1795,6 +1698,7 @@ class spell_gen_mounted_charge: public SpellScriptLoader
                         {
                             case SPELL_CHARGE_TRIGGER_TRIAL_CHAMPION:
                                 spellId = SPELL_CHARGE_CHARGING_EFFECT_20K_1;
+                                break;
                             case SPELL_CHARGE_TRIGGER_FACTION_MOUNTS:
                                 spellId = SPELL_CHARGE_CHARGING_EFFECT_8K5;
                                 break;
@@ -1818,16 +1722,18 @@ class spell_gen_mounted_charge: public SpellScriptLoader
                         Unit::AuraApplicationMap const& auras = target->GetAppliedAuras();
                         for (Unit::AuraApplicationMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
                         {
-                            Aura* aura = itr->second->GetBase();
-                            SpellInfo const* auraInfo = aura->GetSpellInfo();
-                            if (aura && auraInfo->SpellIconID == 2007 && aura->HasEffectType(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN))
+                            if (Aura* aura = itr->second->GetBase())
                             {
-                                aura->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
-                                // Remove dummys from rider (Necessary for updating visual shields)
-                                if (Unit* rider = target->GetCharmer())
-                                    if (Aura* defend = rider->GetAura(aura->GetId()))
-                                        defend->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
-                                break;
+                                SpellInfo const* auraInfo = aura->GetSpellInfo();
+                                if (auraInfo && auraInfo->SpellIconID == 2007 && aura->HasEffectType(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN))
+                                {
+                                    aura->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
+                                    // Remove dummys from rider (Necessary for updating visual shields)
+                                    if (Unit* rider = target->GetCharmer())
+                                        if (Aura* defend = rider->GetAura(aura->GetId()))
+                                            defend->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
+                                    break;
+                                }
                             }
                         }
                         break;
@@ -2371,7 +2277,6 @@ void AddSC_generic_spell_scripts()
     new spell_gen_divine_storm_cd_reset();
     new spell_gen_parachute_ic();
     new spell_gen_gunship_portal();
-    new spell_gen_dungeon_credit();
     new spell_gen_profession_research();
     new spell_generic_clone();
     new spell_generic_clone_weapon();
@@ -2384,7 +2289,6 @@ void AddSC_generic_spell_scripts()
     new spell_gen_vehicle_scaling();
     new spell_gen_oracle_wolvar_reputation();
     new spell_gen_damage_reduction_aura();
-    new spell_gen_luck_of_the_draw();
     new spell_gen_dalaran_disguise("spell_gen_sunreaver_disguise");
     new spell_gen_dalaran_disguise("spell_gen_silver_covenant_disguise");
     new spell_gen_elune_candle();

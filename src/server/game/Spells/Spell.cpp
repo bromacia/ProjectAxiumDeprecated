@@ -1597,7 +1597,6 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                         // Improved Succubus
                         if (m_spellInfo->Id == 6358 && unit->GetTypeId() == TYPEID_PLAYER && m_originalCaster->GetOwner())
                         {
-                            float mod = 1.0f;
                             float durationadd = 0.0f;
 
                             if (m_originalCaster->GetOwner()->HasAura(18754))
@@ -1609,6 +1608,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
 
                             if (durationadd)
                             {
+                                float mod = 1.0f;
                                 switch (m_diminishLevel)
                                 {
                                     case DIMINISHING_LEVEL_1:
@@ -5342,20 +5342,6 @@ SpellCastResult Spell::CheckCast(bool strict)
             // RETURN HERE
             case SPELL_EFFECT_SUMMON_RAF_FRIEND:
             {
-                if (m_caster->GetTypeId() != TYPEID_PLAYER)
-                    return SPELL_FAILED_BAD_TARGETS;
-
-                Player* playerCaster = m_caster->ToPlayer();
-                    //
-                if (!(playerCaster->GetSelection()))
-                    return SPELL_FAILED_BAD_TARGETS;
-
-                Player* target = ObjectAccessor::FindPlayer(playerCaster->GetSelection());
-
-                if (!target ||
-                    !(target->GetSession()->GetRecruiterId() == playerCaster->GetSession()->GetAccountId() || target->GetSession()->GetAccountId() == playerCaster->GetSession()->GetRecruiterId()))
-                    return SPELL_FAILED_BAD_TARGETS;
-
                 break;
             }
             case SPELL_EFFECT_LEAP:

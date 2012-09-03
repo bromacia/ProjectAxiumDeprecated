@@ -813,7 +813,7 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
     return true;
 }
 
-bool SmartAIMgr::IsTextValid(SmartScriptHolder const& e, uint32 id)
+/*bool SmartAIMgr::IsTextValid(SmartScriptHolder const& e, uint32 id)
 {
     bool error = false;
     uint32 entry = 0;
@@ -838,4 +838,4 @@ bool SmartAIMgr::IsTextValid(SmartScriptHolder const& e, uint32 id)
         return false;
     }
     return true;
-}
+}*/

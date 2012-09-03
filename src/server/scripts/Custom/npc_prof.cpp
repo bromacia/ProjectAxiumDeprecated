@@ -85,13 +85,14 @@ class npc_prof : public CreatureScript
         char* skill_name;
 
         SkillLineEntry const *SkillInfo = sSkillLineStore.LookupEntry(skill);
-        skill_name = SkillInfo->name[handler.GetSessionDbcLocale()];
 
         if (!SkillInfo)
         {
             sLog->outError("Received non-valid skill ID (LearnAllRecipesInProfession)");
             return false;
         }
+
+        skill_name = SkillInfo->name[handler.GetSessionDbcLocale()];
 
         LearnSkillRecipesHelper(player, SkillInfo->id);
 

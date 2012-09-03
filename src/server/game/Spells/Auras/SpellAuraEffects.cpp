@@ -3564,22 +3564,22 @@ void AuraEffect::HandleModStateImmunityMask(AuraApplication const* aurApp, uint8
             break;
     }
 
-    if (aura_immunity_list.size() == 0)
+    if (!aura_immunity_list.empty())
     {
-            if (miscVal & (1<<10))
-                aura_immunity_list.push_back(SPELL_AURA_MOD_STUN);
-            if (miscVal & (1<<1))
-                aura_immunity_list.push_back(SPELL_AURA_TRANSFORM);
-            if (miscVal & (1<<6))
-                aura_immunity_list.push_back(SPELL_AURA_MOD_DECREASE_SPEED);
-            if (miscVal & (1<<0))
-                aura_immunity_list.push_back(SPELL_AURA_MOD_ROOT);
-            if (miscVal & (1<<2))
-                aura_immunity_list.push_back(SPELL_AURA_MOD_CONFUSE);
-            if (miscVal & (1<<9))
-                aura_immunity_list.push_back(SPELL_AURA_MOD_FEAR);
-            if (miscVal & (1<<7) && (GetId() != 46924))
-                aura_immunity_list.push_back(SPELL_AURA_MOD_DISARM);
+        if (miscVal & (1<<10))
+            aura_immunity_list.push_back(SPELL_AURA_MOD_STUN);
+        if (miscVal & (1<<1))
+            aura_immunity_list.push_back(SPELL_AURA_TRANSFORM);
+        if (miscVal & (1<<6))
+            aura_immunity_list.push_back(SPELL_AURA_MOD_DECREASE_SPEED);
+        if (miscVal & (1<<0))
+            aura_immunity_list.push_back(SPELL_AURA_MOD_ROOT);
+        if (miscVal & (1<<2))
+            aura_immunity_list.push_back(SPELL_AURA_MOD_CONFUSE);
+        if (miscVal & (1<<9))
+            aura_immunity_list.push_back(SPELL_AURA_MOD_FEAR);
+        if (miscVal & (1<<7) && (GetId() != 46924)) // Bladestorm
+            aura_immunity_list.push_back(SPELL_AURA_MOD_DISARM);
     }
 
     // Bladestorm and Killing Spree
@@ -3673,7 +3673,7 @@ void AuraEffect::HandleAuraModEffectImmunity(AuraApplication const* aurApp, uint
 
     Unit* target = aurApp->GetTarget();
 
-   target->ApplySpellImmune(GetId(), IMMUNITY_EFFECT, GetMiscValue(), apply);
+    target->ApplySpellImmune(GetId(), IMMUNITY_EFFECT, GetMiscValue(), apply);
 
     // when removing flag aura, handle flag drop
     if (!apply && target->GetTypeId() == TYPEID_PLAYER
@@ -3799,7 +3799,7 @@ void AuraEffect::HandleAuraModResistanceExclusive(AuraApplication const* aurApp,
 
     Unit* target = aurApp->GetTarget();
 
-    for (int8 x = SPELL_SCHOOL_NORMAL; x < MAX_SPELL_SCHOOL; x++)
+    for (int8 x = SPELL_SCHOOL_NORMAL; x < MAX_SPELL_SCHOOL; ++x)
     {
         if (GetMiscValue() & int32(1<<x))
         {
@@ -3822,7 +3822,7 @@ void AuraEffect::HandleAuraModResistance(AuraApplication const* aurApp, uint8 mo
 
     Unit* target = aurApp->GetTarget();
 
-    for (int8 x = SPELL_SCHOOL_NORMAL; x < MAX_SPELL_SCHOOL; x++)
+    for (int8 x = SPELL_SCHOOL_NORMAL; x < MAX_SPELL_SCHOOL; ++x)
     {
         if (GetMiscValue() & int32(1<<x))
         {
@@ -3849,7 +3849,7 @@ void AuraEffect::HandleAuraModBaseResistancePCT(AuraApplication const* aurApp, u
     }
     else
     {
-        for (int8 x = SPELL_SCHOOL_NORMAL; x < MAX_SPELL_SCHOOL; x++)
+        for (int8 x = SPELL_SCHOOL_NORMAL; x < MAX_SPELL_SCHOOL; ++x)
         {
             if (GetMiscValue() & int32(1<<x))
                 target->HandleStatModifier(UnitMods(UNIT_MOD_RESISTANCE_START + x), BASE_PCT, float(GetAmount()), apply);
@@ -3864,7 +3864,7 @@ void AuraEffect::HandleModResistancePercent(AuraApplication const* aurApp, uint8
 
     Unit* target = aurApp->GetTarget();
 
-    for (int8 i = SPELL_SCHOOL_NORMAL; i < MAX_SPELL_SCHOOL; i++)
+    for (int8 i = SPELL_SCHOOL_NORMAL; i < MAX_SPELL_SCHOOL; ++i)
     {
         if (GetMiscValue() & int32(1<<i))
         {
@@ -3894,7 +3894,7 @@ void AuraEffect::HandleModBaseResistance(AuraApplication const* aurApp, uint8 mo
     }
     else
     {
-        for (int i = SPELL_SCHOOL_NORMAL; i < MAX_SPELL_SCHOOL; i++)
+        for (int i = SPELL_SCHOOL_NORMAL; i < MAX_SPELL_SCHOOL; ++i)
             if (GetMiscValue() & (1<<i))
                 target->HandleStatModifier(UnitMods(UNIT_MOD_RESISTANCE_START + i), TOTAL_VALUE, float(GetAmount()), apply);
     }
@@ -3935,7 +3935,7 @@ void AuraEffect::HandleAuraModStat(AuraApplication const* aurApp, uint8 mode, bo
         return;
     }
 
-    for (int32 i = STAT_STRENGTH; i < MAX_STATS; i++)
+    for (int32 i = STAT_STRENGTH; i < MAX_STATS; ++i)
     {
         // -1 or -2 is all stats (misc < -2 checked in function beginning)
         if (GetMiscValue() < 0 || GetMiscValue() == i)
@@ -4063,7 +4063,7 @@ void AuraEffect::HandleModTotalPercentStat(AuraApplication const* aurApp, uint8 
     float healthPct = target->GetHealthPct();
     bool alive = target->isAlive();
 
-    for (int32 i = STAT_STRENGTH; i < MAX_STATS; i++)
+    for (int32 i = STAT_STRENGTH; i < MAX_STATS; ++i)
     {
         if (GetMiscValue() == i || GetMiscValue() == -1)
         {

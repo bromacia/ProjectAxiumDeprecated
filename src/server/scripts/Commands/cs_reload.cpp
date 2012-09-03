@@ -29,8 +29,6 @@ EndScriptData */
 #include "MapManager.h"
 #include "CreatureEventAIMgr.h"
 #include "DisableMgr.h"
-#include "LFGMgr.h"
-#include "AuctionHouseMgr.h"
 #include "CreatureTextMgr.h"
 #include "SmartAI.h"
 #include "SkillDiscovery.h"
@@ -64,7 +62,6 @@ public:
         };
         static ChatCommand reloadCommandTable[] =
         {
-            { "auctions",                     SEC_ADMINISTRATOR, true,  &HandleReloadAuctionsCommand,                   "", NULL },
             { "access_requirement",           SEC_ADMINISTRATOR, true,  &HandleReloadAccessRequirementCommand,          "", NULL },
             { "achievement_criteria_data",    SEC_ADMINISTRATOR, true,  &HandleReloadAchievementCriteriaDataCommand,    "", NULL },
             { "achievement_reward",           SEC_ADMINISTRATOR, true,  &HandleReloadAchievementRewardCommand,          "", NULL },
@@ -103,7 +100,6 @@ public:
             { "item_enchantment_template",    SEC_ADMINISTRATOR, true,  &HandleReloadItemEnchantementsCommand,          "", NULL },
             { "item_loot_template",           SEC_ADMINISTRATOR, true,  &HandleReloadLootTemplatesItemCommand,          "", NULL },
             { "item_set_names",               SEC_ADMINISTRATOR, true,  &HandleReloadItemSetNamesCommand,               "", NULL },
-            { "lfg_dungeon_rewards",          SEC_ADMINISTRATOR, true,  &HandleReloadLfgRewardsCommand,                 "", NULL },
             { "locales_achievement_reward",   SEC_ADMINISTRATOR, true,  &HandleReloadLocalesAchievementRewardCommand,   "", NULL },
             { "locales_creature",             SEC_ADMINISTRATOR, true,  &HandleReloadLocalesCreatureCommand,            "", NULL },
             { "locales_gameobject",           SEC_ADMINISTRATOR, true,  &HandleReloadLocalesGameobjectCommand,          "", NULL },
@@ -1160,14 +1156,6 @@ public:
         return true;
     }
 
-    static bool HandleReloadLfgRewardsCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        sLog->outString("Re-Loading lfg dungeon rewards...");
-        sLFGMgr->LoadRewards();
-        handler->SendGlobalGMSysMessage("DB table `lfg_dungeon_rewards` reloaded.");
-        return true;
-    }
-
     static bool HandleReloadLocalesCreatureCommand(ChatHandler* handler, const char* /*args*/)
     {
         sLog->outString("Re-Loading Locales Creature ...");
@@ -1245,16 +1233,6 @@ public:
         sLog->outString("Re-Loading Player level dependent mail rewards...");
         sObjectMgr->LoadMailLevelRewards();
         handler->SendGlobalGMSysMessage("DB table `mail_level_reward` reloaded.");
-        return true;
-    }
-
-    static bool HandleReloadAuctionsCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        ///- Reload dynamic data tables from the database
-        sLog->outString("Re-Loading Auctions...");
-        sAuctionMgr->LoadAuctionItems();
-        sAuctionMgr->LoadAuctions();
-        handler->SendGlobalGMSysMessage("Auctions reloaded.");
         return true;
     }
 

@@ -12878,7 +12878,6 @@ void Unit::setDeathState(DeathState s)
 {
     // death state needs to be updated before RemoveAllAurasOnDeath() calls HandleChannelDeathItem(..) so that
     // it can be used to check creation of death items (such as soul shards).
-    DeathState oldDeathState = m_deathState;
 
     if (s != ALIVE && s != JUST_ALIVED)
     {

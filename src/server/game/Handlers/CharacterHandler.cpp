@@ -43,7 +43,6 @@
 #include "ScriptMgr.h"
 #include "Battleground.h"
 #include "AccountMgr.h"
-#include "LFGMgr.h"
 
 class LoginQueryHolder : public SQLQueryHolder
 {
@@ -890,17 +889,6 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
             // send new char string if not empty
             if (!sWorld->GetNewCharString().empty())
                 chH.PSendSysMessage("%s", sWorld->GetNewCharString().c_str());
-        }
-    }
-
-    if (Group* group = pCurrChar->GetGroup())
-    {
-        if (group->isLFGGroup())
-        {
-            LfgDungeonSet Dungeons;
-            Dungeons.insert(sLFGMgr->GetDungeon(group->GetGUID()));
-            sLFGMgr->SetSelectedDungeons(pCurrChar->GetGUID(), Dungeons);
-            sLFGMgr->SetState(pCurrChar->GetGUID(), sLFGMgr->GetState(group->GetGUID()));
         }
     }
 

@@ -37,7 +37,6 @@ void WorldSession::SendNameQueryOpcode(uint64 guid)
     const CharacterNameData* nameData = sWorld->GetCharacterNameData(GUID_LOPART(guid));
     if (nameData)
         player = ObjectAccessor::FindPlayer(guid);
-
                                                             // guess size
     WorldPacket data(SMSG_NAME_QUERY_RESPONSE, (8+1+1+1+1+1+10));
     data.appendPackGUID(guid);

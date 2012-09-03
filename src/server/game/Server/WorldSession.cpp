@@ -88,15 +88,14 @@ bool WorldSessionFilter::Process(WorldPacket* packet)
 }
 
 /// WorldSession constructor
-WorldSession::WorldSession(uint32 id, WorldSocket* sock, AccountTypes sec, uint8 expansion, time_t mute_time, LocaleConstant locale, uint32 recruiter, bool isARecruiter):
+WorldSession::WorldSession(uint32 id, WorldSocket* sock, AccountTypes sec, uint8 expansion, time_t mute_time, LocaleConstant locale):
 m_muteTime(mute_time), m_timeOutTime(0), _player(NULL), m_Socket(sock),
 _security(sec), _accountId(id), m_expansion(expansion), _logoutTime(0),
 m_inQueue(false), m_playerLoading(false), m_playerLogout(false),
 m_playerRecentlyLogout(false), m_playerSave(false),
 m_sessionDbcLocale(sWorld->GetAvailableDbcLocale(locale)),
 m_sessionDbLocaleIndex(locale),
-m_latency(0), m_TutorialsChanged(false), recruiterId(recruiter),
-isRecruiter(isARecruiter), timeLastWhoCommand(0)
+m_latency(0), m_TutorialsChanged(false), timeLastWhoCommand(0)
 {
     _warden = NULL;
 
@@ -334,7 +333,7 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
                             LogUnprocessedTail(packet);
                         break;
                     case STATUS_NEVER:
-                        sLog->outError("SESSION (account: %u, guidlow: %u, char: %s): received not allowed opcode %s (0x%.4X)",
+                        sLog->outDetail("SESSION (account: %u, guidlow: %u, char: %s): received not allowed opcode %s (0x%.4X)",
                             GetAccountId(), m_GUIDLow, _player ? _player->GetName() : "<none>",
                             LookupOpcodeName(packet->GetOpcode()), packet->GetOpcode());
                         break;
@@ -611,7 +610,7 @@ const char *WorldSession::GetTrinityString(int32 entry) const
 
 void WorldSession::Handle_NULL(WorldPacket& recvPacket)
 {
-    sLog->outError("SESSION: received unhandled opcode %s (0x%.4X)", LookupOpcodeName(recvPacket.GetOpcode()), recvPacket.GetOpcode());
+    sLog->outDetail("SESSION: received unhandled opcode %s (0x%.4X)", LookupOpcodeName(recvPacket.GetOpcode()), recvPacket.GetOpcode());
 }
 
 void WorldSession::Handle_EarlyProccess(WorldPacket& recvPacket)

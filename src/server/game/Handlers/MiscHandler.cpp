@@ -954,10 +954,6 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
     {
         if (!sMapMgr->CanPlayerEnter(at->target_mapId, player, false))
             return;
-
-        if (Group* group = player->GetGroup())
-            if (group->isLFGGroup() && player->GetMap()->IsDungeon())
-                teleported = player->TeleportToBGEntryPoint();
     }
 
     if (!teleported)

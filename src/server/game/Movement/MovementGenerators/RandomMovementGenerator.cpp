@@ -116,9 +116,7 @@ RandomMovementGenerator<Creature>::_setRandomLocation(Creature &creature)
     i_destinationHolder.SetDestination(traveller, nx, ny, nz);
     creature.AddUnitState(UNIT_STATE_ROAMING);
     if (is_air_ok)
-    {
         i_nextMoveTime.Reset(i_destinationHolder.GetTotalTravelTime());
-    }
     //else if (is_water_ok) // Swimming mode to be done with more than this check
     else
     {
@@ -128,9 +126,7 @@ RandomMovementGenerator<Creature>::_setRandomLocation(Creature &creature)
 
     //Call for creature group update
     if (creature.GetFormation() && creature.GetFormation()->getLeader() == &creature)
-    {
         creature.GetFormation()->LeaderMoveTo(nx, ny, nz);
-    }
 }
 
 template<>

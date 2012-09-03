@@ -116,16 +116,13 @@ void WardenMac::RequestHash()
 
 void WardenMac::HandleHashResult(ByteBuffer &buff)
 {
-
     // test
     int keyIn[4];
 
     uint8 mod_seed[16] = { 0x4D, 0x80, 0x8D, 0x2C, 0x77, 0xD9, 0x05, 0xC4, 0x1A, 0x63, 0x80, 0xEC, 0x08, 0x58, 0x6A, 0xFE };
 
-    for(int i = 0; i < 4; ++i)
-    {
+    for (int i = 0; i < 4; ++i)
         keyIn[i] = *(int*)(&mod_seed[0] + i * 4);
-    }
 
     int keyOut[4];
     int keyIn1, keyIn2;
@@ -222,8 +219,6 @@ void WardenMac::HandleData(ByteBuffer &buff)
     //    return;
     //}
 
-    bool found = false;
-
     std::string str = "Test string!";
 
     SHA1Hash sha1;
@@ -236,10 +231,7 @@ void WardenMac::HandleData(ByteBuffer &buff)
     buff.read(sha1Hash, 20);
 
     if (memcmp(sha1Hash, sha1.GetDigest(), 20))
-    {
         sLog->outDebug(LOG_FILTER_WARDEN, "Handle data failed: SHA1 hash is wrong!");
-        found = true;
-    }
 
     MD5_CTX ctx;
     MD5_Init(&ctx);
@@ -251,10 +243,7 @@ void WardenMac::HandleData(ByteBuffer &buff)
     buff.read(theirsMD5Hash, 16);
 
     if (memcmp(ourMD5Hash, theirsMD5Hash, 16))
-    {
         sLog->outDebug(LOG_FILTER_WARDEN, "Handle data failed: MD5 hash is wrong!");
-        found = true;
-    }
 
     _session->KickPlayer();
 }

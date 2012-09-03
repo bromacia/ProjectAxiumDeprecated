@@ -1295,7 +1295,6 @@ class Player : public Unit, public GridObject<Player>
         bool HasItemTotemCategory(uint32 TotemCategory) const;
         InventoryResult CanUseItem(ItemTemplate const* pItem) const;
         InventoryResult CanUseAmmo(uint32 item) const;
-        InventoryResult CanRollForItemInLFG(ItemTemplate const* item, WorldObject const* lootedObject) const;
         Item* StoreNewItem(ItemPosCountVec const& pos, uint32 item, bool update, int32 randomPropertyId = 0);
         Item* StoreNewItem(ItemPosCountVec const& pos, uint32 item, bool update, int32 randomPropertyId, AllowedLooterSet &allowedLooters);
         Item* StoreItem(ItemPosCountVec const& pos, Item* pItem, bool update);
@@ -1951,7 +1950,7 @@ class Player : public Unit, public GridObject<Player>
 
         void BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target) const;
         void DestroyForPlayer(Player* target, bool anim = false) const;
-        void SendLogXPGain(uint32 GivenXP, Unit* victim, uint32 BonusXP, bool recruitAFriend = false, float group_rate=1.0f);
+        void SendLogXPGain(uint32 GivenXP, Unit* victim, uint32 BonusXP/*, float group_rate = 1.0f*/);
 
         // notifiers
         void SendAttackSwingCantAttack();
@@ -2051,14 +2050,9 @@ class Player : public Unit, public GridObject<Player>
         void InitDisplayIds();
 
         bool IsAtGroupRewardDistance(WorldObject const* pRewardSource) const;
-        bool IsAtRecruitAFriendDistance(WorldObject const* pOther) const;
         void RewardPlayerAndGroupAtKill(Unit* pVictim, bool isBattleGround);
         void RewardPlayerAndGroupAtEvent(uint32 creature_id, WorldObject* pRewardSource);
         bool isHonorOrXPTarget(Unit* pVictim);
-
-        bool GetsRecruitAFriendBonus(bool forXP);
-        uint8 GetGrantableLevels() { return m_grantableLevels; }
-        void SetGrantableLevels(uint8 val) { m_grantableLevels = val; }
 
         ReputationMgr&       GetReputationMgr()       { return m_reputationMgr; }
         ReputationMgr const& GetReputationMgr() const { return m_reputationMgr; }
@@ -2377,8 +2371,6 @@ class Player : public Unit, public GridObject<Player>
         bool HasAtLoginFlag(AtLoginFlags f) const { return m_atLoginFlags & f; }
         void SetAtLoginFlag(AtLoginFlags f) { m_atLoginFlags |= f; }
         void RemoveAtLoginFlag(AtLoginFlags flags, bool persist = false);
-
-        bool isUsingLfg();
 
         typedef std::set<uint32> DFQuestsDoneList;
         DFQuestsDoneList m_DFQuests;

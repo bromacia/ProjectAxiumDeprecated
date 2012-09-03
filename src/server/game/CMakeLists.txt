@@ -16,14 +16,12 @@ file(GLOB_RECURSE sources_Accounts Accounts/*.cpp Accounts/*.h)
 file(GLOB_RECURSE sources_Achievements Achievements/*.cpp Achievements/*.h)
 file(GLOB_RECURSE sources_Addons Addons/*.cpp Addons/*.h)
 file(GLOB_RECURSE sources_AI AI/*.cpp AI/*.h)
-file(GLOB_RECURSE sources_AuctionHouse AuctionHouse/*.cpp AuctionHouse/*.h)
 file(GLOB_RECURSE sources_Battlegrounds Battlegrounds/*.cpp Battlegrounds/*.h)
 file(GLOB_RECURSE sources_Calendar Calendar/*.cpp Calendar/*.h)
 file(GLOB_RECURSE sources_Chat Chat/*.cpp Chat/*.h)
 file(GLOB_RECURSE sources_Combat Combat/*.cpp Combat/*.h)
 file(GLOB_RECURSE sources_Conditions Conditions/*.cpp Conditions/*.h)
 file(GLOB_RECURSE sources_DataStores DataStores/*.cpp DataStores/*.h)
-file(GLOB_RECURSE sources_DungeonFinding DungeonFinding/*.cpp DungeonFinding/*.h)
 file(GLOB_RECURSE sources_Entities Entities/*.cpp Entities/*.h)
 file(GLOB_RECURSE sources_Events Events/*.cpp Events/*.h)
 file(GLOB_RECURSE sources_Globals Globals/*.cpp Globals/*.h)
@@ -67,14 +65,12 @@ set(game_STAT_SRCS
   ${sources_Achievements}
   ${sources_Addons}
   ${sources_AI}
-  ${sources_AuctionHouse}
   ${sources_Battlegrounds}
   ${sources_Calendar}
   ${sources_Chat}
   ${sources_Combat}
   ${sources_Conditions}
   ${sources_DataStores}
-  ${sources_DungeonFinding}
   ${sources_Entities}
   ${sources_Events}
   ${sources_Globals}
@@ -133,7 +129,6 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/AI/EventAI
   ${CMAKE_CURRENT_SOURCE_DIR}/AI/ScriptedAI
   ${CMAKE_CURRENT_SOURCE_DIR}/AI/SmartScripts
-  ${CMAKE_CURRENT_SOURCE_DIR}/AuctionHouse
   ${CMAKE_CURRENT_SOURCE_DIR}/Battlegrounds
   ${CMAKE_CURRENT_SOURCE_DIR}/Battlegrounds/Zones
   ${CMAKE_CURRENT_SOURCE_DIR}/Calendar
@@ -143,7 +138,6 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/Combat
   ${CMAKE_CURRENT_SOURCE_DIR}/Conditions
   ${CMAKE_CURRENT_SOURCE_DIR}/DataStores
-  ${CMAKE_CURRENT_SOURCE_DIR}/DungeonFinding
   ${CMAKE_CURRENT_SOURCE_DIR}/Entities
   ${CMAKE_CURRENT_SOURCE_DIR}/Entities/Creature
   ${CMAKE_CURRENT_SOURCE_DIR}/Entities/Corpse

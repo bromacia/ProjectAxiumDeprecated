@@ -89,25 +89,15 @@ void GuardAI::EnterEvadeMode()
     Unit* victim = ObjectAccessor::GetUnit(*me, i_victimGuid);
 
     if (!victim)
-    {
         sLog->outStaticDebug("Creature stopped attacking because victim does not exist [guid=%u]", me->GetGUIDLow());
-    }
     else if (!victim ->isAlive())
-    {
         sLog->outStaticDebug("Creature stopped attacking because victim is dead [guid=%u]", me->GetGUIDLow());
-    }
     else if (victim ->HasStealthAura())
-    {
         sLog->outStaticDebug("Creature stopped attacking because victim is using stealth [guid=%u]", me->GetGUIDLow());
-    }
     else if (victim ->isInFlight())
-    {
         sLog->outStaticDebug("Creature stopped attacking because victim is flying away [guid=%u]", me->GetGUIDLow());
-    }
     else
-    {
         sLog->outStaticDebug("Creature stopped attacking because victim outran him [guid=%u]", me->GetGUIDLow());
-    }
 
     me->RemoveAllAuras();
     me->DeleteThreatList();

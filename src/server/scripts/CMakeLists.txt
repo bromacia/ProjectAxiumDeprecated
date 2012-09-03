@@ -79,7 +79,6 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/server/game/AI/EventAI
   ${CMAKE_SOURCE_DIR}/src/server/game/AI/ScriptedAI
   ${CMAKE_SOURCE_DIR}/src/server/game/AI/SmartScripts
-  ${CMAKE_SOURCE_DIR}/src/server/game/AuctionHouse
   ${CMAKE_SOURCE_DIR}/src/server/game/Battlegrounds
   ${CMAKE_SOURCE_DIR}/src/server/game/Battlegrounds/Zones
   ${CMAKE_SOURCE_DIR}/src/server/game/Calendar
@@ -89,7 +88,6 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/server/shared/Configuration
   ${CMAKE_SOURCE_DIR}/src/server/game/Combat
   ${CMAKE_SOURCE_DIR}/src/server/game/DataStores
-  ${CMAKE_SOURCE_DIR}/src/server/game/DungeonFinding
   ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Corpse
   ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Creature
   ${CMAKE_SOURCE_DIR}/src/server/game/Entities/DynamicObject
@@ -112,7 +110,6 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/server/game/Guilds
   ${CMAKE_SOURCE_DIR}/src/server/game/Handlers
   ${CMAKE_SOURCE_DIR}/src/server/game/Instances
-  ${CMAKE_SOURCE_DIR}/src/server/game/LookingForGroup
   ${CMAKE_SOURCE_DIR}/src/server/game/Loot
   ${CMAKE_SOURCE_DIR}/src/server/game/Mails
   ${CMAKE_SOURCE_DIR}/src/server/game/Miscellaneous

@@ -2347,7 +2347,6 @@ bool SpellInfo::_IsPositiveEffect(uint8 effIndex, bool deep) const
                 case 64904: // Hymn of Hope
                 case 47585: // Dispersion
                     return true;
-                    return false;
                 default:
                     break;
             }

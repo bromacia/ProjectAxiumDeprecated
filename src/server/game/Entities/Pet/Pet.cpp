@@ -627,12 +627,7 @@ void Pet::LoseHappiness()
 
 HappinessState Pet::GetHappinessState()
 {
-    if (GetPower(POWER_HAPPINESS) < HAPPINESS_LEVEL_SIZE)
-        return HAPPY;
-    else if (GetPower(POWER_HAPPINESS) >= HAPPINESS_LEVEL_SIZE * 2)
-        return HAPPY;
-    else
-        return HAPPY;
+    return HAPPY;
 }
 
 void Pet::Remove(PetSaveMode mode, bool returnreagent)
@@ -682,7 +677,7 @@ void Pet::GivePetLevel(uint8 level)
     if (!level || level == getLevel())
         return;
 
-    if (getPetType()==HUNTER_PET)
+    if (getPetType() == HUNTER_PET)
     {
         SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
         SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, uint32(sObjectMgr->GetXPForLevel(level)*PET_XP_FACTOR));

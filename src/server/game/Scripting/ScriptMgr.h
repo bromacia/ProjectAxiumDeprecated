@@ -29,7 +29,6 @@
 #include "World.h"
 #include "Weather.h"
 
-class AuctionHouseObject;
 class AuraScript;
 class Battleground;
 class BattlegroundMap;
@@ -61,7 +60,6 @@ class WorldSocket;
 class WorldObject;
 
 struct AchievementCriteriaData;
-struct AuctionEntry;
 struct Condition;
 struct ItemTemplate;
 struct OutdoorPvPData;
@@ -540,27 +538,6 @@ class WeatherScript : public ScriptObject, public UpdatableScript<Weather>
         virtual void OnChange(Weather* /*weather*/, WeatherState /*state*/, float /*grade*/) { }
 };
 
-class AuctionHouseScript : public ScriptObject
-{
-    protected:
-
-        AuctionHouseScript(const char* name);
-
-    public:
-
-        // Called when an auction is added to an auction house.
-        virtual void OnAuctionAdd(AuctionHouseObject* /*ah*/, AuctionEntry* /*entry*/) { }
-
-        // Called when an auction is removed from an auction house.
-        virtual void OnAuctionRemove(AuctionHouseObject* /*ah*/, AuctionEntry* /*entry*/) { }
-
-        // Called when an auction was succesfully completed.
-        virtual void OnAuctionSuccessful(AuctionHouseObject* /*ah*/, AuctionEntry* /*entry*/) { }
-
-        // Called when an auction expires.
-        virtual void OnAuctionExpire(AuctionHouseObject* /*ah*/, AuctionEntry* /*entry*/) { }
-};
-
 class ConditionScript : public ScriptObject
 {
     protected:
@@ -931,13 +908,6 @@ class ScriptMgr
 
         void OnWeatherChange(Weather* weather, WeatherState state, float grade);
         void OnWeatherUpdate(Weather* weather, uint32 diff);
-
-    public: /* AuctionHouseScript */
-
-        void OnAuctionAdd(AuctionHouseObject* ah, AuctionEntry* entry);
-        void OnAuctionRemove(AuctionHouseObject* ah, AuctionEntry* entry);
-        void OnAuctionSuccessful(AuctionHouseObject* ah, AuctionEntry* entry);
-        void OnAuctionExpire(AuctionHouseObject* ah, AuctionEntry* entry);
 
     public: /* ConditionScript */
 

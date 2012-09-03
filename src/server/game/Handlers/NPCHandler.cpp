@@ -912,4 +912,3 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket & recv_data)
         _player->DurabilityRepairAll(true, discountMod, guildBank);
     }
 }
-

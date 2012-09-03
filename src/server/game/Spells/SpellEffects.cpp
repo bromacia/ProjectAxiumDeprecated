@@ -312,10 +312,9 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
     if (effectHandleMode != SPELL_EFFECT_HANDLE_LAUNCH_TARGET)
         return;
 
-    bool apply_direct_bonus = true;
-
     if (unitTarget && unitTarget->isAlive())
     {
+        bool apply_direct_bonus = true;
         switch (m_spellInfo->SpellFamilyName)
         {
             case SPELLFAMILY_GENERIC:
@@ -1056,10 +1055,7 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                 case 55004:                                 // Nitro Boosts
                     if (!m_CastItem)
                         return;
-                    if (roll_chance_i(100))                  // Nitro Boosts - success
-                        m_caster->CastSpell(m_caster, 54861, true, m_CastItem);
-                    else                                    // Knocked Up   - backfire 0%
-                        m_caster->CastSpell(m_caster, 46014, true, m_CastItem);
+                    m_caster->CastSpell(m_caster, 54861, true, m_CastItem);
                     return;
                 case 51582:                                 //Rocket Boots Engaged (Rocket Boots Xtreme and Rocket Boots Xtreme Lite)
                 {
@@ -1101,7 +1097,7 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     return;
                 case 54171:                                 // Divine Storm
                 {
-                    if (m_UniqueTargetInfo.size())
+                    if (!m_UniqueTargetInfo.empty())
                     {
                         int32 heal = damage / m_UniqueTargetInfo.size();
                         m_caster->CastCustomSpell(unitTarget, 54172, &heal, NULL, NULL, true);
@@ -1868,9 +1864,9 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
 
 void Spell::CalculateJumpSpeeds(uint8 i, float dist, float & speedXY, float & speedZ)
 {
-    bool fspeed = false;
     if (m_spellInfo->Id == 49575)
     {
+        bool fspeed = false;
         if (m_spellInfo->Effects[i].MiscValue)
             speedZ = float(m_spellInfo->Effects[i].MiscValue)/10;
         else if (m_spellInfo->Effects[i].MiscValueB)
@@ -1888,13 +1884,15 @@ void Spell::CalculateJumpSpeeds(uint8 i, float dist, float & speedXY, float & sp
         }
     }
     else
-      if (m_spellInfo->Effects[i].MiscValue)
-           speedZ = float(m_spellInfo->Effects[i].MiscValue)/10;
-      else if (m_spellInfo->Effects[i].MiscValueB)
-           speedZ = float(m_spellInfo->Effects[i].MiscValueB)/10;
-      else
-           speedZ = 10.0f;
-      speedXY = dist * 10.0f / speedZ;
+    {
+        if (m_spellInfo->Effects[i].MiscValue)
+            speedZ = float(m_spellInfo->Effects[i].MiscValue)/10;
+        else if (m_spellInfo->Effects[i].MiscValueB)
+            speedZ = float(m_spellInfo->Effects[i].MiscValueB)/10;
+        else
+            speedZ = 10.0f;
+        speedXY = dist * 10.0f / speedZ;
+    }
 }
 
 void Spell::EffectTeleportUnits(SpellEffIndex /*effIndex*/)
@@ -3812,31 +3810,7 @@ void Spell::EffectEnchantItemTmp(SpellEffIndex effIndex)
     // select enchantment duration
     uint32 duration;
 
-    // rogue family enchantments exception by duration
-    if (m_spellInfo->Id == 38615)
-        duration = 864000;                                    // 10 days
-    // other rogue family enchantments always 1 hour (some have spell damage=0, but some have wrong data in EffBasePoints)
-    else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE)
-        duration = 864000;                                    // 10 days
-    // shaman family enchantments
-    else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_SHAMAN)
-        duration = 864000;                                    // 10 days
-    // other cases with this SpellVisual already selected
-    else if (m_spellInfo->SpellVisual[0] == 215)
-        duration = 864000;                                    // 10 days
-    // some fishing pole bonuses except Glow Worm which lasts full hour
-    else if (m_spellInfo->SpellVisual[0] == 563 && m_spellInfo->Id != 64401)
-        duration = 864000;                                    // 10 days
-    // shaman rockbiter enchantments
-    else if (m_spellInfo->SpellVisual[0] == 0)
-        duration = 864000;                                    // 10 days
-    else if (m_spellInfo->Id == 29702)
-        duration = 864000;                                    // 10 days
-    else if (m_spellInfo->Id == 37360)
-        duration = 864000;                                    // 10 days
-    // default case
-    else
-        duration = 864000;                                    // 10 days
+    duration = 864000;                                    // 10 days
 
     // item can be in trade slot and have owner diff. from caster
     Player* item_owner = itemTarget->GetOwner();

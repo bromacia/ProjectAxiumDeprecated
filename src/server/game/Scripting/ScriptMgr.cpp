@@ -282,7 +282,6 @@ void ScriptMgr::Unload()
     SCR_CLEAR(OutdoorPvPScript);
     SCR_CLEAR(CommandScript);
     SCR_CLEAR(WeatherScript);
-    SCR_CLEAR(AuctionHouseScript);
     SCR_CLEAR(ConditionScript);
     SCR_CLEAR(VehicleScript);
     SCR_CLEAR(DynamicObjectScript);
@@ -1006,38 +1005,6 @@ void ScriptMgr::OnWeatherUpdate(Weather* weather, uint32 diff)
     tmpscript->OnUpdate(weather, diff);
 }
 
-void ScriptMgr::OnAuctionAdd(AuctionHouseObject* ah, AuctionEntry* entry)
-{
-    ASSERT(ah);
-    ASSERT(entry);
-
-    FOREACH_SCRIPT(AuctionHouseScript)->OnAuctionAdd(ah, entry);
-}
-
-void ScriptMgr::OnAuctionRemove(AuctionHouseObject* ah, AuctionEntry* entry)
-{
-    ASSERT(ah);
-    ASSERT(entry);
-
-    FOREACH_SCRIPT(AuctionHouseScript)->OnAuctionRemove(ah, entry);
-}
-
-void ScriptMgr::OnAuctionSuccessful(AuctionHouseObject* ah, AuctionEntry* entry)
-{
-    ASSERT(ah);
-    ASSERT(entry);
-
-    FOREACH_SCRIPT(AuctionHouseScript)->OnAuctionSuccessful(ah, entry);
-}
-
-void ScriptMgr::OnAuctionExpire(AuctionHouseObject* ah, AuctionEntry* entry)
-{
-    ASSERT(ah);
-    ASSERT(entry);
-
-    FOREACH_SCRIPT(AuctionHouseScript)->OnAuctionExpire(ah, entry);
-}
-
 bool ScriptMgr::OnConditionCheck(Condition* condition, Player* player, Unit* invoker)
 {
     ASSERT(condition);
@@ -1491,12 +1458,6 @@ WeatherScript::WeatherScript(const char* name)
     ScriptRegistry<WeatherScript>::AddScript(this);
 }
 
-AuctionHouseScript::AuctionHouseScript(const char* name)
-    : ScriptObject(name)
-{
-    ScriptRegistry<AuctionHouseScript>::AddScript(this);
-}
-
 ConditionScript::ConditionScript(const char* name)
     : ScriptObject(name)
 {
@@ -1565,7 +1526,6 @@ template class ScriptRegistry<BattlegroundScript>;
 template class ScriptRegistry<OutdoorPvPScript>;
 template class ScriptRegistry<CommandScript>;
 template class ScriptRegistry<WeatherScript>;
-template class ScriptRegistry<AuctionHouseScript>;
 template class ScriptRegistry<ConditionScript>;
 template class ScriptRegistry<VehicleScript>;
 template class ScriptRegistry<DynamicObjectScript>;

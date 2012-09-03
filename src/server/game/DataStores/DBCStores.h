@@ -69,7 +69,7 @@ extern DBCStorage <AreaTableEntry>               sAreaStore;// recommend access 
 extern DBCStorage <AreaGroupEntry>               sAreaGroupStore;
 extern DBCStorage <AreaPOIEntry>                 sAreaPOIStore;
 extern DBCStorage <AreaTriggerEntry>             sAreaTriggerStore;
-extern DBCStorage <AuctionHouseEntry>            sAuctionHouseStore;
+//extern DBCStorage <AuctionHouseEntry>            sAuctionHouseStore;
 extern DBCStorage <BankBagSlotPricesEntry>       sBankBagSlotPricesStore;
 extern DBCStorage <BarberShopStyleEntry>         sBarberShopStyleStore;
 extern DBCStorage <BattlemasterListEntry>        sBattlemasterListStore;
@@ -118,7 +118,7 @@ extern DBCStorage <ItemLimitCategoryEntry>       sItemLimitCategoryStore;
 extern DBCStorage <ItemRandomPropertiesEntry>    sItemRandomPropertiesStore;
 extern DBCStorage <ItemRandomSuffixEntry>        sItemRandomSuffixStore;
 extern DBCStorage <ItemSetEntry>                 sItemSetStore;
-extern DBCStorage <LFGDungeonEntry>              sLFGDungeonStore;
+//extern DBCStorage <LFGDungeonEntry>              sLFGDungeonStore;
 //extern DBCStorage <LiquidTypeEntry>              sLiquidTypeStore;
 extern DBCStorage <LockEntry>                    sLockStore;
 extern DBCStorage <MailTemplateEntry>            sMailTemplateStore;

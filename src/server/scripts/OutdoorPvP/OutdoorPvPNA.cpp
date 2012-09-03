@@ -48,27 +48,27 @@ uint32 OPvPCapturePointNA::GetAliveGuardsCount()
     {
         switch (itr->first)
         {
-        case NA_NPC_GUARD_01:
-        case NA_NPC_GUARD_02:
-        case NA_NPC_GUARD_03:
-        case NA_NPC_GUARD_04:
-        case NA_NPC_GUARD_05:
-        case NA_NPC_GUARD_06:
-        case NA_NPC_GUARD_07:
-        case NA_NPC_GUARD_08:
-        case NA_NPC_GUARD_09:
-        case NA_NPC_GUARD_10:
-        case NA_NPC_GUARD_11:
-        case NA_NPC_GUARD_12:
-        case NA_NPC_GUARD_13:
-        case NA_NPC_GUARD_14:
-        case NA_NPC_GUARD_15:
-            if (Creature const* const cr = HashMapHolder<Creature>::Find(itr->second))
-                if (cr->isAlive())
-                    ++cnt;
-            break;
-        default:
-            break;
+            case NA_NPC_GUARD_01:
+            case NA_NPC_GUARD_02:
+            case NA_NPC_GUARD_03:
+            case NA_NPC_GUARD_04:
+            case NA_NPC_GUARD_05:
+            case NA_NPC_GUARD_06:
+            case NA_NPC_GUARD_07:
+            case NA_NPC_GUARD_08:
+            case NA_NPC_GUARD_09:
+            case NA_NPC_GUARD_10:
+            case NA_NPC_GUARD_11:
+            case NA_NPC_GUARD_12:
+            case NA_NPC_GUARD_13:
+            case NA_NPC_GUARD_14:
+            case NA_NPC_GUARD_15:
+                if (Creature const* const cr = HashMapHolder<Creature>::Find(itr->second))
+                    if (cr->isAlive())
+                        ++cnt;
+                break;
+            default:
+                break;
         }
     }
     return cnt;
@@ -125,9 +125,7 @@ void OPvPCapturePointNA::SpawnGOsForTeam(uint32 team)
 void OPvPCapturePointNA::DeSpawnGOs()
 {
     for (int i = 0; i < NA_CONTROL_GO_NUM; ++i)
-    {
         DelObject(i);
-    }
 }
 
 void OPvPCapturePointNA::FactionTakeOver(uint32 team)

@@ -251,7 +251,7 @@ bool SpellClickInfo::IsFitToRequirements(Unit const* clicker, Unit const* clicke
     return true;
 }
 
-ObjectMgr::ObjectMgr(): m_auctionid(1), m_equipmentSetGuid(1),
+ObjectMgr::ObjectMgr(): m_equipmentSetGuid(1),
     m_ItemTextId(1), m_mailid(1), m_hiPetNumber(1), m_hiCharGuid(1),
     m_hiCreatureGuid(1), m_hiPetGuid(1), m_hiVehicleGuid(1), m_hiItemGuid(1),
     m_hiGoGuid(1), m_hiDoGuid(1), m_hiCorpseGuid(1), m_hiMoTransGuid(1)
@@ -5130,12 +5130,6 @@ void ObjectMgr::LoadInstanceEncounters()
             continue;
         }
 
-        if (lastEncounterDungeon && !sLFGDungeonStore.LookupEntry(lastEncounterDungeon))
-        {
-            sLog->outErrorDb("Table `instance_encounters` has an encounter %u (%s) marked as final for invalid dungeon id %u, skipped!", entry, dungeonEncounter->encounterName[0], lastEncounterDungeon);
-            continue;
-        }
-
         std::map<uint32, DungeonEncounterEntry const*>::const_iterator itr = dungeonLastBosses.find(lastEncounterDungeon);
         if (lastEncounterDungeon)
         {
@@ -6172,7 +6166,6 @@ void ObjectMgr::SetHighestGuids()
     // Cleanup other tables from not existed guids ( >= m_hiItemGuid)
     CharacterDatabase.PExecute("DELETE FROM character_inventory WHERE item >= '%u'", m_hiItemGuid);     // One-time query
     CharacterDatabase.PExecute("DELETE FROM mail_items WHERE item_guid >= '%u'", m_hiItemGuid);         // One-time query
-    CharacterDatabase.PExecute("DELETE FROM auctionhouse WHERE itemguid >= '%u'", m_hiItemGuid);        // One-time query
     CharacterDatabase.PExecute("DELETE FROM guild_bank_item WHERE item_guid >= '%u'", m_hiItemGuid);    // One-time query
 
     result = WorldDatabase.Query("SELECT MAX(guid) FROM gameobject");
@@ -6182,10 +6175,6 @@ void ObjectMgr::SetHighestGuids()
     result = WorldDatabase.Query("SELECT MAX(guid) FROM transports");
     if (result)
         m_hiMoTransGuid = (*result)[0].GetUInt32()+1;
-
-    result = CharacterDatabase.Query("SELECT MAX(id) FROM auctionhouse");
-    if (result)
-        m_auctionid = (*result)[0].GetUInt32()+1;
 
     result = CharacterDatabase.Query("SELECT MAX(id) FROM mail");
     if (result)
@@ -6210,16 +6199,6 @@ void ObjectMgr::SetHighestGuids()
     result = CharacterDatabase.Query("SELECT MAX(guid) FROM groups");
     if (result)
         sGroupMgr->SetGroupDbStoreSize((*result)[0].GetUInt32()+1);
-}
-
-uint32 ObjectMgr::GenerateAuctionID()
-{
-    if (m_auctionid >= 0xFFFFFFFE)
-    {
-        sLog->outError("Auctions ids overflow!! Can't continue, shutting down server. ");
-        World::StopNow(ERROR_EXIT_CODE);
-    }
-    return m_auctionid++;
 }
 
 uint64 ObjectMgr::GenerateEquipmentSetGuid()
@@ -8242,8 +8221,6 @@ void ObjectMgr::LoadTrainerSpell()
 
     // For reload case
     m_mCacheTrainerSpellMap.clear();
-
-    std::set<uint32> skip_trainers;
 
     QueryResult result = WorldDatabase.Query("SELECT b.entry, a.spell, a.spellcost, a.reqskill, a.reqskillvalue, a.reqlevel FROM npc_trainer AS a "
                                              "INNER JOIN npc_trainer AS b ON a.entry = -(b.spell) "

@@ -609,15 +609,14 @@ public:
         {
             handler->PSendSysMessage("|cff00ff00DEBUG: wp modify del, PathID: |r|cff00ffff%u|r", pathid);
 
-            // wpCreature
-            Creature* wpCreature = NULL;
-
             if (wpGuid != 0)
             {
-                wpCreature = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(MAKE_NEW_GUID(wpGuid, VISUAL_WAYPOINT, HIGHGUID_UNIT));
-                wpCreature->CombatStop();
-                wpCreature->DeleteFromDB();
-                wpCreature->AddObjectToRemoveList();
+                if (Creature* wpCreature = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(MAKE_NEW_GUID(wpGuid, VISUAL_WAYPOINT, HIGHGUID_UNIT)))
+                {
+                    wpCreature->CombatStop();
+                    wpCreature->DeleteFromDB();
+                    wpCreature->AddObjectToRemoveList();
+                }
             }
 
             PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_WAYPOINT_DATA);
@@ -645,36 +644,36 @@ public:
             Player* chr = handler->GetSession()->GetPlayer();
             Map* map = chr->GetMap();
             {
-                // wpCreature
-                Creature* wpCreature = NULL;
                 // What to do:
                 // Move the visual spawnpoint
                 // Respawn the owner of the waypoints
                 if (wpGuid != 0)
                 {
-                    wpCreature = handler->GetSession()->GetPlayer()->GetMap()->GetCreature(MAKE_NEW_GUID(wpGuid, VISUAL_WAYPOINT, HIGHGUID_UNIT));
-                    wpCreature->CombatStop();
-                    wpCreature->DeleteFromDB();
-                    wpCreature->AddObjectToRemoveList();
-                    // re-create
-                    Creature* wpCreature2 = new Creature;
-                    if (!wpCreature2->Create(sObjectMgr->GenerateLowGuid(HIGHGUID_UNIT), map, chr->GetPhaseMaskForSpawn(), VISUAL_WAYPOINT, 0, 0, chr->GetPositionX(), chr->GetPositionY(), chr->GetPositionZ(), chr->GetOrientation()))
+                    if (Creature* wpCreature = map->GetCreature(MAKE_NEW_GUID(wpGuid, VISUAL_WAYPOINT, HIGHGUID_UNIT)))
                     {
-                        handler->PSendSysMessage(LANG_WAYPOINT_VP_NOTCREATED, VISUAL_WAYPOINT);
-                        delete wpCreature2;
-                        return false;
-                    }
+                        wpCreature->CombatStop();
+                        wpCreature->DeleteFromDB();
+                        wpCreature->AddObjectToRemoveList();
+                        // re-create
+                        Creature* wpCreature2 = new Creature;
+                        if (!wpCreature2->Create(sObjectMgr->GenerateLowGuid(HIGHGUID_UNIT), map, chr->GetPhaseMaskForSpawn(), VISUAL_WAYPOINT, 0, 0, chr->GetPositionX(), chr->GetPositionY(), chr->GetPositionZ(), chr->GetOrientation()))
+                        {
+                            handler->PSendSysMessage(LANG_WAYPOINT_VP_NOTCREATED, VISUAL_WAYPOINT);
+                            delete wpCreature2;
+                            return false;
+                        }
 
-                    wpCreature2->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()), chr->GetPhaseMaskForSpawn());
-                    // To call _LoadGoods(); _LoadQuests(); CreateTrainerSpells();
-                    //TODO: Should we first use "Create" then use "LoadFromDB"?
-                    if (!wpCreature2->LoadCreatureFromDB(wpCreature2->GetDBTableGUIDLow(), map))
-                    {
-                        handler->PSendSysMessage(LANG_WAYPOINT_VP_NOTCREATED, VISUAL_WAYPOINT);
-                        delete wpCreature2;
-                        return false;
+                        wpCreature2->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()), chr->GetPhaseMaskForSpawn());
+                        // To call _LoadGoods(); _LoadQuests(); CreateTrainerSpells();
+                        //TODO: Should we first use "Create" then use "LoadFromDB"?
+                        if (!wpCreature2->LoadCreatureFromDB(wpCreature2->GetDBTableGUIDLow(), map))
+                        {
+                            handler->PSendSysMessage(LANG_WAYPOINT_VP_NOTCREATED, VISUAL_WAYPOINT);
+                            delete wpCreature2;
+                            return false;
+                        }
+                        //sMapMgr->GetMap(npcCreature->GetMapId())->Add(wpCreature2);
                     }
-                    //sMapMgr->GetMap(npcCreature->GetMapId())->Add(wpCreature2);
                 }
 
                 PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_WAYPOINT_DATA_POSITION);

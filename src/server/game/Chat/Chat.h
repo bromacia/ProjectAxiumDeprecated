@@ -47,8 +47,8 @@ class ChatHandler
 {
     public:
         WorldSession* GetSession() { return m_session; }
-        explicit ChatHandler(WorldSession* session) : m_session(session) {}
-        explicit ChatHandler(Player* player) : m_session(player->GetSession()) {}
+        explicit ChatHandler(WorldSession* session) : m_session(session), sentErrorMessage(false) {}
+        explicit ChatHandler(Player* player) : m_session(player->GetSession()), sentErrorMessage(false) {}
         virtual ~ChatHandler() {}
 
         static void FillMessageData(WorldPacket* data, WorldSession* session, uint8 type, uint32 language, const char *channelName, uint64 target_guid, const char *message, Unit* speaker);
@@ -125,7 +125,7 @@ class ChatHandler
         static void SetLoadCommandTable(bool val){ load_command_table = val;};
 
     protected:
-        explicit ChatHandler() : m_session(NULL) {}      // for CLI subclass
+        explicit ChatHandler() : m_session(NULL), sentErrorMessage(false) {}      // for CLI subclass
         static bool SetDataForCommandInTable(ChatCommand* table, const char* text, uint32 security, std::string const& help, std::string const& fullcommand);
         bool ExecuteCommandInTable(ChatCommand* table, const char* text, const std::string& fullcmd);
         bool ShowHelpForCommand(ChatCommand* table, const char* cmd);

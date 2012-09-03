@@ -59,9 +59,7 @@ void MotionMaster::InitDefault()
         Mutate(movement == NULL ? &si_idleMovement : movement, MOTION_SLOT_IDLE);
     }
     else
-    {
         Mutate(&si_idleMovement, MOTION_SLOT_IDLE);
-    }
 }
 
 MotionMaster::~MotionMaster()
@@ -122,7 +120,8 @@ void MotionMaster::DirectClean(bool reset)
     {
         MovementGenerator *curr = top();
         pop();
-        if (curr) DirectDelete(curr);
+        if (curr)
+            DirectDelete(curr);
     }
 
     if (needInitTop())
@@ -204,9 +203,7 @@ void MotionMaster::MoveTargetedHome()
         Mutate(new HomeMovementGenerator<Creature>(), MOTION_SLOT_ACTIVE);
     }
     else
-    {
         sLog->outError("Player (GUID: %u) attempt targeted home", i_owner->GetGUIDLow());
-    }
 }
 
 void MotionMaster::MoveConfused()
@@ -421,9 +418,7 @@ void MotionMaster::MoveFall(float z, uint32 id)
 void MotionMaster::MoveSeekAssistance(float x, float y, float z)
 {
     if (i_owner->GetTypeId() == TYPEID_PLAYER)
-    {
         sLog->outError("Player (GUID: %u) attempt to seek assistance", i_owner->GetGUIDLow());
-    }
     else
     {
         sLog->outStaticDebug("Creature (Entry: %u GUID: %u) seek assistance (X: %f Y: %f Z: %f)",
@@ -437,9 +432,7 @@ void MotionMaster::MoveSeekAssistance(float x, float y, float z)
 void MotionMaster::MoveSeekAssistanceDistract(uint32 time)
 {
     if (i_owner->GetTypeId() == TYPEID_PLAYER)
-    {
         sLog->outError("Player (GUID: %u) attempt to call distract after assistance", i_owner->GetGUIDLow());
-    }
     else
     {
         sLog->outStaticDebug("Creature (Entry: %u GUID: %u) is distracted after assistance call (Time: %u)",
@@ -506,9 +499,7 @@ void MotionMaster::MoveDistract(uint32 timer)
         return;
 
     if (i_owner->GetTypeId() == TYPEID_PLAYER)
-    {
         sLog->outStaticDebug("Player (GUID: %u) distracted (timer: %u)", i_owner->GetGUIDLow(), timer);
-    }
     else
     {
         sLog->outStaticDebug("Creature (Entry: %u GUID: %u) (timer: %u)",
@@ -530,9 +521,7 @@ void MotionMaster::Mutate(MovementGenerator *m, MovementSlot slot)
             DirectDelete(curr);
     }
     else if (i_top < slot)
-    {
         i_top = slot;
-    }
 
     Impl[slot] = m;
     if (i_top > slot)
