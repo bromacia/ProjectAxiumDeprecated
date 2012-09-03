@@ -1507,17 +1507,17 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                 unit->getHostileRefManager().threatAssist(m_caster, 0.0f);
             }
         }
-    }
 
-    // Get Data Needed for Diminishing Returns, some effects may have multiple auras, so this must be done on spell hit, not aura add
-    m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, m_triggeredByAuraSpell);
-    if (m_diminishGroup)
-    {
-        m_diminishLevel = unit->GetDiminishing(m_diminishGroup);
-        DiminishingReturnsType type = GetDiminishingReturnsGroupType(m_diminishGroup);
-        // Increase Diminishing on unit, current informations for actually casts will use values above
-        if ((type == DRTYPE_PLAYER && unit->GetCharmerOrOwnerPlayerOrPlayerItself()) || type == DRTYPE_ALL)
-            unit->IncrDiminishing(m_diminishGroup);
+        // Get Data Needed for Diminishing Returns, some effects may have multiple auras, so this must be done on spell hit, not aura add
+        m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, m_triggeredByAuraSpell);
+        if (m_diminishGroup)
+        {
+            m_diminishLevel = unit->GetDiminishing(m_diminishGroup);
+            DiminishingReturnsType type = GetDiminishingReturnsGroupType(m_diminishGroup);
+            // Increase Diminishing on unit, current informations for actually casts will use values above
+            if ((type == DRTYPE_PLAYER && unit->GetCharmerOrOwnerPlayerOrPlayerItself()) || type == DRTYPE_ALL)
+                unit->IncrDiminishing(m_diminishGroup);
+        }
     }
 
     uint8 aura_effmask = 0;
