@@ -999,7 +999,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
             targetInfo.missCondition = SPELL_MISS_NONE;
     }
     else
-        targetInfo.missCondition = SPELL_MISS_EVADE; //SPELL_MISS_NONE;
+        targetInfo.missCondition = SPELL_MISS_EVADE;
 
     // Spell have speed - need calculate incoming time
     // Incoming time is zero for self casts. At least I think so.
@@ -1217,6 +1217,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
     // Reset damage/healing counter
     m_damage = target->damage;
     m_healing = -target->damage;
+    m_resist = 0;
 
     // Fill base trigger info
     uint32 procAttacker = m_procAttacker;
@@ -1245,11 +1246,11 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
 
     if (spellHitTarget)
     {
-        SpellMissInfo missInfo2 = DoSpellHitOnUnit(spellHitTarget, mask, target->scaleAura);
-        if (missInfo2 != SPELL_MISS_NONE)
+        SpellMissInfo tmp = DoSpellHitOnUnit(spellHitTarget, mask, target->scaleAura);
+        if (tmp != SPELL_MISS_NONE)
         {
-            if (missInfo2 != SPELL_MISS_MISS)
-                m_caster->SendSpellMiss(unit, m_spellInfo->Id, missInfo2);
+            if (tmp != SPELL_MISS_MISS)
+                m_caster->SendSpellMiss(unit, m_spellInfo->Id, tmp);
             m_damage = 0;
             spellHitTarget = NULL;
         }
@@ -1341,7 +1342,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         SpellNonMeleeDamage damageInfo(caster, unitTarget, m_spellInfo->Id, m_spellSchoolMask);
 
         // Add bonuses and fill damageInfo struct
-        caster->CalculateSpellDamageTaken(&damageInfo, m_damage, m_spellInfo, m_attackType,  target->crit);
+        caster->CalculateSpellDamageTaken(&damageInfo, m_damage, m_spellInfo, m_attackType, target->crit, m_resist);
         caster->DealDamageMods(damageInfo.target, damageInfo.damage, &damageInfo.absorb);
 
         // Send log damage message to client
@@ -1476,22 +1477,26 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
 
             if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174)))
                 unit->RemoveAura(66);
+
+            if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252)
+            {
+                unit->RemoveAura(1130);
+                unit->RemoveAura(14323);
+                unit->RemoveAura(14324);
+                unit->RemoveAura(14325);
+                unit->RemoveAura(53338);
+            }
+
+            if (m_spellInfo->Mechanic == MECHANIC_ROOT)
+                if (unit->HasAura(46924))
+                    return SPELL_MISS_IMMUNE;
+
+            bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);
+            m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
+            if (m_resist >= 100)
+                return SPELL_MISS_RESIST;
         }
-
-        if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252)
-        {
-            unit->RemoveAura(1130);
-            unit->RemoveAura(14323);
-            unit->RemoveAura(14324);
-            unit->RemoveAura(14325);
-            unit->RemoveAura(53338);
-        }
-
-        if (m_spellInfo->Mechanic == MECHANIC_ROOT)
-            if (unit->HasAura(46924))
-                return SPELL_MISS_IMMUNE;
-
-        if (m_caster->IsFriendlyTo(unit))
+        else if (m_caster->IsFriendlyTo(unit))
         {
             // for delayed spells ignore negative spells (after duel end) for friendly targets
             // TODO: this cause soul transfer bugged
@@ -1522,6 +1527,13 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             if ((type == DRTYPE_PLAYER && unit->GetCharmerOrOwnerPlayerOrPlayerItself()) || type == DRTYPE_ALL)
                 unit->IncrDiminishing(m_diminishGroup);
         }
+    }
+    else if (!m_spellInfo->IsPositive())
+    {
+        bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);
+        m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
+        if (m_resist >= 100)
+            return SPELL_MISS_RESIST;
     }
 
     uint8 aura_effmask = 0;
