@@ -137,34 +137,34 @@ void BattlegroundWS::PostUpdateImpl(uint32 diff)
         }
         if (m_BothFlagsKept)
         {
-          m_FlagSpellForceTimer += diff;
-          if (m_FlagDebuffState == 0 && m_FlagSpellForceTimer >= 600000)  //10 minutes
-          {
-            if (Player* player = ObjectAccessor::FindPlayer(m_FlagKeepers[0]))
-              player->CastSpell(player, WS_SPELL_FOCUSED_ASSAULT, true);
-            if (Player* player = ObjectAccessor::FindPlayer(m_FlagKeepers[1]))
-              player->CastSpell(player, WS_SPELL_FOCUSED_ASSAULT, true);
-            m_FlagDebuffState = 1;
-          }
-          else if (m_FlagDebuffState == 1 && m_FlagSpellForceTimer >= 900000) //15 minutes
-          {
-            if (Player* player = ObjectAccessor::FindPlayer(m_FlagKeepers[0]))
+            m_FlagSpellForceTimer += diff;
+            if (m_FlagDebuffState == 0 && m_FlagSpellForceTimer >= 600000)  //10 minutes
             {
-              player->RemoveAurasDueToSpell(WS_SPELL_FOCUSED_ASSAULT);
-              player->CastSpell(player, WS_SPELL_BRUTAL_ASSAULT, true);
+                if (Player* player = ObjectAccessor::FindPlayer(m_FlagKeepers[0]))
+                    player->CastSpell(player, WS_SPELL_FOCUSED_ASSAULT, true);
+                if (Player* player = ObjectAccessor::FindPlayer(m_FlagKeepers[1]))
+                    player->CastSpell(player, WS_SPELL_FOCUSED_ASSAULT, true);
+                m_FlagDebuffState = 1;
             }
-            if (Player* player = ObjectAccessor::FindPlayer(m_FlagKeepers[1]))
+            else if (m_FlagDebuffState == 1 && m_FlagSpellForceTimer >= 900000) //15 minutes
             {
-              player->RemoveAurasDueToSpell(WS_SPELL_FOCUSED_ASSAULT);
-              player->CastSpell(player, WS_SPELL_BRUTAL_ASSAULT, true);
+                if (Player* player = ObjectAccessor::FindPlayer(m_FlagKeepers[0]))
+                {
+                    player->RemoveAurasDueToSpell(WS_SPELL_FOCUSED_ASSAULT);
+                    player->CastSpell(player, WS_SPELL_BRUTAL_ASSAULT, true);
+                }
+                if (Player* player = ObjectAccessor::FindPlayer(m_FlagKeepers[1]))
+                {
+                    player->RemoveAurasDueToSpell(WS_SPELL_FOCUSED_ASSAULT);
+                    player->CastSpell(player, WS_SPELL_BRUTAL_ASSAULT, true);
+                }
+                m_FlagDebuffState = 2;
             }
-            m_FlagDebuffState = 2;
-          }
         }
         else
         {
-          m_FlagSpellForceTimer = 0; //reset timer.
-          m_FlagDebuffState = 0;
+            m_FlagSpellForceTimer = 0; //reset timer.
+            m_FlagDebuffState = 0;
         }
     }
 }
@@ -675,8 +675,7 @@ bool BattlegroundWS::SetupBattleground()
         || !AddObject(BG_WS_OBJECT_DOOR_H_1, BG_OBJECT_DOOR_H_1_WS_ENTRY, 949.1663f, 1423.772f, 345.6241f, -0.5756807f, -0.01673368f, -0.004956111f, -0.2839723f, 0.9586737f, RESPAWN_IMMEDIATELY)
         || !AddObject(BG_WS_OBJECT_DOOR_H_2, BG_OBJECT_DOOR_H_2_WS_ENTRY, 953.0507f, 1459.842f, 340.6526f, -1.99662f, -0.1971825f, 0.1575096f, -0.8239487f, 0.5073641f, RESPAWN_IMMEDIATELY)
         || !AddObject(BG_WS_OBJECT_DOOR_H_3, BG_OBJECT_DOOR_H_3_WS_ENTRY, 949.9523f, 1422.751f, 344.9273f, 0.0f, 0, 0, 0, 1, RESPAWN_IMMEDIATELY)
-        || !AddObject(BG_WS_OBJECT_DOOR_H_4, BG_OBJECT_DOOR_H_4_WS_ENTRY, 950.7952f, 1459.583f, 342.1523f, 0.05235988f, 0, 0, 0.02617695f, 0.9996573f, RESPAWN_IMMEDIATELY)
-)
+        || !AddObject(BG_WS_OBJECT_DOOR_H_4, BG_OBJECT_DOOR_H_4_WS_ENTRY, 950.7952f, 1459.583f, 342.1523f, 0.05235988f, 0, 0, 0.02617695f, 0.9996573f, RESPAWN_IMMEDIATELY))
     {
         sLog->outErrorDb("BatteGroundWS: Failed to spawn some object Battleground not created!");
         return false;
@@ -756,7 +755,6 @@ void BattlegroundWS::HandleKillPlayer(Player* player, Player* killer)
 
 void BattlegroundWS::UpdatePlayerScore(Player* Source, uint32 type, uint32 value, bool doAddHonor)
 {
-
     BattlegroundScoreMap::iterator itr = m_PlayerScores.find(Source->GetGUID());
     if (itr == m_PlayerScores.end())                         // player not found
         return;
@@ -838,6 +836,4 @@ void BattlegroundWS::FillInitialWorldStates(WorldPacket& data)
         data << uint32(BG_WS_FLAG_STATE_HORDE) << uint32(2);
     else
         data << uint32(BG_WS_FLAG_STATE_HORDE) << uint32(1);
-
 }
-

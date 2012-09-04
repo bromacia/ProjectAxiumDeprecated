@@ -9929,9 +9929,8 @@ bool Unit::HasAuraState(AuraStateType flag, SpellInfo const* spellProto, Unit co
 Unit* Unit::GetOwner() const
 {
     if (uint64 ownerid = GetOwnerGUID())
-    {
         return ObjectAccessor::GetUnit(*this, ownerid);
-    }
+
     return NULL;
 }
 
@@ -10525,6 +10524,10 @@ void Unit::EnergizeBySpell(Unit* victim, uint32 spellID, uint32 damage, Powers p
 uint32 Unit::SpellDamageBonusDone(Unit* victim, SpellInfo const* spellProto, uint32 pdamage, DamageEffectType damagetype, uint32 stack)
 {
     if (!spellProto || !victim || damagetype == DIRECT_DAMAGE)
+        return pdamage;
+
+    // Some spells don't benefit from done mods
+    if (spellProto->AttributesEx3 & SPELL_ATTR3_NO_DONE_BONUS)
         return pdamage;
 
     // small exception for Deep Wounds, can't find any general rule

@@ -84,7 +84,10 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket & recv_data)
 
     // restrict invite to GMs
     if (!sWorld->getBoolConfig(CONFIG_ALLOW_GM_GROUP) && !GetPlayer()->isGameMaster() && player->isGameMaster())
+    {
+        SendPartyResult(PARTY_OP_INVITE, membername, ERR_BAD_PLAYER_NAME_S);
         return;
+    }
 
     // can't group with
     if (!GetPlayer()->isGameMaster() && !sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_GROUP) && GetPlayer()->GetTeam() != player->GetTeam())
@@ -864,7 +867,7 @@ void WorldSession::BuildPartyMemberStatsChangedPacket(Player* player, WorldPacke
             {
                 if (auramask & (uint64(1) << i))
                 {
-                    AuraApplication const* aurApp = player->GetVisibleAura(i);
+                    AuraApplication const* aurApp = pet->GetVisibleAura(i);
                     *data << uint32(aurApp ? aurApp->GetBase()->GetId() : 0);
                     *data << uint8(1);
                 }

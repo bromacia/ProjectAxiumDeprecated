@@ -218,7 +218,10 @@ class DatabaseWorkerPool
             ResultSet* result = conn->Query(sql);
             conn->Unlock();
             if (!result || !result->GetRowCount())
+            {
+                delete result;
                 return QueryResult(NULL);
+            }
 
             result->NextRow();
             return QueryResult(result);
@@ -266,7 +269,10 @@ class DatabaseWorkerPool
             t->Unlock();
 
             if (!ret || !ret->GetRowCount())
+            {
+                delete ret;
                 return PreparedQueryResult(NULL);
+            }
 
             return PreparedQueryResult(ret);
         }
