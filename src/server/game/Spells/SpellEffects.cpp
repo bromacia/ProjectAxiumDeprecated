@@ -1483,16 +1483,14 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     // Corpse not found - take reagents (only not triggered cast can take them)
                     triggered = false;
                 }
-                // Remove cooldown - summon spells have category
-                m_caster->ToPlayer()->RemoveSpellCooldown(48289, true);
-                m_caster->ToPlayer()->RemoveSpellCooldown(46584, true);
+                // Remove cooldown - summon spellls have category
+                m_caster->ToPlayer()->RemoveSpellCooldown(m_spellInfo->Id, true);
                 spell_id = 48289;
                 break;
             // Raise dead - take reagents and trigger summon spells
             case 48289:
                 if (m_targets.HasDst())
                     targets.SetDst(*m_targets.GetDst());
-
                 spell_id = CalculateDamage(0, NULL);
                 break;
             }
