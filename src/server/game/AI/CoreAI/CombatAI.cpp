@@ -125,6 +125,11 @@ void CombatAI::UpdateAI(const uint32 diff)
         DoMeleeAttackIfReady();
 }
 
+void CombatAI::SpellInterrupted(uint32 spellId, uint32 unTimeMs) 
+{
+    events.RescheduleEvent(spellId, unTimeMs);
+}
+
 /////////////////
 //CasterAI
 /////////////////
@@ -191,6 +196,11 @@ void CasterAI::UpdateAI(const uint32 diff)
         uint32 casttime = me->GetCurrentSpellCastTime(spellId);
         events.ScheduleEvent(spellId, (casttime ? casttime : 500) + GetAISpellInfo(spellId)->realCooldown);
     }
+}
+
+void CasterAI::SpellInterrupted(uint32 spellId, uint32 unTimeMs) 
+{
+    events.RescheduleEvent(spellId, unTimeMs);
 }
 
 //////////////

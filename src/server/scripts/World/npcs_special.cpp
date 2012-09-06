@@ -51,6 +51,7 @@ EndContentData */
 #include "BattlegroundMgr.h"
 #include "ArenaTeam.h"
 #include "ArenaTeamMgr.h"
+#include "PetAI.h"
 
 /*########
 # npc_air_force_bots
@@ -1894,7 +1895,7 @@ public:
 
     struct npc_mirror_imageAI : CasterAI
     {
-        npc_mirror_imageAI(Creature* c) : CasterAI(c) {}
+        npc_mirror_imageAI(Creature* creature) : CasterAI(creature) {}
 
         void InitializeAI()
         {
@@ -2168,16 +2169,24 @@ class npc_shadowfiend : public CreatureScript
 public:
     npc_shadowfiend() : CreatureScript("npc_shadowfiend") { }
 
-    struct npc_shadowfiendAI : public ScriptedAI
+    struct npc_shadowfiendAI : public PetAI
     {
-        npc_shadowfiendAI(Creature* creature) : ScriptedAI(creature) {}
+        npc_shadowfiendAI(Creature* creature) : PetAI(creature) {}
 
-        void DamageTaken(Unit* /*killer*/, uint32& damage)
+        void InitializeAI()
+        {
+            me->InitCharmInfo();
+            PetAI::InitializeAI();
+        }
+
+        void JustDied(Unit* killer)
         {
             if (me->isSummon())
                 if (Unit* owner = me->ToTempSummon()->GetSummoner())
-                    if (owner->HasAura(GLYPH_OF_SHADOWFIEND) && damage >= me->GetHealth())
+                    if (owner->HasAura(GLYPH_OF_SHADOWFIEND))
                         owner->CastSpell(owner, GLYPH_OF_SHADOWFIEND_MANA, true);
+
+            PetAI::JustDied(killer);
         }
 
         void UpdateAI(uint32 const /*diff*/)
@@ -2189,7 +2198,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI(Creature* creature) const
+    PetAI* GetAI(Creature* creature) const
     {
         return new npc_shadowfiendAI(creature);
     }
