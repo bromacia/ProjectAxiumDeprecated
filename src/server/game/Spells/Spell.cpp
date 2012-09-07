@@ -1239,6 +1239,15 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             spellHitTarget = m_caster;
             // Start triggers for remove charges if need (trigger only for victim, and mark as active spell)
             m_caster->ProcDamageAndSpell(unit, PROC_FLAG_NONE, PROC_FLAG_TAKEN_SPELL_MAGIC_DMG_CLASS_NEG, PROC_EX_REFLECT, 1, BASE_ATTACK, m_spellInfo);
+            // Get Data Needed for Diminishing Returns, some effects may have multiple auras, so this must be done on spell hit, not aura add
+            m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, m_triggeredByAuraSpell);
+            if (m_diminishGroup)
+            {
+                m_diminishLevel = unit->GetDiminishing(m_diminishGroup);
+                DiminishingReturnsType type = GetDiminishingReturnsGroupType(m_diminishGroup);
+                if ((type == DRTYPE_PLAYER && unit->GetCharmerOrOwnerPlayerOrPlayerItself()) || type == DRTYPE_ALL)
+                    unit->IncrDiminishing(m_diminishGroup);
+            }
             if (m_caster->GetTypeId() == TYPEID_UNIT)
                 m_caster->ToCreature()->LowerPlayerDamageReq(target->damage);
         }
@@ -1495,6 +1504,16 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
             if (m_resist >= 100)
                 return SPELL_MISS_RESIST;
+
+            // Get Data Needed for Diminishing Returns, some effects may have multiple auras, so this must be done on spell hit, not aura add
+            m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, m_triggeredByAuraSpell);
+            if (m_diminishGroup)
+            {
+                m_diminishLevel = unit->GetDiminishing(m_diminishGroup);
+                DiminishingReturnsType type = GetDiminishingReturnsGroupType(m_diminishGroup);
+                if ((type == DRTYPE_PLAYER && unit->GetCharmerOrOwnerPlayerOrPlayerItself()) || type == DRTYPE_ALL)
+                    unit->IncrDiminishing(m_diminishGroup);
+            }
         }
         else if (m_caster->IsFriendlyTo(unit))
         {
@@ -1515,17 +1534,6 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                 m_caster->SetInCombatState(unit->GetCombatTimer() > 0, unit);
                 unit->getHostileRefManager().threatAssist(m_caster, 0.0f);
             }
-        }
-
-        // Get Data Needed for Diminishing Returns, some effects may have multiple auras, so this must be done on spell hit, not aura add
-        m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, m_triggeredByAuraSpell);
-        if (m_diminishGroup)
-        {
-            m_diminishLevel = unit->GetDiminishing(m_diminishGroup);
-            DiminishingReturnsType type = GetDiminishingReturnsGroupType(m_diminishGroup);
-            // Increase Diminishing on unit, current informations for actually casts will use values above
-            if ((type == DRTYPE_PLAYER && unit->GetCharmerOrOwnerPlayerOrPlayerItself()) || type == DRTYPE_ALL)
-                unit->IncrDiminishing(m_diminishGroup);
         }
     }
     else if (!m_spellInfo->IsPositive())
