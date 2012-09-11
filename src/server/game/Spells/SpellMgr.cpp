@@ -3259,6 +3259,10 @@ void SpellMgr::LoadDbcDataCorrections()
             case 12497: // Frostbite (Rank 3)
                 spellInfo->procChance = 9;
                 break;
+            case 46924: // Bladestorm
+            case 61851: // Killing Spree
+                spellInfo->Effect[1] = 0;
+                break;
             default:
                 break;
         }
