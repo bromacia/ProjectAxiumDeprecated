@@ -1751,16 +1751,19 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
             else if (GetSpellInfo()->SpellFamilyFlags[0] & 0x01000000 && target != caster)
             {
                 // Improved Health Funnel
-                AuraEffect * aurEff = caster->GetAuraEffectOfRankedSpell(18704, 0);
-                if (apply && aurEff)
+                if (apply)
                 {
-                    uint32 spell = sSpellMgr->GetSpellWithRank(60956, sSpellMgr->GetSpellRank(aurEff->GetId()));
-                    target->CastSpell(target, spell, true, 0, 0, caster->GetGUID());
+                    // Rank 2
+                    if (caster->HasAura(18704))
+                        target->CastSpell(target, 60956, true);
+                    // Rank 1
+                    else if (caster->HasAura(18703))
+                        target->CastSpell(target, 60955, true);
                 }
                 else
                 {
-                    target->RemoveAurasDueToSpell(60955);
                     target->RemoveAurasDueToSpell(60956);
+                    target->RemoveAurasDueToSpell(60955);
                 }
             }
             break;
