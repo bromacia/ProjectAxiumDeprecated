@@ -593,8 +593,9 @@ int32 AuraEffect::CalculateAmount(Unit* caster)
             // Earth Shield
             if (GetSpellInfo()->SpellFamilyName == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[1] & 0x400)
             {
+                amount = m_spellInfo->Effects[m_effIndex].BasePoints;
                 amount = caster->SpellHealingBonusDone(GetBase()->GetUnitOwner(), GetSpellInfo(), amount, SPELL_DIRECT_DAMAGE);
-                amount = GetBase()->GetUnitOwner()->SpellHealingBonusTaken(caster, GetSpellInfo(), amount, SPELL_DIRECT_DAMAGE);
+                amount = caster->ApplyEffectModifiers(GetSpellInfo(), m_effIndex, float(amount));
             }
             break;
         case SPELL_AURA_PERIODIC_DAMAGE:
