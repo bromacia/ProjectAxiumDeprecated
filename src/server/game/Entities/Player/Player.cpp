@@ -7857,6 +7857,9 @@ void Player::_ApplyItemBonuses(ItemTemplate const* proto, uint8 slot, bool apply
             case ITEM_MOD_SPELL_PENETRATION:
                 ApplySpellPenetrationBonus(int32(val), apply);
                 break;
+            case ITEM_MOD_BLOCK_VALUE:
+                HandleBaseModValue(SHIELD_BLOCK_VALUE, FLAT_MOD, float(val), apply);
+                break;
             // deprecated item mods
             case ITEM_MOD_SPELL_HEALING_DONE:
             case ITEM_MOD_SPELL_DAMAGE_DONE:
