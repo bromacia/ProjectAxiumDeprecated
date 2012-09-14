@@ -1420,6 +1420,10 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
             // Death strike
             if (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_DK_DEATH_STRIKE)
             {
+                // Offhand Death Strike (Rank 1, 2, 3, 4, 5)
+                // Prevent double procs from Threat of Thassarian
+                if (m_spellInfo->Id == 66188 || m_spellInfo->Id == 66950 || m_spellInfo->Id == 66951 || m_spellInfo->Id == 66952 || m_spellInfo->Id == 66953)
+                    return;
                 uint32 count = unitTarget->GetDiseasesByCaster(m_caster->GetGUID());
                 bp = int32(count * m_caster->CountPctFromMaxHealth(int32(m_spellInfo->Effects[EFFECT_0].DamageMultiplier)));
                 // Improved Death Strike
