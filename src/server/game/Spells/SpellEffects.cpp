@@ -5094,6 +5094,31 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         m_caster->CastSpell(m_caster, 63919, true);
                     return;
                 }
+                case 65917:                                     // Magic Rooster
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    // Prevent stacking of mounts and client crashes upon dismounting
+                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
+
+                    uint32 spellId = 66122;
+                    switch (unitTarget->getRace())
+                    {
+                        case RACE_DRAENEI:
+                            if (unitTarget->getGender() == GENDER_MALE)
+                                spellId = 66123;
+                            break;
+                        case RACE_TAUREN:
+                            if (unitTarget->getGender() == GENDER_MALE)
+                                spellId = 66124;
+                            break;
+                        default:
+                            break;
+                    }
+                    unitTarget->CastSpell(unitTarget, spellId, true);
+                    return;
+                }
                 case 71342:                                     // Big Love Rocket
                 {
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
