@@ -1634,10 +1634,6 @@ void AuraEffect::HandleModInvisibility(AuraApplication const* aurApp, uint8 mode
         target->m_invisibility.AddFlag(type);
         target->m_invisibility.AddValue(type, GetAmount());
 
-        // Arena Spectator
-        // Remove Bind Sight
-        target->RemoveAurasByType(SPELL_AURA_BIND_SIGHT);
-
         UnitList targets;
         Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(target, target, target->GetMap()->GetVisibilityRange());
         Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(target, targets, u_check);
@@ -1738,10 +1734,6 @@ void AuraEffect::HandleModStealth(AuraApplication const* aurApp, uint8 mode, boo
            target->SetStandFlags(UNIT_STAND_FLAGS_CREEP);
         if (target->GetTypeId() == TYPEID_PLAYER)
             target->SetByteFlag(PLAYER_FIELD_BYTES2, 3, PLAYER_FIELD_BYTE2_STEALTH);
-
-        // Arena Spectator
-        // Remove Bind Sight
-        target->RemoveAurasByType(SPELL_AURA_BIND_SIGHT);
 
         UnitList targets;
         Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(target, target, target->GetMap()->GetVisibilityRange());
