@@ -3231,7 +3231,7 @@ void SpellMgr::LoadDbcDataCorrections()
             case 64962: // Sigil of the Vengeful Heart
                 spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
                 spellInfo->EffectApplyAuraName[1] = SPELL_AURA_ADD_FLAT_MODIFIER;
-                spellInfo->EffectMiscValue[1] = 3;
+                spellInfo->EffectMiscValue[1] = 0;
                 spellInfo->EffectSpellClassMask[1] = flag96(0x00002000, 0x00000000, 0x00000000);
                 break;
             case 67769: // Cobalt Frag Bomb
