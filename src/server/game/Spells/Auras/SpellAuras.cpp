@@ -1324,7 +1324,8 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                         target->CombatStop();
                         break;
                     case 44544: // Fingers of Frost - Effect
-                        target->RemoveAurasDueToSpell(74396);
+                        if (removeMode == AURA_REMOVE_BY_ENEMY_SPELL)
+                            target->RemoveAurasDueToSpell(74396);
                         break;
                     case 74396: // Fingers of Frost - Visual
                         target->RemoveAurasDueToSpell(44544);
