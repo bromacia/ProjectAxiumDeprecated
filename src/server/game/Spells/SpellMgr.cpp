@@ -3078,8 +3078,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 5171: // Slice and Dice (Rank 1)
             case 6774: // Slice and Dice (Rank 2)
             case 52610: // Savage Roar
-            case 49376: // Feral Charge - Cat
-            case 50259: // Feral Charge - Cat (Daze)
             case 60946: // Nightmare (Rank 1)
             case 60947: // Nightmare (Rank 2)
             case 51699: // Honor Among Thieves
