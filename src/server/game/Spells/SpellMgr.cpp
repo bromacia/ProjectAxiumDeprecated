@@ -3108,6 +3108,7 @@ void SpellMgr::LoadDbcDataCorrections()
             case 55362: // Living Bomb Final Tic (Rank 3)
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->AttributesEx |= SPELL_ATTR0_CASTABLE_WHILE_DEAD;
+                spellInfo->rangeIndex = 13;
                 break;
             case 18754: // Improved Succubus (Rank 1)
                 spellInfo->EffectApplyAuraName[0] = SPELL_AURA_ADD_FLAT_MODIFIER;
