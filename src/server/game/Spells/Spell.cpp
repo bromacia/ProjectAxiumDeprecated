@@ -1303,8 +1303,10 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
                 }
                 else
                 {
-                    procAttacker |= PROC_FLAG_DONE_SPELL_MAGIC_DMG_CLASS_NEG;
-                    procVictim   |= PROC_FLAG_TAKEN_SPELL_MAGIC_DMG_CLASS_NEG;
+                    // Hand-Mounted Pyro Rocket
+                    if (m_spellInfo->Id != 54757)
+                        procAttacker |= PROC_FLAG_DONE_SPELL_MAGIC_DMG_CLASS_NEG;
+                    procVictim       |= PROC_FLAG_TAKEN_SPELL_MAGIC_DMG_CLASS_NEG;
                 }
             break;
             case SPELL_DAMAGE_CLASS_NONE:
@@ -1315,8 +1317,10 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
                 }
                 else
                 {
-                    procAttacker |= PROC_FLAG_DONE_SPELL_NONE_DMG_CLASS_NEG;
-                    procVictim   |= PROC_FLAG_TAKEN_SPELL_NONE_DMG_CLASS_NEG;
+                    // Hand-Mounted Pyro Rocket
+                    if (m_spellInfo->Id != 54757)
+                        procAttacker |= PROC_FLAG_DONE_SPELL_NONE_DMG_CLASS_NEG;
+                    procVictim       |= PROC_FLAG_TAKEN_SPELL_NONE_DMG_CLASS_NEG;
                 }
             break;
         }
