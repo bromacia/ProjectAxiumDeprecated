@@ -418,9 +418,10 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket & /*recv_data*/)
         return;
     }
 
-    //instant logout in taverns/cities or on taxi or for admins, gm's, mod's if its enabled in worldserver.conf
+    // Instant logout in taverns/cities or on taxi or for admins, gm's, mod's if its enabled in worldserver.conf and not in zangarmarsh if player
     if (GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_RESTING) || GetPlayer()->isInFlight() ||
-        GetSecurity() >= AccountTypes(sWorld->getIntConfig(CONFIG_INSTANT_LOGOUT)))
+        GetSecurity() >= AccountTypes(sWorld->getIntConfig(CONFIG_INSTANT_LOGOUT))
+        && (GetPlayer()->GetSession()->GetSecurity() >= 7 || GetPlayer()->GetZoneId() != 3521))
     {
         WorldPacket data(SMSG_LOGOUT_RESPONSE, 1+4);
         data << uint8(0);
