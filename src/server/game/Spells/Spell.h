@@ -380,7 +380,6 @@ class Spell
         SpellCastResult CheckPetCast(Unit* target);
 
         bool SpellDelaySpell() const;
-        bool VisibilityDelaySpell() const;
         bool MovementDelaySpell() const;
         bool SilenceDelaySpell() const;
 

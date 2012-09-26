@@ -1022,11 +1022,6 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
         targetInfo.timeDelay = 150;
         m_delayMoment = targetInfo.timeDelay;
     }
-    else if (VisibilityDelaySpell())
-    {
-        targetInfo.timeDelay = 100;
-        m_delayMoment = targetInfo.timeDelay;
-    }
     else if (MovementDelaySpell())
     {
         targetInfo.timeDelay = 30;
@@ -3363,7 +3358,7 @@ void Spell::cast(bool skipCheck)
 
     // Okay, everything is prepared. Now we need to distinguish between immediate and evented delayed spells
     if ((m_spellInfo->Speed > 0.0f && !m_spellInfo->IsChanneled()) || m_spellInfo->Id == 14157 // 14157: Ruthlessness (Neeeded?)
-    || SpellDelaySpell() || VisibilityDelaySpell() || MovementDelaySpell() || SilenceDelaySpell())
+    || SpellDelaySpell() || MovementDelaySpell() || SilenceDelaySpell())
     {
         // Remove used for cast item if need (it can be already NULL after TakeReagents call
         // in case delayed spell remove item at cast delay start
@@ -7679,28 +7674,6 @@ bool Spell::SpellDelaySpell() const
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x8) ||
     // Shadowfury
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x1000);
-}
-
-bool Spell::VisibilityDelaySpell() const
-{
-//------------Generic--------------
-    // Shadowmeld
-    return m_spellInfo->Id == 58984 ||
-//------------Rogue----------------
-    // Stealth
-    m_spellInfo->Id == 1784 ||
-    // Vanish (Rank 1)
-    m_spellInfo->Id == 11327 ||
-    // Vanish (Rank 2)
-    m_spellInfo->Id == 11329 ||
-    // Vanish (Rank 3)
-    m_spellInfo->Id == 26888 ||
-//------------Druid----------------
-    // Prowl
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[0] == 0x4000) ||
-//------------Mage-----------------
-    // Invisibility
-    m_spellInfo->Id == 32612;
 }
 
 bool Spell::MovementDelaySpell() const

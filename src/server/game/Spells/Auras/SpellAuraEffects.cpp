@@ -1604,6 +1604,7 @@ void AuraEffect::HandleModInvisibilityDetect(AuraApplication const* aurApp, uint
     {
         target->m_invisibilityDetect.AddFlag(type);
         target->m_invisibilityDetect.AddValue(type, GetAmount());
+        target->CastSpell(target, 200006, true);
     }
     else
     {
@@ -1611,10 +1612,10 @@ void AuraEffect::HandleModInvisibilityDetect(AuraApplication const* aurApp, uint
             target->m_invisibilityDetect.DelFlag(type);
 
         target->m_invisibilityDetect.AddValue(type, -GetAmount());
+        target->CastSpell(target, 200007, true);
     }
 
     // call functions which may have additional effects after chainging state of unit
-    target->UpdateObjectVisibility();
 }
 
 void AuraEffect::HandleModInvisibility(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -1633,6 +1634,8 @@ void AuraEffect::HandleModInvisibility(AuraApplication const* aurApp, uint8 mode
 
         target->m_invisibility.AddFlag(type);
         target->m_invisibility.AddValue(type, GetAmount());
+        if (GetId() != 32727)
+            target->CastSpell(target, 200002, true);
 
         UnitList targets;
         Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(target, target, target->GetMap()->GetVisibilityRange());
@@ -1663,6 +1666,8 @@ void AuraEffect::HandleModInvisibility(AuraApplication const* aurApp, uint8 mode
                 target->RemoveByteFlag(PLAYER_FIELD_BYTES2, 3, PLAYER_FIELD_BYTE2_INVISIBILITY_GLOW);
 
             target->m_invisibility.DelFlag(type);
+            if (GetId() != 32727)
+                target->CastSpell(target, 200003, true);
         }
         else
         {
@@ -1689,7 +1694,6 @@ void AuraEffect::HandleModInvisibility(AuraApplication const* aurApp, uint8 mode
         // drop flag at invisibiliy in bg
         target->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_IMMUNE_OR_LOST_SELECTION);
     }
-    target->UpdateObjectVisibility();
 }
 
 void AuraEffect::HandleModStealthDetect(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -1704,6 +1708,7 @@ void AuraEffect::HandleModStealthDetect(AuraApplication const* aurApp, uint8 mod
     {
         target->m_stealthDetect.AddFlag(type);
         target->m_stealthDetect.AddValue(type, GetAmount());
+        target->CastSpell(target, 200004, true);
     }
     else
     {
@@ -1711,10 +1716,10 @@ void AuraEffect::HandleModStealthDetect(AuraApplication const* aurApp, uint8 mod
             target->m_stealthDetect.DelFlag(type);
 
         target->m_stealthDetect.AddValue(type, -GetAmount());
+        target->CastSpell(target, 200005, true);
     }
 
     // call functions which may have additional effects after chainging state of unit
-    target->UpdateObjectVisibility();
 }
 
 void AuraEffect::HandleModStealth(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -1729,6 +1734,7 @@ void AuraEffect::HandleModStealth(AuraApplication const* aurApp, uint8 mode, boo
     {
         target->m_stealth.AddFlag(type);
         target->m_stealth.AddValue(type, GetAmount());
+        target->CastSpell(target, 200000, true);
 
         if (m_spellInfo->Id != 30231)
            target->SetStandFlags(UNIT_STAND_FLAGS_CREEP);
@@ -1761,6 +1767,7 @@ void AuraEffect::HandleModStealth(AuraApplication const* aurApp, uint8 mode, boo
         if (!target->HasAuraType(SPELL_AURA_MOD_STEALTH)) // if last SPELL_AURA_MOD_STEALTH
         {
             target->m_stealth.DelFlag(type);
+            target->CastSpell(target, 200001, true);
 
             target->RemoveStandFlags(UNIT_STAND_FLAGS_CREEP);
             if (target->GetTypeId() == TYPEID_PLAYER)
@@ -1774,7 +1781,6 @@ void AuraEffect::HandleModStealth(AuraApplication const* aurApp, uint8 mode, boo
         // drop flag at stealth in bg
         target->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_IMMUNE_OR_LOST_SELECTION);
     }
-    target->UpdateObjectVisibility();
 }
 
 void AuraEffect::HandleModStealthLevel(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -5033,6 +5039,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                             break;
                         }
                         case 58600: // Restricted Flight Area
+                        {
                             if (aurApp->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
                                 if (caster->ToPlayer()->GetMapId() == 530)
                                 {
@@ -5045,6 +5052,19 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                                 if (caster->ToPlayer()->GetMapId() != 530)
                                     caster->ToPlayer()->CastSpell(caster->ToPlayer(), 58601, true, NULL, this);
                             break;
+                        }
+                        case 200000: // Object Visibility Update Timer (Stealth, At Apply)
+                        case 200001: // Object Visibility Update Timer (Stealth, At Remove)
+                        case 200002: // Object Visibility Update Timer (Invisibility, At Apply)
+                        case 200003: // Object Visibility Update Timer (Invisibility, At Remove)
+                        case 200004: // Object Visibility Update Timer (Stealth Detection, At Apply)
+                        case 200005: // Object Visibility Update Timer (Stealth Detection, At Remove)
+                        case 200006: // Object Visibility Update Timer (Invisibility Detection, At Apply)
+                        case 200007: // Object Visibility Update Timer (Invisibility Detection, At Remove)
+                        {
+                            if (aurApp->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
+                                target->UpdateObjectVisibility();
+                        }
                     }
                     break;
                 case SPELLFAMILY_MAGE:
