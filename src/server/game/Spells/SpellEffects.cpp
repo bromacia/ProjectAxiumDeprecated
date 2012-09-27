@@ -6351,9 +6351,13 @@ void Spell::EffectCharge(SpellEffIndex /*effIndex*/)
             return;
 
         // not all charge effects used in negative spells
-        Unit* playerTarget = m_caster->ToPlayer()->GetSelectedUnit();
-        if (!m_spellInfo->IsPositive() && m_caster->GetTypeId() == TYPEID_PLAYER)
-            m_caster->Attack(playerTarget, true);
+        if (m_caster->GetTypeId() == TYPEID_PLAYER)
+            if (Unit* playerTarget = m_caster->ToPlayer()->GetSelectedUnit())
+                if (!m_spellInfo->IsPositive())
+                    m_caster->Attack(playerTarget, true);
+        else
+            if (!m_spellInfo->IsPositive())
+                m_caster->Attack(unitTarget, true);
     }
 }
 

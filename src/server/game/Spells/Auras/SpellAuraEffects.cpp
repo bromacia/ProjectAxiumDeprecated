@@ -5039,7 +5039,6 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                             break;
                         }
                         case 58600: // Restricted Flight Area
-                        {
                             if (aurApp->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
                                 if (caster->ToPlayer()->GetMapId() == 530)
                                 {
@@ -5052,7 +5051,6 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                                 if (caster->ToPlayer()->GetMapId() != 530)
                                     caster->ToPlayer()->CastSpell(caster->ToPlayer(), 58601, true, NULL, this);
                             break;
-                        }
                         case 200000: // Object Visibility Update Timer (Stealth, At Apply)
                         case 200001: // Object Visibility Update Timer (Stealth, At Remove)
                         case 200002: // Object Visibility Update Timer (Invisibility, At Apply)
