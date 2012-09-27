@@ -371,20 +371,23 @@ void WorldSession::HandleWhoOpcode(WorldPacket & recv_data)
         if (!s_show)
             continue;
 
-        // 49 is maximum player count sent to client - can be overridden
-        // through config, but is unstable
-        if ((matchcount++) >= sWorld->getIntConfig(CONFIG_MAX_WHO))
-            continue;
+        if (!GetPlayer()->InArena())
+        {
+            // 49 is maximum player count sent to client - can be overridden
+            // through config, but is unstable
+            if ((matchcount++) >= sWorld->getIntConfig(CONFIG_MAX_WHO))
+                continue;
 
-        data << pname;                                    // player name
-        data << gname;                                    // guild name
-        data << uint32(lvl);                              // player level
-        data << uint32(class_);                           // player class
-        data << uint32(race);                             // player race
-        data << uint8(gender);                            // player gender
-        data << uint32(pzoneid);                          // player zone id
+            data << pname;                                    // player name
+            data << gname;                                    // guild name
+            data << uint32(lvl);                              // player level
+            data << uint32(class_);                           // player class
+            data << uint32(race);                             // player race
+            data << uint8(gender);                            // player gender
+            data << uint32(pzoneid);                          // player zone id
 
-        ++displaycount;
+            ++displaycount;
+        }
     }
 
     data.put(0, displaycount);                            // insert right count, count displayed
