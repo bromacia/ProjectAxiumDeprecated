@@ -536,7 +536,7 @@ std::string ByteArrayToHexStr(uint8* bytes, uint32 length)
     for (uint32 i = 0; i < length; ++i)
     {
         char buffer[4];
-        sprintf(buffer, "%02X ", bytes[i]);
+        sprintf(buffer, "%02X", bytes[i]);
         ss << buffer;
     }
 
