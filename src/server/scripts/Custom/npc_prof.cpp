@@ -15,26 +15,15 @@ class npc_prof : public CreatureScript
         return new npc_profAI(creature);
     }
 
-    void CreatureWhisperBasedOnBool(const char* text, Creature* creature, Player* player, bool value)
-    {
-        if (value)
-            creature->MonsterWhisper(text, player->GetGUID());
-    }
-
-    uint32 PlayerMaxLevel() const
-    {
-        return sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL);
-    }
-
     void MainMenu(Player* player, Creature* creature)
     {
-        player->ADD_GOSSIP_ITEM(9, "[Professions] ->", GOSSIP_SENDER_MAIN, 196);
+        player->ADD_GOSSIP_ITEM(9, "Professions", GOSSIP_SENDER_MAIN, 196);
         player->PlayerTalkClass->SendGossipMenu(907, creature->GetGUID());
     }
 
-    bool PlayerHasItemOrSpell(const Player *plr, uint32 itemId, uint32 spellId) const
+    bool PlayerHasItemOrSpell(const Player* player, uint32 itemId, uint32 spellId) const
     {
-        return plr->HasItemCount(itemId, 1, true) || plr->HasSpell(spellId);
+        return player->HasItemCount(itemId, 1, true) || player->HasSpell(spellId);
     }
 
     bool OnGossipHello(Player* player, Creature* creature)
@@ -103,7 +92,7 @@ class npc_prof : public CreatureScript
         return true;
     }
 
-    void LearnSkillRecipesHelper(Player *player, uint32 skill_id)
+    void LearnSkillRecipesHelper(Player* player, uint32 skill_id)
     {
         uint32 classmask = player->getClassMask();
 
@@ -145,11 +134,11 @@ class npc_prof : public CreatureScript
     void CompleteLearnProfession(Player* player, Creature* creature, SkillType skill)
     {
         if (PlayerAlreadyHasTwoProfessions(player) && !IsSecondarySkill(skill))
-            creature->MonsterWhisper("You already know two professions!", player->GetGUID());
+            ChatHandler(player).PSendSysMessage("You already know two professions!");
         else
         {
             if (!LearnAllRecipesInProfession(player, skill))
-                creature->MonsterWhisper("Internal error occured!", player->GetGUID());
+                ChatHandler(player).PSendSysMessage("Internal error occured!");
         }
     }
 
@@ -164,14 +153,14 @@ class npc_prof : public CreatureScript
                 case 196:
                     player->ADD_GOSSIP_ITEM(4, "Alchemy", GOSSIP_SENDER_MAIN, 1);
                     player->ADD_GOSSIP_ITEM(4, "Blacksmithing", GOSSIP_SENDER_MAIN, 2);
-                    player->ADD_GOSSIP_ITEM(4, "Cooking", GOSSIP_SENDER_MAIN, 9);
-                    player->ADD_GOSSIP_ITEM(4, "Enchanting", GOSSIP_SENDER_MAIN, 6);
+                    player->ADD_GOSSIP_ITEM(4, "Cooking", GOSSIP_SENDER_MAIN, 3);
+                    player->ADD_GOSSIP_ITEM(4, "Enchanting", GOSSIP_SENDER_MAIN, 4);
                     player->ADD_GOSSIP_ITEM(4, "Engineering", GOSSIP_SENDER_MAIN, 5);
-                    player->ADD_GOSSIP_ITEM(4, "First Aid", GOSSIP_SENDER_MAIN, 10);
-                    player->ADD_GOSSIP_ITEM(4, "Inscription", GOSSIP_SENDER_MAIN, 8);
-                    player->ADD_GOSSIP_ITEM(4, "Jewelcrafting", GOSSIP_SENDER_MAIN, 7);
-                    player->ADD_GOSSIP_ITEM(4, "Leatherworking", GOSSIP_SENDER_MAIN, 3);
-                    player->ADD_GOSSIP_ITEM(4, "Tailoring", GOSSIP_SENDER_MAIN, 4);
+                    player->ADD_GOSSIP_ITEM(4, "Herbalism", GOSSIP_SENDER_MAIN, 6);
+                    player->ADD_GOSSIP_ITEM(4, "Inscription", GOSSIP_SENDER_MAIN, 7);
+                    player->ADD_GOSSIP_ITEM(4, "Jewelcrafting", GOSSIP_SENDER_MAIN, 8);
+                    player->ADD_GOSSIP_ITEM(4, "Leatherworking", GOSSIP_SENDER_MAIN, 9);
+                    player->ADD_GOSSIP_ITEM(4, "Tailoring", GOSSIP_SENDER_MAIN, 10);
                     player->PlayerTalkClass->SendGossipMenu(907, creature->GetGUID());
                     break;
                 case 1:
@@ -183,12 +172,11 @@ class npc_prof : public CreatureScript
                     player->CLOSE_GOSSIP_MENU();
                     break;
                 case 3:
-                    CompleteLearnProfession(player, creature, SKILL_LEATHERWORKING);
-                    player->learnSpell(57683, false);
+                    CompleteLearnProfession(player, creature, SKILL_COOKING);
                     player->CLOSE_GOSSIP_MENU();
                     break;
                 case 4:
-                    CompleteLearnProfession(player, creature, SKILL_TAILORING);
+                    CompleteLearnProfession(player, creature, SKILL_ENCHANTING);
                     player->CLOSE_GOSSIP_MENU();
                     break;
                 case 5:
@@ -196,23 +184,24 @@ class npc_prof : public CreatureScript
                     player->CLOSE_GOSSIP_MENU();
                     break;
                 case 6:
-                    CompleteLearnProfession(player, creature, SKILL_ENCHANTING);
+                    CompleteLearnProfession(player, creature, SKILL_HERBALISM);
                     player->CLOSE_GOSSIP_MENU();
                     break;
                 case 7:
-                    CompleteLearnProfession(player, creature, SKILL_JEWELCRAFTING);
-                    player->CLOSE_GOSSIP_MENU();
-                    break;
-                case 8:
                     CompleteLearnProfession(player, creature, SKILL_INSCRIPTION);
                     player->CLOSE_GOSSIP_MENU();
                     break;
+                case 8:
+                    CompleteLearnProfession(player, creature, SKILL_JEWELCRAFTING);
+                    player->CLOSE_GOSSIP_MENU();
+                    break;
                 case 9:
-                    CompleteLearnProfession(player, creature, SKILL_COOKING);
+                    CompleteLearnProfession(player, creature, SKILL_LEATHERWORKING);
+                    player->learnSpell(57683, false);
                     player->CLOSE_GOSSIP_MENU();
                     break;
                 case 10:
-                    CompleteLearnProfession(player, creature, SKILL_FIRST_AID);
+                    CompleteLearnProfession(player, creature, SKILL_TAILORING);
                     player->CLOSE_GOSSIP_MENU();
                     break;
             }
