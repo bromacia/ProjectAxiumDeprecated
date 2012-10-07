@@ -2,26 +2,18 @@
 #include <cstring>
 #include <string.h>
 
-enum ArenaRankActionIds {
-    ARENA_2V2_LADDER = GOSSIP_ACTION_INFO_DEF + 1,
-    ARENA_3V3_LADDER = GOSSIP_ACTION_INFO_DEF + 2,
-    ARENA_5V5_LADDER = GOSSIP_ACTION_INFO_DEF + 3,
-    ARENA_GOODBYE = GOSSIP_ACTION_INFO_DEF + 4,
-    ARENA_NOOP = 1,
-    ARENA_START_TEAM_LOOKUP = GOSSIP_ACTION_INFO_DEF + 5,
-    
+enum ArenaRankActionIds
+{
+    ARENA_2V2_LADDER        = 1000,
+    ARENA_3V3_LADDER        = 1100,
+    ARENA_5V5_LADDER        = 1200,
+    ARENA_START_TEAM_LOOKUP = 1300,
+    MAIN_MENU               = 1400,
 };
 
-enum ArenaRankOptions {
-    ARENA_MAX_RESULTS = 50,
-};
-
-enum ArenaGossipText {
-    ARENA_GOSSIP_HELLO = 11201,
-    ARENA_GOSSIP_NOTEAMS = 11202,
-    ARENA_GOSSIP_TEAMS = 11203,
-    ARENA_GOSSIP_TEAM_LOOKUP = 11204,
-    
+enum ArenaRankOptions
+{
+    ARENA_MAX_RESULTS = 20,
 };
 
 class npc_arena_ranks : public CreatureScript
@@ -49,9 +41,15 @@ class npc_arena_ranks : public CreatureScript
             uint32 option;
             switch (teamType)
             {
-                case 2: option = ARENA_2V2_LADDER; break;
-                case 3: option = ARENA_3V3_LADDER; break;
-                case 5: option = ARENA_5V5_LADDER; break;
+                case 2:
+                    option = ARENA_2V2_LADDER;
+                    break;
+                case 3:
+                    option = ARENA_3V3_LADDER;
+                    break;
+                case 5:
+                    option = ARENA_5V5_LADDER;
+                    break;
             }
             return option;
         }
@@ -159,27 +157,26 @@ class npc_arena_ranks : public CreatureScript
         }
 
     public:
-        npc_arena_ranks() : CreatureScript("npc_arena_ranks"){}
+        npc_arena_ranks() : CreatureScript("npc_arena_ranks") { }
 
         bool OnGossipHello(Player* player, Creature* creature)
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "2v2 Rankings", GOSSIP_SENDER_MAIN, ARENA_2V2_LADDER);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "3v3 Rankings", GOSSIP_SENDER_MAIN, ARENA_3V3_LADDER);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "5v5 Rankings", GOSSIP_SENDER_MAIN, ARENA_5V5_LADDER);
-            
-            player->SEND_GOSSIP_MENU(ARENA_GOSSIP_HELLO, creature->GetGUID());
-            
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "2v2", GOSSIP_SENDER_MAIN, ARENA_2V2_LADDER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "3v3", GOSSIP_SENDER_MAIN, ARENA_3V3_LADDER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "5v5", GOSSIP_SENDER_MAIN, ARENA_5V5_LADDER);
+            player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             return true;
         }
 
-        bool OnGossipSelect(Player* player, Creature* creature, uint32 /*uiSender*/, uint32 uiAction)
+        bool OnGossipSelect(Player* player, Creature* creature, uint32 uiSender, uint32 uiAction)
         {
             player->PlayerTalkClass->ClearMenus();
 
-            switch(uiAction)
+            switch (uiAction)
             {
-                case ARENA_GOODBYE:
-                    player->PlayerTalkClass->SendCloseGossip();
+                case MAIN_MENU:
+                    player->PlayerTalkClass->ClearMenus();
+                    OnGossipHello(player, creature);
                     break;
                 case ARENA_2V2_LADDER:
                 case ARENA_5V5_LADDER:
@@ -187,36 +184,40 @@ class npc_arena_ranks : public CreatureScript
                 {
                     uint32 teamType = optionToTeamType(uiAction);
                     QueryResult result = CharacterDatabase.PQuery("SELECT arenaTeamid, name, rating, seasonWins, seasonGames - seasonWins "
-                    "FROM `arena_team` WHERE `type` = '%u' ORDER BY rating DESC LIMIT %u;", teamType, ARENA_MAX_RESULTS);
+                        "FROM `arena_team` WHERE `type` = '%u' ORDER BY rating DESC LIMIT %u;", teamType, ARENA_MAX_RESULTS);
 
-                    if(!result) 
+                    if (!result) 
                     {
-                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Goodbye", GOSSIP_SENDER_MAIN, ARENA_GOODBYE);
-                        player->SEND_GOSSIP_MENU(ARENA_GOSSIP_NOTEAMS, creature->GetGUID());
+                        ChatHandler(player).PSendSysMessage("No Arena Teams found.");
+                        player->CLOSE_GOSSIP_MENU();
+                        return false;
                     }
                     else
                     {
-                        std::string name;
-                        uint32 teamId, rating, seasonWins, seasonLosses, rank = 1;
+                        uint32 rank = 1;
                         do
                         {
-                            Field *fields = result->Fetch();
-                            teamId = fields[0].GetUInt32();
-                            name = fields[1].GetString();
-                            rating = fields[2].GetUInt32();
-                            seasonWins = fields[3].GetUInt32();
-                            seasonLosses = fields[4].GetUInt32();
+                            Field* fields = result->Fetch();
+                            uint32 teamId = fields[0].GetUInt32();
+                            std::string name = fields[1].GetString();
+                            uint32 rating = fields[2].GetUInt32();
+                            uint32 seasonWins = fields[3].GetUInt32();
+                            uint32 seasonLosses = fields[4].GetUInt32();
 
                             std::stringstream buffer;
-                            buffer << rank << ". [" << rating << "] " << name;
-                            buffer << " (" << seasonWins << "-" << seasonLosses << ")";
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, buffer.str(), GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
+                            if (rank < 10)
+                                buffer << rank << ".   ";
+                            else
+                                buffer << rank << ". ";
+                            buffer << " [" << rating << "] " << name << " (" << seasonWins << "-" << seasonLosses << ")";
+                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, buffer.str(), GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
 
-                            rank++;
+                            ++rank;
                         }
                         while (result->NextRow());
 
-                        player->SEND_GOSSIP_MENU(ARENA_GOSSIP_TEAMS, creature->GetGUID());
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MAIN_MENU);
+                        player->SEND_GOSSIP_MENU(1, creature->GetGUID());
                     }
                     break;
                 }
@@ -228,20 +229,20 @@ class npc_arena_ranks : public CreatureScript
 
                         // lookup team
                         QueryResult result = CharacterDatabase.PQuery(
-                        //      [-0]  [--1-]  [----2---]  [-----------3----------]
-                        "SELECT name, rating, seasonWins, seasonGames - seasonWins, "
-                        //[--4--]  [---------5--------]  [-6]  [----7----]   [-8]
-                        "weekWins, weekGames - weekWins, rank, captainGuid , type "
-                        "FROM `arena_team` WHERE `arenaTeamId` = '%u'", teamId);
+                            //      [-0]  [--1-]  [----2---]  [-----------3----------]
+                            "SELECT name, rating, seasonWins, seasonGames - seasonWins, "
+                            //[--4--]  [---------5--------]  [-6]  [----7----]   [-8]
+                            "weekWins, weekGames - weekWins, rank, captainGuid , type "
+                            "FROM `arena_team` WHERE `arenaTeamId` = '%u'", teamId);
 
-                        if(!result)
+                        if (!result)
                         {
-                            player->GetSession()->SendNotification("Arena team not found...");
+                            ChatHandler(player).PSendSysMessage("Arena Team not found.");
                             player->PlayerTalkClass->SendCloseGossip();
-                            return true;
+                            return false;
                         }
 
-                        Field *fields = result->Fetch();
+                        Field* fields = result->Fetch();
                         std::string name = fields[0].GetString();
                         uint32 rating = fields[1].GetUInt32();
                         uint32 seasonWins = fields[2].GetUInt32();
@@ -258,39 +259,40 @@ class npc_arena_ranks : public CreatureScript
 
                         std::stringstream buf;
                         buf << "Team Name: " << name;
-                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, buf.str(), GOSSIP_SENDER_MAIN, parentOption);
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, buf.str(), GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
                         buf.str("");
                         buf << "Rating: " << rating << " (rank " << rank << ", bracket " << type << "v" << type << ")";
-                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, buf.str(), GOSSIP_SENDER_MAIN, parentOption);
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, buf.str(), GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
                         buf.str("");
                         buf << "Total Week: " << weekWins << "-" << weekLosses << " (" << weekWinPercentage << " win), " << (weekWins + weekLosses) << " played"; 
-                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, buf.str(), GOSSIP_SENDER_MAIN, parentOption);
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, buf.str(), GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
                         buf.str("");
                         buf << "Total Season: " << seasonWins << "-" << seasonLosses << " (" << seasonWinPercentage << " win), " << (seasonWins + seasonLosses) << " played"; 
-                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, buf.str(), GOSSIP_SENDER_MAIN, parentOption);
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, buf.str(), GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
 
                         QueryResult members = CharacterDatabase.PQuery(
-                        //      [--0-]  [-------1------]  [----2---]  [-----------3----------]
-                        "SELECT a.guid, a.personalRating, a.weekWins, a.weekGames - a.weekWins, "
-                        // [----4---]  [-------------5----------]  [--6-]  [--7-]  [--8--]  [--9--]
-                        "a.seasonWins, a.seasonGames - seasonWins, c.name, c.race, c.class, c.level "
-                        "FROM arena_team_member a LEFT JOIN characters c ON a.guid = c.guid WHERE arenaTeamId = '%u' "
-                        "ORDER BY a.guid = '%u' DESC, a.seasonGames DESC, c.name ASC", teamId, captainGuid);
+                            //      [--0-]  [-------1------]  [----2---]  [-----------3----------]
+                            "SELECT a.guid, a.personalRating, a.weekWins, a.weekGames - a.weekWins, "
+                            // [----4---]  [-------------5----------]  [--6-]  [--7-]  [--8--]  [--9--]
+                            "a.seasonWins, a.seasonGames - seasonWins, c.name, c.race, c.class, c.level "
+                            "FROM arena_team_member a LEFT JOIN characters c ON a.guid = c.guid WHERE arenaTeamId = '%u' "
+                            "ORDER BY a.guid = '%u' DESC, a.seasonGames DESC, c.name ASC", teamId, captainGuid);
 
-                        if(!members)
+                        if (!members)
                         {
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "No team members found...?", GOSSIP_SENDER_MAIN, parentOption);
+                            ChatHandler(player).PSendSysMessage("No Arena Team members found.");
+                            player->PlayerTalkClass->SendCloseGossip();
+                            return false;
                         }
                         else
                         {
-                            uint32 memberPos = 1;
                             uint32 memberCount = members->GetRowCount();
                             uint32 guid, personalRating, level;
                             std::string name, race, Class;
 
                             buf.str("");
-                            buf << memberCount << " team " << ((memberCount == 1) ? "member" : " members") << " found:";
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, buf.str(), GOSSIP_SENDER_MAIN, parentOption);
+                            buf << memberCount << " team " << ((memberCount == 1) ? "member" : "members") << " found:";
+                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, buf.str(), GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
 
                             do
                             {
@@ -309,35 +311,34 @@ class npc_arena_ranks : public CreatureScript
                                 seasonWinPercentage = getWinPercent(seasonWins, seasonLosses);
                                 weekWinPercentage = getWinPercent(weekWins, weekLosses);
 
+                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, " ", GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
                                 buf.str("");
-                                buf << memberPos << ". "; 
+                                buf << "Player: " << name;
                                 if (guid == captainGuid) 
-                                    buf <<  "Team Captain ";
-                                buf << name << ", " << getPlayerStatus(guid);
-
-                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, buf.str(), GOSSIP_SENDER_MAIN, parentOption);
+                                    buf <<  " <Captain> - ";
+                                buf << " (" << getPlayerStatus(guid) << ")";
+                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, buf.str(), GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
                                 buf.str("");
-                                buf << "Level " << level << " " << race << " " << Class << ", " << personalRating << " personal rating.";
-                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, buf.str(), GOSSIP_SENDER_MAIN, parentOption);
+                                buf << "Level " << level << " " << race << " " << Class;
+                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, buf.str(), GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
                                 buf.str("");
-                                buf << "Week: " << weekWins << "-" << weekLosses << " (" << weekWinPercentage << " win), " << (weekWins + weekLosses) << " played"; 
-                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, buf.str(), GOSSIP_SENDER_MAIN, parentOption);
+                                buf << "Personal Rating: " << personalRating;
+                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, buf.str(), GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
                                 buf.str("");
-                                buf << "Season: " << seasonWins << "-" << seasonLosses << " (" << seasonWinPercentage << " win), " << (seasonWins + seasonLosses) << " played"; 
-                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, buf.str(), GOSSIP_SENDER_MAIN, parentOption);
-                                memberPos++;
+                                buf << "Week: " << weekWins << "-" << weekLosses << " (" << weekWinPercentage << " Win), " << (weekWins + weekLosses) << " played"; 
+                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, buf.str(), GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
+                                buf.str("");
+                                buf << "Season: " << seasonWins << "-" << seasonLosses << " (" << seasonWinPercentage << " Win), " << (seasonWins + seasonLosses) << " played"; 
+                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, buf.str(), GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
                             }
                             while (members->NextRow());
                         }
 
-                        buf.str("");
-                        buf << "Return to " << type << "v" << type << " Rankings";
-                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, buf.str(), GOSSIP_SENDER_MAIN, parentOption);
-                        player->SEND_GOSSIP_MENU(ARENA_GOSSIP_TEAM_LOOKUP, creature->GetGUID());
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, parentOption);
+                        player->SEND_GOSSIP_MENU(1, creature->GetGUID());
                     }
                 }
             }
-
             return true;
         }
 };
