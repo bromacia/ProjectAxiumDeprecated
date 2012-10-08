@@ -35,7 +35,7 @@
 
 Pet::Pet(Player* owner, PetType type) : Guardian(NULL, owner, true),
 m_usedTalentCount(0), m_removed(false), m_owner(owner),
-m_happinessTimer(7500), m_petType(type), m_duration(0),
+m_happinessTimer(10000), m_petType(type), m_duration(0),
 m_auraRaidUpdateMask(0), m_loading(false), m_declinedname(NULL)
 {
     m_unitTypeMask |= UNIT_MASK_PET;
@@ -216,7 +216,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber, bool c
             SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
                                                             // this enables popup window (pet abandon, cancel)
             SetMaxPower(POWER_HAPPINESS, GetCreatePowers(POWER_HAPPINESS));
-            SetPower(POWER_HAPPINESS, fields[12].GetUInt32());
+            SetPower(POWER_HAPPINESS, 1000000);
             setPowerType(POWER_FOCUS);
             break;
         default:
@@ -462,6 +462,11 @@ void Pet::setDeathState(DeathState s)                       // overwrite virtual
             SetUInt32Value(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_NONE);
             RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
 
+            /* Lose happiness when died and not in BG/Arena
+            MapEntry const* mapEntry = sMapStore.LookupEntry(GetMapId());
+            if (!mapEntry || (mapEntry->map_type != MAP_ARENA && mapEntry->map_type != MAP_BATTLEGROUND))
+                ModifyPower(POWER_HAPPINESS, -HAPPINESS_LEVEL_SIZE);*/
+
             //SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
         }
     }
@@ -616,13 +621,7 @@ void Creature::Regenerate(Powers power)
 
 void Pet::LoseHappiness()
 {
-    uint32 curValue = GetPower(POWER_HAPPINESS);
-    if (curValue <= 0)
-        return;
-    int32 addvalue = 670;                                   //value is 70/35/17/8/4 (per min) * 1000 / 8 (timer 7.5 secs)
-    if (isInCombat())                                        //we know in combat happiness fades faster, multiplier guess
-        addvalue = int32(addvalue * 1.5f);
-    ModifyPower(POWER_HAPPINESS, +addvalue);
+    ModifyPower(POWER_HAPPINESS, 1000000);
 }
 
 HappinessState Pet::GetHappinessState()
@@ -801,14 +800,57 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
     CreatureFamilyEntry const* cFamily = sCreatureFamilyStore.LookupEntry(cinfo->family);
     if (cFamily && cFamily->minScale > 0.0f && petType == HUNTER_PET)
     {
-        float scale;
-        if (getLevel() >= cFamily->maxScaleLevel)
+        float scale = 1.0f;
+        /*if (getLevel() >= cFamily->maxScaleLevel)
             scale = cFamily->maxScale;
         else if (getLevel() <= cFamily->minScaleLevel)
             scale = cFamily->minScale;
         else
-            scale = cFamily->minScale + float(getLevel() - cFamily->minScaleLevel) / cFamily->maxScaleLevel * (cFamily->maxScale - cFamily->minScale);
+            scale = cFamily->minScale + float(getLevel() - cFamily->minScaleLevel) / cFamily->maxScaleLevel * (cFamily->maxScale - cFamily->minScale);*/
 
+        switch (cFamily->ID)
+        {
+            case CREATURE_FAMILY_WASP:
+                scale = 0.7f;
+                break;
+            case CREATURE_FAMILY_CAT:
+            case CREATURE_FAMILY_BOAR:
+            case CREATURE_FAMILY_GORILLA:
+            case CREATURE_FAMILY_RAPTOR:
+            case CREATURE_FAMILY_TURTLE:
+            case CREATURE_FAMILY_BAT:
+            case CREATURE_FAMILY_BIRD_OF_PREY:
+            case CREATURE_FAMILY_WIND_SERPENT:
+            case CREATURE_FAMILY_SERPENT:
+                scale = 1.1f;
+                break;
+            case CREATURE_FAMILY_WOLF:
+            case CREATURE_FAMILY_BEAR:
+            case CREATURE_FAMILY_CROCOLISK:
+            case CREATURE_FAMILY_CRAB:
+            case CREATURE_FAMILY_TALLSTRIDER:
+            case CREATURE_FAMILY_HYENA:
+            case CREATURE_FAMILY_DRAGONHAWK:
+            case CREATURE_FAMILY_RAVAGER:
+            case CREATURE_FAMILY_MOTH:
+            case CREATURE_FAMILY_CHIMAERA:
+            case CREATURE_FAMILY_SILITHID:
+            case CREATURE_FAMILY_WORM:
+            case CREATURE_FAMILY_SPIRIT_BEAST:
+                scale = 1.2f;
+                break;
+            case CREATURE_FAMILY_SPIDER:
+            case CREATURE_FAMILY_SCORPID:
+            case CREATURE_FAMILY_WARP_STALKER:
+            case CREATURE_FAMILY_NETHER_RAY:
+            case CREATURE_FAMILY_DEVILSAUR:
+            case CREATURE_FAMILY_RHINO:
+            case CREATURE_FAMILY_CORE_HOUND:
+                scale = 1.3f;
+                break;
+            default:
+                break;
+        }
         SetFloatValue(OBJECT_FIELD_SCALE_X, scale);
     }
 
@@ -1006,6 +1048,10 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
 
     SetFullHealth();
     SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
+
+    UpdateSpeed(MOVE_RUN, true);
+    UpdateSpeed(MOVE_SWIM, true);
+    UpdateSpeed(MOVE_FLIGHT, true);
     return true;
 }
 
@@ -1142,10 +1188,10 @@ void Pet::_SaveSpells(SQLTransaction& trans)
                 continue;
             case PETSPELL_CHANGED:
                 trans->PAppend("DELETE FROM pet_spell WHERE guid = '%u' and spell = '%u'", m_charmInfo->GetPetNumber(), itr->first);
-                trans->PAppend("INSERT INTO pet_spell (guid, spell, active) VALUES ('%u', '%u', '%u')", m_charmInfo->GetPetNumber(), itr->first, itr->second.active);
+                trans->PAppend("REPLACE INTO pet_spell (guid, spell, active) VALUES ('%u', '%u', '%u')", m_charmInfo->GetPetNumber(), itr->first, itr->second.active);
                 break;
             case PETSPELL_NEW:
-                trans->PAppend("INSERT INTO pet_spell (guid, spell, active) VALUES ('%u', '%u', '%u')", m_charmInfo->GetPetNumber(), itr->first, itr->second.active);
+                trans->PAppend("REPLACE INTO pet_spell (guid, spell, active) VALUES ('%u', '%u', '%u')", m_charmInfo->GetPetNumber(), itr->first, itr->second.active);
                 break;
             case PETSPELL_UNCHANGED:
                 continue;

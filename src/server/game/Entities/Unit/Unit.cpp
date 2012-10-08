@@ -12778,6 +12778,25 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
         default:
             sLog->outError("Unit::UpdateSpeed: Unsupported move type (%d)", mtype);
             return;
+
+        if (isPet())
+        {
+            switch (mtype)
+            {
+                case MOVE_WALK:
+                case MOVE_RUN:
+                case MOVE_RUN_BACK:
+                case MOVE_SWIM:
+                case MOVE_SWIM_BACK:
+                case MOVE_FLIGHT:
+                case MOVE_FLIGHT_BACK:
+                    if (HasAura(19596)) // Boar's Speed
+                        main_speed_mod = 30;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     // now we ready for speed calculation
@@ -15388,9 +15407,7 @@ Pet* Unit::CreateTamedPetFrom(Creature* creatureTarget, uint32 spell_id)
         return NULL;
     }
 
-    uint8 level = creatureTarget->getLevel() + 5 < getLevel() ? (getLevel() - 5) : creatureTarget->getLevel();
-
-    InitTamedPet(pet, level, spell_id);
+    InitTamedPet(pet, 80, spell_id);
 
     return pet;
 }
@@ -15435,6 +15452,7 @@ bool Unit::InitTamedPet(Pet* pet, uint8 level, uint32 spell_id)
     pet->InitPetCreateSpells();
     //pet->InitLevelupSpellsForLevel();
     pet->SetFullHealth();
+    pet->SetPower(POWER_HAPPINESS, 1000000);
     return true;
 }
 
