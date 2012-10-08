@@ -48,7 +48,7 @@ class npc_prof : public CreatureScript
 
         for (uint32 i = 1; i < sSkillLineStore.GetNumRows(); ++i)
         {
-            SkillLineEntry const *SkillInfo = sSkillLineStore.LookupEntry(i);
+            SkillLineEntry const* SkillInfo = sSkillLineStore.LookupEntry(i);
             if (!SkillInfo)
                 continue;
 
@@ -73,7 +73,7 @@ class npc_prof : public CreatureScript
         ChatHandler handler(player);
         char* skill_name;
 
-        SkillLineEntry const *SkillInfo = sSkillLineStore.LookupEntry(skill);
+        SkillLineEntry const* SkillInfo = sSkillLineStore.LookupEntry(skill);
 
         if (!SkillInfo)
         {
@@ -98,7 +98,7 @@ class npc_prof : public CreatureScript
 
         for (uint32 j = 0; j < sSkillLineAbilityStore.GetNumRows(); ++j)
         {
-            SkillLineAbilityEntry const *skillLine = sSkillLineAbilityStore.LookupEntry(j);
+            SkillLineAbilityEntry const* skillLine = sSkillLineAbilityStore.LookupEntry(j);
             if (!skillLine)
                 continue;
 
@@ -197,7 +197,6 @@ class npc_prof : public CreatureScript
                     break;
                 case 9:
                     CompleteLearnProfession(player, creature, SKILL_LEATHERWORKING);
-                    player->learnSpell(57683, false);
                     player->CLOSE_GOSSIP_MENU();
                     break;
                 case 10:
