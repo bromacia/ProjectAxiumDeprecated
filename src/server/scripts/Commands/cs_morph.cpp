@@ -9,6 +9,7 @@ public:
     {
         static ChatCommand morphCommandTable[] =
         {
+            { "nog",             SEC_PLAYER,         false, &HandleMorphNoggenfoggerCommand,         "", NULL },
             { "hum",             SEC_MODERATOR,      false, &HandleMorphHumanMaleCommand,            "", NULL },
             { "huf",             SEC_MODERATOR,      false, &HandleMorphHumanFemaleCommand,          "", NULL },
             { "dwm",             SEC_MODERATOR,      false, &HandleMorphDwarfMaleCommand,            "", NULL },
@@ -36,8 +37,9 @@ public:
         return commandTable;
     }
     
-    enum
+    enum MorphIds
     {
+        NOG      = 7550,
         HUM      = 19723,
         HUF      = 19724,
         DWM      = 20317,
@@ -56,410 +58,156 @@ public:
         GOBF     = 20583
     };
 
-    static bool HandleMorphHumanMaleCommand(ChatHandler* handler, const char* /*args*/)
+    static void Morph(ChatHandler* handler, uint32 morphId)
     {
         Player* player = handler->GetSession()->GetPlayer();
         if (player->HasAuraType(SPELL_AURA_TRANSFORM))
         {
             handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
+            return;
         }
         else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
         {
             handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
+            return;
         }
         else if (player->InArena())
         {
             handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
+            return;
         }
         else
-            player->SetNativeDisplayId(HUM);
-            player->SetDisplayId(HUM);
-        return true;
+            player->SetNativeDisplayId(morphId);
+            player->SetDisplayId(morphId);
     }
 
-    static bool HandleMorphHumanFemaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(HUF);
-            player->SetDisplayId(HUF);
-        return true;
-    }
-
-    static bool HandleMorphDwarfMaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(DWM);
-            player->SetDisplayId(DWM);
-        return true;
-    }
-
-    static bool HandleMorphNightElfMaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(NEM);
-            player->SetDisplayId(NEM);
-        return true;
-    }
-
-    static bool HandleMorphGnomeMaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(GNM);
-            player->SetDisplayId(GNM);
-        return true;
-    }
-
-    static bool HandleMorphGnomeFemaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(GNF);
-            player->SetDisplayId(GNF);
-        return true;
-    }
-
-    static bool HandleMorphDraeneiFemaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(DRF);
-            player->SetDisplayId(DRF);
-        return true;
-    }
-
-    static bool HandleMorphFelOrcMaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(ORCM);
-            player->SetDisplayId(ORCM);
-        return true;
-    }
-
-    static bool HandleMorphOrcFemaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(ORCF);
-            player->SetDisplayId(ORCF);
-        return true;
-    }
-
-    static bool HandleMorphTaurenMaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(TAM);
-            player->SetDisplayId(TAM);
-        return true;
-    }
-
-    static bool HandleMorphTaurenFemaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(TAF);
-            player->SetDisplayId(TAF);
-        return true;
-    }
-
-    static bool HandleMorphTrollMaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(TRM);
-            player->SetDisplayId(TRM);
-        return true;
-    }
-
-    static bool HandleMorphBloodElfMaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(BEM);
-            player->SetDisplayId(BEM);
-        return true;
-    }
-
-    static bool HandleMorphBloodElfFemaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(BEF);
-            player->SetDisplayId(BEF);
-        return true;
-    }
-
-    static bool HandleMorphGoblinMaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(GOBM);
-            player->SetDisplayId(GOBM);
-        return true;
-    }
-
-    static bool HandleMorphGoblinFemaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        if (player->HasAuraType(SPELL_AURA_TRANSFORM))
-        {
-            handler->PSendSysMessage("You cannot morph when you are transformed.");
-            return false;
-        }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
-        {
-            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
-            return false;
-        }
-        else if (player->InArena())
-        {
-            handler->PSendSysMessage("You cannot morph when you are in arena.");
-            return false;
-        }
-        else
-            player->SetNativeDisplayId(GOBF);
-            player->SetDisplayId(GOBF);
-        return true;
-    }
-
-    static bool HandleMorphNoneCommand(ChatHandler* handler, const char* /*args*/)
+    static void Demorph(ChatHandler* handler)
     {
         Player* player = handler->GetSession()->GetPlayer();
         if (player->HasAuraType(SPELL_AURA_TRANSFORM))
         {
             handler->PSendSysMessage("You cannot demorph when you are transformed.");
-            return false;
+            return;
         }
         else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
         {
             handler->PSendSysMessage("You cannot demorph when you are shapeshifted.");
-            return false;
+            return;
         }
         else if (player->InArena())
         {
             handler->PSendSysMessage("You cannot demorph when you are in arena.");
-            return false;
+            return;
         }
         else
             player->InitDisplayIds();
+    }
+
+    static bool HandleMorphNoggenfoggerCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, NOG);
+        return true;
+    }
+
+    static bool HandleMorphHumanMaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, HUM);
+        return true;
+    }
+
+    static bool HandleMorphHumanFemaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, HUF);
+        return true;
+    }
+
+    static bool HandleMorphDwarfMaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, DWM);
+        return true;
+    }
+
+    static bool HandleMorphNightElfMaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, NEM);
+        return true;
+    }
+
+    static bool HandleMorphGnomeMaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, GNM);
+        return true;
+    }
+
+    static bool HandleMorphGnomeFemaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, GNF);
+        return true;
+    }
+
+    static bool HandleMorphDraeneiFemaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, DRF);
+        return true;
+    }
+
+    static bool HandleMorphFelOrcMaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, ORCM);
+        return true;
+    }
+
+    static bool HandleMorphOrcFemaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, ORCF);
+        return true;
+    }
+
+    static bool HandleMorphTaurenMaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, TAM);
+        return true;
+    }
+
+    static bool HandleMorphTaurenFemaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, TAF);
+        return true;
+    }
+
+    static bool HandleMorphTrollMaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, TRM);
+        return true;
+    }
+
+    static bool HandleMorphBloodElfMaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, BEM);
+        return true;
+    }
+
+    static bool HandleMorphBloodElfFemaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, BEF);
+        return true;
+    }
+
+    static bool HandleMorphGoblinMaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, GOBM);
+        return true;
+    }
+
+    static bool HandleMorphGoblinFemaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, GOBF);
+        return true;
+    }
+
+    static bool HandleMorphNoneCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Demorph(handler);
         return true;
     }
 };
