@@ -5671,7 +5671,6 @@ SpellCastResult Spell::CheckCast(bool strict)
         }
     }
     // Axium
-    //Todo: Don't need to constantly redeclare caster or target, its already being declared, and this loop should be uint8, not an int
     for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
     {
         // Dont allow anything to be cast while in cyclone besides PvP Trinket or Ever Man for Himself
@@ -5729,16 +5728,28 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (target->IsMounted())
                     return SPELL_FAILED_NOT_ON_MOUNTED;
 
+        // Dont allow PvP Trinket or Every Man for Himself to be casted
+        // if Will of the Forsaken Cooldown Trigger (WOTF) has been triggerd
+        if (m_spellInfo->Id == 42292 || m_spellInfo->Id == 59752)
+            if (Player* playerCaster = m_caster->ToPlayer())
+                if (playerCaster->HasSpellCooldown(72757))
+                    return SPELL_FAILED_NOT_READY;
+
+        // Dont allow Will of the Forsaken to be casted
+        // if Will of the Forsaken Cooldown Trigger has been triggerd
+        if (m_spellInfo->Id == 7744)
+            if (Player* playerCaster = m_caster->ToPlayer())
+                if (playerCaster->HasSpellCooldown(72752))
+                    return SPELL_FAILED_NOT_READY;
+
         // Blazing Hippogryph
         if (m_spellInfo->Id == 74856)
-        {
             if (m_originalCaster && m_originalCaster->GetTypeId() == TYPEID_PLAYER && m_originalCaster->isAlive())
             {
                 if (AreaTableEntry const* pArea = GetAreaEntryByAreaID(m_originalCaster->GetAreaId()))
                     if (pArea->flags & AREA_FLAG_NO_FLY_ZONE)
                         return (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_NOT_HERE;
             }
-        }
         break;
     }
 
