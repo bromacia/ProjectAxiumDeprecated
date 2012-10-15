@@ -1019,7 +1019,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
     }
     else if (SpellDelaySpell())
     {
-        targetInfo.timeDelay = 150;
+        targetInfo.timeDelay = 100;
         m_delayMoment = targetInfo.timeDelay;
     }
     else if (MovementDelaySpell())
@@ -1029,7 +1029,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
     }
     else if (SilenceDelaySpell())
     {
-        targetInfo.timeDelay = 20;
+        targetInfo.timeDelay = 10;
         m_delayMoment = targetInfo.timeDelay;
     }
     else
