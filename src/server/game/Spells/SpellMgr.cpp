@@ -3238,7 +3238,10 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->DmgClass = 0;
                 break;
             case 1953: // Blink
-                spellInfo->DurationIndex = 407;
+            case 7744: // Will of the Forsaken
+            case 42292: // PvP Trinket
+            case 59752: // Every Man for Himself
+                spellInfo->DurationIndex = 328;
                 break;
             case 56651: // Master's Call
                 spellInfo->Effect[0] = 0;

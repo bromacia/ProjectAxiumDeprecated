@@ -333,7 +333,7 @@ class SpellScript : public _SpellScript
         int32 GetHitHeal();
         void SetHitHeal(int32 heal);
         void PreventHitHeal() { SetHitHeal(0); }
-
+        Spell* GetSpell() { return m_spell; }
         // returns current spell hit target aura
         Aura* GetHitAura();
         // prevents applying aura on current spell hit target
