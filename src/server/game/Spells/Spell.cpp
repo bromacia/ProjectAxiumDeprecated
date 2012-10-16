@@ -1504,7 +1504,8 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                 unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
             }
 
-            if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174)))
+            if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174))
+                || CrowdControlSpell())
                 unit->RemoveAura(66);
 
             if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252)
@@ -7775,6 +7776,17 @@ bool Spell::SilenceDelaySpell() const
     m_spellInfo->Id == 19244 ||
     // Spell Lock (Rank 2)
     m_spellInfo->Id == 19247;
+}
+
+bool Spell::CrowdControlSpell() const
+{
+    for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
+        return m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_POSSESS ||
+        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CONFUSE ||
+        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CHARM ||
+        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_AOE_CHARM ||
+        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR ||
+        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN;
 }
 
 bool Spell::InstantOrAoeCrowdControlSpell() const

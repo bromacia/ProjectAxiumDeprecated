@@ -644,12 +644,12 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
 
 bool Unit::IsCrowdControlled() const
 {
-    return (HasAuraType(SPELL_AURA_MOD_POSSESS)
+    return HasAuraType(SPELL_AURA_MOD_POSSESS)
         || HasAuraType(SPELL_AURA_MOD_CONFUSE)
         || HasAuraType(SPELL_AURA_MOD_CHARM)
         || HasAuraType(SPELL_AURA_AOE_CHARM)
         || HasAuraType(SPELL_AURA_MOD_FEAR)
-        || HasAuraType(SPELL_AURA_MOD_STUN));
+        || HasAuraType(SPELL_AURA_MOD_STUN);
 }
 
 void Unit::DealDamageMods(Unit* victim, uint32 &damage, uint32* absorb)

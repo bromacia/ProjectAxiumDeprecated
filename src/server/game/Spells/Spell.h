@@ -383,6 +383,7 @@ class Spell
         bool MovementDelaySpell() const;
         bool SilenceDelaySpell() const;
 
+        bool CrowdControlSpell() const;
         bool InstantOrAoeCrowdControlSpell() const;
 
         // handlers
