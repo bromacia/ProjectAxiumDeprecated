@@ -1190,7 +1190,16 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         return;
 
     if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastSanctuaryTime)
-        return;
+    {
+        if (InstantOrAoeCrowdControlSpell())
+        {
+            unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+            unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
+            return;
+        }
+        else
+            return;
+    }
 
     if (m_spellInfo->Mechanic == MECHANIC_STUN)
         if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastBlinkTime)
@@ -7678,12 +7687,8 @@ bool Spell::SpellDelaySpell() const
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] == 0x80) ||
     // Faerie Fire
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109) ||
-    // Hibernate (Rank 1)
-    m_spellInfo->Id == 2637 ||
-    // Hibernate (Rank 2)
-    m_spellInfo->Id == 18657 ||
-    // Hibernate (Rank 3)
-    m_spellInfo->Id == 18658 ||
+    // Hibernate
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 44) ||
 //------------Priest---------------
     // Psychic Scream
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && m_spellInfo->SpellFamilyFlags[0] == 0x10000) ||
@@ -7767,4 +7772,78 @@ bool Spell::SilenceDelaySpell() const
     m_spellInfo->Id == 19244 ||
     // Spell Lock (Rank 2)
     m_spellInfo->Id == 19247;
+}
+
+bool Spell::InstantOrAoeCrowdControlSpell() const
+{
+//------------Generic--------------
+    // War Stomp
+    return m_spellInfo->Id == 20549 ||
+//------------Warrior--------------
+    // Charge Stun
+    m_spellInfo->Id == 7922 ||
+    // Intercept Stun
+    m_spellInfo->Id == 20253 ||
+    // Intimidating Shout
+    m_spellInfo->Id == 5246 ||
+    // Shockwave
+    m_spellInfo->Id == 46968 ||
+    // Concussion Blow
+    m_spellInfo->Id == 12809 ||
+//------------Paladin--------------
+    // Hammer of Justice
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN && m_spellInfo->SpellFamilyFlags[0] == 0x800) ||
+    // Repentance
+    m_spellInfo->Id == 20066 ||
+//---------Death Knight------------
+    // Gnaw
+    m_spellInfo->Id == 47481 ||
+    // Hungering Cold
+    m_spellInfo->Id == 49203 ||
+//------------Shaman---------------
+    // Spirit Wolf Bash
+    m_spellInfo->Id == 58861 ||
+//------------Rogue----------------
+    // Blind
+    m_spellInfo->Id == 2094 ||
+    // Cheap Shot
+    m_spellInfo->Id == 1833 ||
+    // Kidney Shot
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[0] == 0x200000) ||
+    // Gouge
+    m_spellInfo->Id == 1776 ||
+    // Sap
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[0] == 0x80) ||
+//------------Druid----------------
+    // Cyclone
+    m_spellInfo->Id == 33786 ||
+    // Bash
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[0] == 0x2000) ||
+    // Pounce
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[0] == 0x20000) ||
+    // Maim
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] == 0x80) ||
+    // Faerie Fire
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109) ||
+    // Hibernate
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 44) ||
+//------------Priest---------------
+    // Psychic Scream
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && m_spellInfo->SpellFamilyFlags[0] == 0x10000) ||
+    // Psychic Horror - Trigger and Stun
+    m_spellInfo->Id == 64044 ||
+//------------Mage-----------------
+    // Polymorph
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags[0] == 0x1000000) ||
+    // Deep Freeze
+    m_spellInfo->Id == 44572 ||
+    // Dragon's Breath
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags[0] == 0x800000) ||
+//----------Warlock----------------
+    // Fear
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x400) ||
+    // Howl of Terror
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x8) ||
+    // Shadowfury
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x1000);
 }

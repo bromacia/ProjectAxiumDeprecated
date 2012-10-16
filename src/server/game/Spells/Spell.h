@@ -383,6 +383,8 @@ class Spell
         bool MovementDelaySpell() const;
         bool SilenceDelaySpell() const;
 
+        bool InstantOrAoeCrowdControlSpell() const;
+
         // handlers
         void handle_immediate();
         uint64 handle_delayed(uint64 t_offset);
