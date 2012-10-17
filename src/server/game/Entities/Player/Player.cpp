@@ -7479,7 +7479,7 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
 //If players are too far away from the duel flag... they lose the duel
 void Player::CheckDuelDistance(time_t currTime)
 {
-    /*if (!duel)
+    if (!duel)
         return;
 
     uint64 duelFlagGUID = GetUInt64Value(PLAYER_DUEL_ARBITER);
@@ -7508,7 +7508,7 @@ void Player::CheckDuelDistance(time_t currTime)
         }
         else if (currTime >= (duel->outOfBound+10))
             DuelComplete(DUEL_FLED);
-    }*/
+    }
 }
 
 bool Player::IsOutdoorPvPActive()
