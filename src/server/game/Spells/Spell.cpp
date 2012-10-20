@@ -7782,11 +7782,11 @@ bool Spell::CrowdControlSpell() const
 {
     for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
         return m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_POSSESS ||
-        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CONFUSE ||
-        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CHARM ||
-        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_AOE_CHARM ||
-        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR ||
-        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN;
+            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CONFUSE ||
+            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CHARM ||
+            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_AOE_CHARM ||
+            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR ||
+            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN;
 }
 
 bool Spell::InstantOrAoeCrowdControlSpell() const
