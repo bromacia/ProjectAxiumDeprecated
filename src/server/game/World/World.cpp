@@ -1214,6 +1214,19 @@ void World::LoadConfigSettings(bool reload)
     // Mail queue
     m_int_configs[CONFIG_MAIL_QUEUE_TIMER] = ConfigMgr::GetIntDefault("MailQueue.Timer", 2);
 
+    // Class Damage Adjustment
+    m_bool_configs[CONFIG_DAMAGE_ADJUSTMENT] = ConfigMgr::GetBoolDefault("GlobalDamageAdjustment.On", false);
+    m_float_configs[CONFIG_DMG_ADJ_WARRIOR] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warrior", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_PALADIN] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Paladin", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_DEATHKNIGHT] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Deathknight", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_HUNTER] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Hunter", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_SHAMAN] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Shaman", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_ROGUE] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Rogue", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_DRUID] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Shaman", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_PRIEST] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Priest", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_MAGE] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Mage", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_WARLOCK] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warlock", 1.00f);
+
     sScriptMgr->OnConfigLoad(reload);
 }
 
