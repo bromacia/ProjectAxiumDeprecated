@@ -5055,6 +5055,31 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                         case 200001: // Object Visibility Update Timer (Stealth, At Remove)
                         case 200002: // Object Visibility Update Timer (Invisibility, At Apply)
                         case 200003: // Object Visibility Update Timer (Invisibility, At Remove)
+                        {
+                            if (aurApp->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
+                            {
+                                target->UpdateObjectVisibility();
+
+                                UnitList targets;
+                                Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(target, target, target->GetMap()->GetVisibilityRange());
+                                Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(target, targets, u_check);
+                                target->VisitNearbyObject(target->GetMap()->GetVisibilityRange(), searcher);
+                                for (UnitList::iterator iter = targets.begin(); iter != targets.end(); ++iter)
+                                {
+                                    if (!(*iter)->HasUnitState(UNIT_STATE_CASTING))
+                                        continue;
+
+                                    for (uint32 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_MAX_SPELL; i++)
+                                    {
+                                        if ((*iter)->GetCurrentSpell(i)
+                                        && (*iter)->GetCurrentSpell(i)->m_targets.GetUnitTargetGUID() == target->GetGUID())
+                                        {
+                                            (*iter)->InterruptSpell(CurrentSpellTypes(i), false);
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         case 200004: // Object Visibility Update Timer (Stealth Detection, At Apply)
                         case 200005: // Object Visibility Update Timer (Stealth Detection, At Remove)
                         case 200006: // Object Visibility Update Timer (Invisibility Detection, At Apply)
