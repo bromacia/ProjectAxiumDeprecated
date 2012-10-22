@@ -1019,7 +1019,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
     }
     else if (SpellDelaySpell())
     {
-        targetInfo.timeDelay = 100;
+        targetInfo.timeDelay = 150;
         m_delayMoment = targetInfo.timeDelay;
     }
     else if (MovementDelaySpell())
@@ -1190,16 +1190,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         return;
 
     if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastSanctuaryTime)
-    {
-        if (InstantOrAoeCrowdControlSpell())
-        {
-            unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
-            unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
-            return;
-        }
-        else
-            return;
-    }
+        return;
 
     if (m_spellInfo->Mechanic == MECHANIC_STUN)
         if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastBlinkTime)
