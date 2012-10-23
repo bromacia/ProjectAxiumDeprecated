@@ -146,30 +146,6 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
             guid1, guid2, spellid, flag, pet->GetGUIDLow(), pet->GetTypeId());
         return;
     }
-
-    float distance = PET_FOLLOW_DIST;
-    if (pet->ToCreature())
-    {
-        switch (pet->ToCreature()->GetCreatureInfo()->family)
-        {
-            case CREATURE_FAMILY_SPIRIT_BEAST:
-                distance = 1.5f;
-                break;
-            case CREATURE_FAMILY_DEVILSAUR:
-            case CREATURE_FAMILY_RHINO:
-                distance = -2.0f;
-                break;
-            case CREATURE_FAMILY_CORE_HOUND:
-                distance = -3.0f;
-                break;
-            case CREATURE_FAMILY_SPIDER:
-                distance = -5.5f;
-                break;
-            default:
-                break;
-        }
-    }
-
     switch (flag)
     {
         case ACT_COMMAND:                                   //0x07
@@ -190,7 +166,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                 case COMMAND_FOLLOW:                        //spellid=1792  //FOLLOW
                     pet->AttackStop();
                     pet->InterruptNonMeleeSpells(false);
-                    pet->GetMotionMaster()->MoveFollow(_player, distance, pet->GetFollowAngle());
+                    pet->GetMotionMaster()->MoveFollow(_player, PET_FOLLOW_DIST, pet->GetFollowAngle());
                     charmInfo->SetCommandState(COMMAND_FOLLOW);
 
                     charmInfo->SetIsCommandAttack(false);

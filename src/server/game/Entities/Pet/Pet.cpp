@@ -796,6 +796,8 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
 
     SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);
 
+    SetFloatValue(UNIT_FIELD_COMBATREACH, 1.5f);
+
     //scale
     CreatureFamilyEntry const* cFamily = sCreatureFamilyStore.LookupEntry(cinfo->family);
     if (cFamily && cFamily->minScale > 0.0f && petType == HUNTER_PET)

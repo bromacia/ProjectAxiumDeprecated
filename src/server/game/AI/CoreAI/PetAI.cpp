@@ -382,31 +382,6 @@ void PetAI::OwnerAttacked(Unit* target)
     AttackStart(target);
 }
 
-float PetAI::CalculateFollowDistance()
-{
-    float distance = PET_FOLLOW_DIST;
-    switch (me->GetCreatureInfo()->family)
-    {
-        case CREATURE_FAMILY_SPIRIT_BEAST:
-            distance = 1.5f;
-            break;
-        case CREATURE_FAMILY_DEVILSAUR:
-        case CREATURE_FAMILY_RHINO:
-            distance = -2.0f;
-            break;
-        case CREATURE_FAMILY_CORE_HOUND:
-            distance = -3.0f;
-            break;
-        case CREATURE_FAMILY_SPIDER:
-            distance = -5.5f;
-            break;
-        default:
-            break;
-    }
-
-    return distance;
-}
-
 Unit* PetAI::SelectNextTarget()
 {
     // Provides next target selection after current target death
@@ -466,7 +441,7 @@ void PetAI::HandleReturnMovement()
             {
                 me->GetCharmInfo()->SetIsReturning(true);
                 me->GetMotionMaster()->Clear();
-                me->GetMotionMaster()->MoveFollow(me->GetCharmerOrOwner(), CalculateFollowDistance(), me->GetFollowAngle());
+                me->GetMotionMaster()->MoveFollow(me->GetCharmerOrOwner(), PET_FOLLOW_DIST, me->GetFollowAngle());
             }
         }
     }
