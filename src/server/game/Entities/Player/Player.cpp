@@ -23288,7 +23288,7 @@ void Player::RestoreBaseRune(uint8 index)
     ConvertRune(index, GetBaseRune(index));
     SetRuneConvertAura(index, NULL);
     // Don't drop passive talents providing rune convertion
-    if (!aura || aura->GetAuraType() != SPELL_AURA_CONVERT_RUNE)
+    if (!aura || !aura->GetAuraType() || aura->GetAuraType() != SPELL_AURA_CONVERT_RUNE)
         return;
     for (uint8 i = 0; i < MAX_RUNES; ++i)
     {
