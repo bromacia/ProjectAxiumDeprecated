@@ -4953,6 +4953,9 @@ SpellCastResult Spell::CheckCast(bool strict)
 
             if (!(m_spellInfo->AttributesEx2 & SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS) && VMAP::VMapFactory::checkSpellForLoS(m_spellInfo->Id) && !m_caster->IsWithinLOSInMap(target))
                 return SPELL_FAILED_LINE_OF_SIGHT;
+
+            if (!(m_spellInfo->AttributesEx6 & SPELL_ATTR6_CAN_TARGET_INVISIBLE) && !m_caster->canSeeOrDetect(target) && m_casttime != 0 && !target->HasAura(200008))
+                return SPELL_FAILED_BAD_TARGETS;
         }
         else
         {
