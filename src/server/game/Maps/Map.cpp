@@ -709,6 +709,8 @@ void Map::PlayerRelocation(Player* player, float x, float y, float z, float orie
         AddToGrid(player, new_cell);
     }
 
+    if (!(player->HasAura(200000) || player->HasAura(200001) || player->HasAura(200002) || player->HasAura(200003)
+        || player->HasAura(200004) || player->HasAura(200005) || player->HasAura(200006) || player->HasAura(200007)))
     player->UpdateObjectVisibility(false);
 }
 
