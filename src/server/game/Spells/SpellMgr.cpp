@@ -3230,7 +3230,7 @@ void SpellMgr::LoadDbcDataCorrections()
             case 64962: // Sigil of the Vengeful Heart
                 spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
                 spellInfo->EffectApplyAuraName[1] = SPELL_AURA_ADD_FLAT_MODIFIER;
-                spellInfo->EffectMiscValue[1] = 0;
+                spellInfo->EffectMiscValue[1] = SPELLMOD_DAMAGE;
                 spellInfo->EffectSpellClassMask[1] = flag96(0x00002000, 0x00000000, 0x00000000);
                 break;
             case 67769: // Cobalt Frag Bomb
@@ -3264,6 +3264,11 @@ void SpellMgr::LoadDbcDataCorrections()
             case 46924: // Bladestorm
             case 61851: // Killing Spree
                 spellInfo->Effect[1] = 0;
+                break;
+            case 48506: // Earth and Moon (Rank 1)
+            case 48510: // Earth and Moon (Rank 2)
+            case 48511: // Earth and Moon (Rank 3)
+                spellInfo->EffectMiscValueB[1] = SPELLMOD_DAMAGE;
                 break;
             default:
                 break;
