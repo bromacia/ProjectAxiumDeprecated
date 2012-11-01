@@ -242,7 +242,7 @@ void MessageDistDeliverer::Visit(PlayerMapType &m)
     for (PlayerMapType::iterator iter = m.begin(); iter != m.end(); ++iter)
     {
         Player* target = iter->getSource();
-        if (!target->InSamePhase(i_phaseMask))
+        /*if (!target->InSamePhase(i_phaseMask))
             continue;
 
         if (target->GetExactDist2dSq(i_source) > i_distSq)
@@ -257,7 +257,7 @@ void MessageDistDeliverer::Visit(PlayerMapType &m)
                     SendPacket(*i);
         }
 
-        if (target->m_seer == target || target->GetVehicle())
+        if (target->m_seer == target || target->GetVehicle())*/
             SendPacket(target);
     }
 }
