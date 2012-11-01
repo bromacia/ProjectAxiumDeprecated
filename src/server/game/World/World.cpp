@@ -1222,7 +1222,7 @@ void World::LoadConfigSettings(bool reload)
     m_float_configs[CONFIG_DMG_ADJ_HUNTER] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Hunter", 1.00f);
     m_float_configs[CONFIG_DMG_ADJ_SHAMAN] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Shaman", 1.00f);
     m_float_configs[CONFIG_DMG_ADJ_ROGUE] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Rogue", 1.00f);
-    m_float_configs[CONFIG_DMG_ADJ_DRUID] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Shaman", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_DRUID] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Druid", 1.00f);
     m_float_configs[CONFIG_DMG_ADJ_PRIEST] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Priest", 1.00f);
     m_float_configs[CONFIG_DMG_ADJ_MAGE] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Mage", 1.00f);
     m_float_configs[CONFIG_DMG_ADJ_WARLOCK] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warlock", 1.00f);

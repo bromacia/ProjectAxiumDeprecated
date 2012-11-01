@@ -10946,26 +10946,39 @@ uint32 Unit::SpellDamageBonusDone(Unit* victim, SpellInfo const* spellProto, uin
 
     if (sWorld->getBoolConfig(CONFIG_DAMAGE_ADJUSTMENT))
     {
-        if (getClass() == CLASS_WARRIOR)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR);
-        if (getClass() == CLASS_PALADIN)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN);
-        if (getClass() == CLASS_DEATH_KNIGHT)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT);
-        if (getClass() == CLASS_HUNTER)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER);
-        if (getClass() == CLASS_SHAMAN)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN);
-        if (getClass() == CLASS_ROGUE)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE);
-        if (getClass() == CLASS_DRUID)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID);
-        if (getClass() == CLASS_PRIEST)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST);
-        if (getClass() == CLASS_MAGE)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE);
-        if (getClass() == CLASS_WARLOCK)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK);
+        switch (getClass())
+        {
+            case CLASS_WARRIOR:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR);
+                break;
+            case CLASS_PALADIN:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN);
+                break;
+            case CLASS_DEATH_KNIGHT:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT);
+                break;
+            case CLASS_HUNTER:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER);
+                break;
+            case CLASS_SHAMAN:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN);
+                break;
+            case CLASS_ROGUE:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE);
+                break;
+            case CLASS_DRUID:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID);
+                break;
+            case CLASS_PRIEST:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST);
+                break;
+            case CLASS_MAGE:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE);
+                break;
+            case CLASS_WARLOCK:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK);
+                break;
+        }
     }
 
     return uint32(std::max(tmpDamage, 0.0f));
@@ -11980,26 +11993,39 @@ uint32 Unit::MeleeDamageBonusDone(Unit* victim, uint32 pdamage, WeaponAttackType
 
     if (sWorld->getBoolConfig(CONFIG_DAMAGE_ADJUSTMENT))
     {
-        if (getClass() == CLASS_WARRIOR)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR);
-        if (getClass() == CLASS_PALADIN)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN);
-        if (getClass() == CLASS_DEATH_KNIGHT)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT);
-        if (getClass() == CLASS_HUNTER)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER);
-        if (getClass() == CLASS_SHAMAN)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN);
-        if (getClass() == CLASS_ROGUE)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE);
-        if (getClass() == CLASS_DRUID)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID);
-        if (getClass() == CLASS_PRIEST)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST);
-        if (getClass() == CLASS_MAGE)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE);
-        if (getClass() == CLASS_WARLOCK)
-            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK);
+        switch (getClass())
+        {
+            case CLASS_WARRIOR:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR);
+                break;
+            case CLASS_PALADIN:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN);
+                break;
+            case CLASS_DEATH_KNIGHT:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT);
+                break;
+            case CLASS_HUNTER:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER);
+                break;
+            case CLASS_SHAMAN:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN);
+                break;
+            case CLASS_ROGUE:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE);
+                break;
+            case CLASS_DRUID:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID);
+                break;
+            case CLASS_PRIEST:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST);
+                break;
+            case CLASS_MAGE:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE);
+                break;
+            case CLASS_WARLOCK:
+                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK);
+                break;
+        }
     }
 
     // bonus result can be negative
