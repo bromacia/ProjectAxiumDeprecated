@@ -22,7 +22,7 @@ class npc_beastmaster : public CreatureScript
         if (Pet* playerPet = player->ToPet())
         {
             player->StopCastingCharm();
-            player->RemovePet(playerPet, PET_SAVE_AS_DELETED , false);
+            player->RemovePet(playerPet, PET_SAVE_AS_DELETED, false);
         }
 
         pet->GetMap()->AddToMap(pet->ToCreature());
