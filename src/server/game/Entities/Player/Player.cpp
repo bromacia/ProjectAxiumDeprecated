@@ -20096,12 +20096,7 @@ void Player::DropModCharge(SpellModifier* mod, Spell* spell)
         return;
 
     if (spell && mod->ownerAura && mod->charges > 0)
-    {
-        if (--mod->charges == 0)
-            mod->charges = -1;
-
         spell->m_appliedMods.insert(mod->ownerAura);
-    }
 }
 
 void Player::SetSpellModTakingSpell(Spell* spell, bool apply)
