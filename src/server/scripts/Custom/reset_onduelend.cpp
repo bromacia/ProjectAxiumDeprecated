@@ -11,6 +11,7 @@ class Reset_OnDuelEnd : public PlayerScript
     {
 		if (winner->GetAreaId() != 85 || loser->GetAreaId() != 85)
 			return;
+
 		winner->RemoveAllNegativeAuras();
 		loser->RemoveAllNegativeAuras();
 		winner->SetHealth(winner->GetMaxHealth());
