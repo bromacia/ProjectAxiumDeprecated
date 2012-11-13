@@ -2185,8 +2185,6 @@ public:
                 if (Unit* owner = me->ToTempSummon()->GetSummoner())
                     if (owner->HasAura(GLYPH_OF_SHADOWFIEND))
                         owner->CastSpell(owner, GLYPH_OF_SHADOWFIEND_MANA, true);
-
-            PetAI::JustDied(killer);
         }
 
         void UpdateAI(uint32 const /*diff*/)
