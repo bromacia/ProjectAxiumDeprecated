@@ -379,12 +379,13 @@ class Spell
         SpellCastResult CheckCast(bool strict);
         SpellCastResult CheckPetCast(Unit* target);
 
-        bool SpellDelaySpell() const;
-        bool MovementDelaySpell() const;
-        bool SilenceDelaySpell() const;
+        bool IsSpellDelaySpell() const;
+        bool IsMovementDelaySpell() const;
+        bool IsSilenceDelaySpell() const;
 
-        bool CrowdControlSpell() const;
-        bool InstantOrAoeCrowdControlSpell() const;
+        bool IsCrowdControlSpell() const;
+
+        bool IsNegativeAuraSpell() const;
 
         // handlers
         void handle_immediate();
@@ -491,6 +492,7 @@ class Spell
         void CleanupTargetList();
 
         void SetSpellValue(SpellValueMod mod, int32 value);
+
     protected:
         bool HasGlobalCooldown() const;
         void TriggerGlobalCooldown();

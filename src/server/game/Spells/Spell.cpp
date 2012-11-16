@@ -1017,17 +1017,17 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
         if (m_delayMoment == 0 || m_delayMoment > targetInfo.timeDelay)
             m_delayMoment = targetInfo.timeDelay;
     }
-    else if (SpellDelaySpell())
+    else if (IsSpellDelaySpell())
     {
         targetInfo.timeDelay = 150;
         m_delayMoment = targetInfo.timeDelay;
     }
-    else if (MovementDelaySpell())
+    else if (IsMovementDelaySpell())
     {
         targetInfo.timeDelay = 30;
         m_delayMoment = targetInfo.timeDelay;
     }
-    else if (SilenceDelaySpell())
+    else if (IsSilenceDelaySpell())
     {
         targetInfo.timeDelay = 10;
         m_delayMoment = targetInfo.timeDelay;
@@ -1483,24 +1483,23 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         if (m_spellInfo->Speed > 0.0f && unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
             return SPELL_MISS_EVADE;
 
-        if (!unit->HasAura(32727))
+        if (!unit->HasAura(32727)) // Arena Preparation
         {
             unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
 
-            if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC) && unit->IsControlledByPlayer() || m_spellInfo->Id == 34709
-            || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109)
-            || m_spellInfo->Mechanic == MECHANIC_SILENCE)
+            if (IsNegativeAuraSpell() || m_spellInfo->Id == 34709) // Shadow Sight
             {
                 unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
                 unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
             }
 
-            if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174))
-                || CrowdControlSpell())
-                unit->RemoveAura(66);
+            if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174)) // Faerie Fire & Cyclone
+                || IsCrowdControlSpell())
+                unit->RemoveAura(66); // Invisibility 3sec fading aura
 
-            if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252)
+            if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252) // Vanish
             {
+                // Hunter's Mark
                 unit->RemoveAura(1130);
                 unit->RemoveAura(14323);
                 unit->RemoveAura(14324);
@@ -3375,7 +3374,7 @@ void Spell::cast(bool skipCheck)
 
     // Okay, everything is prepared. Now we need to distinguish between immediate and evented delayed spells
     if ((m_spellInfo->Speed > 0.0f && !m_spellInfo->IsChanneled()) || m_spellInfo->Id == 14157 // 14157: Ruthlessness (Neeeded?)
-    || SpellDelaySpell() || MovementDelaySpell() || SilenceDelaySpell())
+    || IsSpellDelaySpell() || IsMovementDelaySpell() || IsSilenceDelaySpell())
     {
         // Remove used for cast item if need (it can be already NULL after TakeReagents call
         // in case delayed spell remove item at cast delay start
@@ -7632,7 +7631,7 @@ void Spell::CancelGlobalCooldown()
         m_caster->ToPlayer()->GetGlobalCooldownMgr().CancelGlobalCooldown(m_spellInfo);
 }
 
-bool Spell::SpellDelaySpell() const
+bool Spell::IsSpellDelaySpell() const
 {
 //------------Generic--------------
     // War Stomp
@@ -7716,7 +7715,7 @@ bool Spell::SpellDelaySpell() const
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x1000);
 }
 
-bool Spell::MovementDelaySpell() const
+bool Spell::IsMovementDelaySpell() const
 {
 //------------Rogue----------------
     // Shadowstep
@@ -7734,7 +7733,7 @@ bool Spell::MovementDelaySpell() const
     m_spellInfo->Id == 48020;
 }
 
-bool Spell::SilenceDelaySpell() const
+bool Spell::IsSilenceDelaySpell() const
 {
 //------------Generic--------------
     // Arcane Torrent - Mana
@@ -7772,87 +7771,22 @@ bool Spell::SilenceDelaySpell() const
     m_spellInfo->Id == 19247;
 }
 
-bool Spell::CrowdControlSpell() const
+bool Spell::IsCrowdControlSpell() const
 {
     for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
-        return m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_POSSESS ||
-            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CONFUSE ||
-            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CHARM ||
-            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_AOE_CHARM ||
-            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR ||
-            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN;
+        return m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_POSSESS
+            || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CONFUSE
+            || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CHARM
+            || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_AOE_CHARM
+            || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR
+            || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN;
 }
 
-bool Spell::InstantOrAoeCrowdControlSpell() const
+bool Spell::IsNegativeAuraSpell() const
 {
-//------------Generic--------------
-    // War Stomp
-    return m_spellInfo->Id == 20549 ||
-//------------Warrior--------------
-    // Charge Stun
-    m_spellInfo->Id == 7922 ||
-    // Intercept Stun
-    m_spellInfo->Id == 20253 ||
-    // Intimidating Shout
-    m_spellInfo->Id == 5246 ||
-    // Shockwave
-    m_spellInfo->Id == 46968 ||
-    // Concussion Blow
-    m_spellInfo->Id == 12809 ||
-//------------Paladin--------------
-    // Hammer of Justice
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN && m_spellInfo->SpellFamilyFlags[0] == 0x800) ||
-    // Repentance
-    m_spellInfo->Id == 20066 ||
-//---------Death Knight------------
-    // Gnaw
-    m_spellInfo->Id == 47481 ||
-    // Hungering Cold
-    m_spellInfo->Id == 49203 ||
-//------------Shaman---------------
-    // Spirit Wolf Bash
-    m_spellInfo->Id == 58861 ||
-//------------Rogue----------------
-    // Blind
-    m_spellInfo->Id == 2094 ||
-    // Cheap Shot
-    m_spellInfo->Id == 1833 ||
-    // Kidney Shot
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[0] == 0x200000) ||
-    // Gouge
-    m_spellInfo->Id == 1776 ||
-    // Sap
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[0] == 0x80) ||
-//------------Druid----------------
-    // Cyclone
-    m_spellInfo->Id == 33786 ||
-    // Bash
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[0] == 0x2000) ||
-    // Pounce
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[0] == 0x20000) ||
-    // Maim
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] == 0x80) ||
-    // Faerie Fire
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 109) ||
-    // Hibernate
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 44) ||
-//------------Priest---------------
-    // Psychic Scream
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && m_spellInfo->SpellFamilyFlags[0] == 0x10000) ||
-    // Psychic Horror - Trigger and Stun
-    m_spellInfo->Id == 64044 ||
-//------------Mage-----------------
-    // Polymorph
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags[0] == 0x1000000) ||
-    // Deep Freeze
-    m_spellInfo->Id == 44572 ||
-    // Dragon's Breath
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags[0] == 0x800000) ||
-//----------Warlock----------------
-    // Fear
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x400) ||
-    // Howl of Terror
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x8) ||
-    // Shadowfury
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] == 0x1000);
+    for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
+        return (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_AURA
+            && !(m_spellInfo->AttributesEx4 & SPELL_ATTR4_UNK21) && !m_spellInfo->IsPassive()
+            && (!m_spellInfo->IsPositive() || !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT)))
+            && !m_spellInfo->IsPositive() && m_spellInfo->Id != 80864 && m_spellInfo->Id != 7267;
 }
