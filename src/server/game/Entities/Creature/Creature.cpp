@@ -2228,6 +2228,14 @@ void Creature::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs
     }
 }
 
+void Creature::RemoveAllCreatureSpellCooldowns(Player* player)
+{
+    for (CreatureSpellCooldowns::const_iterator itr = m_CreatureSpellCooldowns.begin(); itr != m_CreatureSpellCooldowns.end(); ++itr)
+        player->SendClearCooldown(itr->first, this);
+    m_CreatureSpellCooldowns.clear();
+    m_CreatureCategoryCooldowns.clear();
+}
+
 bool Creature::HasSpell(uint32 spellID) const
 {
     uint8 i;

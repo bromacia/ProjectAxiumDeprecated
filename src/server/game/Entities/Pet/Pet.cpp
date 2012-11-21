@@ -2017,3 +2017,13 @@ void Pet::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs)
         owner->GetSession()->SendPacket(&data);
     
 }
+
+void Pet::RemoveAllPetSpellCooldowns(Player* player)
+{
+    CharacterDatabase.PExecute("DELETE FROM pet_spell_cooldown WHERE guid = %u", GetCharmInfo()->GetPetNumber());
+    for (CreatureSpellCooldowns::const_iterator itr = m_CreatureSpellCooldowns.begin(); itr != m_CreatureSpellCooldowns.end(); ++itr)
+        player->SendClearCooldown(itr->first, this);
+    m_CreatureSpellCooldowns.clear();
+    m_CreatureCategoryCooldowns.clear();
+    _LoadSpellCooldowns();
+}

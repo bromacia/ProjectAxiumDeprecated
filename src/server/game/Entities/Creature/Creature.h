@@ -542,6 +542,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapCreature
             return uint32(itr != m_CreatureSpellCooldowns.end() && itr->second > t ? itr->second - t : 0);
         }
         virtual void ProhibitSpellSchool(SpellSchoolMask, uint32);
+        void RemoveAllCreatureSpellCooldowns(Player* player);
 
         bool HasSpell(uint32 spellID) const;
 

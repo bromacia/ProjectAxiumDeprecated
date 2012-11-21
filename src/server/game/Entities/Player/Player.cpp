@@ -4247,7 +4247,7 @@ void Player::RemoveArenaSpellCooldowns(bool removeActivePetCooldowns)
         }
 }
 
-void Player::RemoveAllSpellCooldown()
+void Player::RemoveAllPlayerSpellCooldowns()
 {
     if (!m_spellCooldowns.empty())
     {
