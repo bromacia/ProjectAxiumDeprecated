@@ -18,18 +18,19 @@ set(scripts_STAT_SRCS
   Commands/cs_go.cpp
   Commands/cs_gobject.cpp
   Commands/cs_gps.cpp
+  Commands/cs_group.cpp
   Commands/cs_honor.cpp
   Commands/cs_learn.cpp
   Commands/cs_misc.cpp
   Commands/cs_modify.cpp
+  Commands/cs_morph.cpp
   Commands/cs_npc.cpp
   Commands/cs_quest.cpp
   Commands/cs_reload.cpp
   Commands/cs_tele.cpp
   Commands/cs_titles.cpp
-  Commands/cs_wp.cpp
-  Commands/cs_morph.cpp
   Commands/cs_utility.cpp
+  Commands/cs_wp.cpp
 #  Commands/cs_character.cpp
 #  Commands/cs_list.cpp
 #  Commands/cs_lookup.cpp

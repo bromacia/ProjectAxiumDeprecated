@@ -187,7 +187,9 @@ bool ChatHandler::HandleCooldownCommand(const char* args)
 
     if (!*args)
     {
-        target->RemoveAllSpellCooldown();
+        target->RemoveAllPlayerSpellCooldowns();
+        if (Pet* pet = target->GetPet())
+            pet->RemoveAllPetSpellCooldowns(target);
         PSendSysMessage(LANG_REMOVEALL_COOLDOWN, tNameLink.c_str());
     }
     else
@@ -4629,51 +4631,6 @@ bool ChatHandler::HandleListFreezeCommand(const char* /*args*/)
     return true;
 }
 
-bool ChatHandler::HandleGroupLeaderCommand(const char* args)
-{
-    Player* player  = NULL;
-    Group* group = NULL;
-    uint64 guid  = 0;
-    char* cname  = strtok((char*)args, " ");
-
-    if (GetPlayerGroupAndGUIDByName(cname, player, group, guid))
-        if (group && group->GetLeaderGUID() != guid)
-        {
-            group->ChangeLeader(guid);
-            group->SendUpdate();
-        }
-
-    return true;
-}
-
-bool ChatHandler::HandleGroupDisbandCommand(const char* args)
-{
-    Player* player  = NULL;
-    Group* group = NULL;
-    uint64 guid  = 0;
-    char* cname  = strtok((char*)args, " ");
-
-    if (GetPlayerGroupAndGUIDByName(cname, player, group, guid))
-        if (group)
-            group->Disband();
-
-    return true;
-}
-
-bool ChatHandler::HandleGroupRemoveCommand(const char* args)
-{
-    Player* player  = NULL;
-    Group* group = NULL;
-    uint64 guid  = 0;
-    char* cname  = strtok((char*)args, " ");
-
-    if (GetPlayerGroupAndGUIDByName(cname, player, group, guid, true))
-        if (group)
-            group->RemoveMember(guid);
-
-    return true;
-}
-
 bool ChatHandler::HandlePossessCommand(const char* /*args*/)
 {
     Unit* unit = getSelectedUnit();
@@ -4841,136 +4798,5 @@ bool ChatHandler::HandleWarpCommand(const char* args)
         }
         break;
     }
-    return true;
-}
-
-bool ChatHandler::HandlePrepareCommand(const char* args)
-{
-    Player* target;
-    uint64 target_guid;
-    if (!extractPlayerTarget((char*)args, &target, &target_guid))
-        return false;
-
-    if (target)
-    {
-        target->ResurrectPlayer(1.0f);
-        target->SpawnCorpseBones();
-        target->SaveToDB();
-        target->RemoveAllSpellCooldown();
-        target->RemoveAllNegativeAuras();
-        target->ClearDiminishings();
-        target->ClearComboPoints();
-        target->ClearInCombat();
-        target->getHostileRefManager().deleteReferences();
-    }
-    else
-        // will resurrected at login without corpse
-        sObjectAccessor->ConvertCorpseForPlayer(target_guid);
-
-    return true;
-}
-
-bool ChatHandler::HandleGroupFreezeCommand(const char* args)
-{
-    Player* target;
-    if (!extractPlayerTarget((char*)args, &target))
-        return false;
-
-    Group* grp = target->GetGroup();
-
-    std::string nameLink = GetNameLink(target);
-
-    if (!grp)
-    {
-        PSendSysMessage(LANG_NOT_IN_GROUP, nameLink.c_str());
-        SetSentErrorMessage(true);
-        return false;
-    }
-
-    for (GroupReference* itr = grp->GetFirstMember(); itr != NULL; itr = itr->next())
-    {
-        Player* player = itr->getSource();
-        if (!player || player == m_session->GetPlayer() || !player->GetSession())
-            continue;
-
-        //stop combat + make player unattackable + duel stop + stop some spells
-        player->setFaction(35);
-        player->CombatStop();
-        if (player->IsNonMeleeSpellCasted(true))
-            player->InterruptNonMeleeSpells(true);
-        player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-
-        //if player class = hunter || warlock remove pet if alive
-        if ((player->getClass() == CLASS_HUNTER) || (player->getClass() == CLASS_WARLOCK))
-        {
-            if (Pet* pet = player->GetPet())
-            {
-                pet->SavePetToDB(PET_SAVE_AS_CURRENT);
-                // not let dismiss dead pet
-                if (pet && pet->isAlive())
-                    player->RemovePet(pet, PET_SAVE_NOT_IN_SLOT);
-            }
-        }
-
-        //m_session->GetPlayer()->CastSpell(player, spellID, false);
-        if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(9454))
-            Aura::TryRefreshStackOrCreate(spellInfo, MAX_EFFECT_MASK, player, player);
-
-        //save player
-        player->SaveToDB();
-    }
-
-    return true;
-}
-
-bool ChatHandler::HandleGroupUnFreezeCommand(const char* args)
-{
-    Player* target;
-    if (!extractPlayerTarget((char*)args, &target))
-        return false;
-
-    Group* grp = target->GetGroup();
-
-    std::string nameLink = GetNameLink(target);
-
-    if (!grp)
-    {
-        PSendSysMessage(LANG_NOT_IN_GROUP, nameLink.c_str());
-        SetSentErrorMessage(true);
-        return false;
-    }
-
-    for (GroupReference* itr = grp->GetFirstMember(); itr != NULL; itr = itr->next())
-    {
-        Player* player = itr->getSource();
-        if (!player || player == m_session->GetPlayer() || !player->GetSession())
-            continue;
-
-        //Reset player faction + allow combat + allow duels
-        player->setFactionForRace(player->getRace());
-        player->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-
-        //allow movement and spells
-        player->RemoveAurasDueToSpell(9454);
-
-        //save player
-        player->SaveToDB();
-    }
-
-    return true;
-}
-
-bool ChatHandler::HandleBarbershopCommand(const char* args)
-{
-    Player* player = m_session->GetPlayer();
-    if (player->InBattleground() || player->InArena())
-    {
-        PSendSysMessage("You cant do that while in a battleground.");
-        SetSentErrorMessage(true);
-        return false;
-    }
-
-    WorldPacket data(SMSG_ENABLE_BARBER_SHOP, 0);
-    player->GetSession()->SendPacket(&data);
     return true;
 }

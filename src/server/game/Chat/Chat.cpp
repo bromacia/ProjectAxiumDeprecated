@@ -138,14 +138,6 @@ ChatCommand* ChatHandler::getCommandTable()
         { NULL,       0,                     false, NULL,  "", NULL                   }
     };
 
-    static ChatCommand groupCommandTable[] =
-    {
-        { "leader",         SEC_ADMINISTRATOR,     false,  OldHandler<&ChatHandler::HandleGroupLeaderCommand>,         "", NULL },
-        { "disband",        SEC_ADMINISTRATOR,     false,  OldHandler<&ChatHandler::HandleGroupDisbandCommand>,        "", NULL },
-        { "remove",         SEC_ADMINISTRATOR,     false,  OldHandler<&ChatHandler::HandleGroupRemoveCommand>,         "", NULL },
-        { NULL,             0,                     false, NULL,                                           "", NULL }
-    };
-
     static ChatCommand guildCommandTable[] =
     {
         { "create",         SEC_GAMEMASTER,     true,  OldHandler<&ChatHandler::HandleGuildCreateCommand>,         "", NULL },
@@ -340,7 +332,6 @@ ChatCommand* ChatHandler::getCommandTable()
         { "reset",          SEC_ADMINISTRATOR,  true,  NULL,                                           "", resetCommandTable    },
         { "instance",       SEC_ADMINISTRATOR,  true,  NULL,                                           "", instanceCommandTable },
         { "server",         SEC_ADMINISTRATOR,  true,  NULL,                                           "", serverCommandTable   },
-        { "group",          SEC_ADMINISTRATOR, true, NULL,                                             "", groupCommandTable    },
         { "channel",        SEC_ADMINISTRATOR, true, NULL,                                             "", channelCommandTable  },
         { "pet",            SEC_GAMEMASTER,     false, NULL,                                           "", petCommandTable },
         { "ticket",         SEC_MODERATOR,      false,  NULL,                                          "", ticketCommandTable },
@@ -354,7 +345,6 @@ ChatCommand* ChatHandler::getCommandTable()
         { "gmnotify",       SEC_MODERATOR,      true,  OldHandler<&ChatHandler::HandleGMNotifyCommand>,            "", NULL },
         { "appear",         SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandleAppearCommand>,              "", NULL },
         { "summon",         SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandleSummonCommand>,              "", NULL },
-        { "groupsummon",    SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandleGroupSummonCommand>,         "", NULL },
         { "commands",       SEC_PLAYER,         true,  OldHandler<&ChatHandler::HandleCommandsCommand>,            "", NULL },
         { "demorph",        SEC_GAMEMASTER,     false, OldHandler<&ChatHandler::HandleDeMorphCommand>,             "", NULL },
         { "die",            SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleDieCommand>,                 "", NULL },
@@ -417,10 +407,6 @@ ChatCommand* ChatHandler::getCommandTable()
         { "personalqueue",    SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandlePersonalQueueCommand>,     "", NULL },
         { "addpersonalqueue", SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleAddPersonalQueueCommand>,  "", NULL },
         { "warp",             SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleWarpCommand>,              "", NULL },
-        { "prepare",          SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandlePrepareCommand>,           "", NULL },
-        { "groupfreeze",      SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandleGroupFreezeCommand>,       "", NULL },
-        { "groupunfreeze",    SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandleGroupUnFreezeCommand>,     "", NULL },
-        { "barbershop",       SEC_MODERATOR,      false, OldHandler<&ChatHandler::HandleBarbershopCommand>,        "", NULL },
         { NULL,               0,                  false, NULL,                                                     "", NULL }
     };
 
