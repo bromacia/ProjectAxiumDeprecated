@@ -2227,10 +2227,13 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             // remove arena spell coldowns/buffs now to also remove pet's cooldowns before it's temporarily unsummoned
             if (mEntry->IsBattleArena())
             {
-                RemoveArenaSpellCooldowns(true);
+                RemoveArenaSpellCooldowns();
                 RemoveArenaAuras();
                 if (pet)
+                {
                     pet->RemoveArenaAuras();
+                    pet->RemoveAllPetSpellCooldowns(this);
+                }
             }
 
             // remove pet on map change
@@ -19546,6 +19549,9 @@ void Player::RemovePet(Pet* pet, PetSaveMode mode, bool returnreagent)
         return;
 
     pet->CombatStop();
+    pet->RemoveAllPetSpellCooldowns(this);
+    pet->RemoveAllPositiveAuras();
+    pet->RemoveAllNegativeAuras();
 
     /*if (returnreagent)
    {

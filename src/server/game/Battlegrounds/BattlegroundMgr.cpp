@@ -880,6 +880,7 @@ void BattlegroundMgr::SendToBattleground(Player* player, uint32 instanceId, Batt
         uint32 mapid = bg->GetMapId();
         float x, y, z, O;
         uint32 team = player->GetBGTeam();
+        player->RemoveAllControlled();
         if (team == 0)
             team = player->GetTeam();
         bg->GetTeamStartLoc(team, x, y, z, O);

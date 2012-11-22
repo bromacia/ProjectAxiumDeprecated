@@ -1006,10 +1006,6 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
             {
                 bgTypeId=BATTLEGROUND_AA;                   // set the bg type to all arenas (it will be used for queue refreshing)
 
-                // unsummon current and summon old pet if there was one and there isn't a current pet
-                player->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT);
-                player->ResummonPetTemporaryUnSummonedIfAny();
-
                 if (isRated() && GetStatus() == STATUS_IN_PROGRESS)
                 {
                     //left a rated match while the encounter was in progress, consider as loser
@@ -1179,9 +1175,10 @@ void Battleground::AddPlayer(Player* player)
         }
 
         player->DestroyConjuredItems(true);
-        player->UnsummonPetTemporaryIfAny();
         player->ClearDiminishings();
         player->ClearComboPoints();
+        player->StopCastingCharm();
+        player->RemoveAllPlayerSpellCooldowns();
 
         if (GetStatus() == STATUS_WAIT_JOIN)                 // not started yet
         {
