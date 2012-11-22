@@ -49,18 +49,24 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 
     player->SendDuelCountdown(3000);
     plTarget->SendDuelCountdown(3000);
+
     if (player->GetAreaId() != 85 || plTarget->GetAreaId() != 85)
         return;
+
     player->RemoveAllNegativeAuras();
     plTarget->RemoveAllNegativeAuras();
     player->SetHealth(player->GetMaxHealth());
-    player->SetPower(POWER_MANA, player->GetMaxPower(POWER_MANA));
     plTarget->SetHealth(plTarget->GetMaxHealth());
+    player->SetPower(POWER_MANA, player->GetMaxPower(POWER_MANA));
     plTarget->SetPower(POWER_MANA,  plTarget->GetMaxPower(POWER_MANA));
+    player->SetPower(POWER_ENERGY, player->GetMaxPower(POWER_ENERGY));
+    plTarget->SetPower(POWER_ENERGY,  plTarget->GetMaxPower(POWER_ENERGY));
     player->SetPower(POWER_RAGE, 0);
     plTarget->SetPower(POWER_RAGE, 0);
-    player->RemoveArenaSpellCooldowns();
-    plTarget->RemoveArenaSpellCooldowns();
+    player->SetPower(POWER_RUNIC_POWER, 0);
+    plTarget->SetPower(POWER_RUNIC_POWER, 0);
+    player->RemoveAllPlayerSpellCooldowns();
+    plTarget->RemoveAllPlayerSpellCooldowns();
     player->AddAura(80864, player);
     plTarget->AddAura(80864, plTarget);
     player->ClearDiminishings();
@@ -71,6 +77,30 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     plTarget->ClearInCombat();
     player->getHostileRefManager().deleteReferences();
     plTarget->getHostileRefManager().deleteReferences();
+
+    if (Pet* playerPet = player->GetPet())
+    {
+        playerPet->RemoveAllNegativeAuras();
+        playerPet->SetHealth(playerPet->GetMaxHealth());
+        playerPet->SetPower(POWER_MANA, playerPet->GetMaxPower(POWER_MANA));
+        playerPet->SetPower(POWER_FOCUS, playerPet->GetMaxPower(POWER_FOCUS));
+        playerPet->RemoveAllPetSpellCooldowns(player);
+        playerPet->ClearDiminishings();
+        playerPet->ClearInCombat();
+        playerPet->getHostileRefManager().deleteReferences();
+    }
+
+    if (Pet* plTargetPet = plTarget->GetPet())
+    {
+        plTargetPet->RemoveAllNegativeAuras();
+        plTargetPet->SetHealth(plTargetPet->GetMaxHealth());
+        plTargetPet->SetPower(POWER_MANA, plTargetPet->GetMaxPower(POWER_MANA));
+        plTargetPet->SetPower(POWER_FOCUS, plTargetPet->GetMaxPower(POWER_FOCUS));
+        plTargetPet->RemoveAllPetSpellCooldowns(plTarget);
+        plTargetPet->ClearDiminishings();
+        plTargetPet->ClearInCombat();
+        plTargetPet->getHostileRefManager().deleteReferences();
+    }
 }
 
 void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recvPacket)
