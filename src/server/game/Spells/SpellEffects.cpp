@@ -3942,21 +3942,8 @@ void Spell::EffectSummonPet(SpellEffIndex effIndex)
             if (OldSummon->isDead())
                 return;
 
-            ASSERT(OldSummon->GetMap() == owner->GetMap());
-
-            //OldSummon->GetMap()->Remove(OldSummon->ToCreature(), false);
-
-            float px, py, pz;
-            owner->GetClosePoint(px, py, pz, OldSummon->GetObjectSize());
-
-            OldSummon->NearTeleportTo(px, py, pz, OldSummon->GetOrientation());
-            //OldSummon->Relocate(px, py, pz, OldSummon->GetOrientation());
-            //OldSummon->SetMap(owner->GetMap());
-            //owner->GetMap()->Add(OldSummon->ToCreature());
-
-            if (owner->GetTypeId() == TYPEID_PLAYER && OldSummon->isControlled())
-                owner->ToPlayer()->PetSpellInitialize();
-
+            owner->UnsummonPetTemporaryIfAny();
+            owner->ResummonPetTemporaryUnSummonedIfAny();
             return;
         }
 
