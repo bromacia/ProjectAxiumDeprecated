@@ -2109,6 +2109,12 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     // reset movement flags at teleport, because player will continue move with these flags after teleport
     SetUnitMovementFlags(0);
 
+    if (HasUnitState(UNIT_STATE_LOST_CONTROL)) 
+    {
+        StopMoving(); 
+        GetMotionMaster()->Clear();
+    }
+
     if (m_transport)
     {
         if (options & TELE_TO_NOT_LEAVE_TRANSPORT)
