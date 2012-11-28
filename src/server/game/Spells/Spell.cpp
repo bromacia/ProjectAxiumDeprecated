@@ -1411,7 +1411,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
     }
 
     // Bladestorm and Killing Spree should remove all slows on use
-    if (m_spellInfo->Id == 46924 || m_spellInfo->Id == 61851)
+    if (m_spellInfo->Id == 46924 || m_spellInfo->Id == 51690)
     {
         unit->RemoveAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
         unit->RemoveAurasByType(SPELL_AURA_MOD_ROOT);
@@ -1511,7 +1511,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
             {
                 // Bladestorm and Killing Spree immunities
-                if (unit->HasAura(46924) || unit->HasAura(61851))
+                if (unit->HasAura(46924) || unit->HasAura(51690))
                     if (m_spellInfo->Mechanic == MECHANIC_SNARE || m_spellInfo->Mechanic == MECHANIC_ROOT
                         || m_spellInfo->Mechanic == MECHANIC_FEAR || m_spellInfo->Mechanic == MECHANIC_STUN
                         || m_spellInfo->Mechanic == MECHANIC_SLEEP || m_spellInfo->Mechanic == MECHANIC_CHARM
@@ -1526,7 +1526,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                         return SPELL_MISS_IMMUNE;
 
                 // Killing Spree immunity to disarm
-                if (unit->HasAura(61851))
+                if (unit->HasAura(51690))
                     if (m_spellInfo->Mechanic == MECHANIC_DISARM || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_DISARM)
                         return SPELL_MISS_IMMUNE;
             }

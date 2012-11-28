@@ -382,9 +382,7 @@ class Spell
         bool IsSpellDelaySpell() const;
         bool IsMovementDelaySpell() const;
         bool IsSilenceDelaySpell() const;
-
         bool IsCrowdControlSpell() const;
-
         bool IsNegativeAuraSpell() const;
 
         // handlers
