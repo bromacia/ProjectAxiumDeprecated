@@ -1487,7 +1487,8 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         {
             unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
 
-            if (IsNegativeAuraSpell() || m_spellInfo->Id == 34709) // Shadow Sight
+            if (m_spellInfo->Id == 34709 || (IsNegativeAuraSpell() // Shadow Sight
+                && m_spellInfo->Id != 3600 && m_spellInfo->Id != 2096 && m_spellInfo->Id != 10909)) // Earthbind and Mind Vision
             {
                 unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
                 unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
