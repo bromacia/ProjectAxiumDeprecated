@@ -1190,7 +1190,20 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         return;
 
     if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastSanctuaryTime)
-        return;
+    {
+        if (m_spellInfo->Speed == 0)
+        {
+            unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+            unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
+            unit->RemoveAura(200000); // Object Visibility Update Timer (Stealth, At Apply)
+            unit->RemoveAura(200001); // Object Visibility Update Timer (Stealth, At Remove)
+            unit->RemoveAura(200002); // Object Visibility Update Timer (Invisibility, At Apply)
+            unit->RemoveAura(200003); // Object Visibility Update Timer (Invisibility, At Remove)
+            return;
+        }
+        else
+            return;
+    }
 
     if (m_spellInfo->Mechanic == MECHANIC_STUN)
         if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastBlinkTime)
