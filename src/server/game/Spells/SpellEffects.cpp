@@ -2439,7 +2439,7 @@ void Spell::EffectHealthLeech(SpellEffIndex effIndex)
 
     m_caster->CalcAbsorbResist(unitTarget, m_spellInfo->GetSchoolMask(), SPELL_DIRECT_DAMAGE, uint32(m_damage), &absorb, &resist, m_spellInfo);
 
-    damage -= absorb + resist;
+    damage = (damage <= int32(absorb) + int32(resist)) ? 0 : (damage - int32(absorb) - int32(resist));
 
     // get max possible damage, don't count overkill for heal
     uint32 healthGain = uint32(-unitTarget->GetHealthGain(-damage) * healMultiplier);
