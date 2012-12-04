@@ -1024,7 +1024,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
     }
     else if (IsMovementDelaySpell())
     {
-        targetInfo.timeDelay = 30;
+        targetInfo.timeDelay = 10;
         m_delayMoment = targetInfo.timeDelay;
     }
     else if (IsSilenceDelaySpell())
@@ -1199,10 +1199,8 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             unit->RemoveAura(200001); // Object Visibility Update Timer (Stealth, At Remove)
             unit->RemoveAura(200002); // Object Visibility Update Timer (Invisibility, At Apply)
             unit->RemoveAura(200003); // Object Visibility Update Timer (Invisibility, At Remove)
-            return;
         }
-        else
-            return;
+        return;
     }
 
     if (m_spellInfo->Mechanic == MECHANIC_STUN)
