@@ -3260,6 +3260,15 @@ void SpellMgr::LoadDbcDataCorrections()
             case 48511: // Earth and Moon (Rank 3)
                 spellInfo->EffectMiscValueB[1] = SPELLMOD_DAMAGE;
                 break;
+            case 31661: // Dragon's Breath (Rank 1)
+            case 33041: // Dragon's Breath (Rank 2)
+            case 33042: // Dragon's Breath (Rank 3)
+            case 33043: // Dragon's Breath (Rank 4)
+            case 42949: // Dragon's Breath (Rank 5)
+            case 42950: // Dragon's Breath (Rank 6)
+                spellInfo->Effect[2] = 0;
+                spellInfo->EffectMechanic[2] = 0;
+                break;
             default:
                 break;
         }
