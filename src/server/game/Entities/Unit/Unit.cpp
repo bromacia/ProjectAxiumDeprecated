@@ -7188,7 +7188,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                          return false;
 
                     // Now compute real proc chance...
-                    uint32 chance = 30;
+                    uint32 chance = 20;
                     player->ApplySpellMod(dummySpell->Id, SPELLMOD_CHANCE_OF_SUCCESS, chance);
 
                     Item* addWeapon = player->GetWeaponForAttack(attType == BASE_ATTACK ? OFF_ATTACK : BASE_ATTACK, true);
