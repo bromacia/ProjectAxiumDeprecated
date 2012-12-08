@@ -5691,7 +5691,7 @@ SpellCastResult Spell::CheckCast(bool strict)
     // Axium
     for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
     {
-        // Dont allow anything to be cast while in cyclone besides PvP Trinket or Ever Man for Himself
+        // Dont allow anything to be cast while in Cyclone besides PvP Trinket or Ever Man for Himself
         if (m_spellInfo->Id != 42292 && m_spellInfo->Id != 65547 && m_spellInfo->Id != 59752)
             if (Player* playerCaster = m_caster->ToPlayer())
                 if (playerCaster->HasAura(33786))
@@ -7672,6 +7672,8 @@ bool Spell::IsSpellDelaySpell() const
     // Death Grip
     m_spellInfo->Id == 49576 ||
 //------------Shaman---------------
+    // Hex
+    m_spellInfo->Id == 51514 ||
     // Spirit Wolf Bash
     m_spellInfo->Id == 58861 ||
 //------------Rogue----------------
@@ -7797,8 +7799,8 @@ bool Spell::IsCrowdControlSpell() const
 bool Spell::IsNegativeAuraSpell() const
 {
     for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
-        return (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_AURA
+        return m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_AURA
             && !(m_spellInfo->AttributesEx4 & SPELL_ATTR4_UNK21) && !m_spellInfo->IsPassive()
-            && (!m_spellInfo->IsPositive() || !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT)))
+            && (!m_spellInfo->IsPositive() || !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT))
             && !m_spellInfo->IsPositive() && m_spellInfo->Id != 80864 && m_spellInfo->Id != 7267;
 }
