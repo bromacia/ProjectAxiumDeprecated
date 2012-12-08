@@ -3931,6 +3931,12 @@ void Spell::EffectSummonPet(SpellEffIndex effIndex)
 
             owner->UnsummonPetTemporaryIfAny();
             owner->ResummonPetTemporaryUnSummonedIfAny();
+            OldSummon->SetHealth(OldSummon->GetMaxHealth());
+            OldSummon->SetPower(POWER_MANA, OldSummon->GetMaxPower(POWER_MANA));
+            OldSummon->SetPower(POWER_FOCUS, OldSummon->GetMaxPower(POWER_FOCUS));
+            OldSummon->RemoveAllPositiveAuras();
+            OldSummon->RemoveAllNegativeAuras();
+            OldSummon->RemoveAllPetSpellCooldowns(owner);
             return;
         }
 
