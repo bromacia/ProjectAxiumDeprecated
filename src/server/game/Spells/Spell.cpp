@@ -1520,28 +1520,25 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             }
 
             // Handle some immunities here instead of AuraEffect::HandleModStateImmunityMask
-            for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
-            {
-                // Bladestorm and Killing Spree immunities
-                if (unit->HasAura(46924) || unit->HasAura(51690))
-                    if (m_spellInfo->Mechanic == MECHANIC_SNARE || m_spellInfo->Mechanic == MECHANIC_ROOT
-                        || m_spellInfo->Mechanic == MECHANIC_FEAR || m_spellInfo->Mechanic == MECHANIC_STUN
-                        || m_spellInfo->Mechanic == MECHANIC_SLEEP || m_spellInfo->Mechanic == MECHANIC_CHARM
-                        || m_spellInfo->Mechanic == MECHANIC_SAPPED || m_spellInfo->Mechanic == MECHANIC_HORROR
-                        || m_spellInfo->Mechanic == MECHANIC_POLYMORPH || m_spellInfo->Mechanic == MECHANIC_DISORIENTED
-                        || m_spellInfo->Mechanic == MECHANIC_FREEZE || m_spellInfo->Mechanic == MECHANIC_TURN
-                        || m_spellInfo->Mechanic == MECHANIC_BANISH || m_spellInfo->Mechanic == IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK
-                        || m_spellInfo->Effects[i].Effect == SPELL_EFFECT_KNOCK_BACK || m_spellInfo->Effects[i].Effect == SPELL_EFFECT_KNOCK_BACK_DEST
-                        || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_DECREASE_SPEED
-                        || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_ROOT || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CONFUSE
-                        || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR)
-                        return SPELL_MISS_IMMUNE;
+            // Bladestorm and Killing Spree immunities
+            if (unit->HasAura(46924) || unit->HasAura(51690))
+                if (m_spellInfo->Mechanic == MECHANIC_SNARE || m_spellInfo->Mechanic == MECHANIC_ROOT
+                    || m_spellInfo->Mechanic == MECHANIC_FEAR || m_spellInfo->Mechanic == MECHANIC_STUN
+                    || m_spellInfo->Mechanic == MECHANIC_SLEEP || m_spellInfo->Mechanic == MECHANIC_CHARM
+                    || m_spellInfo->Mechanic == MECHANIC_SAPPED || m_spellInfo->Mechanic == MECHANIC_HORROR
+                    || m_spellInfo->Mechanic == MECHANIC_POLYMORPH || m_spellInfo->Mechanic == MECHANIC_DISORIENTED
+                    || m_spellInfo->Mechanic == MECHANIC_FREEZE || m_spellInfo->Mechanic == MECHANIC_TURN
+                    || m_spellInfo->Mechanic == MECHANIC_BANISH || m_spellInfo->Mechanic == IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK
+                    || m_spellInfo->HasEffect(SPELL_EFFECT_KNOCK_BACK) || m_spellInfo->HasEffect(SPELL_EFFECT_KNOCK_BACK_DEST)
+                    || m_spellInfo->HasAura(SPELL_AURA_MOD_STUN) || m_spellInfo->HasAura(SPELL_AURA_MOD_DECREASE_SPEED)
+                    || m_spellInfo->HasAura(SPELL_AURA_MOD_ROOT) || m_spellInfo->HasAura(SPELL_AURA_MOD_CONFUSE)
+                    || m_spellInfo->HasAura(SPELL_AURA_MOD_FEAR))
+                    return SPELL_MISS_IMMUNE;
 
-                // Killing Spree immunity to disarm
-                if (unit->HasAura(51690))
-                    if (m_spellInfo->Mechanic == MECHANIC_DISARM || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_DISARM)
-                        return SPELL_MISS_IMMUNE;
-            }
+            // Killing Spree immunity to disarm
+            if (unit->HasAura(51690))
+                if (m_spellInfo->Mechanic == MECHANIC_DISARM || m_spellInfo->HasAura(SPELL_AURA_MOD_DISARM))
+                    return SPELL_MISS_IMMUNE;
 
             bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);
             m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
@@ -5478,16 +5475,6 @@ SpellCastResult Spell::CheckCast(bool strict)
                         if (bg->GetStatus() == STATUS_IN_PROGRESS)
                             return SPELL_FAILED_NOT_IN_BATTLEGROUND;
                 break;
-            case SPELL_EFFECT_APPLY_AURA:
-            {
-                // Spells that cant be used while rooted (Shadowstep, Charge, Intercept, Intervene, Feral Charge Cat/Bear)
-                if (m_spellInfo->Id == 36554 || m_spellInfo->Id == 11578 || m_spellInfo->Id == 20252 || m_spellInfo->Id == 3411 || m_spellInfo->Id == 16979 || m_spellInfo->Id == 49376)
-                {
-                    if (m_caster->HasUnitState(UNIT_STATE_ROOT))
-                        return SPELL_FAILED_ROOTED;
-                    break;
-                }
-            }
             default:
                 break;
         }
@@ -5668,108 +5655,100 @@ SpellCastResult Spell::CheckCast(bool strict)
 
                 break;
             }
-            case SPELL_AURA_PERIODIC_HEAL:
-            {
-                // Dont allow health funnel to be casted if the pet isnt within LoS of the owner
-                if (m_spellInfo->AttributesEx2 & SPELL_ATTR2_HEALTH_FUNNEL)
-                    if (Player* playerCaster = m_caster->ToPlayer())
-                        if (Pet* playerPet = playerCaster->GetPet())
-                            if (!m_caster->IsWithinLOSInMap(playerPet))
-                                return SPELL_FAILED_LINE_OF_SIGHT;
-
-                // Dont allow bandage to be casted if the caster or target has Recently Bandaged aura
-                if (m_spellInfo->SpellIconID == 104 && m_spellInfo->Mechanic == MECHANIC_BANDAGE)
-                    if (Unit* target = m_targets.GetUnitTarget())
-                        if (target->HasAura(11196))
-                            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-                break;
-            }
             default:
                 break;
         }
     }
     // Axium
-    for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
-    {
-        // Dont allow anything to be cast while in Cyclone besides PvP Trinket or Ever Man for Himself
-        if (m_spellInfo->Id != 42292 && m_spellInfo->Id != 65547 && m_spellInfo->Id != 59752)
-            if (Player* playerCaster = m_caster->ToPlayer())
-                if (playerCaster->HasAura(33786))
-                    return SPELL_FAILED_DONT_REPORT;
+    // Spells that cant be used while rooted (Shadowstep, Charge, Intercept, Intervene, Feral Charge Cat/Bear)
+    if (m_spellInfo->Id == 36554 || m_spellInfo->Id == 11578 || m_spellInfo->Id == 20252 || m_spellInfo->Id == 3411 || m_spellInfo->Id == 16979 || m_spellInfo->Id == 49376)
+        if (m_caster->HasUnitState(UNIT_STATE_ROOT))
+            return SPELL_FAILED_ROOTED;
 
-        // Dont allow anything to be casted if the target has Zangarmarsh Banish aura
+    // Dont allow health funnel to be casted if the pet isnt within LoS of the owner
+    if (m_spellInfo->AttributesEx2 & SPELL_ATTR2_HEALTH_FUNNEL)
         if (Player* playerCaster = m_caster->ToPlayer())
-            if (playerCaster->HasAura(30231))
+            if (Pet* playerPet = playerCaster->GetPet())
+                if (!m_caster->IsWithinLOSInMap(playerPet))
+                    return SPELL_FAILED_LINE_OF_SIGHT;
+
+    // Dont allow bandage to be casted if the caster or target has Recently Bandaged aura
+    if (m_spellInfo->SpellIconID == 104 && m_spellInfo->Mechanic == MECHANIC_BANDAGE)
+        if (Unit* target = m_targets.GetUnitTarget())
+            if (target->HasAura(11196))
                 return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
-        // Dont allow any procs from Frostbite if the target is already frozen
-        if (m_spellInfo->Id == 12494)
-            if (Unit* target = m_targets.GetUnitTarget())
-                if (target->HasAuraType(SPELL_AURA_MOD_ROOT))
-                    return SPELL_FAILED_DONT_REPORT;
+    // Dont allow anything to be cast while in Cyclone besides PvP Trinket or Ever Man for Himself
+    if (m_spellInfo->Id != 42292 && m_spellInfo->Id != 65547 && m_spellInfo->Id != 59752)
+        if (Player* playerCaster = m_caster->ToPlayer())
+            if (playerCaster->HasAura(33786))
+                return SPELL_FAILED_DONT_REPORT;
 
-        // Dont allow Mind Soothe to be casted on players
-        if (m_spellInfo->Id == 453)
-            if (Unit* target = m_targets.GetUnitTarget())
-                if (target->GetTypeId() == TYPEID_PLAYER)
-                    return SPELL_FAILED_BAD_TARGETS;
+    // Dont allow anything to be casted if the target has Zangarmarsh Banish aura
+    if (Player* playerCaster = m_caster->ToPlayer())
+        if (playerCaster->HasAura(30231))
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
-        // Dont allow Master's Call to be cast if the hunter's pet is dead
-        if (m_spellInfo->Id == 53271)
-            if (Unit* pet = m_caster->ToPlayer()->GetPet())
-                if (pet->isDead() || pet->IsCrowdControlled())
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+    // Dont allow any procs from Frostbite if the target is already frozen
+    if (m_spellInfo->Id == 12494)
+        if (Unit* target = m_targets.GetUnitTarget())
+            if (target->HasAuraType(SPELL_AURA_MOD_ROOT))
+                return SPELL_FAILED_DONT_REPORT;
 
-        // Dont allow Stealth or Invisibility to be casted while the target is Flared
-        if (m_spellInfo->Id == 1784 || m_spellInfo->Id == 66
-            || (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252)
-            || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 103))
-            if (Player* playerCaster = m_caster->ToPlayer())
-                if (playerCaster->HasAura(1543))
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+    // Dont allow Mind Soothe to be casted on players
+    if (m_spellInfo->Id == 453)
+        if (Unit* target = m_targets.GetUnitTarget())
+            if (target->GetTypeId() == TYPEID_PLAYER)
+                return SPELL_FAILED_BAD_TARGETS;
 
-        // Dont allow Heroism or Bloodlust to be casted if the caster has Exhaustion or Sated
-        if (m_spellInfo->Id == 32182 || m_spellInfo->Id == 2825)
-            if (Player* playerCaster = m_caster->ToPlayer())
-                if (playerCaster->HasAura(57723) || playerCaster->HasAura(57724))
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+    // Dont allow Master's Call to be cast if the hunter's pet is dead
+    if (m_spellInfo->Id == 53271)
+        if (Unit* pet = m_caster->ToPlayer()->GetPet())
+            if (pet->isDead() || pet->IsCrowdControlled())
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
-        // Dont allow Bloodrage or Berserk Rage to be casted if the caster has Enraged Regeneration
-        if (m_spellInfo->Id == 2687 || m_spellInfo->Id == 18499)
-            if (Player* playerCaster = m_caster->ToPlayer())
-                if (playerCaster->HasAura(55694))
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+    // Dont allow Stealth or Invisibility to be casted while the target is Flared
+    if (m_spellInfo->Id == 1784 || m_spellInfo->Id == 66
+        || (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252)
+        || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 103))
+        if (Player* playerCaster = m_caster->ToPlayer())
+            if (playerCaster->HasAura(1543))
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
-        // Dont allow levitate to be casted if the player is mounted
-        if (m_spellInfo->Id == 1706)
-            if (Unit* target = m_targets.GetUnitTarget())
-                if (target->IsMounted())
-                    return SPELL_FAILED_NOT_ON_MOUNTED;
+    // Dont allow Heroism or Bloodlust to be casted if the caster has Exhaustion or Sated
+    if (m_spellInfo->Id == 32182 || m_spellInfo->Id == 2825)
+        if (Player* playerCaster = m_caster->ToPlayer())
+            if (playerCaster->HasAura(57723) || playerCaster->HasAura(57724))
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
-        // Dont allow PvP Trinket or Every Man for Himself to be casted
-        // if Will of the Forsaken Cooldown Trigger (WOTF) has been triggerd
-        if (m_spellInfo->Id == 42292 || m_spellInfo->Id == 59752)
-            if (Player* playerCaster = m_caster->ToPlayer())
-                if (playerCaster->HasSpellCooldown(72757))
-                    return SPELL_FAILED_NOT_READY;
+    // Dont allow levitate to be casted if the player is mounted
+    if (m_spellInfo->Id == 1706)
+        if (Unit* target = m_targets.GetUnitTarget())
+            if (target->IsMounted())
+                return SPELL_FAILED_NOT_ON_MOUNTED;
 
-        // Dont allow Will of the Forsaken to be casted
-        // if Will of the Forsaken Cooldown Trigger has been triggerd
-        if (m_spellInfo->Id == 7744)
-            if (Player* playerCaster = m_caster->ToPlayer())
-                if (playerCaster->HasSpellCooldown(72752))
-                    return SPELL_FAILED_NOT_READY;
+    // Dont allow PvP Trinket or Every Man for Himself to be casted
+    // if Will of the Forsaken Cooldown Trigger (WOTF) has been triggerd
+    if (m_spellInfo->Id == 42292 || m_spellInfo->Id == 59752)
+        if (Player* playerCaster = m_caster->ToPlayer())
+            if (playerCaster->HasSpellCooldown(72757))
+                return SPELL_FAILED_NOT_READY;
 
-        // Blazing Hippogryph
-        if (m_spellInfo->Id == 74856)
-            if (m_originalCaster && m_originalCaster->GetTypeId() == TYPEID_PLAYER && m_originalCaster->isAlive())
-            {
-                if (AreaTableEntry const* pArea = GetAreaEntryByAreaID(m_originalCaster->GetAreaId()))
-                    if (pArea->flags & AREA_FLAG_NO_FLY_ZONE)
-                        return (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_NOT_HERE;
-            }
-        break;
-    }
+    // Dont allow Will of the Forsaken to be casted
+    // if Will of the Forsaken Cooldown Trigger has been triggerd
+    if (m_spellInfo->Id == 7744)
+        if (Player* playerCaster = m_caster->ToPlayer())
+            if (playerCaster->HasSpellCooldown(72752))
+                return SPELL_FAILED_NOT_READY;
+
+    // Blazing Hippogryph
+    if (m_spellInfo->Id == 74856)
+        if (m_originalCaster && m_originalCaster->GetTypeId() == TYPEID_PLAYER && m_originalCaster->isAlive())
+        {
+            if (AreaTableEntry const* pArea = GetAreaEntryByAreaID(m_originalCaster->GetAreaId()))
+                if (pArea->flags & AREA_FLAG_NO_FLY_ZONE)
+                    return (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_NOT_HERE;
+        }
 
     // check trade slot case (last, for allow catch any another cast problems)
     if (m_targets.GetTargetMask() & TARGET_FLAG_TRADE_ITEM)
@@ -7787,20 +7766,18 @@ bool Spell::IsSilenceDelaySpell() const
 
 bool Spell::IsCrowdControlSpell() const
 {
-    for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
-        return m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_POSSESS
-            || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CONFUSE
-            || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CHARM
-            || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_AOE_CHARM
-            || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR
-            || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN;
+    return m_spellInfo->HasAura(SPELL_AURA_MOD_POSSESS)
+        || m_spellInfo->HasAura(SPELL_AURA_MOD_CONFUSE)
+        || m_spellInfo->HasAura(SPELL_AURA_MOD_CHARM)
+        || m_spellInfo->HasAura(SPELL_AURA_AOE_CHARM)
+        || m_spellInfo->HasAura(SPELL_AURA_MOD_FEAR)
+        || m_spellInfo->HasAura(SPELL_AURA_MOD_STUN);
 }
 
 bool Spell::IsNegativeAuraSpell() const
 {
-    for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
-        return m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_AURA
-            && !(m_spellInfo->AttributesEx4 & SPELL_ATTR4_UNK21) && !m_spellInfo->IsPassive()
-            && (!m_spellInfo->IsPositive() || !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT))
-            && !m_spellInfo->IsPositive() && m_spellInfo->Id != 80864 && m_spellInfo->Id != 7267;
+    return m_spellInfo->HasEffect(SPELL_EFFECT_APPLY_AURA)
+        && !(m_spellInfo->AttributesEx4 & SPELL_ATTR4_UNK21) && !m_spellInfo->IsPassive()
+        && (!m_spellInfo->IsPositive() || !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT))
+        && !m_spellInfo->IsPositive() && m_spellInfo->Id != 80864 && m_spellInfo->Id != 7267;
 }
