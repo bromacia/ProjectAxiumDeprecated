@@ -1974,6 +1974,9 @@ void Spell::EffectTeleportUnits(SpellEffIndex /*effIndex*/)
     else if (unitTarget->GetTypeId() == TYPEID_PLAYER)
         unitTarget->ToPlayer()->TeleportTo(mapid, x, y, z, orientation, unitTarget == m_caster ? TELE_TO_SPELL : 0);
 
+    if (m_spellInfo->Id == 1953)
+        unitTarget->m_lastBlinkTime = getMSTime();
+
     // post effects for TARGET_DEST_DB
     switch (m_spellInfo->Id)
     {
@@ -6187,9 +6190,6 @@ void Spell::EffectLeap(SpellEffIndex /*effIndex*/)
 
     if (!m_targets.HasDst())
         return;
-
-    if (m_spellInfo->Id == 1953)
-        unitTarget->m_lastBlinkTime = getMSTime();
 
     unitTarget->NearTeleportTo(m_targets.GetDst()->GetPositionX(), m_targets.GetDst()->GetPositionY(), m_targets.GetDst()->GetPositionZ(), m_targets.GetDst()->GetOrientation(), unitTarget == m_caster);
 }
