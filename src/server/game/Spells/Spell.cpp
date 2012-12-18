@@ -5809,6 +5809,12 @@ SpellCastResult Spell::CheckPetCast(Unit* target)
         }
     }
 
+    // Devour Magic
+    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && (m_spellInfo->SpellFamilyFlags[2] & 0x400))
+        if (m_caster->ToCreature()->GetOwner()->ToPlayer()->GetTeam() != target->ToPlayer()->GetTeam() 
+            && !m_caster->ToCreature()->IsValidAttackTarget(target))
+            return SPELL_FAILED_BAD_TARGETS;
+
     // cooldown
     if (Creature const* creatureCaster = m_caster->ToCreature())
         if (creatureCaster->HasSpellCooldown(m_spellInfo->Id))
