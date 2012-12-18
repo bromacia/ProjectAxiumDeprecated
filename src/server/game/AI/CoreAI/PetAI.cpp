@@ -110,9 +110,6 @@ void PetAI::UpdateAI(const uint32 diff)
             return;
         }
 
-        if (owner && !owner->isInCombat())
-            owner->SetInCombatWith(me->getVictim());
-
         DoMeleeAttackIfReady();
     }
     else if (owner && me->GetCharmInfo()) //no victim
@@ -170,26 +167,6 @@ void PetAI::UpdateAI(const uint32 diff)
 
             if (spellInfo->IsPositive())
             {
-                // non combat spells allowed
-                // only pet spells have IsNonCombatSpell and not fit this reqs:
-                // Consume Shadows, Lesser Invisibility, so ignore checks for its
-                if (spellInfo->CanBeUsedInCombat())
-                {
-                    // allow only spell without spell cost or with spell cost but not duration limit
-                    int32 duration = spellInfo->GetDuration();
-                    if ((spellInfo->ManaCost || spellInfo->ManaCostPercentage || spellInfo->ManaPerSecond) && duration > 0)
-                        continue;
-
-                    // allow only spell without cooldown > duration
-                    int32 cooldown = spellInfo->GetRecoveryTime();
-                    if (cooldown >= 0 && duration >= 0 && cooldown > duration)
-                        continue;
-						
-                    // Check if we're in combat or commanded to attack
-                    if (!me->isInCombat() && !me->GetCharmInfo()->IsCommandAttack())
-                        continue;
-                }
-
                 Spell* spell = new Spell(me, spellInfo, TRIGGERED_NONE, 0);
                 bool spellUsed = false;
 
@@ -346,9 +323,6 @@ void PetAI::AttackStart(Unit* target)
     // Check all pet states to decide if we can attack this target
     if (!CanAttack(target))
         return;
-
-    if (Unit* owner = me->GetOwner())
-        owner->SetInCombatWith(target);
 
     DoAttack(target, true);
 }

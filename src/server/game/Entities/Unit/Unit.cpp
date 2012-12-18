@@ -12231,6 +12231,10 @@ void Unit::CombatStart(Unit* target, bool initialAggro)
 
         SetInCombatWith(target);
         target->SetInCombatWith(this);
+
+        if (Unit* owner = GetCharmerOrOwner())
+            if (owner && !owner->isInCombat())
+                owner->SetInCombatWith(target);
     }
     Unit* who = target->GetCharmerOrOwnerOrSelf();
     if (who->GetTypeId() == TYPEID_PLAYER)
