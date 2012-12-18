@@ -2744,9 +2744,8 @@ void World::LoadDBAllowedSecurityLevel()
 
 void World::SetPlayerSecurityLimit(AccountTypes _sec)
 {
-    AccountTypes sec = _sec < SEC_CONSOLE ? _sec : SEC_PLAYER;
-    bool update = sec > m_allowedSecurityLevel;
-    m_allowedSecurityLevel = sec;
+    bool update = _sec > m_allowedSecurityLevel;
+    m_allowedSecurityLevel = _sec;
     if (update)
         KickAllLess(m_allowedSecurityLevel);
 }
