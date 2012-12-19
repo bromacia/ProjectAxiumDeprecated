@@ -16370,6 +16370,7 @@ void Player::_LoadEquipmentSets(PreparedQueryResult result)
 
         eqSet.Guid      = fields[0].GetUInt64();
         uint32 index    = fields[1].GetUInt32();
+        eqSet.index     = index;
         eqSet.Name      = fields[2].GetString();
         eqSet.IconName  = fields[3].GetString();
         eqSet.state     = EQUIPMENT_SET_UNCHANGED;
@@ -24251,7 +24252,8 @@ void Player::SendEquipmentSetList()
         if (itr->second.state == EQUIPMENT_SET_DELETED)
             continue;
         data.appendPackGUID(itr->second.Guid);
-        data << uint32(itr->first);
+        uint32 index = itr->second.index;
+        data << itr->second.index;
         data << itr->second.Name;
         data << itr->second.IconName;
         for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)

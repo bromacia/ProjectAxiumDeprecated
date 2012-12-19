@@ -664,6 +664,7 @@ struct EquipmentSet
     }
 
     uint64 Guid;
+    uint32 index;
     std::string Name;
     std::string IconName;
     uint32 Items[EQUIPMENT_SLOT_END];
