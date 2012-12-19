@@ -4790,16 +4790,16 @@ bool ChatHandler::HandleWarpCommand(const char* args)
         {
             float fx = x + cosf(o)*value;
             float fy = y + sinf(o)*value; 
-            float fz = std::max(warpmap->GetHeight(fx, fy, MAX_HEIGHT), warpmap->GetWaterLevel(fx, fy));
-            player->TeleportTo(mapid, fx, fy, fz, o);
+            //float fz = std::max(warpmap->GetHeight(fx, fy, MAX_HEIGHT), warpmap->GetWaterLevel(fx, fy));
+            player->TeleportTo(mapid, fx, fy, z, o);
         }
         break;
     case 'b':
         {
             float bx = x - cosf(o)*value;
             float by = y - sinf(o)*value;
-            float bz = std::max(warpmap->GetHeight(bx, by, MAX_HEIGHT), warpmap->GetWaterLevel(bx, by));
-            player->TeleportTo(mapid, bx, by, bz, o);
+            //float bz = std::max(warpmap->GetHeight(bx, by, MAX_HEIGHT), warpmap->GetWaterLevel(bx, by));
+            player->TeleportTo(mapid, bx, by, z, o);
         }
         break;
     }

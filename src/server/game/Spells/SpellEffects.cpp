@@ -1974,6 +1974,9 @@ void Spell::EffectTeleportUnits(SpellEffIndex /*effIndex*/)
     else if (unitTarget->GetTypeId() == TYPEID_PLAYER)
         unitTarget->ToPlayer()->TeleportTo(mapid, x, y, z, orientation, unitTarget == m_caster ? TELE_TO_SPELL : 0);
 
+    if (m_spellInfo->Id == 1953)
+        unitTarget->m_lastBlinkTime = getMSTime();
+
     // post effects for TARGET_DEST_DB
     switch (m_spellInfo->Id)
     {
@@ -2439,7 +2442,7 @@ void Spell::EffectHealthLeech(SpellEffIndex effIndex)
 
     m_caster->CalcAbsorbResist(unitTarget, m_spellInfo->GetSchoolMask(), SPELL_DIRECT_DAMAGE, uint32(m_damage), &absorb, &resist, m_spellInfo);
 
-    damage -= absorb + resist;
+    damage = (damage <= int32(absorb) + int32(resist)) ? 0 : (damage - int32(absorb) - int32(resist));
 
     // get max possible damage, don't count overkill for heal
     uint32 healthGain = uint32(-unitTarget->GetHealthGain(-damage) * healMultiplier);
@@ -3931,6 +3934,12 @@ void Spell::EffectSummonPet(SpellEffIndex effIndex)
 
             owner->UnsummonPetTemporaryIfAny();
             owner->ResummonPetTemporaryUnSummonedIfAny();
+            OldSummon->SetHealth(OldSummon->GetMaxHealth());
+            OldSummon->SetPower(POWER_MANA, OldSummon->GetMaxPower(POWER_MANA));
+            OldSummon->SetPower(POWER_FOCUS, OldSummon->GetMaxPower(POWER_FOCUS));
+            OldSummon->RemoveAllPositiveAuras();
+            OldSummon->RemoveAllNegativeAuras();
+            OldSummon->RemoveAllPetSpellCooldowns(owner);
             return;
         }
 
@@ -6181,9 +6190,6 @@ void Spell::EffectLeap(SpellEffIndex /*effIndex*/)
 
     if (!m_targets.HasDst())
         return;
-
-    if (m_spellInfo->Id == 1953)
-        unitTarget->m_lastBlinkTime = getMSTime();
 
     unitTarget->NearTeleportTo(m_targets.GetDst()->GetPositionX(), m_targets.GetDst()->GetPositionY(), m_targets.GetDst()->GetPositionZ(), m_targets.GetDst()->GetOrientation(), unitTarget == m_caster);
 }

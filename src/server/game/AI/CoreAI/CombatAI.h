@@ -51,6 +51,7 @@ class CombatAI : public CreatureAI
     protected:
         EventMap events;
         SpellVct spells;
+        Unit* target;
 };
 
 class CasterAI : public CombatAI
@@ -64,6 +65,7 @@ class CasterAI : public CombatAI
         void SpellInterrupted(uint32 spellId, uint32 unTimeMs);
     private:
         float m_attackDist;
+        Unit* target;
 };
 
 struct ArcherAI : public CreatureAI
