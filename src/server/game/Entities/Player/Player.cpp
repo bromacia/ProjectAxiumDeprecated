@@ -16351,9 +16351,7 @@ void Player::_LoadArenaTeamInfo(PreparedQueryResult result)
     }
 
     for (uint8 slot = 0; slot <= 2; ++slot)
-    {
         SetArenaTeamInfoField(slot, ARENA_TEAM_PERSONAL_RATING, uint32(personalRatingCache[slot]));
-    }
 }
 
 void Player::_LoadEquipmentSets(PreparedQueryResult result)
@@ -24252,7 +24250,6 @@ void Player::SendEquipmentSetList()
         if (itr->second.state == EQUIPMENT_SET_DELETED)
             continue;
         data.appendPackGUID(itr->second.Guid);
-        uint32 index = itr->second.index;
         data << itr->second.index;
         data << itr->second.Name;
         data << itr->second.IconName;

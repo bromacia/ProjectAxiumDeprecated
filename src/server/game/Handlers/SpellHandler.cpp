@@ -636,7 +636,12 @@ void WorldSession::HandleMirrorImageDataRequest(WorldPacket & recv_data)
             else if (*itr == EQUIPMENT_SLOT_BACK && player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_HIDE_CLOAK))
                 data << uint32(0);
             else if (Item const* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, *itr))
-                data << uint32(item->GetTemplate()->DisplayInfoID);
+            {
+                if (ItemTemplate const* transmogItem = sObjectMgr->GetItemTemplate(item->TransmogEntry))
+                    data << uint32(transmogItem->DisplayInfoID);
+                else
+                    data << uint32(item->GetTemplate()->DisplayInfoID);
+            }
             else
                 data << uint32(0);
         }
@@ -645,19 +650,9 @@ void WorldSession::HandleMirrorImageDataRequest(WorldPacket & recv_data)
     {
         // Skip player data for creatures
         data << uint8(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
+
+        for (uint8 i = 0; i <= 12; ++i)
+            data << uint32(0);
     }
 
     SendPacket(&data);
