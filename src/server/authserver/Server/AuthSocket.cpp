@@ -365,7 +365,7 @@ bool AuthSocket::_HandleLogonChallenge()
     if (result)
     {
         pkt << (uint8)WOW_FAIL_BANNED;
-        sLog->outBasic("'%s:%d' [AuthChallenge] Banned ip tried to login!",socket().getRemoteAddress().c_str(), socket().getRemotePort());
+        sLog->outBasic("'%s:%d' [AuthChallenge] Banned ip tried to login!", socket().getRemoteAddress().c_str(), socket().getRemotePort());
     }
     else
     {
@@ -401,6 +401,7 @@ bool AuthSocket::_HandleLogonChallenge()
             if (!locked)
             {
                 //set expired bans to inactive
+                //TODO: Cache this (Could probably just use world server cache)
                 LoginDatabase.Execute(LoginDatabase.GetPreparedStatement(LOGIN_UPD_EXPIRED_ACCOUNT_BANS));
 
                 // If the account is banned, reject the logon attempt
@@ -654,6 +655,7 @@ bool AuthSocket::_HandleLogonProof()
         uint32 MaxWrongPassCount = ConfigMgr::GetIntDefault("WrongPass.MaxCount", 0);
         if (MaxWrongPassCount > 0)
         {
+            //TODO: Do this in memory
             //Increment number of failed logins by one and if it reaches the limit temporarily ban that account or IP
             PreparedStatement *stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_FAILEDLOGINS);
             stmt->setString(0, _login);
@@ -824,21 +826,6 @@ bool AuthSocket::_HandleRealmList()
 
     socket().recv_skip(5);
 
-    // Get the user id (else close the connection)
-    // No SQL injection (prepared statement)
-    PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_ID_BY_NAME);
-    stmt->setString(0, _login);
-    PreparedQueryResult result = LoginDatabase.Query(stmt);
-    if (!result)
-    {
-        sLog->outError("'%s:%d' [ERROR] user %s tried to login but we cannot find him in the database.", socket().getRemoteAddress().c_str(), socket().getRemotePort(), _login.c_str());
-        socket().shutdown();
-        return false;
-    }
-
-    Field* fields = result->Fetch();
-    uint32 id = fields[0].GetUInt32();
-
     // Update realm list if need
     sRealmList->UpdateIfNeed();
 
@@ -854,18 +841,6 @@ bool AuthSocket::_HandleRealmList()
         else if ((_expversion & PRE_BC_EXP_FLAG) && !AuthHelper::IsPreBCAcceptedClientBuild(i->second.gamebuild))
             continue;
 
-        uint8 AmountOfCharacters;
-
-        // No SQL injection. id of realm is controlled by the database.
-        stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_NUM_CHARS_ON_REALM);
-        stmt->setUInt32(0, i->second.m_ID);
-        stmt->setUInt32(1, id);
-        result = LoginDatabase.Query(stmt);
-        if (result)
-            AmountOfCharacters = (*result)[0].GetUInt8();
-        else
-            AmountOfCharacters = 0;
-
         uint8 lock = (i->second.allowedSecurityLevel > _accountSecurityLevel) ? 1 : 0;
 
         pkt << i->second.icon;                              // realm type
@@ -875,7 +850,7 @@ bool AuthSocket::_HandleRealmList()
         pkt << i->first;
         pkt << i->second.address;
         pkt << i->second.populationLevel;
-        pkt << AmountOfCharacters;
+        pkt << (uint8)0;                                    // number of characters on realm
         pkt << i->second.timezone;                          // realm category
         if (_expversion & POST_BC_EXP_FLAG)                 // 2.x and 3.x clients
             pkt << (uint8)0x2C;                             // unk, may be realm number/id?
