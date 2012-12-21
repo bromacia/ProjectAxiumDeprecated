@@ -97,6 +97,40 @@ enum PlayerSpellState
     PLAYERSPELL_TEMPORARY = 4
 };
 
+enum PlayerSpec
+{
+    PLAYERSPEC_FIRE                 = 41,
+    PLAYERSPEC_FROST                = 61,
+    PLAYERSPEC_ARCANE               = 81,
+    PLAYERSPEC_ARMS                 = 161,
+    PLAYERSPEC_PROTECTION           = 163,
+    PLAYERSPEC_FURY                 = 164,
+    PLAYERSPEC_COMBAT               = 181,
+    PLAYERSPEC_ASSASSINATION        = 182,
+    PLAYERSPEC_SUBLETY              = 183,
+    PLAYERSPEC_DISCIPLINE           = 201,
+    PLAYERSPEC_HOLY                 = 202,
+    PLAYERSPEC_SHADOW               = 203,
+    PLAYERSPEC_ELEMENTAL            = 261,
+    PLAYERSPEC_RESTORATION_SHAMAN   = 262,
+    PLAYERSPEC_ENHANCEMENT          = 263,
+    PLAYERSPEC_FERALCOMBAT          = 281,
+    PLAYERSPEC_RESTORATION_DRUID    = 282,
+    PLAYERSPEC_BALANCE              = 283,
+    PLAYERSPEC_DESTRUCTION          = 301,
+    PLAYERSPEC_AFFLICTION           = 302,
+    PLAYERSPEC_DEMONOLOGY           = 303,
+    PLAYERSPEC_BEASTMASTERY         = 361,
+    PLAYERSPEC_SURVIVAL             = 362,
+    PLAYERSPEC_MARKSMANSHIP         = 363,
+    PLAYERSPEC_RETRIBUTION          = 381,
+    PLAYERSPEC_HOLY                 = 382,
+    PLAYERSPEC_PROTECTION           = 383,
+    PLAYERSPEC_BLOOD                = 398,
+    PLAYERSPEC_FROST                = 399,
+    PLAYERSPEC_UNHOLY               = 400
+};
+
 struct PlayerSpell
 {
     PlayerSpellState state : 8;
@@ -1691,6 +1725,7 @@ class Player : public Unit, public GridObject<Player>
         bool resetTalents(bool no_cost = false);
         uint32 resetTalentsCost() const;
         void InitTalentForLevel();
+        uint32 GetTalentSpec();
         void BuildPlayerTalentsInfoData(WorldPacket* data);
         void BuildPetTalentsInfoData(WorldPacket* data);
         void SendTalentsInfoData(bool pet);
