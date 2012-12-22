@@ -10830,40 +10830,173 @@ uint32 Unit::SpellDamageBonusDone(Unit* victim, SpellInfo const* spellProto, uin
     if (Player* modOwner = GetSpellModOwner())
         modOwner->ApplySpellMod(spellProto->Id, damagetype == DOT ? SPELLMOD_DOT : SPELLMOD_DAMAGE, tmpDamage);
 
-    if (sWorld->getBoolConfig(CONFIG_DAMAGE_ADJUSTMENT))
+    if (GetTypeId() == TYPEID_PLAYER)
     {
-        switch (getClass())
+        if (sWorld->getBoolConfig(CONFIG_GLOBAL_ADJUSTMENT))
         {
-            case CLASS_WARRIOR:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR);
-                break;
-            case CLASS_PALADIN:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN);
-                break;
-            case CLASS_DEATH_KNIGHT:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT);
-                break;
-            case CLASS_HUNTER:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER);
-                break;
-            case CLASS_SHAMAN:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN);
-                break;
-            case CLASS_ROGUE:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE);
-                break;
-            case CLASS_DRUID:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID);
-                break;
-            case CLASS_PRIEST:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST);
-                break;
-            case CLASS_MAGE:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE);
-                break;
-            case CLASS_WARLOCK:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK);
-                break;
+            switch (getClass())
+            {
+                case CLASS_WARRIOR:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_WARRIOR_ARMS:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR_ARMS);
+                            break;
+                        case PLAYERSPEC_WARRIOR_FURY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR_FURY);
+                            break;
+                        case PLAYERSPEC_WARRIOR_PROTECTION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR_PROT);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR_DEFAULT);
+                            break;
+                    }
+                case CLASS_PALADIN:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_PALADIN_HOLY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN_HOLY);
+                            break;
+                        case PLAYERSPEC_PALADIN_PROTECTION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN_PROT);
+                            break;
+                        case PLAYERSPEC_PALADIN_RETRIBUTION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN_RET);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN_DEFAULT);
+                            break;
+                    }
+                case CLASS_DEATH_KNIGHT:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_DEATHKNIGHT_BLOOD:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT_BLOOD);
+                            break;
+                        case PLAYERSPEC_DEATHKNIGHT_FROST:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT_FROST);
+                            break;
+                        case PLAYERSPEC_DEATHKNIGHT_UNHOLY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT_UNHOLY);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT_DEFAULT);
+                            break;
+                    }
+                case CLASS_HUNTER:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_HUNTER_BEASTMASTERY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER_BM);
+                            break;
+                        case PLAYERSPEC_HUNTER_MARKSMANSHIP:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER_MARKS);
+                            break;
+                        case PLAYERSPEC_HUNTER_SURVIVAL:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER_SURVIVAL);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER_DEFAULT);
+                            break;
+                    }
+                case CLASS_SHAMAN:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_SHAMAN_ELEMENTAL:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN_ELE);
+                            break;
+                        case PLAYERSPEC_SHAMAN_ENHANCEMENT:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN_ENH);
+                            break;
+                        case PLAYERSPEC_SHAMAN_RESTORATION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN_RESTO);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN_DEFAULT);
+                            break;
+                    }
+                case CLASS_ROGUE:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_ROGUE_ASSASSINATION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE_MUTI);
+                            break;
+                        case PLAYERSPEC_ROGUE_COMBAT:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE_COMBAT);
+                            break;
+                        case PLAYERSPEC_ROGUE_SUBLETY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE_SUB);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE_DEFAULT);
+                            break;
+                    }
+                case CLASS_DRUID:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_DRUID_BALANCE:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID_BALANCE);
+                            break;
+                        case PLAYERSPEC_DRUID_FERALCOMBAT:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID_FERAL);
+                            break;
+                        case PLAYERSPEC_DRUID_RESTORATION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID_RESTO);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID_DEFAULT);
+                            break;
+                    }
+                case CLASS_PRIEST:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_PRIEST_DISCIPLINE:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST_DISC);
+                            break;
+                        case PLAYERSPEC_PRIEST_HOLY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST_HOLY);
+                            break;
+                        case PLAYERSPEC_PRIEST_SHADOW:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST_SHADOW);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST_DEFAULT);
+                            break;
+                    }
+                case CLASS_MAGE:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_MAGE_ARCANE:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE_ARCANE);
+                            break;
+                        case PLAYERSPEC_MAGE_FIRE:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE_FIRE);
+                            break;
+                        case PLAYERSPEC_MAGE_FROST:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE_FROST);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE_DEFAULT);
+                            break;
+                    }
+                case CLASS_WARLOCK:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_WARLOCK_AFFLICTION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK_AFFI);
+                            break;
+                        case PLAYERSPEC_WARLOCK_DEMONOLOGY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK_DEMO);
+                            break;
+                        case PLAYERSPEC_WARLOCK_DESTRUCTION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK_DESTRO);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK_DEFAULT);
+                            break;
+                    }
+            }
         }
     }
 
@@ -11413,6 +11546,176 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, ui
     if (Player* modOwner = GetSpellModOwner())
         modOwner->ApplySpellMod(spellProto->Id, damagetype == DOT ? SPELLMOD_DOT : SPELLMOD_DAMAGE, heal);
 
+    if (GetTypeId() == TYPEID_PLAYER)
+    {
+        if (sWorld->getBoolConfig(CONFIG_GLOBAL_ADJUSTMENT))
+        {
+            switch (getClass())
+            {
+                case CLASS_WARRIOR:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_WARRIOR_ARMS:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_WARRIOR_ARMS);
+                            break;
+                        case PLAYERSPEC_WARRIOR_FURY:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_WARRIOR_FURY);
+                            break;
+                        case PLAYERSPEC_WARRIOR_PROTECTION:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_WARRIOR_PROT);
+                            break;
+                        default:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_WARRIOR_DEFAULT);
+                            break;
+                    }
+                case CLASS_PALADIN:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_PALADIN_HOLY:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_PALADIN_HOLY);
+                            break;
+                        case PLAYERSPEC_PALADIN_PROTECTION:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_PALADIN_PROT);
+                            break;
+                        case PLAYERSPEC_PALADIN_RETRIBUTION:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_PALADIN_RET);
+                            break;
+                        default:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_PALADIN_DEFAULT);
+                            break;
+                    }
+                case CLASS_DEATH_KNIGHT:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_DEATHKNIGHT_BLOOD:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_DEATHKNIGHT_BLOOD);
+                            break;
+                        case PLAYERSPEC_DEATHKNIGHT_FROST:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_DEATHKNIGHT_FROST);
+                            break;
+                        case PLAYERSPEC_DEATHKNIGHT_UNHOLY:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_DEATHKNIGHT_UNHOLY);
+                            break;
+                        default:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_DEATHKNIGHT_DEFAULT);
+                            break;
+                    }
+                case CLASS_HUNTER:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_HUNTER_BEASTMASTERY:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_HUNTER_BM);
+                            break;
+                        case PLAYERSPEC_HUNTER_MARKSMANSHIP:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_HUNTER_MARKS);
+                            break;
+                        case PLAYERSPEC_HUNTER_SURVIVAL:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_HUNTER_SURVIVAL);
+                            break;
+                        default:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_HUNTER_DEFAULT);
+                            break;
+                    }
+                case CLASS_SHAMAN:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_SHAMAN_ELEMENTAL:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_SHAMAN_ELE);
+                            break;
+                        case PLAYERSPEC_SHAMAN_ENHANCEMENT:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_SHAMAN_ENH);
+                            break;
+                        case PLAYERSPEC_SHAMAN_RESTORATION:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_SHAMAN_RESTO);
+                            break;
+                        default:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_SHAMAN_DEFAULT);
+                            break;
+                    }
+                case CLASS_ROGUE:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_ROGUE_ASSASSINATION:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_ROGUE_MUTI);
+                            break;
+                        case PLAYERSPEC_ROGUE_COMBAT:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_ROGUE_COMBAT);
+                            break;
+                        case PLAYERSPEC_ROGUE_SUBLETY:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_ROGUE_SUB);
+                            break;
+                        default:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_ROGUE_DEFAULT);
+                            break;
+                    }
+                case CLASS_DRUID:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_DRUID_BALANCE:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_DRUID_BALANCE);
+                            break;
+                        case PLAYERSPEC_DRUID_FERALCOMBAT:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_DRUID_FERAL);
+                            break;
+                        case PLAYERSPEC_DRUID_RESTORATION:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_DRUID_RESTO);
+                            break;
+                        default:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_DRUID_DEFAULT);
+                            break;
+                    }
+                case CLASS_PRIEST:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_PRIEST_DISCIPLINE:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_PRIEST_DISC);
+                            break;
+                        case PLAYERSPEC_PRIEST_HOLY:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_PRIEST_HOLY);
+                            break;
+                        case PLAYERSPEC_PRIEST_SHADOW:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_PRIEST_SHADOW);
+                            break;
+                        default:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_PRIEST_DEFAULT);
+                            break;
+                    }
+                case CLASS_MAGE:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_MAGE_ARCANE:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_MAGE_ARCANE);
+                            break;
+                        case PLAYERSPEC_MAGE_FIRE:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_MAGE_FIRE);
+                            break;
+                        case PLAYERSPEC_MAGE_FROST:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_MAGE_FROST);
+                            break;
+                        default:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_MAGE_DEFAULT);
+                            break;
+                    }
+                case CLASS_WARLOCK:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_WARLOCK_AFFLICTION:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_WARLOCK_AFFI);
+                            break;
+                        case PLAYERSPEC_WARLOCK_DEMONOLOGY:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_WARLOCK_DEMO);
+                            break;
+                        case PLAYERSPEC_WARLOCK_DESTRUCTION:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_WARLOCK_DESTRO);
+                            break;
+                        default:
+                            heal *= sWorld->getFloatConfig(CONFIG_HEAL_ADJ_WARLOCK_DEFAULT);
+                            break;
+                    }
+            }
+        }
+    }
+
     return uint32(std::max(heal, 0.0f));
 }
 
@@ -11877,40 +12180,173 @@ uint32 Unit::MeleeDamageBonusDone(Unit* victim, uint32 pdamage, WeaponAttackType
         if (Player* modOwner = GetSpellModOwner())
             modOwner->ApplySpellMod(spellProto->Id, SPELLMOD_DAMAGE, tmpDamage);
 
-    if (sWorld->getBoolConfig(CONFIG_DAMAGE_ADJUSTMENT))
+    if (GetTypeId() == TYPEID_PLAYER)
     {
-        switch (getClass())
+        if (sWorld->getBoolConfig(CONFIG_GLOBAL_ADJUSTMENT))
         {
-            case CLASS_WARRIOR:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR);
-                break;
-            case CLASS_PALADIN:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN);
-                break;
-            case CLASS_DEATH_KNIGHT:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT);
-                break;
-            case CLASS_HUNTER:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER);
-                break;
-            case CLASS_SHAMAN:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN);
-                break;
-            case CLASS_ROGUE:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE);
-                break;
-            case CLASS_DRUID:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID);
-                break;
-            case CLASS_PRIEST:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST);
-                break;
-            case CLASS_MAGE:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE);
-                break;
-            case CLASS_WARLOCK:
-                tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK);
-                break;
+            switch (getClass())
+            {
+                case CLASS_WARRIOR:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_WARRIOR_ARMS:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR_ARMS);
+                            break;
+                        case PLAYERSPEC_WARRIOR_FURY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR_FURY);
+                            break;
+                        case PLAYERSPEC_WARRIOR_PROTECTION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR_PROT);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARRIOR_DEFAULT);
+                            break;
+                    }
+                case CLASS_PALADIN:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_PALADIN_HOLY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN_HOLY);
+                            break;
+                        case PLAYERSPEC_PALADIN_PROTECTION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN_PROT);
+                            break;
+                        case PLAYERSPEC_PALADIN_RETRIBUTION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN_RET);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PALADIN_DEFAULT);
+                            break;
+                    }
+                case CLASS_DEATH_KNIGHT:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_DEATHKNIGHT_BLOOD:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT_BLOOD);
+                            break;
+                        case PLAYERSPEC_DEATHKNIGHT_FROST:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT_FROST);
+                            break;
+                        case PLAYERSPEC_DEATHKNIGHT_UNHOLY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT_UNHOLY);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DEATHKNIGHT_DEFAULT);
+                            break;
+                    }
+                case CLASS_HUNTER:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_HUNTER_BEASTMASTERY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER_BM);
+                            break;
+                        case PLAYERSPEC_HUNTER_MARKSMANSHIP:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER_MARKS);
+                            break;
+                        case PLAYERSPEC_HUNTER_SURVIVAL:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER_SURVIVAL);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_HUNTER_DEFAULT);
+                            break;
+                    }
+                case CLASS_SHAMAN:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_SHAMAN_ELEMENTAL:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN_ELE);
+                            break;
+                        case PLAYERSPEC_SHAMAN_ENHANCEMENT:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN_ENH);
+                            break;
+                        case PLAYERSPEC_SHAMAN_RESTORATION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN_RESTO);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_SHAMAN_DEFAULT);
+                            break;
+                    }
+                case CLASS_ROGUE:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_ROGUE_ASSASSINATION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE_MUTI);
+                            break;
+                        case PLAYERSPEC_ROGUE_COMBAT:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE_COMBAT);
+                            break;
+                        case PLAYERSPEC_ROGUE_SUBLETY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE_SUB);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_ROGUE_DEFAULT);
+                            break;
+                    }
+                case CLASS_DRUID:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_DRUID_BALANCE:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID_BALANCE);
+                            break;
+                        case PLAYERSPEC_DRUID_FERALCOMBAT:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID_FERAL);
+                            break;
+                        case PLAYERSPEC_DRUID_RESTORATION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID_RESTO);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_DRUID_DEFAULT);
+                            break;
+                    }
+                case CLASS_PRIEST:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_PRIEST_DISCIPLINE:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST_DISC);
+                            break;
+                        case PLAYERSPEC_PRIEST_HOLY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST_HOLY);
+                            break;
+                        case PLAYERSPEC_PRIEST_SHADOW:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST_SHADOW);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_PRIEST_DEFAULT);
+                            break;
+                    }
+                case CLASS_MAGE:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_MAGE_ARCANE:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE_ARCANE);
+                            break;
+                        case PLAYERSPEC_MAGE_FIRE:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE_FIRE);
+                            break;
+                        case PLAYERSPEC_MAGE_FROST:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE_FROST);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_MAGE_DEFAULT);
+                            break;
+                    }
+                case CLASS_WARLOCK:
+                    switch (ToPlayer()->m_playerSpec)
+                    {
+                        case PLAYERSPEC_WARLOCK_AFFLICTION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK_AFFI);
+                            break;
+                        case PLAYERSPEC_WARLOCK_DEMONOLOGY:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK_DEMO);
+                            break;
+                        case PLAYERSPEC_WARLOCK_DESTRUCTION:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK_DESTRO);
+                            break;
+                        default:
+                            tmpDamage *= sWorld->getFloatConfig(CONFIG_DMG_ADJ_WARLOCK_DEFAULT);
+                            break;
+                    }
+            }
         }
     }
 

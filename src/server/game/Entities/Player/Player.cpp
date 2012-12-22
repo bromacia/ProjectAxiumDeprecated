@@ -860,6 +860,8 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     isDebugAreaTriggers = false;
 
     SetPendingBind(0, 0);
+
+    m_playerSpec = 0;
 }
 
 Player::~Player ()
@@ -3122,6 +3124,7 @@ void Player::InitTalentForLevel()
         else
             SetFreeTalentPoints(talentPointsForLevel - m_usedTalentCount);
     }
+    m_playerSpec = 0;
 
     if (!GetSession()->PlayerLoading())
         SendTalentsInfoData(false);                         // update at client
@@ -3497,6 +3500,8 @@ bool Player::AddTalent(uint32 spellId, uint8 spec, bool learning)
         (*m_talents[spec])[spellId] = newtalent;
         return true;
     }
+
+    m_playerSpec = GetTalentSpec();
     return false;
 }
 
@@ -4008,6 +4013,7 @@ void Player::removeSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
             m_usedTalentCount -= talentCosts;
         else
             m_usedTalentCount = 0;
+        m_playerSpec = GetTalentSpec();
     }
 
     // update free primary prof.points (if not overflow setting, can be in case GM use before .learn prof. learning)
@@ -4444,6 +4450,8 @@ bool Player::resetTalents(bool no_cost)
     CharacterDatabase.CommitTransaction(trans);
 
     SetFreeTalentPoints(talentPointsForLevel);
+
+    m_playerSpec = 0;
 
     if (!no_cost)
     {
@@ -17105,8 +17113,9 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     QueryResult result2 = LoginDatabase.PQuery("SELECT vip FROM account WHERE id = %u", GetSession()->GetAccountId());
     Field* fields2 = result2->Fetch();
-
     m_vip = fields2[0].GetBool();
+
+    m_playerSpec = GetTalentSpec();
 
     // Remove Demonic Circle aura
     if (HasAura(48018))
@@ -23843,6 +23852,8 @@ void Player::LearnTalent(uint32 talentId, uint32 talentRank)
     learnSpell(spellid, false);
     AddTalent(spellid, m_activeSpec, true);
 
+    m_playerSpec = GetTalentSpec();
+
     sLog->outDetail("TalentID: %u Rank: %u Spell: %u Spec: %u\n", talentId, talentRank, spellid, m_activeSpec);
 
     // update free talent points
@@ -24090,7 +24101,7 @@ uint32 Player::GetTalentSpec()
                     TalentPoints += curtalent_maxrank;
                     ++TalentPoints;
 
-                    if (TalentPoints == 41)
+                    if (TalentPoints >= 41)
                         return talentTabId;
                 }
             }

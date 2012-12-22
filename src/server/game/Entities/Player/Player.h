@@ -126,9 +126,9 @@ enum PlayerSpec
     PLAYERSPEC_PALADIN_RETRIBUTION  = 381,
     PLAYERSPEC_PALADIN_HOLY         = 382,
     PLAYERSPEC_PALADIN_PROTECTION   = 383,
-    PLAYERSPEC_DK_BLOOD             = 398,
-    PLAYERSPEC_DK_FROST             = 399,
-    PLAYERSPEC_DK_UNHOLY            = 400
+    PLAYERSPEC_DEATHKNIGHT_BLOOD    = 398,
+    PLAYERSPEC_DEATHKNIGHT_FROST    = 399,
+    PLAYERSPEC_DEATHKNIGHT_UNHOLY   = 400
 };
 
 struct PlayerSpell
@@ -1736,6 +1736,8 @@ class Player : public Unit, public GridObject<Player>
         bool HasTalent(uint32 spell_id, uint8 spec) const;
 
         uint32 CalculateTalentsPoints() const;
+
+        uint32 m_playerSpec;
 
         // Dual Spec
         void UpdateSpecCount(uint8 count);

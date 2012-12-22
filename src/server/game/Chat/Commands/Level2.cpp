@@ -267,12 +267,12 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         return false;
 
     uint32 accId = 0;
-    uint32 money = 0;
     uint32 total_player_time = 0;
     uint8 level = 0;
     uint32 latency = 0;
     uint8 race;
     uint8 Class;
+    uint16 spec;
     int64 muteTime = 0;
     int64 banTime = -1;
     uint32 mapId;
@@ -288,12 +288,12 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
             return false;
 
         accId = target->GetSession()->GetAccountId();
-        money = target->GetMoney();
         total_player_time = target->GetTotalPlayedTime();
         level = target->getLevel();
         latency = target->GetSession()->GetLatency();
         race = target->getRace();
         Class = target->getClass();
+        spec = target->m_playerSpec;
         muteTime = target->GetSession()->m_muteTime;
         mapId = target->GetMapId();
         areaId = target->GetAreaId();
@@ -306,8 +306,8 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         if (HasLowerSecurity(NULL, target_guid))
             return false;
 
-        //                                                     0          1      2      3        4     5      6    7
-        QueryResult result = CharacterDatabase.PQuery("SELECT totaltime, level, money, account, race, class, map, zone FROM characters "
+        //                                                    0          1      2        3     4      5    6
+        QueryResult result = CharacterDatabase.PQuery("SELECT totaltime, level, account, race, class, map, zone FROM characters "
                                                       "WHERE guid = '%u'", GUID_LOPART(target_guid));
         if (!result)
             return false;
@@ -315,12 +315,11 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         Field* fields = result->Fetch();
         total_player_time = fields[0].GetUInt32();
         level = fields[1].GetUInt32();
-        money = fields[2].GetUInt32();
-        accId = fields[3].GetUInt32();
-        race = fields[4].GetUInt8();
-        Class = fields[5].GetUInt8();
-        mapId = fields[6].GetUInt16();
-        areaId = fields[7].GetUInt16();
+        accId = fields[2].GetUInt32();
+        race = fields[3].GetUInt8();
+        Class = fields[4].GetUInt8();
+        mapId = fields[5].GetUInt16();
+        areaId = fields[6].GetUInt16();
     }
 
     std::string username = GetTrinityString(LANG_ERROR);
@@ -345,7 +344,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         vip = fields[6].GetUInt8();
 
         if (email.empty())
-            email = "-";
+            email = "Unknown";
 
         if (!m_session || m_session->GetSecurity() >= AccountTypes(security))
         {
@@ -354,16 +353,17 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         }
         else
         {
-            last_ip = "-";
-            last_login = "-";
+            last_ip = "Unknown";
+            last_login = "Unknown";
         }
     }
 
     std::string nameLink = playerLink(target_name);
 
-    PSendSysMessage(LANG_PINFO_ACCOUNT, (target?"":GetTrinityString(LANG_OFFLINE)), nameLink.c_str(), GUID_LOPART(target_guid), username.c_str(), accId, email.c_str(), security, vip, last_ip.c_str(), last_login.c_str(), latency);
+    PSendSysMessage("Player%s %s (guid: %u), Account(id: %u): %s, Email: %s, GMLevel: %u, VIP: %u, Last IP: %s, Last login: %s, Latency: %ums",
+    (target ? "" : "(Offline)"), nameLink.c_str(), GUID_LOPART(target_guid), accId, username.c_str(), email.c_str(), security, vip, last_ip.c_str(), last_login.c_str(), latency);
 
-    std::string bannedby = "unknown";
+    std::string bannedby = "Unknown";
     std::string banreason = "";
     if (QueryResult result2 = LoginDatabase.PQuery("SELECT unbandate, bandate = unbandate, bannedby, banreason FROM account_banned "
                                                   "WHERE id = '%u' AND active ORDER BY bandate ASC LIMIT 1", accId))
@@ -383,12 +383,12 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
     }
 
     if (muteTime > 0)
-        PSendSysMessage(LANG_PINFO_MUTE, secsToTimeString(muteTime - time(NULL), true).c_str());
+        PSendSysMessage("Mute time remaining: %s", secsToTimeString(muteTime - time(NULL), true).c_str());
 
     if (banTime >= 0)
-        PSendSysMessage(LANG_PINFO_BAN, banTime > 0 ? secsToTimeString(banTime - time(NULL), true).c_str() : "permanently", bannedby.c_str(), banreason.c_str());
+        PSendSysMessage("Ban time remaining: %s, Banned by: %s, Reason: %s", banTime > 0 ? secsToTimeString(banTime - time(NULL), true).c_str() : "permanently", bannedby.c_str(), banreason.c_str());
 
-    std::string race_s, Class_s;
+    std::string race_s, Class_s, spec_s;
     switch (race)
     {
         case RACE_HUMAN:            race_s = "Human";       break;
@@ -415,16 +415,47 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         case CLASS_WARLOCK:         Class_s = "Warlock";        break;
         case CLASS_DRUID:           Class_s = "Druid";          break;
     }
+    switch (spec)
+    {
+        case PLAYERSPEC_WARRIOR_ARMS:           spec_s = "Arms";            break;
+        case PLAYERSPEC_WARRIOR_FURY:           spec_s = "Fury";            break;
+        case PLAYERSPEC_WARRIOR_PROTECTION:     spec_s = "Protection";      break;
+        case PLAYERSPEC_PALADIN_HOLY:           spec_s = "Holy";            break;
+        case PLAYERSPEC_PALADIN_PROTECTION:     spec_s = "Protection";      break;
+        case PLAYERSPEC_PALADIN_RETRIBUTION:    spec_s = "Retribution";     break;
+        case PLAYERSPEC_DEATHKNIGHT_BLOOD:      spec_s = "Blood";           break;
+        case PLAYERSPEC_DEATHKNIGHT_FROST:      spec_s = "Frost";           break;
+        case PLAYERSPEC_DEATHKNIGHT_UNHOLY:     spec_s = "Unholy";          break;
+        case PLAYERSPEC_HUNTER_BEASTMASTERY:    spec_s = "Beast Mastery";   break;
+        case PLAYERSPEC_HUNTER_MARKSMANSHIP:    spec_s = "Marksmanship";    break;
+        case PLAYERSPEC_HUNTER_SURVIVAL:        spec_s = "Survival";        break;
+        case PLAYERSPEC_SHAMAN_ELEMENTAL:       spec_s = "Elemental";       break;
+        case PLAYERSPEC_SHAMAN_ENHANCEMENT:     spec_s = "Enhancement";     break;
+        case PLAYERSPEC_SHAMAN_RESTORATION:     spec_s = "Restoration";     break;
+        case PLAYERSPEC_ROGUE_ASSASSINATION:    spec_s = "Assassination";   break;
+        case PLAYERSPEC_ROGUE_COMBAT:           spec_s = "Combat";          break;
+        case PLAYERSPEC_ROGUE_SUBLETY:          spec_s = "Sublety";         break;
+        case PLAYERSPEC_DRUID_BALANCE:          spec_s = "Balance";         break;
+        case PLAYERSPEC_DRUID_FERALCOMBAT:      spec_s = "Feral";           break;
+        case PLAYERSPEC_DRUID_RESTORATION:      spec_s = "Restoration";     break;
+        case PLAYERSPEC_PRIEST_DISCIPLINE:      spec_s = "Discipline";      break;
+        case PLAYERSPEC_PRIEST_HOLY:            spec_s = "Holy";            break;
+        case PLAYERSPEC_PRIEST_SHADOW:          spec_s = "Shadow";          break;
+        case PLAYERSPEC_MAGE_ARCANE:            spec_s = "Arcane";          break;
+        case PLAYERSPEC_MAGE_FIRE:              spec_s = "Fire";            break;
+        case PLAYERSPEC_MAGE_FROST:             spec_s = "Frost";           break;
+        case PLAYERSPEC_WARLOCK_AFFLICTION:     spec_s = "Affliction";      break;
+        case PLAYERSPEC_WARLOCK_DEMONOLOGY:     spec_s = "Demonology";      break;
+        case PLAYERSPEC_WARLOCK_DESTRUCTION:    spec_s = "Destruction";     break;
+        default:                                spec_s = "Hybrid/None";     break;
+    }
 
     std::string timeStr = secsToTimeString(total_player_time, true, true);
-    uint32 gold = money /GOLD;
-    uint32 silv = (money % GOLD) / SILVER;
-    uint32 copp = (money % GOLD) % SILVER;
-    PSendSysMessage(LANG_PINFO_LEVEL, race_s.c_str(), Class_s.c_str(), timeStr.c_str(), level, gold, silv, copp);
+    PSendSysMessage("Race: %s, Class: %s, Spec: %s, Played Time: %s, Level: %u", race_s.c_str(), Class_s.c_str(), spec_s.c_str(), timeStr.c_str(), level);
 
     // Add map, zone, subzone and phase to output
     int locale = GetSessionDbcLocale();
-    std::string areaName = "<unknown>";
+    std::string areaName = "<Unknown>";
     std::string zoneName = "";
 
     MapEntry const* map = sMapStore.LookupEntry(mapId);
@@ -443,12 +474,12 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
     if (target)
     {
         if (!zoneName.empty())
-            PSendSysMessage(LANG_PINFO_MAP_ONLINE, map->name[locale], zoneName.c_str(), areaName.c_str(), phase);
+            PSendSysMessage("Map: %s, Area: %s, Zone: %s, Phase: %u", map->name[locale], zoneName.c_str(), areaName.c_str(), phase);
         else
-            PSendSysMessage(LANG_PINFO_MAP_ONLINE, map->name[locale], areaName.c_str(), "<unknown>", phase);
+            PSendSysMessage("Map: %s, Area: %s, Zone: %s, Phase: %u", map->name[locale], areaName.c_str(), "<Unknown>", phase);
     }
     else
-        PSendSysMessage(LANG_PINFO_MAP_OFFLINE, map->name[locale], areaName.c_str());
+        PSendSysMessage("Map: %s, Area: %s", map->name[locale], areaName.c_str());
 
     return true;
 }

@@ -1214,18 +1214,112 @@ void World::LoadConfigSettings(bool reload)
     // Mail queue
     m_int_configs[CONFIG_MAIL_QUEUE_TIMER] = ConfigMgr::GetIntDefault("MailQueue.Timer", 2);
 
-    // Class Damage Adjustment
-    m_bool_configs[CONFIG_DAMAGE_ADJUSTMENT] = ConfigMgr::GetBoolDefault("GlobalDamageAdjustment.On", false);
-    m_float_configs[CONFIG_DMG_ADJ_WARRIOR] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warrior", 1.00f);
-    m_float_configs[CONFIG_DMG_ADJ_PALADIN] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Paladin", 1.00f);
-    m_float_configs[CONFIG_DMG_ADJ_DEATHKNIGHT] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Deathknight", 1.00f);
-    m_float_configs[CONFIG_DMG_ADJ_HUNTER] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Hunter", 1.00f);
-    m_float_configs[CONFIG_DMG_ADJ_SHAMAN] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Shaman", 1.00f);
-    m_float_configs[CONFIG_DMG_ADJ_ROGUE] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Rogue", 1.00f);
-    m_float_configs[CONFIG_DMG_ADJ_DRUID] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Druid", 1.00f);
-    m_float_configs[CONFIG_DMG_ADJ_PRIEST] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Priest", 1.00f);
-    m_float_configs[CONFIG_DMG_ADJ_MAGE] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Mage", 1.00f);
-    m_float_configs[CONFIG_DMG_ADJ_WARLOCK] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warlock", 1.00f);
+    // Class Global Damage/Heal Adjustment
+    m_bool_configs[CONFIG_GLOBAL_ADJUSTMENT]           = ConfigMgr::GetBoolDefault("GlobalAdjustment.On", false);
+
+    /* ========== Damage ========== */
+    // Warrior
+    m_float_configs[CONFIG_DMG_ADJ_WARRIOR_DEFAULT]     = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warrior.Default", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_WARRIOR_ARMS]        = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warrior.Arms", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_WARRIOR_FURY]        = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warrior.Fury", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_WARRIOR_PROT]        = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warrior.Prot", 1.00f);
+    // Paladin
+    m_float_configs[CONFIG_DMG_ADJ_PALADIN_DEFAULT]     = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Paladin.Default", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_PALADIN_HOLY]        = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Paladin.Holy", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_PALADIN_PROT]        = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Paladin.Prot", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_PALADIN_RET]         = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Paladin.Ret", 1.00f);
+    // Death Knight
+    m_float_configs[CONFIG_DMG_ADJ_DEATHKNIGHT_DEFAULT] = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Deathknight.Default", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_DEATHKNIGHT_BLOOD]   = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Deathknight.Blood", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_DEATHKNIGHT_FROST]   = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Deathknight.Frost", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_DEATHKNIGHT_UNHOLY]  = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Deathknight.Unholy", 1.00f);
+    // Hunter
+    m_float_configs[CONFIG_DMG_ADJ_HUNTER_DEFAULT]      = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Hunter.Default", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_HUNTER_BM]           = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Hunter.BM", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_HUNTER_MARKS]        = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Hunter.Marks", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_HUNTER_SURVIVAL]     = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Hunter.Survival", 1.00f);
+    // Shaman
+    m_float_configs[CONFIG_DMG_ADJ_SHAMAN_DEFAULT]      = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Shaman.Default", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_SHAMAN_ELE]          = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Shaman.Ele", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_SHAMAN_ENH]          = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Shaman.Enh", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_SHAMAN_RESTO]        = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Shaman.Resto", 1.00f);
+    // Rogue
+    m_float_configs[CONFIG_DMG_ADJ_ROGUE_DEFAULT]       = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Rogue.Default", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_ROGUE_MUTI]          = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Rogue.Muti", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_ROGUE_COMBAT]        = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Rogue.Combat", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_ROGUE_SUB]           = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Rogue.Sub", 1.00f);
+    // Druid
+    m_float_configs[CONFIG_DMG_ADJ_DRUID_DEFAULT]       = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Druid.Default", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_DRUID_BALANCE]       = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Druid.Balance", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_DRUID_FERAL]         = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Druid.Feral", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_DRUID_RESTO]         = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Druid.Resto", 1.00f);
+    // Priest
+    m_float_configs[CONFIG_DMG_ADJ_PRIEST_DEFAULT]      = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Priest.Default", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_PRIEST_DISC]         = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Priest.Disc", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_PRIEST_HOLY]         = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Priest.Holy", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_PRIEST_SHADOW]       = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Priest.Shadow", 1.00f);
+    // Mage
+    m_float_configs[CONFIG_DMG_ADJ_MAGE_DEFAULT]        = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Mage.Default", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_MAGE_ARCANE]         = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Mage.Arcane", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_MAGE_FIRE]           = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Mage.Fire", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_MAGE_FROST]          = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Mage.Frost", 1.00f);
+    // Warlock
+    m_float_configs[CONFIG_DMG_ADJ_WARLOCK_DEFAULT]     = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warlock.Default", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_WARLOCK_AFFI]        = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warlock.Affi", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_WARLOCK_DEMO]        = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warlock.Demo", 1.00f);
+    m_float_configs[CONFIG_DMG_ADJ_WARLOCK_DESTRO]      = ConfigMgr::GetFloatDefault("GlobalDamageAdjustment.Warlock.Destro", 1.00f);
+
+    /* ========== Healing ========== */
+    // Warrior
+    m_float_configs[CONFIG_HEAL_ADJ_WARRIOR_DEFAULT]     = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Warrior.Default", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_WARRIOR_ARMS]        = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Warrior.Arms", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_WARRIOR_FURY]        = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Warrior.Fury", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_WARRIOR_PROT]        = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Warrior.Prot", 1.00f);
+    // Paladin
+    m_float_configs[CONFIG_HEAL_ADJ_PALADIN_DEFAULT]     = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Paladin.Default", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_PALADIN_HOLY]        = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Paladin.Holy", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_PALADIN_PROT]        = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Paladin.Prot", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_PALADIN_RET]         = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Paladin.Ret", 1.00f);
+    // Death Knight
+    m_float_configs[CONFIG_HEAL_ADJ_DEATHKNIGHT_DEFAULT] = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Deathknight.Default", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_DEATHKNIGHT_BLOOD]   = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Deathknight.Blood", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_DEATHKNIGHT_FROST]   = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Deathknight.Frost", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_DEATHKNIGHT_UNHOLY]  = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Deathknight.Unholy", 1.00f);
+    // Hunter
+    m_float_configs[CONFIG_HEAL_ADJ_HUNTER_DEFAULT]      = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Hunter.Default", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_HUNTER_BM]           = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Hunter.BM", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_HUNTER_MARKS]        = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Hunter.Marks", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_HUNTER_SURVIVAL]     = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Hunter.Survival", 1.00f);
+    // Shaman
+    m_float_configs[CONFIG_HEAL_ADJ_SHAMAN_DEFAULT]      = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Shaman.Default", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_SHAMAN_ELE]          = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Shaman.Ele", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_SHAMAN_ENH]          = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Shaman.Enh", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_SHAMAN_RESTO]        = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Shaman.Resto", 1.00f);
+    // Rogue
+    m_float_configs[CONFIG_HEAL_ADJ_ROGUE_DEFAULT]       = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Rogue.Default", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_ROGUE_MUTI]          = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Rogue.Muti", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_ROGUE_COMBAT]        = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Rogue.Combat", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_ROGUE_SUB]           = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Rogue.Sub", 1.00f);
+    // Druid
+    m_float_configs[CONFIG_HEAL_ADJ_DRUID_DEFAULT]       = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Druid.Default", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_DRUID_BALANCE]       = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Druid.Balance", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_DRUID_FERAL]         = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Druid.Feral", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_DRUID_RESTO]         = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Druid.Resto", 1.00f);
+    // Priest
+    m_float_configs[CONFIG_HEAL_ADJ_PRIEST_DEFAULT]      = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Priest.Default", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_PRIEST_DISC]         = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Priest.Disc", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_PRIEST_HOLY]         = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Priest.Holy", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_PRIEST_SHADOW]       = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Priest.Shadow", 1.00f);
+    // Mage
+    m_float_configs[CONFIG_HEAL_ADJ_MAGE_DEFAULT]        = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Mage.Default", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_MAGE_ARCANE]         = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Mage.Arcane", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_MAGE_FIRE]           = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Mage.Fire", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_MAGE_FROST]          = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Mage.Frost", 1.00f);
+    // Warlock
+    m_float_configs[CONFIG_HEAL_ADJ_WARLOCK_DEFAULT]     = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Warlock.Default", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_WARLOCK_AFFI]        = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Warlock.Affi", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_WARLOCK_DEMO]        = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Warlock.Demo", 1.00f);
+    m_float_configs[CONFIG_HEAL_ADJ_WARLOCK_DESTRO]      = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Warlock.Destro", 1.00f);
 
     sScriptMgr->OnConfigLoad(reload);
 }
