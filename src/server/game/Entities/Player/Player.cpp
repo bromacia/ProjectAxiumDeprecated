@@ -17106,7 +17106,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     QueryResult result2 = LoginDatabase.PQuery("SELECT vip FROM account WHERE id = %u", GetSession()->GetAccountId());
     Field* fields2 = result2->Fetch();
 
-    m_vip = fields2[0].GetUInt8();
+    m_vip = fields2[0].GetBool();
 
     // Remove Demonic Circle aura
     if (HasAura(48018))

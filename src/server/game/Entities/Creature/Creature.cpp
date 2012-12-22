@@ -2454,13 +2454,6 @@ bool Creature::IsDungeonBoss() const
     return cinfo && (cinfo->flags_extra & CREATURE_FLAG_EXTRA_DUNGEON_BOSS);
 }
 
-
-bool Creature::IsVipVendor() const
-{
-    CreatureTemplate const* cinfo = sObjectMgr->GetCreatureTemplate(GetEntry());
-    return cinfo && (cinfo->flags_extra & CREATURE_FLAG_EXTRA_VIP_VENDOR);
-}
-
 void Creature::SetWalk(bool enable)
 {
     if (enable)

@@ -791,7 +791,10 @@ void WorldSession::SendListInventory(uint64 vendorGuid)
                 data << uint32(price);
                 data << uint32(itemTemplate->MaxDurability);
                 data << uint32(itemTemplate->BuyCount);
-                data << uint32(item->ExtendedCost);
+                if (_player->IsVip() && vendor->IsVipVendor())
+                    data << uint32(0);
+                else
+                    data << uint32(item->ExtendedCost);
             }
         }
     }

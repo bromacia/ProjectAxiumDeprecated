@@ -2920,7 +2920,7 @@ class Player : public Unit, public GridObject<Player>
         uint32 _pendingBindId;
         uint32 _pendingBindTimer;
         bool IsVip() const { return m_vip; }
-        uint8 m_vip;
+        bool m_vip;
 };
 
 void AddItemsSetItem(Player*player, Item* item);
