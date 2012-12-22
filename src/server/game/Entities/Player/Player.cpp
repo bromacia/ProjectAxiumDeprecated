@@ -17117,14 +17117,20 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     m_playerSpec = GetTalentSpec();
 
-    // Remove Demonic Circle aura
-    if (HasAura(48018))
-        RemoveAura(48018);
+    if (!InArena() && !InBattleground())
+    {
+        // Remove Demonic Circle aura
+        if (HasAura(48018))
+            RemoveAura(48018);
 
-    // Revive Player
-    ResurrectPlayer(1.0f);
-    SpawnCorpseBones();
-    SaveToDB();
+        // Revive Player
+        if (!isAlive())
+        {
+            ResurrectPlayer(1.0f);
+            SpawnCorpseBones();
+            SaveToDB();
+        }
+    }
 
     return true;
 }
