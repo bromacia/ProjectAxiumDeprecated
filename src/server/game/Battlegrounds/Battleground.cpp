@@ -259,9 +259,7 @@ void Battleground::Update(uint32 diff)
     {
         case STATUS_WAIT_JOIN:
             if (GetPlayersSize())
-            {
                 _ProcessJoin(diff);
-            }
             break;
         case STATUS_IN_PROGRESS:
             _ProcessOfflineQueue();
