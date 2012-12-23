@@ -1281,11 +1281,11 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
 
             ObjectList* targets = GetTargets(e, unit);
             if (e.GetTargetType() == SMART_TARGET_SELF)
-                me->SetFacingTo(me->GetHomePosition().GetOrientation());
+                me->SetFacing(me->GetHomePosition().GetOrientation(), NULL);
             else if (e.GetTargetType() == SMART_TARGET_POSITION)
-                me->SetFacingTo(e.target.o);
+                me->SetFacing(e.target.o, NULL);
             else if (targets && !targets->empty())
-                me->SetFacingToObject(*targets->begin());
+                me->SetFacing(0, (*targets->begin()));
 
             delete targets;
             break;

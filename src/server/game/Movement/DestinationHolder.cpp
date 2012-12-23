@@ -16,9 +16,5 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MovementGenerator.h"
-
-MovementGenerator::~MovementGenerator()
-{
-}
+#include "DestinationHolder.h"
 

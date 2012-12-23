@@ -61,6 +61,7 @@ void AddSC_group_commandscript();
 #ifdef SCRIPTS
 //world
 void AddSC_areatrigger_scripts();
+void AddSC_emerald_dragons();
 void AddSC_generic_creature();
 void AddSC_go_scripts();
 void AddSC_guards();
@@ -154,6 +155,7 @@ void AddWorldScripts()
 {
 #ifdef SCRIPTS
     AddSC_areatrigger_scripts();
+    AddSC_emerald_dragons();
     AddSC_generic_creature();
     AddSC_go_scripts();
     AddSC_guards();

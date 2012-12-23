@@ -483,9 +483,10 @@ void PetAI::MovementInform(uint32 moveType, uint32 data)
                 me->GetMotionMaster()->Clear();
                 me->GetMotionMaster()->MoveIdle();
             }
-            break;
         }
-        case FOLLOW_MOTION_TYPE:
+        break;
+
+        case TARGETED_MOTION_TYPE:
         {
             // If data is owner's GUIDLow then we've reached follow point,
             // otherwise we're probably chasing a creature
@@ -495,9 +496,11 @@ void PetAI::MovementInform(uint32 moveType, uint32 data)
                 me->GetCharmInfo()->SetIsReturning(false);
                 me->GetCharmInfo()->SetIsFollowing(true);
                 me->GetCharmInfo()->SetIsCommandAttack(false);
+                me->AddUnitState(UNIT_STATE_FOLLOW);
             }
-            break;
         }
+        break;
+
         default:
             break;
     }

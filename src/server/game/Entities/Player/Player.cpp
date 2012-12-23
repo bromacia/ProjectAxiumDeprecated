@@ -2110,7 +2110,6 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
 
     // reset movement flags at teleport, because player will continue move with these flags after teleport
     SetUnitMovementFlags(0);
-    DisableSpline();
 
     if (HasUnitState(UNIT_STATE_LOST_CONTROL)) 
     {
@@ -5166,10 +5165,43 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
     }
 }
 
+/**
+ * FallMode = 0 implies that the player is dying, or already dead, and the proper death state will be set.
+ *          = 1 simply causes the player to plummet towards the ground, and not suffer any damage.
+ *          = 2 causes the player to plummet towards the ground, and causes falling damage, regardless
+ *              of any auras that might of prevented fall damage.
+ */
+bool Player::FallGround(uint8 FallMode)
+{
+    // Let's abort after we called this function one time
+    if (getDeathState() == DEAD_FALLING && FallMode == 0)
+        return false;
+
+    float x, y, z;
+    GetPosition(x, y, z);
+    float ground_Z = GetMap()->GetHeight(x, y, z);
+    float z_diff = 0.0f;
+    if ((z_diff = fabs(ground_Z - z)) < 0.1f)
+        return false;
+
+    GetMotionMaster()->MoveFall(ground_Z, EVENT_FALL_GROUND);
+
+    // Below formula for falling damage is from Player::HandleFall
+    if (FallMode == 2 && z_diff >= 14.57f)
+    {
+        uint32 damage = std::min(GetMaxHealth(), (uint32)((0.018f * z_diff - 0.2426f) * GetMaxHealth() * sWorld->getRate(RATE_DAMAGE_FALL)));
+        if (damage)
+            EnvironmentalDamage(DAMAGE_FALL, damage);
+    }
+    else if (FallMode == 0)
+        Unit::setDeathState(DEAD_FALLING);
+    return true;
+}
+
 void Player::KillPlayer()
 {
     if (IsFlying() && !GetTransport())
-        i_motionMaster.MoveFall();
+        FallGround();
 
     SetMovement(MOVE_ROOT);
 
@@ -21532,6 +21564,8 @@ void Player::SendInitialVisiblePackets(Unit* target)
     SendAurasForTarget(target);
     if (target->isAlive())
     {
+        if (target->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+            target->SendMonsterMoveWithSpeedToCurrentDestination(this);
         if (target->HasUnitState(UNIT_STATE_MELEE_ATTACKING) && target->getVictim())
             target->SendMeleeAttackStart(target->getVictim());
     }
