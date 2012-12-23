@@ -3257,6 +3257,10 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->Effect[2] = 0;
                 spellInfo->EffectMechanic[2] = 0;
                 break;
+            case 25504: // Windfury Attack (Main Hand)
+            case 33750: // Windfury Attack (Off Hand)
+                spellInfo->speed = 150;
+                break;
             default:
                 break;
         }
