@@ -17128,7 +17128,6 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         {
             ResurrectPlayer(1.0f);
             SpawnCorpseBones();
-            SaveToDB();
         }
     }
 
