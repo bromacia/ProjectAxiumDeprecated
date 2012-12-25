@@ -1412,13 +1412,19 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         }
     }
 
-    if (missInfo != SPELL_MISS_EVADE && m_caster && !m_caster->IsFriendlyTo(unit) && (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
+    if (m_caster)
     {
-        m_caster->CombatStart(unit, !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO));
+        if (missInfo != SPELL_MISS_EVADE && !m_caster->IsFriendlyTo(unit) && (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
+        {
+            m_caster->CombatStart(unit, !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO));
 
-        if (m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC)
-            if (!unit->IsStandState())
-                unit->SetStandState(UNIT_STAND_STATE_STAND);
+            if (m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC)
+                if (!unit->IsStandState())
+                    unit->SetStandState(UNIT_STAND_STATE_STAND);
+        }
+
+        if (missInfo != SPELL_MISS_EVADE && unit != m_caster && m_caster->IsFriendlyTo(unit) && m_spellInfo->IsPositive() && unit->isInCombat())
+            m_caster->SetInCombatWith(unit);
     }
 
     // Bladestorm and Killing Spree should remove all slows on use
