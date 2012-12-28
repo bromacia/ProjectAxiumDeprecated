@@ -151,7 +151,12 @@ void CasterAI::EnterCombat(Unit* who)
         for (SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr, ++count)
         {
             if (me->GetEntry() == 31216) // Mirror Image
-                 me->CastSpell(target, *itr, false);
+            {
+                if (Unit* ownerTarget = me->GetCharmerOrOwner()->ToPlayer()->GetSelectedUnit())
+                    target = ownerTarget;
+
+                me->CastSpell(target, *itr, false);
+            }
             else
             {
                 if (AISpellInfo[*itr].condition == AICOND_AGGRO)
@@ -179,37 +184,24 @@ void CasterAI::UpdateAI(const uint32 diff)
     events.Update(diff);
 
     Unit* owner = me->GetCharmerOrOwner();
-    Unit* ownerTarget = owner->ToPlayer()->GetSelectedUnit();
-
-    if (ownerTarget && !owner->IsFriendlyTo(ownerTarget)
-        && me->IsWithinDist(ownerTarget, m_attackDist) && !ownerTarget->HasBreakableByDamageCrowdControlAura(me))
-        target = ownerTarget;
 
     if (me->getVictim()->HasBreakableByDamageCrowdControlAura(me))
     {
+        me->CombatStop(true);
         me->AttackStop();
-        me->InterruptNonMeleeSpells(false);
-        me->SendMeleeAttackStop();
         me->StopMoving();
         me->GetMotionMaster()->Clear();
         me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
-        if (ownerTarget && !owner->IsFriendlyTo(ownerTarget)
-            && me->IsWithinDist(ownerTarget, m_attackDist) && !ownerTarget->HasBreakableByDamageCrowdControlAura(me))
-            target = ownerTarget;
         return;
     }
 
     if (!me->IsWithinDist(target, m_attackDist))
     {
+        me->CombatStop(true);
         me->AttackStop();
-        me->InterruptNonMeleeSpells(false);
-        me->SendMeleeAttackStop();
         me->StopMoving();
         me->GetMotionMaster()->Clear();
         me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
-        if (ownerTarget && !owner->IsFriendlyTo(ownerTarget)
-            && me->IsWithinDist(ownerTarget, m_attackDist) && !ownerTarget->HasBreakableByDamageCrowdControlAura(me))
-            target = ownerTarget;
         return;
     }
 
