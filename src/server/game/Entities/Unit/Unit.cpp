@@ -13363,6 +13363,8 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
         }
     }
     SetSpeed(mtype, speed, forced);
+    if (mtype == MOVE_RUN)
+        SetSpeed(MOVE_WALK, speed, forced);
 }
 
 float Unit::GetSpeed(UnitMoveType mtype) const
