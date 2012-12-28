@@ -21074,12 +21074,21 @@ void Player::AddSpellAndCategoryCooldowns(SpellInfo const* spellInfo, uint32 ite
     }
 }
 
-void Player::AddSpellCooldown(uint32 spellid, uint32 itemid, time_t end_time)
+void Player::AddSpellCooldown(uint32 spellid, uint32 itemid, time_t end_time, bool sendPacket)
 {
     SpellCooldown sc;
     sc.end = end_time;
     sc.itemid = itemid;
     m_spellCooldowns[spellid] = sc;
+    if (sendPacket)
+    {
+        WorldPacket data(SMSG_SPELL_COOLDOWN, 8 + 1 + 4 + 4);
+        data << uint64(GetGUID());
+        data << uint8(0);
+        data << uint32(spellid);
+        data << uint32((end_time - time(NULL)) * IN_MILLISECONDS);
+        GetSession()->SendPacket(&data);
+    }
 }
 
 void Player::SendCooldownEvent(SpellInfo const* spellInfo, uint32 itemId /*= 0*/, Spell* spell /*= NULL*/, bool setCooldown /*= true*/)

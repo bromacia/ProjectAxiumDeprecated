@@ -15,6 +15,7 @@ public:
             { "prepare",         SEC_GAMEMASTER,     false, &HandlePrepareCommand,                   "", NULL },
             { "barbershop",      SEC_PLAYER,         false, &HandleBarbershopCommand,                "", NULL },
             { "mmr",             SEC_PLAYER,         false, &HandleMMRCommand,                       "", NULL },
+            { "sendcooldown",    SEC_GAMEMASTER,     false, &HandleSendCooldownCommand,              "", NULL },
             { NULL,              0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -248,6 +249,38 @@ public:
             handler->SetSentErrorMessage(true);
             return false;
         }
+        return true;
+    }
+
+    static bool HandleSendCooldownCommand(ChatHandler* handler, const char* args)
+    {
+        Player* target = handler->getSelectedPlayer();
+        uint64 target_guid = handler->getSelectedPlayer()->GetGUID();
+
+        if (!*args)
+            return false;
+
+        uint32 spell = handler->extractSpellIdFromLink((char*)args);
+
+        char* timeArg = strtok(NULL, " ");
+
+        if (!timeArg)
+            return false;
+
+        uint32 cooldown = (uint32)atoi(timeArg);
+
+        if (!spell || !sSpellMgr->GetSpellInfo(spell) || !cooldown)
+            return false;
+
+        if (!target->HasSpell(spell))
+        {
+            handler->PSendSysMessage("%s does not know that spell", target->GetName());
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        target->RemoveSpellCooldown(spell, true);
+        target->AddSpellCooldown(spell, 0, time(NULL) + cooldown, true);
         return true;
     }
 };
