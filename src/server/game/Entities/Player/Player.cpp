@@ -24098,52 +24098,43 @@ bool Player::canSeeSpellClickOn(Creature const* c) const
 
 uint32 Player::GetTalentSpec()
 {
-    if (m_specsCount)
+    uint32 const* talentTabIds = GetTalentTabPages(getClass());
+
+    for (uint8 i = 0; i < MAX_TALENT_TABS; ++i)
     {
-        if (m_specsCount > MAX_TALENT_SPECS)
-            m_specsCount = MAX_TALENT_SPECS;
+        uint32 talentTabId = talentTabIds[i];
+        uint8 TalentPoints = 0;
 
-        uint32 const* talentTabIds = GetTalentTabPages(getClass());
-
-        for (uint32 specIdx = 0; specIdx < m_specsCount; ++specIdx)
+        for (uint32 talentId = 0; talentId < sTalentStore.GetNumRows(); ++talentId)
         {
-            for (uint8 i = 0; i < MAX_TALENT_TABS; ++i)
+            TalentEntry const* talentInfo = sTalentStore.LookupEntry(talentId);
+            if (!talentInfo)
+                continue;
+
+            // skip another tab talents
+            if (talentInfo->TalentTab != talentTabId)
+                continue;
+
+            // find max talent rank (0~4)
+            int8 curtalent_maxrank = -1;
+            for (int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
             {
-                uint32 talentTabId = talentTabIds[i];
-                uint8 TalentPoints = 0;
-
-                for (uint32 talentId = 0; talentId < sTalentStore.GetNumRows(); ++talentId)
+                if (talentInfo->RankID[rank] && HasTalent(talentInfo->RankID[rank], GetActiveSpec()))
                 {
-                    TalentEntry const* talentInfo = sTalentStore.LookupEntry(talentId);
-                    if (!talentInfo)
-                        continue;
-
-                    // skip another tab talents
-                    if (talentInfo->TalentTab != talentTabId)
-                        continue;
-
-                    // find max talent rank (0~4)
-                    int8 curtalent_maxrank = -1;
-                    for (int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
-                    {
-                        if (talentInfo->RankID[rank] && HasTalent(talentInfo->RankID[rank], specIdx))
-                        {
-                            curtalent_maxrank = rank;
-                            break;
-                        }
-                    }
-
-                    // not learned talent
-                    if (curtalent_maxrank < 0)
-                        continue;
-
-                    TalentPoints += curtalent_maxrank;
-                    ++TalentPoints;
-
-                    if (TalentPoints >= 41)
-                        return talentTabId;
+                    curtalent_maxrank = rank;
+                    break;
                 }
             }
+
+            // not learned talent
+            if (curtalent_maxrank < 0)
+                continue;
+
+            TalentPoints += curtalent_maxrank;
+            ++TalentPoints;
+
+            if (TalentPoints >= 41)
+                return talentTabId;
         }
     }
     return 0;
@@ -24777,6 +24768,8 @@ void Player::ActivateSpec(uint8 spec)
         SetPower(POWER_MANA, 0); // Mana must be 0 even if it isn't the active power type.
 
     SetPower(pw, 0);
+
+    m_playerSpec = GetTalentSpec();
 }
 
 void Player::ResetTimeSync()
