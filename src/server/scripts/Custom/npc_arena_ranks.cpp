@@ -24,32 +24,21 @@ class npc_arena_ranks : public CreatureScript
             uint32 teamType;
             switch (option)
             {
-                case ARENA_2V2_LADDER:
-                    teamType = 2;
-                    break;
-                case ARENA_3V3_LADDER:
-                    teamType = 3;
-                    break;
-                case ARENA_5V5_LADDER:
-                    teamType = 5;
-                    break;
+                case ARENA_2V2_LADDER: teamType = 2; break;
+                case ARENA_3V3_LADDER: teamType = 3; break;
+                case ARENA_5V5_LADDER: teamType = 5; break;
             }
             return teamType;
         }
+
         uint32 teamTypeToOption(uint32 teamType)
         {
             uint32 option;
             switch (teamType)
             {
-                case 2:
-                    option = ARENA_2V2_LADDER;
-                    break;
-                case 3:
-                    option = ARENA_3V3_LADDER;
-                    break;
-                case 5:
-                    option = ARENA_5V5_LADDER;
-                    break;
+                case 2: option = ARENA_2V2_LADDER; break;
+                case 3: option = ARENA_3V3_LADDER; break;
+                case 5: option = ARENA_5V5_LADDER; break;
             }
             return option;
         }
@@ -59,36 +48,16 @@ class npc_arena_ranks : public CreatureScript
             std::string race_s = "Unknown";
             switch (race)
             {
-                case RACE_HUMAN:
-                    race_s = "Human";
-                    break;
-                case RACE_ORC:
-                    race_s = "Orc";
-                    break;
-                case RACE_DWARF:
-                    race_s = "Dwarf";
-                    break;
-                case RACE_NIGHTELF:
-                    race_s = "Night Elf";
-                    break;
-                case RACE_UNDEAD_PLAYER:
-                    race_s = "Undead";
-                    break;
-                case RACE_TAUREN:
-                    race_s = "Tauren";
-                    break;
-                case RACE_GNOME:
-                    race_s = "Gnome";
-                    break;
-                case RACE_TROLL:
-                    race_s = "Troll";
-                    break;
-                case RACE_BLOODELF:
-                    race_s = "Blood Elf";
-                    break;
-                case RACE_DRAENEI:
-                    race_s = "Draenei";
-                    break;
+                case RACE_HUMAN:         race_s = "Human";     break;
+                case RACE_ORC:           race_s = "Orc";       break;
+                case RACE_DWARF:         race_s = "Dwarf";     break;
+                case RACE_NIGHTELF:      race_s = "Night Elf"; break;
+                case RACE_UNDEAD_PLAYER: race_s = "Undead";    break;
+                case RACE_TAUREN:        race_s = "Tauren";    break;
+                case RACE_GNOME:         race_s = "Gnome";     break;
+                case RACE_TROLL:         race_s = "Troll";     break;
+                case RACE_BLOODELF:      race_s = "Blood Elf"; break;
+                case RACE_DRAENEI:       race_s = "Draenei";   break;
             }
             return race_s;
         }
@@ -98,36 +67,16 @@ class npc_arena_ranks : public CreatureScript
             std::string Class_s = "Unknown";
             switch (Class)
             {
-                case CLASS_WARRIOR:
-                    Class_s = "Warrior";
-                    break;
-                case CLASS_PALADIN:
-                    Class_s = "Paladin";
-                    break;
-                case CLASS_HUNTER:
-                    Class_s = "Hunter";
-                    break;
-                case CLASS_ROGUE:
-                    Class_s = "Rogue";
-                    break;
-                case CLASS_PRIEST:
-                    Class_s = "Priest";
-                    break;
-                case CLASS_DEATH_KNIGHT:
-                    Class_s = "Death Knight";
-                    break;
-                case CLASS_SHAMAN:
-                    Class_s = "Shaman";
-                    break;
-                case CLASS_MAGE:
-                    Class_s = "Mage";
-                    break;
-                case CLASS_WARLOCK:
-                    Class_s = "Warlock";
-                    break;
-                case CLASS_DRUID:
-                    Class_s = "Druid";
-                    break;
+                case CLASS_WARRIOR:      Class_s = "Warrior";      break;
+                case CLASS_PALADIN:      Class_s = "Paladin";      break;
+                case CLASS_HUNTER:       Class_s = "Hunter";       break;
+                case CLASS_ROGUE:        Class_s = "Rogue";        break;
+                case CLASS_PRIEST:       Class_s = "Priest";       break;
+                case CLASS_DEATH_KNIGHT: Class_s = "Death Knight"; break;
+                case CLASS_SHAMAN:       Class_s = "Shaman";       break;
+                case CLASS_MAGE:         Class_s = "Mage";         break;
+                case CLASS_WARLOCK:      Class_s = "Warlock";      break;
+                case CLASS_DRUID:        Class_s = "Druid";        break;
             }
             return Class_s;
         }
