@@ -3261,6 +3261,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 33750: // Windfury Attack (Off Hand)
                 spellInfo->speed = 150;
                 break;
+            case 31884: // Avenging Wrath
+                spellInfo->excludeCasterAuraSpell = 0;
+                break;
             default:
                 break;
         }

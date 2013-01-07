@@ -2012,8 +2012,13 @@ class Unit : public WorldObject
         void UpdateObjectVisibility(bool forced = true);
 
         SpellImmuneList m_spellImmune[MAX_SPELL_IMMUNITY];
+
         uint32 m_lastSanctuaryTime;
         uint32 m_lastBlinkTime;
+        uint32 DivineShieldCooldown;
+        uint32 DivineProtectionCooldown;
+        uint32 HandOfProtectionCooldown;
+        uint32 LayOnHandsCooldown;
 
         // Threat related methods
         bool CanHaveThreatList() const;

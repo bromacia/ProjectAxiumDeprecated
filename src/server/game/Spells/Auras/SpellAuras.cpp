@@ -1300,18 +1300,79 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
     // mods at aura remove
     else
     {
+        // Forbearance
+        if (m_spellInfo->Id == 25771)
+        {
+            uint32 msTime = getMSTime();
+            // Divine Shield
+            if (target->ToPlayer()->HasSpell(642))
+                if (msTime <= target->DivineShieldCooldown)
+                    target->ToPlayer()->AddSpellCooldown(642, 0, time(NULL) + ((target->DivineShieldCooldown - msTime) / IN_MILLISECONDS), true);
+                else
+                    target->ToPlayer()->RemoveSpellCooldown(642, true);
+
+            // Divine Protection
+            if (target->ToPlayer()->HasSpell(498))
+                if (msTime <= target->DivineProtectionCooldown)
+                    target->ToPlayer()->AddSpellCooldown(498, 0, time(NULL) + ((target->DivineProtectionCooldown - msTime) / IN_MILLISECONDS), true);
+                else
+                    target->ToPlayer()->RemoveSpellCooldown(498, true);
+
+            // Hand of Protection
+            if (msTime <= target->HandOfProtectionCooldown)
+            {
+                if (target->ToPlayer()->HasSpell(1022))
+                    target->ToPlayer()->AddSpellCooldown(1022, 0, time(NULL) + ((target->HandOfProtectionCooldown - msTime) / IN_MILLISECONDS, true));
+
+                if (target->ToPlayer()->HasSpell(5599))
+                    target->ToPlayer()->AddSpellCooldown(5599, 0, time(NULL) + ((target->HandOfProtectionCooldown - msTime) / IN_MILLISECONDS, true));
+
+                if (target->ToPlayer()->HasSpell(10278))
+                    target->ToPlayer()->AddSpellCooldown(10278, 0, time(NULL) + ((target->HandOfProtectionCooldown - msTime) / IN_MILLISECONDS, true));
+            }
+            else
+            {
+                if (target->ToPlayer()->HasSpell(1022))
+                    target->ToPlayer()->RemoveSpellCooldown(1022, true);
+
+                if (target->ToPlayer()->HasSpell(1022))
+                    target->ToPlayer()->RemoveSpellCooldown(5599, true);
+
+                if (target->ToPlayer()->HasSpell(1022))
+                    target->ToPlayer()->RemoveSpellCooldown(10278, true);
+            }
+
+            // Lay on Hands
+            if (msTime <= target->LayOnHandsCooldown)
+            {
+                if (target->ToPlayer()->HasSpell(633))
+                    target->ToPlayer()->AddSpellCooldown(633, 0, time(NULL) + ((target->LayOnHandsCooldown - msTime) / IN_MILLISECONDS, true));
+                if (target->ToPlayer()->HasSpell(2800))
+                    target->ToPlayer()->AddSpellCooldown(2800, 0, time(NULL) + ((target->LayOnHandsCooldown - msTime) / IN_MILLISECONDS, true));
+                if (target->ToPlayer()->HasSpell(10310))
+                    target->ToPlayer()->AddSpellCooldown(10310, 0, time(NULL) + ((target->LayOnHandsCooldown - msTime) / IN_MILLISECONDS, true));
+                if (target->ToPlayer()->HasSpell(27154))
+                    target->ToPlayer()->AddSpellCooldown(27154, 0, time(NULL) + ((target->LayOnHandsCooldown - msTime) / IN_MILLISECONDS, true));
+                if (target->ToPlayer()->HasSpell(48788))
+                    target->ToPlayer()->AddSpellCooldown(48788, 0, time(NULL) + ((target->LayOnHandsCooldown - msTime) / IN_MILLISECONDS, true));
+            }
+            else
+            {
+                if (target->ToPlayer()->HasSpell(633))
+                    target->ToPlayer()->RemoveSpellCooldown(633, true);
+                if (target->ToPlayer()->HasSpell(2800))
+                    target->ToPlayer()->RemoveSpellCooldown(2800, true);
+                if (target->ToPlayer()->HasSpell(10310))
+                    target->ToPlayer()->RemoveSpellCooldown(10310, true);
+                if (target->ToPlayer()->HasSpell(27154))
+                    target->ToPlayer()->RemoveSpellCooldown(27154, true);
+                if (target->ToPlayer()->HasSpell(48788))
+                    target->ToPlayer()->RemoveSpellCooldown(48788, true);
+            }
+        }
+
         switch (GetSpellInfo()->SpellFamilyName)
         {
-            case SPELLFAMILY_GENERIC:
-                switch (GetId())
-                {
-                    case 61987: // Avenging Wrath
-                        // Remove the immunity shield marker on Avenging Wrath removal if Forbearance is not present
-                        if (target->HasAura(61988) && !target->HasAura(25771))
-                            target->RemoveAura(61988);
-                        break;
-                }
-                break;
             case SPELLFAMILY_MAGE:
                 switch (GetId())
                 {
@@ -1505,11 +1566,6 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                 // Remove Vanish on stealth remove
                 if (GetId() == 1784)
                     target->RemoveAurasWithFamily(SPELLFAMILY_ROGUE, 0x0000800, 0, 0, target->GetGUID());
-                break;
-            case SPELLFAMILY_PALADIN:
-                // Remove the immunity shield marker on Forbearance removal if AW marker is not present
-                if (GetId() == 25771 && target->HasAura(61988) && !target->HasAura(61987))
-                    target->RemoveAura(61988);
                 break;
             case SPELLFAMILY_DEATHKNIGHT:
                 // Blood of the North

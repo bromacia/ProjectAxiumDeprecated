@@ -899,7 +899,6 @@ void Spell::prepareDataForTriggerSystem(AuraEffect const* /*triggeredByAura*/)
         (m_spellInfo->SpellFamilyFlags[0] & 0x18 ||     // Freezing and Frost Trap, Freezing Arrow
         m_spellInfo->Id == 57879 ||                     // Snake Trap - done this way to avoid double proc
         m_spellInfo->SpellFamilyFlags[2] & 0x00024000)) // Explosive and Immolation Trap
-
         m_procAttacker |= PROC_FLAG_DONE_TRAP_ACTIVATION;
 
     /* Effects which are result of aura proc from triggered spell cannot proc
@@ -1427,7 +1426,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             m_caster->SetInCombatWith(unit);
     }
 
-    // Bladestorm and Killing Spree should remove all slows on use
+    // Bladestorm and Killing Spree should remove all slows
     if (m_spellInfo->Id == 46924 || m_spellInfo->Id == 51690)
     {
         unit->RemoveAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
@@ -1435,6 +1434,11 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         unit->RemoveAurasWithMechanic(MECHANIC_SNARE);
         unit->RemoveAurasWithMechanic(MECHANIC_ROOT);
     }
+
+    // Divine Shield, Divine Protection, Hand of Protection and Lay on Hands
+    if (m_spellInfo->Id == 642 || m_spellInfo->Id == 498 || m_spellInfo->Id == 1022 || m_spellInfo->Id == 5599 || m_spellInfo->Id == 10278 ||
+        m_spellInfo->Id == 633 || m_spellInfo->Id == 2800 || m_spellInfo->Id == 10310 || m_spellInfo->Id == 27154 || m_spellInfo->Id == 48788)
+        m_caster->ToPlayer()->CastSpell(unit, 25771); // Forbearance
 
     if (spellHitTarget)
     {
@@ -1734,20 +1738,6 @@ void Spell::DoTriggersOnSpellHit(Unit* unit, uint8 effMask)
     // TODO: move this code to scripts
     if (m_preCastSpell)
     {
-        // Paladin immunity shields
-        if (m_preCastSpell == 61988)
-        {
-            // Cast Forbearance
-            m_caster->CastSpell(unit, 25771, true);
-            // Cast Avenging Wrath Marker
-            unit->CastSpell(unit, 61987, true);
-        }
-
-        // Avenging Wrath
-        if (m_preCastSpell == 61987)
-            // Cast the serverside immunity shield marker
-            m_caster->CastSpell(unit, 61988, true);
-
         if (sSpellMgr->GetSpellInfo(m_preCastSpell))
             // Blizz seems to just apply aura without bothering to cast
             m_caster->AddAura(m_preCastSpell, unit);
@@ -3763,6 +3753,7 @@ void Spell::finish(bool ok)
 
     if (m_spellState == SPELL_STATE_FINISHED)
         return;
+
     m_spellState = SPELL_STATE_FINISHED;
 
     if (m_spellInfo->IsChanneled())
@@ -3840,6 +3831,134 @@ void Spell::finish(bool ok)
     // Stop Attack for some spells
     if (m_spellInfo->Attributes & SPELL_ATTR0_STOP_ATTACK_TARGET)
         m_caster->AttackStop();
+
+    // Avenging Wrath
+    if (m_spellInfo->Id == 31884 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(642) < 30000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(498) < 30000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(1022) < 30000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(5599) < 30000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(10278) < 30000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(633) < 30000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(2800) < 30000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(10310) < 30000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(27154) < 30000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(48788) < 30000)
+    {
+        m_caster->ToPlayer()->AddSpellCooldown(642, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(498, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(1022, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(5599, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(10278, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(633, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(2800, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(10310, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(27154, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(48788, 0, time(NULL) + 30, true);
+    }
+        
+
+    // Divine Shield
+    if (m_spellInfo->Id == 642 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(31884) < 30000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(498) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(1022) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(5599) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(10278) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(633) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(2800) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(10310) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(27154) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(48788) < 120000)
+    {
+        m_caster->DivineShieldCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(642) + getMSTime();
+        m_caster->DivineProtectionCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(498) + getMSTime();
+        m_caster->HandOfProtectionCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(1022) + getMSTime();
+        m_caster->LayOnHandsCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(633) + getMSTime();
+        m_caster->ToPlayer()->AddSpellCooldown(31884, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(498, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(1022, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(5599, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(10278, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(633, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(2800, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(10310, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(27154, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(48788, 0, time(NULL) + 120, true);
+    }
+
+    // Divine Protection
+    if (m_spellInfo->Id == 498 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(31884) < 30000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(642) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(1022) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(5599) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(10278) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(633) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(2800) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(10310) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(27154) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(48788) < 120000)
+    {
+        m_caster->DivineShieldCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(642) + getMSTime();
+        m_caster->DivineProtectionCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(498) + getMSTime();
+        m_caster->HandOfProtectionCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(1022) + getMSTime();
+        m_caster->LayOnHandsCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(633) + getMSTime();
+        m_caster->ToPlayer()->AddSpellCooldown(31884, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(642, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(1022, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(5599, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(10278, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(633, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(2800, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(10310, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(27154, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(48788, 0, time(NULL) + 120, true);
+    }
+
+    // Hand of Protection
+    if (m_spellInfo->Id == 1022 || m_spellInfo->Id == 5599 || m_spellInfo->Id == 10278 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(31884) < 30000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(642) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(498) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(633) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(2800) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(10310) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(27154) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(48788) < 120000)
+    {
+        m_caster->DivineShieldCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(642) + getMSTime();
+        m_caster->DivineProtectionCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(498) + getMSTime();
+        m_caster->HandOfProtectionCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(1022) + getMSTime();
+        m_caster->LayOnHandsCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(633) + getMSTime();
+        m_caster->ToPlayer()->AddSpellCooldown(31884, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(642, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(498, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(633, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(2800, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(10310, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(27154, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(48788, 0, time(NULL) + 120, true);
+    }
+
+    // Lay on Lands
+    if (m_spellInfo->Id == 633 || m_spellInfo->Id == 2800 || m_spellInfo->Id == 10310 || m_spellInfo->Id == 27154 || m_spellInfo->Id == 48788 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(642) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(498) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(1022) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(5599) < 120000 &&
+        m_caster->ToPlayer()->GetSpellCooldownDelay(10278) < 120000)
+    {
+        m_caster->DivineShieldCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(642) + getMSTime();
+        m_caster->DivineProtectionCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(498) + getMSTime();
+        m_caster->HandOfProtectionCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(1022) + getMSTime();
+        m_caster->LayOnHandsCooldown = m_caster->ToPlayer()->GetSpellCooldownDelay(633) + getMSTime();
+        m_caster->ToPlayer()->AddSpellCooldown(31884, 0, time(NULL) + 30, true);
+        m_caster->ToPlayer()->AddSpellCooldown(498, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(1022, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(5599, 0, time(NULL) + 120, true);
+        m_caster->ToPlayer()->AddSpellCooldown(10278, 0, time(NULL) + 120, true);
+    }
 
     // Penance
     if (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST
@@ -4972,19 +5091,9 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (!(m_spellInfo->AttributesEx6 & SPELL_ATTR6_CAN_TARGET_INVISIBLE) && !m_caster->canSeeOrDetect(target) && m_casttime != 0 && !target->HasAura(200008))
                 return SPELL_FAILED_BAD_TARGETS;
         }
-        else
-        {
-            if (m_caster->GetTypeId() == TYPEID_PLAYER) // Target - is player caster
-            {
-                // Lay on Hands - cannot be self-cast on paladin with Forbearance or after using Avenging Wrath
-                if (m_spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN && m_spellInfo->SpellFamilyFlags[0] & 0x0008000)
-                    if (target->HasAura(61988)) // Immunity shield marker
-                        return SPELL_FAILED_TARGET_AURASTATE;
-            }
-        }
     }
 
-    //Check for line of sight for spells with dest
+    // Check for line of sight for spells with dest
     if (m_targets.HasDst())
     {
         float x, y, z;
@@ -5814,12 +5923,6 @@ SpellCastResult Spell::CheckPetCast(Unit* target)
             break;
         }
     }
-
-    // Devour Magic
-    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && (m_spellInfo->SpellFamilyFlags[2] & 0x400))
-        if (m_caster->ToCreature()->GetOwner()->ToPlayer()->GetTeam() != target->ToPlayer()->GetTeam() 
-            && !m_caster->ToCreature()->IsValidAttackTarget(target))
-            return SPELL_FAILED_BAD_TARGETS;
 
     // cooldown
     if (Creature const* creatureCaster = m_caster->ToCreature())
