@@ -357,6 +357,7 @@ class Item : public Object
         bool CheckSoulboundTradeExpire();
 
         uint32 TransmogEntry;
+        uint32 TransmogEnchant;
 
         void BuildUpdate(UpdateDataMapType&);
 

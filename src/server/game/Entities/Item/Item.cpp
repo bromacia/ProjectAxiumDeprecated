@@ -254,6 +254,7 @@ Item::Item()
     m_paidExtendedCost = 0;
 
     TransmogEntry = 0;
+    TransmogEnchant = 0;
 }
 
 bool Item::Create(uint32 guidlow, uint32 itemid, Player const* owner)
@@ -288,6 +289,8 @@ bool Item::Create(uint32 guidlow, uint32 itemid, Player const* owner)
     }
 
     TransmogEntry = 0;
+    TransmogEnchant = 0;
+
     return true;
 }
 

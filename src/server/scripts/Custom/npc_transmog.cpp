@@ -2,20 +2,23 @@
 
 enum TransmogSlots
 {
-    TRANSMOG_SLOT_HEAD     = PLAYER_VISIBLE_ITEM_1_ENTRYID,
-    TRANSMOG_SLOT_SHOULDER = PLAYER_VISIBLE_ITEM_3_ENTRYID,
-    TRANSMOG_SLOT_CHEST    = PLAYER_VISIBLE_ITEM_5_ENTRYID,
-    TRANSMOG_SLOT_WRIST    = PLAYER_VISIBLE_ITEM_9_ENTRYID,
-    TRANSMOG_SLOT_GLOVES   = PLAYER_VISIBLE_ITEM_10_ENTRYID,
-    TRANSMOG_SLOT_BELT     = PLAYER_VISIBLE_ITEM_6_ENTRYID,
-    TRANSMOG_SLOT_LEGS     = PLAYER_VISIBLE_ITEM_7_ENTRYID,
-    TRANSMOG_SLOT_BOOTS    = PLAYER_VISIBLE_ITEM_8_ENTRYID,
-    TRANSMOG_SLOT_MAINHAND = PLAYER_VISIBLE_ITEM_16_ENTRYID,
-    TRANSMOG_SLOT_OFFHAND  = PLAYER_VISIBLE_ITEM_17_ENTRYID,
-    TRANSMOG_SLOT_RANGED   = PLAYER_VISIBLE_ITEM_18_ENTRYID,
-    TRANSMOG_SLOT_BACK     = PLAYER_VISIBLE_ITEM_15_ENTRYID,
-    TRANSMOG_SLOT_SHIRT    = PLAYER_VISIBLE_ITEM_4_ENTRYID,
-    TRANSMOG_SLOT_TABARD   = PLAYER_VISIBLE_ITEM_19_ENTRYID,
+    TRANSMOG_SLOT_HEAD             = PLAYER_VISIBLE_ITEM_1_ENTRYID,
+    TRANSMOG_SLOT_SHOULDER         = PLAYER_VISIBLE_ITEM_3_ENTRYID,
+    TRANSMOG_SLOT_CHEST            = PLAYER_VISIBLE_ITEM_5_ENTRYID,
+    TRANSMOG_SLOT_WRIST            = PLAYER_VISIBLE_ITEM_9_ENTRYID,
+    TRANSMOG_SLOT_GLOVES           = PLAYER_VISIBLE_ITEM_10_ENTRYID,
+    TRANSMOG_SLOT_BELT             = PLAYER_VISIBLE_ITEM_6_ENTRYID,
+    TRANSMOG_SLOT_LEGS             = PLAYER_VISIBLE_ITEM_7_ENTRYID,
+    TRANSMOG_SLOT_BOOTS            = PLAYER_VISIBLE_ITEM_8_ENTRYID,
+    TRANSMOG_SLOT_MAINHAND         = PLAYER_VISIBLE_ITEM_16_ENTRYID,
+    TRANSMOG_SLOT_OFFHAND          = PLAYER_VISIBLE_ITEM_17_ENTRYID,
+    TRANSMOG_SLOT_RANGED           = PLAYER_VISIBLE_ITEM_18_ENTRYID,
+    TRANSMOG_SLOT_BACK             = PLAYER_VISIBLE_ITEM_15_ENTRYID,
+    TRANSMOG_SLOT_SHIRT            = PLAYER_VISIBLE_ITEM_4_ENTRYID,
+    TRANSMOG_SLOT_TABARD           = PLAYER_VISIBLE_ITEM_19_ENTRYID,
+    TRANSMOG_SLOT_MAINHAND_ENCHANT = PLAYER_VISIBLE_ITEM_16_ENCHANTMENT,
+    TRANSMOG_SLOT_OFFHAND_ENCHANT  = PLAYER_VISIBLE_ITEM_17_ENCHANTMENT,
+    TRANSMOG_SLOT_RANGED_ENCHANT   = PLAYER_VISIBLE_ITEM_18_ENCHANTMENT,
 };
 
 enum TransmogTeams
@@ -28,9 +31,11 @@ enum TransmogOptions
 {
     TRANSMOG_ACTION_SHOW_ARMOR = 1,
     TRANSMOG_ACTION_SHOW_WEAPONS,
+    TRANSMOG_ACTION_SHOW_ENCHANTS,
     TRANSMOG_ACTION_MAIN_MENU,
     TRANSMOG_ACTION_REMOVE_ARMOR,
     TRANSMOG_ACTION_REMOVE_WEAPONS,
+    TRANSMOG_ACTION_REMOVE_ENCHANTS,
 };
 
 class npc_transmog : public CreatureScript
@@ -42,6 +47,7 @@ class npc_transmog : public CreatureScript
     {
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "Armor Sets", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_SHOW_ARMOR);
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "Weapons", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_SHOW_WEAPONS);
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "Enchants", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_SHOW_ENCHANTS);
 
         player->SEND_GOSSIP_MENU(1, creature->GetGUID());
         return true;
@@ -52,9 +58,11 @@ class npc_transmog : public CreatureScript
         player->PlayerTalkClass->ClearMenus();
 
         if (action == TRANSMOG_ACTION_SHOW_ARMOR)
-            ShowTransmogArmorSets(player, creature, sender, action);
+            ShowTransmogArmorSets(player, creature);
         else if (action == TRANSMOG_ACTION_SHOW_WEAPONS)
-            ShowTransmogWeapons(player, creature, sender, action);
+            ShowTransmogWeapons(player, creature);
+        else if (action == TRANSMOG_ACTION_SHOW_ENCHANTS)
+            ShowTransmogEnchants(player, creature);
         else if (action == TRANSMOG_ACTION_MAIN_MENU)
             OnGossipHello(player, creature);
         else
@@ -62,22 +70,38 @@ class npc_transmog : public CreatureScript
             if (sender == TRANSMOG_ACTION_SHOW_ARMOR)
             {
                 if (action == TRANSMOG_ACTION_REMOVE_ARMOR)
-                    RemoveArmorTransmog(player, creature, sender, action);
+                {
+                    RemoveArmorTransmog(player);
+                    return true;
+                }
 
-                TransmogrifyArmor(player, creature, sender, action);
+                TransmogrifyArmor(player, action);
             }
             else if (sender == TRANSMOG_ACTION_SHOW_WEAPONS)
             {
                 if (action == TRANSMOG_ACTION_REMOVE_WEAPONS)
-                    RemoveWeaponTransmog(player, creature, sender, action);
+                {
+                    RemoveWeaponTransmog(player);
+                    return true;
+                }
 
-                TransmogrifyWeapon(player, creature, sender, action);
+                TransmogrifyWeapon(player, action);
+            }
+            else if (sender == TRANSMOG_ACTION_SHOW_ENCHANTS)
+            {
+                if (action == TRANSMOG_ACTION_REMOVE_ENCHANTS)
+                {
+                    RemoveEnchantTransmog(player);
+                    return true;
+                }
+
+                TransmogrifyEnchant(player, action);
             }
         }
         return false;
     }
 
-    bool ShowTransmogArmorSets(Player* player, Creature* creature, uint32 sender, uint32 action)
+    bool ShowTransmogArmorSets(Player* player, Creature* creature)
     {
         QueryResult result = WorldDatabase.PQuery("SELECT option_name, id, team_id, account_id "
         "FROM transmog_armor_sets WHERE class = '%d' OR class = '0' ORDER BY id ASC", player->getClass());
@@ -105,9 +129,9 @@ class npc_transmog : public CreatureScript
         return true;
     }
 
-    bool ShowTransmogWeapons(Player* player, Creature* creature, uint32 sender, uint32 action)
+    bool ShowTransmogWeapons(Player* player, Creature* creature)
     {
-        QueryResult result = WorldDatabase.PQuery("SELECT option_name, id, team_id, account_id, mainhand_id, offhand_id, ranged_id "
+        QueryResult result = WorldDatabase.PQuery("SELECT option_name, id, team_id, account_id "
         "FROM transmog_weapons WHERE class = '%d' OR class = '0' ORDER BY id ASC", player->getClass());
 
         if (!result)
@@ -133,7 +157,32 @@ class npc_transmog : public CreatureScript
         return true;
     }
 
-    bool TransmogrifyArmor(Player* player, Creature* creature, uint32 sender, uint32 action)
+    bool ShowTransmogEnchants(Player* player, Creature* creature)
+    {
+        QueryResult result = WorldDatabase.PQuery("SELECT option_name, id FROM transmog_enchants ORDER BY id ASC");
+
+        if (!result)
+        {
+            ChatHandler(player).PSendSysMessage("Unable to find Transmog enchant data");
+            player->CLOSE_GOSSIP_MENU();
+            return false;
+        }
+
+        do
+        {
+            Field* fields = result->Fetch();
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, fields[0].GetString(), TRANSMOG_ACTION_SHOW_ENCHANTS, fields[1].GetUInt32());
+        }
+        while (result->NextRow());
+
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "Remove Enchant Transmogrifications", TRANSMOG_ACTION_SHOW_ENCHANTS, TRANSMOG_ACTION_REMOVE_ENCHANTS);
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_MAIN_MENU);
+
+        player->SEND_GOSSIP_MENU(1, creature->GetGUID());
+        return true;
+    }
+
+    bool TransmogrifyArmor(Player* player, uint32 action)
     {
         TransmogArmor const* transmog = sObjectMgr->GetTransmogArmorEntry(action);
         if (!transmog)
@@ -217,7 +266,7 @@ class npc_transmog : public CreatureScript
         return true;
     }
 
-    bool TransmogrifyWeapon(Player* player, Creature* creature, uint32 sender, uint32 action)
+    bool TransmogrifyWeapon(Player* player, uint32 action)
     {
         TransmogWeapon const* transmog = sObjectMgr->GetTransmogWeaponEntry(action);
         if (!transmog)
@@ -231,7 +280,7 @@ class npc_transmog : public CreatureScript
         {
             ItemTemplate const* transmogItem = sObjectMgr->GetItemTemplate(transmog->mainhand_id);
             ItemTemplate const* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate();
-            if (transmogItem->InventoryType == inventoryItem->InventoryType && transmogItem->SubClass == inventoryItem->SubClass)
+            if (transmogItem->SubClass == inventoryItem->SubClass)
             {
                 CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u",
                 transmog->mainhand_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetGUIDLow());
@@ -247,7 +296,7 @@ class npc_transmog : public CreatureScript
         {
             ItemTemplate const* transmogItem = sObjectMgr->GetItemTemplate(transmog->offhand_id);
             ItemTemplate const* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetTemplate();
-            if (transmogItem->InventoryType == inventoryItem->InventoryType && transmogItem->SubClass == inventoryItem->SubClass)
+            if (transmogItem->SubClass == inventoryItem->SubClass)
             {
                 CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u",
                 transmog->offhand_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetGUIDLow());
@@ -263,7 +312,7 @@ class npc_transmog : public CreatureScript
         {
             ItemTemplate const* transmogItem = sObjectMgr->GetItemTemplate(transmog->ranged_id);
             ItemTemplate const* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetTemplate();
-            if (transmogItem->InventoryType == inventoryItem->InventoryType && transmogItem->SubClass == inventoryItem->SubClass)
+            if (transmogItem->SubClass == inventoryItem->SubClass)
             {
                 CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u",
                 transmog->ranged_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetGUIDLow());
@@ -279,7 +328,49 @@ class npc_transmog : public CreatureScript
         return true;
     }
 
-    bool RemoveArmorTransmog(Player* player, Creature* creature, uint32 sender, uint32 action)
+    bool TransmogrifyEnchant(Player* player, uint32 action)
+    {
+        TransmogEnchant const* transmog = sObjectMgr->GetTransmogEnchantEntry(action);
+        if (!transmog)
+        {
+            ChatHandler(player).PSendSysMessage("Unable to find Transmog data for that enchant");
+            player->CLOSE_GOSSIP_MENU();
+            return false;
+        }
+
+        if (transmog->enchant_id != 0 && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != 0)
+        {
+            ItemTemplate const* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate();
+            if (inventoryItem->Class == ITEM_CLASS_WEAPON)
+            {
+                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEnchant = %u WHERE guid = %u",
+                transmog->enchant_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetGUIDLow());
+
+                player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->TransmogEnchant = transmog->enchant_id;
+                player->SetUInt16Value(TRANSMOG_SLOT_MAINHAND_ENCHANT, 0, transmog->enchant_id);
+                player->SetUInt16Value(TRANSMOG_SLOT_MAINHAND_ENCHANT, 1, transmog->enchant_id);
+            }
+        }
+
+        if (transmog->enchant_id != 0 && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND) != 0)
+        {
+            ItemTemplate const* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetTemplate();
+            if (inventoryItem->Class == ITEM_CLASS_WEAPON)
+            {
+                CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEnchant = %u WHERE guid = %u",
+                transmog->enchant_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetGUIDLow());
+
+                player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->TransmogEnchant = transmog->enchant_id;
+                player->SetUInt16Value(TRANSMOG_SLOT_OFFHAND_ENCHANT, 0, transmog->enchant_id);
+                player->SetUInt16Value(TRANSMOG_SLOT_OFFHAND_ENCHANT, 1, transmog->enchant_id);
+            }
+        }
+
+        player->CLOSE_GOSSIP_MENU();
+        return true;
+    }
+
+    bool RemoveArmorTransmog(Player* player)
     {
         for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
         {
@@ -304,7 +395,7 @@ class npc_transmog : public CreatureScript
         return true;
     }
 
-    bool RemoveWeaponTransmog(Player* player, Creature* creature, uint32 sender, uint32 action)
+    bool RemoveWeaponTransmog(Player* player)
     {
         for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
         {
@@ -317,6 +408,28 @@ class npc_transmog : public CreatureScript
                     CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = 0 WHERE guid = %u", item->GetGUIDLow());
                     item->TransmogEntry = 0;
                     player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), item->GetEntry());
+                }
+            }
+        }
+
+        player->CLOSE_GOSSIP_MENU();
+        return true;
+    }
+
+    bool RemoveEnchantTransmog(Player* player)
+    {
+        for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
+        {
+            if (Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+            {
+                if (slot == EQUIPMENT_SLOT_MAINHAND ||
+                    slot == EQUIPMENT_SLOT_OFFHAND ||
+                    slot == EQUIPMENT_SLOT_RANGED)
+                {
+                    CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEnchant = 0 WHERE guid = %u", item->GetGUIDLow());
+                    item->TransmogEnchant = 0;
+                    player->SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 0, item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
+                    player->SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 1, item->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT));
                 }
             }
         }

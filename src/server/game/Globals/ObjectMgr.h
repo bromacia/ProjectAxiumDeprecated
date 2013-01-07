@@ -507,6 +507,12 @@ struct TransmogWeapon
     uint32 ranged_id;
 };
 
+struct TransmogEnchant
+{
+    uint32 id;
+    uint32 enchant_id;
+};
+
 struct GossipMenus
 {
     uint32          entry;
@@ -632,6 +638,7 @@ class ObjectMgr
         typedef UNORDERED_MAP<uint32, ReputationOnKillEntry> RepOnKillMap;
         typedef UNORDERED_MAP<uint32, TransmogArmor> TransmogArmorMap;
         typedef UNORDERED_MAP<uint32, TransmogWeapon> TransmogWeaponMap;
+        typedef UNORDERED_MAP<uint32, TransmogEnchant> TransmogEnchantMap;
         typedef UNORDERED_MAP<uint32, RepSpilloverTemplate> RepSpilloverTemplateMap;
 
         typedef UNORDERED_MAP<uint32, PointOfInterest> PointOfInterestMap;
@@ -791,6 +798,14 @@ class ObjectMgr
         {
             TransmogWeaponMap::const_iterator itr = mTransmogWeapon.find(id);
             if (itr != mTransmogWeapon.end())
+                return &itr->second;
+            return NULL;
+        }
+
+        TransmogEnchant const* GetTransmogEnchantEntry(uint32 id) const
+        {
+            TransmogEnchantMap::const_iterator itr = mTransmogEnchant.find(id);
+            if (itr != mTransmogEnchant.end())
                 return &itr->second;
             return NULL;
         }
@@ -956,6 +971,7 @@ class ObjectMgr
 
         void LoadArmorTransmogs();
         void LoadWeaponTransmogs();
+        void LoadEnchantTransmogs();
 
         void LoadVendors();
         void LoadTrainerSpell();
@@ -1276,6 +1292,7 @@ class ObjectMgr
 
         TransmogArmorMap     mTransmogArmor;
         TransmogWeaponMap    mTransmogWeapon;
+        TransmogEnchantMap   mTransmogEnchant;
 
         GossipMenusMap      m_mGossipMenusMap;
         GossipMenuItemsMap  m_mGossipMenuItemsMap;

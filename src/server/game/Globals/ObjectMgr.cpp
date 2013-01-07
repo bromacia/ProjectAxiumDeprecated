@@ -8522,6 +8522,44 @@ void ObjectMgr::LoadWeaponTransmogs()
     sLog->outString();
 }
 
+void ObjectMgr::LoadEnchantTransmogs()
+{
+    uint32 oldMSTime = getMSTime();
+
+    mTransmogEnchant.clear();
+
+    QueryResult result = WorldDatabase.Query("SELECT id, enchant_id FROM transmog_enchants");
+
+    if (!result)
+    {
+        sLog->outErrorDb(">> Loaded 0 transmog enchants. DB table `transmog_enchants` is empty!");
+        sLog->outString();
+        return;
+    }
+
+    uint32 count = 0;
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint32 id = fields[0].GetUInt32();
+
+        TransmogEnchant transmog;
+
+        transmog.id                 = id;
+        transmog.enchant_id         = fields[1].GetUInt32();
+
+        mTransmogEnchant[id] = transmog;
+
+        ++count;
+    }
+    while (result->NextRow());
+
+    sLog->outString(">> Loaded %u transmog enchants in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    sLog->outString();
+}
+
 void ObjectMgr::AddVendorItem(uint32 entry, uint32 item, int32 maxcount, uint32 incrtime, uint32 extendedCost, bool persist /*= true*/)
 {
     VendorItemData& vList = m_mCacheVendorItemMap[entry];
