@@ -5857,6 +5857,13 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (playerCaster->HasSpellCooldown(72752))
                 return SPELL_FAILED_NOT_READY;
 
+    // Dont allow movement effects to be used while the player is in Arena or Battleground Preparation
+    if (m_spellInfo->HasEffect(SPELL_EFFECT_LEAP) || m_spellInfo->HasEffect(SPELL_EFFECT_CHARGE) ||
+        m_spellInfo->HasEffect(SPELL_EFFECT_TELEPORT_UNITS) || m_spellInfo->HasEffect(SPELL_EFFECT_JUMP_DEST))
+        if (Player* playerCaster = m_caster->ToPlayer())
+            if (playerCaster->HasAura(32727) || playerCaster->HasAura(44521))
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
     // Blazing Hippogryph
     if (m_spellInfo->Id == 74856)
         if (m_originalCaster && m_originalCaster->GetTypeId() == TYPEID_PLAYER && m_originalCaster->isAlive())
