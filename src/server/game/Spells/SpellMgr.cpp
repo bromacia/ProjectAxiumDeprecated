@@ -3264,6 +3264,13 @@ void SpellMgr::LoadDbcDataCorrections()
             case 31884: // Avenging Wrath
                 spellInfo->excludeCasterAuraSpell = 0;
                 break;
+            case 16089: // Elemental Fury (Rank 1)
+            case 60184: // Elemental Fury (Rank 2)
+            case 60185: // Elemental Fury (Rank 3)
+            case 60187: // Elemental Fury (Rank 4)
+            case 60188: // Elemental Fury (Rank 5)
+                spellInfo->EffectSpellClassMask[0] = flag96(0xD1300003, 0x00043000, 0x00000004);
+                break;
             default:
                 break;
         }
