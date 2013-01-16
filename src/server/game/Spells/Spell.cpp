@@ -1435,6 +1435,35 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         unit->RemoveAurasWithMechanic(MECHANIC_ROOT);
     }
 
+    // Bestial Wrath and Beast Within remove auras
+    if (m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
+    {
+        unit->RemoveAurasWithMechanic(MECHANIC_SNARE);
+        unit->RemoveAurasWithMechanic(MECHANIC_ROOT);
+        unit->RemoveAurasWithMechanic(MECHANIC_FEAR);
+        unit->RemoveAurasWithMechanic(MECHANIC_STUN);
+        unit->RemoveAurasWithMechanic(MECHANIC_SLEEP);
+        unit->RemoveAurasWithMechanic(MECHANIC_CHARM);
+        unit->RemoveAurasWithMechanic(MECHANIC_SAPPED);
+        unit->RemoveAurasWithMechanic(MECHANIC_HORROR);
+        unit->RemoveAurasWithMechanic(MECHANIC_POLYMORPH);
+        unit->RemoveAurasWithMechanic(MECHANIC_DISORIENTED);
+        unit->RemoveAurasWithMechanic(MECHANIC_FREEZE);
+        unit->RemoveAurasWithMechanic(MECHANIC_TURN);
+        unit->RemoveAurasWithMechanic(MECHANIC_BANISH);
+        unit->RemoveAurasWithMechanic(MECHANIC_BANISH);
+        unit->RemoveAurasWithMechanic(IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK);
+        unit->RemoveAurasByType(SPELL_AURA_MOD_STUN);
+        unit->RemoveAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
+        unit->RemoveAurasByType(SPELL_AURA_MOD_ROOT);
+        unit->RemoveAurasByType(SPELL_AURA_MOD_CONFUSE);
+        unit->RemoveAurasByType(SPELL_AURA_MOD_FEAR);
+        unit->RemoveAurasByType(SPELL_AURA_MOD_DISARM);
+
+        if (!m_caster->HasAura(34471))
+            m_caster->AddAura(34471, m_caster);
+    }
+
     // Divine Shield, Divine Protection, Hand of Protection and Lay on Hands
     if (m_spellInfo->Id == 642 || m_spellInfo->Id == 498 || m_spellInfo->Id == 1022 || m_spellInfo->Id == 5599 || m_spellInfo->Id == 10278 ||
         m_spellInfo->Id == 633 || m_spellInfo->Id == 2800 || m_spellInfo->Id == 10310 || m_spellInfo->Id == 27154 || m_spellInfo->Id == 48788)
@@ -1508,16 +1537,16 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         {
             unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
 
-            if (m_spellInfo->Id == 34709 || (IsNegativeAuraSpell() // Shadow Sight
-                && m_spellInfo->Id != 3600 && m_spellInfo->Id != 2096 && m_spellInfo->Id != 10909) // Earthbind and Mind Vision
-                || (!m_caster->IsFriendlyTo(unit) && !m_spellInfo->IsTargetingArea() && m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
+            if (m_spellInfo->Id == 34709 || (IsNegativeAuraSpell() && // Shadow Sight
+                m_spellInfo->Id != 3600 && m_spellInfo->Id != 2096 && m_spellInfo->Id != 10909) || // Earthbind and Mind Vision
+                (!m_caster->IsFriendlyTo(unit) && !m_spellInfo->IsTargetingArea() && m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
             {
                 unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
                 unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
             }
 
-            if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174)) // Faerie Fire & Cyclone
-                || IsCrowdControlSpell())
+            if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174)) || // Faerie Fire & Cyclone
+                IsCrowdControlSpell())
                 unit->RemoveAura(66); // Invisibility 3sec fading aura
 
             if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252) // Vanish
@@ -1531,23 +1560,23 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             }
 
             // Handle some immunities here instead of AuraEffect::HandleModStateImmunityMask
-            // Bladestorm and Killing Spree immunities
-            if (unit->HasAura(46924) || unit->HasAura(51690))
-                if (m_spellInfo->Mechanic == MECHANIC_SNARE || m_spellInfo->Mechanic == MECHANIC_ROOT
-                    || m_spellInfo->Mechanic == MECHANIC_FEAR || m_spellInfo->Mechanic == MECHANIC_STUN
-                    || m_spellInfo->Mechanic == MECHANIC_SLEEP || m_spellInfo->Mechanic == MECHANIC_CHARM
-                    || m_spellInfo->Mechanic == MECHANIC_SAPPED || m_spellInfo->Mechanic == MECHANIC_HORROR
-                    || m_spellInfo->Mechanic == MECHANIC_POLYMORPH || m_spellInfo->Mechanic == MECHANIC_DISORIENTED
-                    || m_spellInfo->Mechanic == MECHANIC_FREEZE || m_spellInfo->Mechanic == MECHANIC_TURN
-                    || m_spellInfo->Mechanic == MECHANIC_BANISH || m_spellInfo->Mechanic == IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK
-                    || m_spellInfo->HasEffect(SPELL_EFFECT_KNOCK_BACK) || m_spellInfo->HasEffect(SPELL_EFFECT_KNOCK_BACK_DEST)
-                    || m_spellInfo->HasAura(SPELL_AURA_MOD_STUN) || m_spellInfo->HasAura(SPELL_AURA_MOD_DECREASE_SPEED)
-                    || m_spellInfo->HasAura(SPELL_AURA_MOD_ROOT) || m_spellInfo->HasAura(SPELL_AURA_MOD_CONFUSE)
-                    || m_spellInfo->HasAura(SPELL_AURA_MOD_FEAR))
+            // Bladestorm, Killing Spree, Bestial Wrath and Beast Within immunities
+            if (unit->HasAura(46924) || unit->HasAura(51690) || unit->HasAura(19574) || unit->HasAura(34471) || unit->HasAura(34692))
+                if (m_spellInfo->Mechanic == MECHANIC_SNARE || m_spellInfo->Mechanic == MECHANIC_ROOT ||
+                    m_spellInfo->Mechanic == MECHANIC_FEAR || m_spellInfo->Mechanic == MECHANIC_STUN ||
+                    m_spellInfo->Mechanic == MECHANIC_SLEEP || m_spellInfo->Mechanic == MECHANIC_CHARM ||
+                    m_spellInfo->Mechanic == MECHANIC_SAPPED || m_spellInfo->Mechanic == MECHANIC_HORROR ||
+                    m_spellInfo->Mechanic == MECHANIC_POLYMORPH || m_spellInfo->Mechanic == MECHANIC_DISORIENTED ||
+                    m_spellInfo->Mechanic == MECHANIC_FREEZE || m_spellInfo->Mechanic == MECHANIC_TURN ||
+                    m_spellInfo->Mechanic == MECHANIC_BANISH || m_spellInfo->Mechanic == IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK ||
+                    m_spellInfo->HasEffect(SPELL_EFFECT_KNOCK_BACK) || m_spellInfo->HasEffect(SPELL_EFFECT_KNOCK_BACK_DEST) ||
+                    m_spellInfo->HasAura(SPELL_AURA_MOD_STUN) || m_spellInfo->HasAura(SPELL_AURA_MOD_DECREASE_SPEED) ||
+                    m_spellInfo->HasAura(SPELL_AURA_MOD_ROOT) || m_spellInfo->HasAura(SPELL_AURA_MOD_CONFUSE) ||
+                    m_spellInfo->HasAura(SPELL_AURA_MOD_FEAR))
                     return SPELL_MISS_IMMUNE;
 
-            // Killing Spree immunity to disarm
-            if (unit->HasAura(51690))
+            // Killing Spree, Bestial Wrath and Beast Within immunity to disarm
+            if (unit->HasAura(51690) || unit->HasAura(19574) || unit->HasAura(34471) || unit->HasAura(34692))
                 if (m_spellInfo->Mechanic == MECHANIC_DISARM || m_spellInfo->HasAura(SPELL_AURA_MOD_DISARM))
                     return SPELL_MISS_IMMUNE;
 
@@ -3379,8 +3408,8 @@ void Spell::cast(bool skipCheck)
     SendSpellGo();
 
     // Okay, everything is prepared. Now we need to distinguish between immediate and evented delayed spells
-    if ((m_spellInfo->Speed > 0.0f && !m_spellInfo->IsChanneled()) || m_spellInfo->Id == 14157 // 14157: Ruthlessness (Neeeded?)
-    || IsSpellDelaySpell() || IsMovementDelaySpell() || IsSilenceDelaySpell())
+    if ((m_spellInfo->Speed > 0.0f && !m_spellInfo->IsChanneled()) || m_spellInfo->Id == 14157 || // 14157: Ruthlessness (Neeeded?)
+        IsSpellDelaySpell() || IsMovementDelaySpell() || IsSilenceDelaySpell())
     {
         // Remove used for cast item if need (it can be already NULL after TakeReagents call
         // in case delayed spell remove item at cast delay start
@@ -5795,7 +5824,8 @@ SpellCastResult Spell::CheckCast(bool strict)
                 return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
     // Dont allow anything to be cast while in Cyclone besides PvP Trinket or Ever Man for Himself
-    if (m_spellInfo->Id != 42292 && m_spellInfo->Id != 65547 && m_spellInfo->Id != 59752)
+    if (m_spellInfo->Id != 42292 && m_spellInfo->Id != 65547 && m_spellInfo->Id != 59752 &&
+        m_spellInfo->Id != 19574 && m_spellInfo->Id != 34471)
         if (Player* playerCaster = m_caster->ToPlayer())
             if (playerCaster->HasAura(33786))
                 return SPELL_FAILED_DONT_REPORT;
@@ -5863,6 +5893,12 @@ SpellCastResult Spell::CheckCast(bool strict)
         if (Player* playerCaster = m_caster->ToPlayer())
             if (playerCaster->HasAura(32727) || playerCaster->HasAura(44521))
                 return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+    // Do not allow Bestial Wrath to be casted while the player's pet isnt within LoS of the player
+    if (m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
+        if (Unit* pet = m_caster->ToPlayer()->GetPet())
+            if (!m_caster->ToPlayer()->IsWithinLOS(pet->GetPositionX(), pet->GetPositionY(), pet->GetPositionZ()))
+                return SPELL_FAILED_LINE_OF_SIGHT;
 
     // Blazing Hippogryph
     if (m_spellInfo->Id == 74856)
@@ -5978,35 +6014,38 @@ SpellCastResult Spell::CheckCasterAuras() const
     SpellCastResult prevented_reason = SPELL_CAST_OK;
     // Have to check if there is a stun aura. Otherwise will have problems with ghost aura apply while logging out
     uint32 unitflag = m_caster->GetUInt32Value(UNIT_FIELD_FLAGS);     // Get unit state
-    if (unitflag & UNIT_FLAG_STUNNED)
+    if (m_spellInfo->Id != 19574 && m_spellInfo->Id != 34471) // Bestial Wrath, Beast Within
     {
-        // spell is usable while stunned, check if caster has only mechanic stun auras, another stun types must prevent cast spell
-        if (usableInStun)
+        if (unitflag & UNIT_FLAG_STUNNED)
         {
-            bool foundNotStun = false;
-            Unit::AuraEffectList const& stunAuras = m_caster->GetAuraEffectsByType(SPELL_AURA_MOD_STUN);
-            for (Unit::AuraEffectList::const_iterator i = stunAuras.begin(); i != stunAuras.end(); ++i)
+            // spell is usable while stunned, check if caster has only mechanic stun auras, another stun types must prevent cast spell
+            if (usableInStun)
             {
-                if (!((*i)->GetSpellInfo()->GetAllEffectsMechanicMask() & (1<<MECHANIC_STUN)))
+                bool foundNotStun = false;
+                Unit::AuraEffectList const& stunAuras = m_caster->GetAuraEffectsByType(SPELL_AURA_MOD_STUN);
+                for (Unit::AuraEffectList::const_iterator i = stunAuras.begin(); i != stunAuras.end(); ++i)
                 {
-                    foundNotStun = true;
-                    break;
+                    if (!((*i)->GetSpellInfo()->GetAllEffectsMechanicMask() & (1<<MECHANIC_STUN)))
+                    {
+                        foundNotStun = true;
+                        break;
+                    }
                 }
+                if (foundNotStun)
+                    prevented_reason = SPELL_FAILED_STUNNED;
             }
-            if (foundNotStun)
+            else
                 prevented_reason = SPELL_FAILED_STUNNED;
         }
-        else
-            prevented_reason = SPELL_FAILED_STUNNED;
+        else if (unitflag & UNIT_FLAG_CONFUSED && !(m_spellInfo->AttributesEx5 & SPELL_ATTR5_USABLE_WHILE_CONFUSED))
+            prevented_reason = SPELL_FAILED_CONFUSED;
+        else if (unitflag & UNIT_FLAG_FLEEING && !(m_spellInfo->AttributesEx5 & SPELL_ATTR5_USABLE_WHILE_FEARED))
+            prevented_reason = SPELL_FAILED_FLEEING;
+        else if (unitflag & UNIT_FLAG_SILENCED && m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)
+            prevented_reason = SPELL_FAILED_SILENCED;
+        else if (unitflag & UNIT_FLAG_PACIFIED && m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_PACIFY)
+            prevented_reason = SPELL_FAILED_PACIFIED;
     }
-    else if (unitflag & UNIT_FLAG_CONFUSED && !(m_spellInfo->AttributesEx5 & SPELL_ATTR5_USABLE_WHILE_CONFUSED))
-        prevented_reason = SPELL_FAILED_CONFUSED;
-    else if (unitflag & UNIT_FLAG_FLEEING && !(m_spellInfo->AttributesEx5 & SPELL_ATTR5_USABLE_WHILE_FEARED))
-        prevented_reason = SPELL_FAILED_FLEEING;
-    else if (unitflag & UNIT_FLAG_SILENCED && m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)
-        prevented_reason = SPELL_FAILED_SILENCED;
-    else if (unitflag & UNIT_FLAG_PACIFIED && m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_PACIFY)
-        prevented_reason = SPELL_FAILED_PACIFIED;
 
     // Attr must make flag drop spell totally immune from all effects
     if (prevented_reason != SPELL_CAST_OK)
@@ -6035,7 +6074,8 @@ SpellCastResult Spell::CheckCasterAuras() const
                         switch (part->GetAuraType())
                         {
                             case SPELL_AURA_MOD_STUN:
-                                if (!usableInStun || !(auraInfo->GetAllEffectsMechanicMask() & (1<<MECHANIC_STUN)))
+                                if (!usableInStun || !(auraInfo->GetAllEffectsMechanicMask() & (1<<MECHANIC_STUN)) &&
+                                    m_spellInfo->Id != 19574 && m_spellInfo->Id != 34471) // Bestial Wrath, Beast Within
                                     return SPELL_FAILED_STUNNED;
                                 break;
                             case SPELL_AURA_MOD_CONFUSE:
