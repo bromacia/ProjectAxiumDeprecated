@@ -1204,7 +1204,11 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
 
     if (m_spellInfo->Mechanic == MECHANIC_STUN)
         if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastBlinkTime)
+        {
+            m_caster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_IMMUNE);
             return;
+        }
+
 
     // Get original caster (if exist) and calculate damage/healing from him data
     Unit* caster = m_originalCaster ? m_originalCaster : m_caster;
