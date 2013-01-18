@@ -2734,22 +2734,23 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit* victim, SpellInfo const* spellInfo
         {
             int32 rand = irand(0, 10000);
 
-            if (rand < deflect_chance)
-                return SPELL_MISS_DEFLECT;
+            if (!(spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && spellInfo->SpellFamilyFlags[1] == 0x20000))
+                if (rand < deflect_chance)
+                    return SPELL_MISS_DEFLECT;
         }
 
-        int32 miss = (10000 - CalcMagicSpellHitChance(victim, schoolMask, spellInfo)) * (100 - ignoredResistance) / 100;
+    int32 miss = (10000 - CalcMagicSpellHitChance(victim, schoolMask, spellInfo)) * (100 - ignoredResistance) / 100;
 
-        int32 rand = irand(0, 10000);
+    int32 rand = irand(0, 10000);
 
-        if (rand < miss)
-            return SPELL_MISS_MISS;
+    if (rand < miss)
+        return SPELL_MISS_MISS;
 
-        // Spells with SPELL_ATTR3_IGNORE_HIT_RESULT will additionally fully ignore
-        // resist and deflect chances
-        if (spellInfo->AttributesEx3 & SPELL_ATTR3_IGNORE_HIT_RESULT)
-            return SPELL_MISS_NONE;
+    // Spells with SPELL_ATTR3_IGNORE_HIT_RESULT will additionally fully ignore
+    // resist and deflect chances
+    if (spellInfo->AttributesEx3 & SPELL_ATTR3_IGNORE_HIT_RESULT)
         return SPELL_MISS_NONE;
+    return SPELL_MISS_NONE;
 }
 
 // Calculate spell hit result can be:
@@ -2771,6 +2772,7 @@ SpellMissInfo Unit::SpellHitResult(Unit* victim, SpellInfo const* spell, bool Ca
     if (spell->IsPositive()
         &&(!IsHostileTo(victim)))  // prevent from affecting enemy by "positive" spell
         return SPELL_MISS_NONE;
+
     // Check for immune
     if (victim->IsImmunedToDamage(spell))
         return SPELL_MISS_IMMUNE;
