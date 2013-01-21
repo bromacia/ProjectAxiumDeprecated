@@ -1541,48 +1541,51 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         {
             unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
 
-            if (m_spellInfo->Id == 34709 || (IsNegativeAuraSpell() && // Shadow Sight
-                m_spellInfo->Id != 3600 && m_spellInfo->Id != 2096 && m_spellInfo->Id != 10909) || // Earthbind and Mind Vision
-                (!m_caster->IsFriendlyTo(unit) && !m_spellInfo->IsTargetingArea() && m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
             {
-                unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
-                unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
+                if (m_spellInfo->Id == 34709 || (IsNegativeAuraSpell() && // Shadow Sight
+                    m_spellInfo->Id != 3600 && m_spellInfo->Id != 2096 && m_spellInfo->Id != 10909 && m_spellInfo->Id != 14183) || // Earthbind, Mind Vision, Premeditation
+                    (!m_caster->IsFriendlyTo(unit) && !m_spellInfo->IsTargetingArea() && m_spellInfo->Effects[i].Effect == SPELL_EFFECT_DISPEL))
+                {
+                    unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+                    unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
+                }
+
+                if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174)) || // Faerie Fire & Cyclone
+                    IsCrowdControlSpell())
+                    unit->RemoveAura(66); // Invisibility 3sec fading aura
+
+                if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252) // Vanish
+                {
+                    // Hunter's Mark
+                    unit->RemoveAura(1130);
+                    unit->RemoveAura(14323);
+                    unit->RemoveAura(14324);
+                    unit->RemoveAura(14325);
+                    unit->RemoveAura(53338);
+                }
+
+                // Handle some immunities here instead of AuraEffect::HandleModStateImmunityMask
+                // Bladestorm, Killing Spree, Bestial Wrath and Beast Within immunities
+                if (unit->HasAura(46924) || unit->HasAura(51690) || unit->HasAura(19574) || unit->HasAura(34471) || unit->HasAura(34692))
+                    if (m_spellInfo->Mechanic == MECHANIC_SNARE || m_spellInfo->Mechanic == MECHANIC_ROOT ||
+                        m_spellInfo->Mechanic == MECHANIC_FEAR || m_spellInfo->Mechanic == MECHANIC_STUN ||
+                        m_spellInfo->Mechanic == MECHANIC_SLEEP || m_spellInfo->Mechanic == MECHANIC_CHARM ||
+                        m_spellInfo->Mechanic == MECHANIC_SAPPED || m_spellInfo->Mechanic == MECHANIC_HORROR ||
+                        m_spellInfo->Mechanic == MECHANIC_POLYMORPH || m_spellInfo->Mechanic == MECHANIC_DISORIENTED ||
+                        m_spellInfo->Mechanic == MECHANIC_FREEZE || m_spellInfo->Mechanic == MECHANIC_TURN ||
+                        m_spellInfo->Mechanic == MECHANIC_BANISH || m_spellInfo->Mechanic == IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK ||
+                        m_spellInfo->Effects[i].Effect == SPELL_EFFECT_KNOCK_BACK || m_spellInfo->Effects[i].Effect == SPELL_EFFECT_KNOCK_BACK_DEST ||
+                        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_DECREASE_SPEED ||
+                        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_ROOT || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CONFUSE ||
+                        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR)
+                        return SPELL_MISS_IMMUNE;
+
+                // Killing Spree, Bestial Wrath and Beast Within immunity to disarm
+                if (unit->HasAura(51690) || unit->HasAura(19574) || unit->HasAura(34471) || unit->HasAura(34692))
+                    if (m_spellInfo->Mechanic == MECHANIC_DISARM || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_DISARM)
+                        return SPELL_MISS_IMMUNE;
             }
-
-            if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174)) || // Faerie Fire & Cyclone
-                IsCrowdControlSpell())
-                unit->RemoveAura(66); // Invisibility 3sec fading aura
-
-            if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252) // Vanish
-            {
-                // Hunter's Mark
-                unit->RemoveAura(1130);
-                unit->RemoveAura(14323);
-                unit->RemoveAura(14324);
-                unit->RemoveAura(14325);
-                unit->RemoveAura(53338);
-            }
-
-            // Handle some immunities here instead of AuraEffect::HandleModStateImmunityMask
-            // Bladestorm, Killing Spree, Bestial Wrath and Beast Within immunities
-            if (unit->HasAura(46924) || unit->HasAura(51690) || unit->HasAura(19574) || unit->HasAura(34471) || unit->HasAura(34692))
-                if (m_spellInfo->Mechanic == MECHANIC_SNARE || m_spellInfo->Mechanic == MECHANIC_ROOT ||
-                    m_spellInfo->Mechanic == MECHANIC_FEAR || m_spellInfo->Mechanic == MECHANIC_STUN ||
-                    m_spellInfo->Mechanic == MECHANIC_SLEEP || m_spellInfo->Mechanic == MECHANIC_CHARM ||
-                    m_spellInfo->Mechanic == MECHANIC_SAPPED || m_spellInfo->Mechanic == MECHANIC_HORROR ||
-                    m_spellInfo->Mechanic == MECHANIC_POLYMORPH || m_spellInfo->Mechanic == MECHANIC_DISORIENTED ||
-                    m_spellInfo->Mechanic == MECHANIC_FREEZE || m_spellInfo->Mechanic == MECHANIC_TURN ||
-                    m_spellInfo->Mechanic == MECHANIC_BANISH || m_spellInfo->Mechanic == IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK ||
-                    m_spellInfo->HasEffect(SPELL_EFFECT_KNOCK_BACK) || m_spellInfo->HasEffect(SPELL_EFFECT_KNOCK_BACK_DEST) ||
-                    m_spellInfo->HasAura(SPELL_AURA_MOD_STUN) || m_spellInfo->HasAura(SPELL_AURA_MOD_DECREASE_SPEED) ||
-                    m_spellInfo->HasAura(SPELL_AURA_MOD_ROOT) || m_spellInfo->HasAura(SPELL_AURA_MOD_CONFUSE) ||
-                    m_spellInfo->HasAura(SPELL_AURA_MOD_FEAR))
-                    return SPELL_MISS_IMMUNE;
-
-            // Killing Spree, Bestial Wrath and Beast Within immunity to disarm
-            if (unit->HasAura(51690) || unit->HasAura(19574) || unit->HasAura(34471) || unit->HasAura(34692))
-                if (m_spellInfo->Mechanic == MECHANIC_DISARM || m_spellInfo->HasAura(SPELL_AURA_MOD_DISARM))
-                    return SPELL_MISS_IMMUNE;
 
             bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);
             m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
@@ -5892,15 +5895,16 @@ SpellCastResult Spell::CheckCast(bool strict)
                 return SPELL_FAILED_NOT_READY;
 
     // Dont allow movement effects to be used while the player is in Arena or Battleground Preparation
-    if (m_spellInfo->HasEffect(SPELL_EFFECT_LEAP) || m_spellInfo->HasEffect(SPELL_EFFECT_CHARGE) ||
-        m_spellInfo->HasEffect(SPELL_EFFECT_TELEPORT_UNITS) || m_spellInfo->HasEffect(SPELL_EFFECT_JUMP_DEST))
-        if (Player* playerCaster = m_caster->ToPlayer())
-            if (playerCaster->HasAura(32727) || playerCaster->HasAura(44521))
-                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+        if (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_LEAP || m_spellInfo->Effects[i].Effect == SPELL_EFFECT_CHARGE ||
+            m_spellInfo->Effects[i].Effect == SPELL_EFFECT_TELEPORT_UNITS || m_spellInfo->Effects[i].Effect == SPELL_EFFECT_JUMP_DEST)
+            if (Player* playerCaster = m_caster->ToPlayer())
+                if (playerCaster->HasAura(32727) || playerCaster->HasAura(44521))
+                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
     // Do not allow Bestial Wrath to be casted while the player's pet isnt within LoS of the player
     if (m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
-        if (Unit* pet = m_caster->ToPlayer()->GetPet())
+        if (Pet* pet = m_caster->ToPlayer()->GetPet())
             if (!m_caster->ToPlayer()->IsWithinLOS(pet->GetPositionX(), pet->GetPositionY(), pet->GetPositionZ()))
                 return SPELL_FAILED_LINE_OF_SIGHT;
 
@@ -7933,18 +7937,20 @@ bool Spell::IsSilenceDelaySpell() const
 
 bool Spell::IsCrowdControlSpell() const
 {
-    return m_spellInfo->HasAura(SPELL_AURA_MOD_POSSESS)
-        || m_spellInfo->HasAura(SPELL_AURA_MOD_CONFUSE)
-        || m_spellInfo->HasAura(SPELL_AURA_MOD_CHARM)
-        || m_spellInfo->HasAura(SPELL_AURA_AOE_CHARM)
-        || m_spellInfo->HasAura(SPELL_AURA_MOD_FEAR)
-        || m_spellInfo->HasAura(SPELL_AURA_MOD_STUN);
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+        return m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_POSSESS ||
+            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CONFUSE ||
+            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CHARM ||
+            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_AOE_CHARM ||
+            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR ||
+            m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN;
 }
 
 bool Spell::IsNegativeAuraSpell() const
 {
-    return m_spellInfo->HasEffect(SPELL_EFFECT_APPLY_AURA)
-        && !(m_spellInfo->AttributesEx4 & SPELL_ATTR4_UNK21) && !m_spellInfo->IsPassive()
-        && (!m_spellInfo->IsPositive() || !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT))
-        && !m_spellInfo->IsPositive() && m_spellInfo->Id != 80864 && m_spellInfo->Id != 7267;
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+        return m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_AURA &&
+            !(m_spellInfo->AttributesEx4 & SPELL_ATTR4_UNK21) && !m_spellInfo->IsPassive() &&
+            (!m_spellInfo->IsPositive() || !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT)) &&
+            !m_spellInfo->IsPositive() && m_spellInfo->Id != 7267;
 }
