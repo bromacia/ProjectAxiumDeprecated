@@ -16,6 +16,7 @@ public:
             { "barbershop",      SEC_PLAYER,         false, &HandleBarbershopCommand,                "", NULL },
             { "mmr",             SEC_PLAYER,         false, &HandleMMRCommand,                       "", NULL },
             { "sendcooldown",    SEC_GAMEMASTER,     false, &HandleSendCooldownCommand,              "", NULL },
+            { "transmogcopy",    SEC_GAMEMASTER,     false, &HandleTransmogCopyCommand,              "", NULL },
             { NULL,              0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -281,6 +282,62 @@ public:
 
         target->RemoveSpellCooldown(spell, true);
         target->AddSpellCooldown(spell, 0, time(NULL) + cooldown, true);
+        return true;
+    }
+
+    static bool HandleTransmogCopyCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Player* player = handler->GetSession()->GetPlayer();
+        Unit* unitTarget = handler->getSelectedUnit();
+
+        if (handler->getSelectedUnit()->GetTypeId() != TYPEID_PLAYER)
+        {
+            handler->PSendSysMessage("Your target isnt a player.");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        Player* target = unitTarget->ToPlayer();
+
+        for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
+        {
+            if (Item* playerItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+                if (Item* targetItem = target->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+                {
+                    if (slot == EQUIPMENT_SLOT_HEAD ||
+                        slot == EQUIPMENT_SLOT_SHOULDERS ||
+                        slot == EQUIPMENT_SLOT_CHEST ||
+                        slot == EQUIPMENT_SLOT_HANDS ||
+                        slot == EQUIPMENT_SLOT_LEGS ||
+                        slot == EQUIPMENT_SLOT_WAIST ||
+                        slot == EQUIPMENT_SLOT_FEET ||
+                        slot == EQUIPMENT_SLOT_MAINHAND ||
+                        slot == EQUIPMENT_SLOT_OFFHAND ||
+                        slot == EQUIPMENT_SLOT_RANGED)
+                    {
+                        if (targetItem->TransmogEntry)
+                        {
+                            CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", targetItem->TransmogEntry, playerItem->GetGUIDLow());
+                            playerItem->TransmogEntry = targetItem->TransmogEntry;
+                            player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), targetItem->TransmogEntry);
+                        }
+                        else
+                        {
+                            CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", targetItem->GetEntry(), playerItem->GetGUIDLow());
+                            playerItem->TransmogEntry = targetItem->GetEntry();
+                            player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), targetItem->GetEntry());
+                        }
+
+                        if (targetItem->TransmogEnchant)
+                        {
+                            CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEnchant = %u WHERE guid = %u", targetItem->TransmogEnchant, playerItem->GetGUIDLow());
+                            playerItem->TransmogEnchant = targetItem->TransmogEnchant;
+                            player->SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 0, targetItem->TransmogEnchant);
+                            player->SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 1, targetItem->TransmogEnchant);
+                        }
+                    }
+                }
+        }
         return true;
     }
 };
