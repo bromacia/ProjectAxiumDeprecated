@@ -3244,19 +3244,6 @@ void Spell::cancel()
     if (m_spellInfo->IsChanneled()) // if not channeled then the object for the current cast wasn't summoned yet
         m_caster->RemoveGameObject(m_spellInfo->Id, true);
 
-    // Penance
-    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST
-        && ((m_spellInfo->SpellFamilyFlags[1] == 0x10000 && m_spellInfo->SpellFamilyFlags[2] == 0x80)
-        || (m_spellInfo->SpellFamilyFlags[2] == 0x80)))
-    {
-            // Borrowed Time (Rank 1-5)
-            m_caster->RemoveAura(59887);
-            m_caster->RemoveAura(59888);
-            m_caster->RemoveAura(59889);
-            m_caster->RemoveAura(59890);
-            m_caster->RemoveAura(59891);
-    }
-
     //set state back so finish will be processed
     m_spellState = oldState;
 
@@ -3994,19 +3981,6 @@ void Spell::finish(bool ok)
         m_caster->ToPlayer()->AddSpellCooldown(1022, 0, time(NULL) + 120, true);
         m_caster->ToPlayer()->AddSpellCooldown(5599, 0, time(NULL) + 120, true);
         m_caster->ToPlayer()->AddSpellCooldown(10278, 0, time(NULL) + 120, true);
-    }
-
-    // Penance
-    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST
-        && ((m_spellInfo->SpellFamilyFlags[1] == 0x10000 && m_spellInfo->SpellFamilyFlags[2] == 0x80)
-        || (m_spellInfo->SpellFamilyFlags[2] == 0x80)))
-    {
-            // Borrowed Time (Rank 1-5)
-            m_caster->RemoveAura(59887);
-            m_caster->RemoveAura(59888);
-            m_caster->RemoveAura(59889);
-            m_caster->RemoveAura(59890);
-            m_caster->RemoveAura(59891);
     }
 }
 
