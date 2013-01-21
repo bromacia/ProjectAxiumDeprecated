@@ -5908,6 +5908,12 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (!m_caster->ToPlayer()->IsWithinLOS(pet->GetPositionX(), pet->GetPositionY(), pet->GetPositionZ()))
                 return SPELL_FAILED_LINE_OF_SIGHT;
 
+    // Do not allow Fire Nova to be casted while the player's fire totem isnt within LoS of the player
+    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[0] == 0x8000000)
+        if (Creature* fireTotem = m_caster->ToPlayer()->GetMap()->GetCreature(m_caster->ToPlayer()->m_SummonSlot[1])->ToTotem())
+            if (!m_caster->ToPlayer()->IsWithinLOS(fireTotem->GetPositionX(), fireTotem->GetPositionY(), fireTotem->GetPositionZ()))
+                return SPELL_FAILED_LINE_OF_SIGHT;
+
     // Blazing Hippogryph
     if (m_spellInfo->Id == 74856)
         if (m_originalCaster && m_originalCaster->GetTypeId() == TYPEID_PLAYER && m_originalCaster->isAlive())
