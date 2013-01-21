@@ -5960,6 +5960,12 @@ SpellCastResult Spell::CheckPetCast(Unit* target)
         if (creatureCaster->HasSpellCooldown(m_spellInfo->Id))
             return SPELL_FAILED_NOT_READY;
 
+    // Do not allow Spirit Walk to be casted while the owner isnt within los of Spirit Wolves
+    if (m_spellInfo->Id == 58875)
+        if (Player* owner = m_caster->GetOwner()->ToPlayer())
+            if (!m_caster->IsWithinLOS(owner->GetPositionX(), owner->GetPositionY(), owner->GetPositionZ()))
+                return SPELL_FAILED_LINE_OF_SIGHT;
+
     return CheckCast(true);
 }
 
