@@ -1567,7 +1567,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
 
                 // Handle some immunities here instead of AuraEffect::HandleModStateImmunityMask
                 // Bladestorm, Killing Spree, Bestial Wrath and Beast Within immunities
-                if (unit->HasAura(46924) || unit->HasAura(51690) || unit->HasAura(19574) || unit->HasAura(34471) || unit->HasAura(34692))
+                if (unit->HasAura(46924) || unit->HasAura(51690) || unit->HasAura(19574) || unit->HasAura(34471))
                     if (m_spellInfo->Mechanic == MECHANIC_SNARE || m_spellInfo->Mechanic == MECHANIC_ROOT ||
                         m_spellInfo->Mechanic == MECHANIC_FEAR || m_spellInfo->Mechanic == MECHANIC_STUN ||
                         m_spellInfo->Mechanic == MECHANIC_SLEEP || m_spellInfo->Mechanic == MECHANIC_CHARM ||
@@ -1582,7 +1582,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                         return SPELL_MISS_IMMUNE;
 
                 // Killing Spree, Bestial Wrath and Beast Within immunity to disarm
-                if (unit->HasAura(51690) || unit->HasAura(19574) || unit->HasAura(34471) || unit->HasAura(34692))
+                if (unit->HasAura(51690) || unit->HasAura(19574) || unit->HasAura(34471))
                     if (m_spellInfo->Mechanic == MECHANIC_DISARM || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_DISARM)
                         return SPELL_MISS_IMMUNE;
             }
