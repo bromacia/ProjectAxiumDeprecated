@@ -5083,10 +5083,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                         int32 stack = GetBase()->GetStackAmount();
                         int32 heal = m_amount;
                         if (caster)
-                        {
                             heal = caster->SpellHealingBonusDone(target, GetSpellInfo(), heal, HEAL, stack);
-                            heal = target->SpellHealingBonusTaken(caster, GetSpellInfo(), heal, HEAL, stack);
-                        }
                         target->CastCustomSpell(target, 33778, &heal, &stack, NULL, true, NULL, this, GetCasterGUID());
 
                         // restore mana
