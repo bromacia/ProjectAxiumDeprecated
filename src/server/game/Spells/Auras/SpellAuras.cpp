@@ -731,6 +731,13 @@ void Aura::SetDuration(int32 duration, bool withMods)
     SetNeedClientUpdateForTargets();
 }
 
+void Aura::SetDurationAndMaxDuration(int32 duration)
+{
+    m_duration = duration;
+    m_maxDuration = duration;
+    SetNeedClientUpdateForTargets();
+}
+
 void Aura::RefreshDuration()
 {
     SetDuration(GetMaxDuration());
@@ -1624,21 +1631,45 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                 // Master of subtlety
                 if (AuraEffect const* aurEff = target->GetAuraEffectOfRankedSpell(31221, 0))
                 {
+                    int32 basepoints0 = aurEff->GetAmount();
                     if (!apply)
-                        target->CastSpell(target, 31666, true);
+                    {
+                        if (target->HasAura(31665))
+                            target->GetAura(31665, target->GetGUID())->SetDurationAndMaxDuration(6000);
+                        else
+                        {
+                            target->CastCustomSpell(target, 31665, &basepoints0, NULL, NULL, true);
+                            target->GetAura(31665, target->GetGUID())->SetDurationAndMaxDuration(6000);
+                        }
+                    }
                     else
                     {
-                        int32 basepoints0 = aurEff->GetAmount();
-                        target->CastCustomSpell(target, 31665, &basepoints0, NULL, NULL, true);
+                        if (target->HasAura(31665))
+                            target->GetAura(31665, target->GetGUID())->SetDurationAndMaxDuration(-1);
+                        else
+                            target->CastCustomSpell(target, 31665, &basepoints0, NULL, NULL, true);
                     }
                 }
                 // Overkill
                 if (target->HasAura(58426))
                 {
                     if (!apply)
-                        target->CastSpell(target, 58428, true);
+                    {
+                        if (target->HasAura(58427))
+                            target->GetAura(58427, target->GetGUID())->SetDurationAndMaxDuration(20000);
+                        else
+                        {
+                            target->CastSpell(target, 58427, true);
+                            target->GetAura(58427, target->GetGUID())->SetDurationAndMaxDuration(20000);
+                        }
+                    }
                     else
-                        target->CastSpell(target, 58427, true);
+                    {
+                        if (target->HasAura(58427))
+                            target->GetAura(58427, target->GetGUID())->SetDurationAndMaxDuration(-1);
+                        else
+                            target->CastSpell(target, 58427, true);
+                    }
                 }
                 break;
             }
