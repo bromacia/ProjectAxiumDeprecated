@@ -278,7 +278,7 @@ bool OPvPCapturePoint::Update(uint32 diff)
 
     float radius = (float)m_capturePoint->GetGOInfo()->capturePoint.radius;
 
-    for (uint32 team = 0; team < 2; ++team)
+    for (uint8 team = 0; team < 2; ++team)
     {
         for (PlayerSet::iterator itr = m_activePlayers[team].begin(); itr != m_activePlayers[team].end();)
         {
@@ -393,20 +393,18 @@ bool OPvPCapturePoint::Update(uint32 diff)
 void OutdoorPvP::SendUpdateWorldState(uint32 field, uint32 value)
 {
     if (m_sendUpdate)
-        for (int i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
             for (PlayerSet::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 (*itr)->SendUpdateWorldState(field, value);
 }
 
 void OPvPCapturePoint::SendUpdateWorldState(uint32 field, uint32 value)
 {
-    for (uint32 team = 0; team < 2; ++team)
+    for (uint8 team = 0; team < 2; ++team)
     {
         // send to all players present in the area
         for (PlayerSet::iterator itr = m_activePlayers[team].begin(); itr != m_activePlayers[team].end(); ++itr)
-        {
             (*itr)->SendUpdateWorldState(field, value);
-        }
     }
 }
 
@@ -415,14 +413,14 @@ void OPvPCapturePoint::SendObjectiveComplete(uint32 id, uint64 guid)
     uint32 team;
     switch (m_State)
     {
-    case OBJECTIVESTATE_ALLIANCE:
-        team = 0;
-        break;
-    case OBJECTIVESTATE_HORDE:
-        team = 1;
-        break;
-    default:
-        return;
+        case OBJECTIVESTATE_ALLIANCE:
+            team = 0;
+            break;
+        case OBJECTIVESTATE_HORDE:
+            team = 1;
+            break;
+        default:
+            return;
     }
 
     // send to all players present in the area
@@ -448,18 +446,14 @@ void OutdoorPvP::HandleKill(Player* killer, Unit* killed)
             // creature kills must be notified, even if not inside objective / not outdoor pvp active
             // player kills only count if active and inside objective
             if ((pGroupGuy->IsOutdoorPvPActive() && IsInsideObjective(pGroupGuy)) || killed->GetTypeId() == TYPEID_UNIT)
-            {
                 HandleKillImpl(pGroupGuy, killed);
-            }
         }
     }
     else
     {
         // creature kills must be notified, even if not inside objective / not outdoor pvp active
         if (killer && ((killer->IsOutdoorPvPActive() && IsInsideObjective(killer)) || killed->GetTypeId() == TYPEID_UNIT))
-        {
             HandleKillImpl(killer, killed);
-        }
     }
 }
 
@@ -548,9 +542,7 @@ int32 OPvPCapturePoint::HandleOpenGo(Player* /*player*/, uint64 guid)
 {
     std::map<uint64, uint32>::iterator itr = m_ObjectTypes.find(guid);
     if (itr != m_ObjectTypes.end())
-    {
         return itr->second;
-    }
     return -1;
 }
 
@@ -562,7 +554,7 @@ bool OutdoorPvP::HandleAreaTrigger(Player* /*player*/, uint32 /*trigger*/)
 void OutdoorPvP::BroadcastPacket(WorldPacket &data) const
 {
     // This is faster than sWorld->SendZoneMessage
-    for (uint32 team = 0; team < 2; ++team)
+    for (uint8 team = 0; team < 2; ++team)
         for (PlayerSet::const_iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
             (*itr)->GetSession()->SendPacket(&data);
 }

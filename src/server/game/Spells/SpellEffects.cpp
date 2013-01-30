@@ -4061,7 +4061,7 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
     // multiple weapon dmg effect workaround
     // execute only the last weapon damage
     // and handle all effects at once
-    for (uint32 j = effIndex + 1; j < MAX_SPELL_EFFECTS; ++j)
+    for (uint8 j = effIndex + 1; j < MAX_SPELL_EFFECTS; ++j)
     {
         switch (m_spellInfo->Effects[j].Effect)
         {
@@ -4396,7 +4396,7 @@ void Spell::EffectInterruptCast(SpellEffIndex effIndex)
     // TODO: not all spells that used this effect apply cooldown at school spells
     // also exist case: apply cooldown to interrupted cast only and to all spells
     // there is no CURRENT_AUTOREPEAT_SPELL spells that can be interrupted
-    for (uint32 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_AUTOREPEAT_SPELL; ++i)
+    for (uint8 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_AUTOREPEAT_SPELL; ++i)
     {
         if (Spell* spell = unitTarget->GetCurrentSpell(CurrentSpellTypes(i)))
         {
@@ -5051,7 +5051,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                 case 58941:                                 // Rock Shards
                     if (unitTarget && m_originalCaster)
                     {
-                        for (uint32 i = 0; i < 3; ++i)
+                        for (uint8 i = 0; i < 3; ++i)
                         {
                             m_originalCaster->CastSpell(unitTarget, 58689, true);
                             m_originalCaster->CastSpell(unitTarget, 58692, true);
@@ -7103,7 +7103,7 @@ void Spell::EffectActivateRune(SpellEffIndex effIndex)
 
     uint32 count = damage;
     if (count == 0) count = 1;
-    for (uint32 j = 0; j < MAX_RUNES && count > 0; ++j)
+    for (uint8 j = 0; j < MAX_RUNES && count > 0; ++j)
     {
         if (player->GetRuneCooldown(j) && player->GetCurrentRune(j) == RuneType(m_spellInfo->Effects[effIndex].MiscValue))
         {
@@ -7118,7 +7118,7 @@ void Spell::EffectActivateRune(SpellEffIndex effIndex)
     // Blood Tap
     if (m_spellInfo->Id == 45529 && count > 0)
     {
-        for (uint32 l = 0; l < MAX_RUNES && count > 0; ++l)
+        for (uint8 l = 0; l < MAX_RUNES && count > 0; ++l)
         {
             // Check if both runes are on cd as that is the only time when this needs to come into effect
             if ((player->GetRuneCooldown(l) && player->GetCurrentRune(l) == RuneType(m_spellInfo->Effects[effIndex].MiscValueB)) && (player->GetRuneCooldown(l+1) && player->GetCurrentRune(l+1) == RuneType(m_spellInfo->Effects[effIndex].MiscValueB)))
@@ -7143,7 +7143,7 @@ void Spell::EffectActivateRune(SpellEffIndex effIndex)
         if (effIndex != 0)
             return;
 
-        for (uint32 i = 0; i < MAX_RUNES; ++i)
+        for (uint8 i = 0; i < MAX_RUNES; ++i)
         {
             if (player->GetRuneCooldown(i) && (player->GetCurrentRune(i) == RUNE_FROST ||  player->GetCurrentRune(i) == RUNE_DEATH))
                 player->SetRuneCooldown(i, 0);

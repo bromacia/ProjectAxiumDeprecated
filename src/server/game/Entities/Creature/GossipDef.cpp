@@ -335,7 +335,7 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, uint64 npcGUID, 
     else
     {
         data << uint32(quest->GetRewChoiceItemsCount());
-        for (uint32 i=0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+        for (uint8 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
         {
             if (!quest->RewardChoiceItemId[i])
                 continue;
@@ -351,7 +351,7 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, uint64 npcGUID, 
 
         data << uint32(quest->GetRewItemsCount());
 
-        for (uint32 i=0; i < QUEST_REWARDS_COUNT; ++i)
+        for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
         {
             if (!quest->RewardItemId[i])
                 continue;
@@ -379,17 +379,17 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, uint64 npcGUID, 
     data << uint32(quest->GetRewArenaPoints());             // reward arena points
     data << uint32(0);                                      // unk
 
-    for (uint32 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
         data << uint32(quest->RewardFactionId[i]);
 
-    for (uint32 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
         data << int32(quest->RewardFactionValueId[i]);
 
-    for (uint32 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
         data << int32(quest->RewardFactionValueIdOverride[i]);
 
     data << uint32(QUEST_EMOTE_COUNT);
-    for (uint32 i = 0; i < QUEST_EMOTE_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_EMOTE_COUNT; ++i)
     {
         data << uint32(quest->DetailsEmote[i]);
         data << uint32(quest->DetailsEmoteDelay[i]);       // DetailsEmoteDelay (in ms)
@@ -408,7 +408,7 @@ void PlayerMenu::SendQuestQueryResponse(Quest const* quest) const
     std::string questCompletedText = quest->GetCompletedText();
 
     std::string questObjectiveText[QUEST_OBJECTIVES_COUNT];
-    for (uint32 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
         questObjectiveText[i] = quest->ObjectiveText[i];
 
     int32 locale = _session->GetSessionDbLocaleIndex();
@@ -469,32 +469,32 @@ void PlayerMenu::SendQuestQueryResponse(Quest const* quest) const
 
     if (quest->HasFlag(QUEST_FLAGS_HIDDEN_REWARDS))
     {
-        for (uint32 i = 0; i < QUEST_REWARDS_COUNT; ++i)
+        for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
             data << uint32(0) << uint32(0);
-        for (uint32 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+        for (uint8 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
             data << uint32(0) << uint32(0);
     }
     else
     {
-        for (uint32 i = 0; i < QUEST_REWARDS_COUNT; ++i)
+        for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
         {
             data << uint32(quest->RewardItemId[i]);
             data << uint32(quest->RewardItemIdCount[i]);
         }
-        for (uint32 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+        for (uint8 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
         {
             data << uint32(quest->RewardChoiceItemId[i]);
             data << uint32(quest->RewardChoiceItemCount[i]);
         }
     }
 
-    for (uint32 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)        // reward factions ids
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)        // reward factions ids
         data << uint32(quest->RewardFactionId[i]);
 
-    for (uint32 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)        // columnid+1 QuestFactionReward.dbc?
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)        // columnid+1 QuestFactionReward.dbc?
         data << int32(quest->RewardFactionValueId[i]);
 
-    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)           // unk (0)
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)           // unk (0)
         data << int32(quest->RewardFactionValueIdOverride[i]);
 
     data << quest->GetPointMapId();
@@ -508,7 +508,7 @@ void PlayerMenu::SendQuestQueryResponse(Quest const* quest) const
     data << questEndText;
     data << questCompletedText;                                  // display in quest objectives window once all objectives are completed
 
-    for (uint32 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
     {
         if (quest->RequiredNpcOrGo[i] < 0)
             data << uint32((quest->RequiredNpcOrGo[i] * (-1)) | 0x80000000);    // client expects gameobject template id in form (id|0x80000000)
@@ -520,13 +520,13 @@ void PlayerMenu::SendQuestQueryResponse(Quest const* quest) const
         data << uint32(0);                                  // req source count?
     }
 
-    for (uint32 i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
     {
         data << uint32(quest->RequiredItemId[i]);
         data << uint32(quest->RequiredItemCount[i]);
     }
 
-    for (uint32 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
         data << questObjectiveText[i];
 
     _session->SendPacket(&data);
@@ -559,7 +559,7 @@ void PlayerMenu::SendQuestGiverOfferReward(Quest const* quest, uint64 npcGUID, b
     data << uint32(quest->GetSuggestedPlayers());           // SuggestedGroupNum
 
     uint32 emoteCount = 0;
-    for (uint32 i = 0; i < QUEST_EMOTE_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_EMOTE_COUNT; ++i)
     {
         if (quest->OfferRewardEmote[i] <= 0)
             break;
@@ -567,14 +567,14 @@ void PlayerMenu::SendQuestGiverOfferReward(Quest const* quest, uint64 npcGUID, b
     }
 
     data << emoteCount;                                     // Emote Count
-    for (uint32 i = 0; i < emoteCount; ++i)
+    for (uint8 i = 0; i < emoteCount; ++i)
     {
         data << uint32(quest->OfferRewardEmoteDelay[i]);    // Delay Emote
         data << uint32(quest->OfferRewardEmote[i]);
     }
 
     data << uint32(quest->GetRewChoiceItemsCount());
-    for (uint32 i=0; i < quest->GetRewChoiceItemsCount(); ++i)
+    for (uint32 i = 0; i < quest->GetRewChoiceItemsCount(); ++i)
     {
         data << uint32(quest->RewardChoiceItemId[i]);
         data << uint32(quest->RewardChoiceItemCount[i]);
@@ -611,13 +611,13 @@ void PlayerMenu::SendQuestGiverOfferReward(Quest const* quest, uint64 npcGUID, b
     data << uint32(quest->GetRewArenaPoints());             // arena points
     data << uint32(0);
 
-    for (uint32 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)    // reward factions ids
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)    // reward factions ids
         data << uint32(quest->RewardFactionId[i]);
 
-    for (uint32 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)    // columnid in QuestFactionReward.dbc (zero based)?
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)    // columnid in QuestFactionReward.dbc (zero based)?
         data << int32(quest->RewardFactionValueId[i]);
 
-    for (uint32 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)    // reward reputation override?
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)    // reward reputation override?
         data << uint32(quest->RewardFactionValueIdOverride[i]);
 
     _session->SendPacket(&data);

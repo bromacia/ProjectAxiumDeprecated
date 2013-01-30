@@ -31,7 +31,7 @@
 
 Vehicle::Vehicle(Unit* unit, VehicleEntry const* vehInfo, uint32 creatureEntry) : _me(unit), _vehicleInfo(vehInfo), _usableSeatNum(0), _creatureEntry(creatureEntry)
 {
-    for (uint32 i = 0; i < MAX_VEHICLE_SEATS; ++i)
+    for (uint8 i = 0; i < MAX_VEHICLE_SEATS; ++i)
     {
         if (uint32 seatId = _vehicleInfo->m_seatID[i])
             if (VehicleSeatEntry const* veSeat = sVehicleSeatStore.LookupEntry(seatId))
@@ -70,7 +70,7 @@ void Vehicle::Install()
                 _me->SetMaxPower(POWER_ENERGY, 50);
                 break;
             default:
-                for (uint32 i = 0; i < MAX_SPELL_VEHICLE; ++i)
+                for (uint8 i = 0; i < MAX_SPELL_VEHICLE; ++i)
                 {
                     if (!creature->m_spells[i])
                         continue;

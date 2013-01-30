@@ -588,7 +588,7 @@ void ObjectMgr::CheckCreatureTemplate(CreatureTemplate const* cInfo)
         return;
 
     bool ok = true;                                     // bool to allow continue outside this loop
-    for (uint32 diff = 0; diff < MAX_DIFFICULTY - 1 && ok; ++diff)
+    for (uint8 diff = 0; diff < MAX_DIFFICULTY - 1 && ok; ++diff)
     {
         if (!cInfo->DifficultyEntry[diff])
             continue;
@@ -603,7 +603,7 @@ void ObjectMgr::CheckCreatureTemplate(CreatureTemplate const* cInfo)
         }
 
         bool ok2 = true;
-        for (uint32 diff2 = 0; diff2 < MAX_DIFFICULTY - 1 && ok2; ++diff2)
+        for (uint8 diff2 = 0; diff2 < MAX_DIFFICULTY - 1 && ok2; ++diff2)
         {
             ok2 = false;
             if (difficultyEntries[diff2].find(cInfo->Entry) != difficultyEntries[diff2].end())
@@ -1418,15 +1418,15 @@ void ObjectMgr::LoadCreatures()
 
     CreatureTemplateContainer const* ctc = sObjectMgr->GetCreatureTemplates();
     for (CreatureTemplateContainer::const_iterator itr = ctc->begin(); itr != ctc->end(); ++itr)
-            for (uint32 diff = 0; diff < MAX_DIFFICULTY - 1; ++diff)
-                if (itr->second.DifficultyEntry[diff])
-                    difficultyCreatures[diff].insert(itr->second.DifficultyEntry[diff]);
+        for (uint8 diff = 0; diff < MAX_DIFFICULTY - 1; ++diff)
+            if (itr->second.DifficultyEntry[diff])
+                difficultyCreatures[diff].insert(itr->second.DifficultyEntry[diff]);
 
     // Build single time for check spawnmask
     std::map<uint32, uint32> spawnMasks;
     for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
         if (sMapStore.LookupEntry(i))
-            for (int k = 0; k < MAX_DIFFICULTY; ++k)
+            for (uint8 k = 0; k < MAX_DIFFICULTY; ++k)
                 if (GetMapDifficultyData(i, Difficulty(k)))
                     spawnMasks[i] |= (1 << k);
 
@@ -1480,7 +1480,7 @@ void ObjectMgr::LoadCreatures()
             sLog->outErrorDb("Table `creature` have creature (GUID: %u) that have wrong spawn mask %u including not supported difficulty modes for map (Id: %u).", guid, data.spawnMask, data.mapid);
 
         bool ok = true;
-        for (uint32 diff = 0; diff < MAX_DIFFICULTY - 1 && ok; ++diff)
+        for (uint8 diff = 0; diff < MAX_DIFFICULTY - 1 && ok; ++diff)
         {
             if (difficultyCreatures[diff].find(data.id) != difficultyCreatures[diff].end())
             {
@@ -2715,7 +2715,7 @@ void ObjectMgr::LoadItemSetNames()
         if (!setEntry)
             continue;
 
-        for (uint32 i = 0; i < MAX_ITEM_SET_ITEMS; ++i)
+        for (uint8 i = 0; i < MAX_ITEM_SET_ITEMS; ++i)
             if (setEntry->itemId[i])
                 itemSetItems.insert(setEntry->itemId[i]);
     }
@@ -6911,7 +6911,7 @@ void ObjectMgr::LoadReputationSpilloverTemplate()
             continue;
         }
 
-        for (uint32 i = 0; i < MAX_SPILLOVER_FACTIONS; ++i)
+        for (uint8 i = 0; i < MAX_SPILLOVER_FACTIONS; ++i)
         {
             if (repTemplate.faction[i])
             {
@@ -7864,7 +7864,7 @@ bool ObjectMgr::CheckDeclinedNames(std::wstring w_ownname, DeclinedName const& n
     bool y = true;
 
     // check declined names
-    for (uint8 i =0; i < MAX_DECLINED_NAME_CASES; ++i)
+    for (uint8 i = 0; i < MAX_DECLINED_NAME_CASES; ++i)
     {
         std::wstring wname;
         if (!Utf8toWStr(names.name[i], wname))

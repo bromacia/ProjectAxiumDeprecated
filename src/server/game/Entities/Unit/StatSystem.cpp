@@ -121,7 +121,7 @@ bool Player::UpdateStats(Stats stat)
             mask |= (*i)->GetMiscValue();
     if (mask)
     {
-        for (uint32 rating = 0; rating < MAX_COMBAT_RATING; ++rating)
+        for (uint8 rating = 0; rating < MAX_COMBAT_RATING; ++rating)
             if (mask & (1 << rating))
                 ApplyRatingMod(CombatRating(rating), 0, true);
     }
@@ -870,7 +870,7 @@ void Player::UpdateRuneRegen(RuneType rune)
 
     uint32 cooldown = 0;
 
-    for (uint32 i = 0; i < MAX_RUNES; ++i)
+    for (uint8 i = 0; i < MAX_RUNES; ++i)
     {
         if (GetBaseRune(i) == rune)
         {

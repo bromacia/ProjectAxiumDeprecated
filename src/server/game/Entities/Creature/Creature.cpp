@@ -1681,7 +1681,7 @@ SpellInfo const* Creature::reachWithSpellAttack(Unit* pVictim)
     if (!pVictim)
         return NULL;
 
-    for (uint32 i=0; i < CREATURE_MAX_SPELLS; ++i)
+    for (uint8 i = 0; i < CREATURE_MAX_SPELLS; ++i)
     {
         if (!m_spells[i])
             continue;
@@ -1693,7 +1693,7 @@ SpellInfo const* Creature::reachWithSpellAttack(Unit* pVictim)
         }
 
         bool bcontinue = true;
-        for (uint32 j = 0; j < MAX_SPELL_EFFECTS; j++)
+        for (uint8 j = 0; j < MAX_SPELL_EFFECTS; j++)
         {
             if ((spellInfo->Effects[j].Effect == SPELL_EFFECT_SCHOOL_DAMAGE)       ||
                 (spellInfo->Effects[j].Effect == SPELL_EFFECT_INSTAKILL)            ||
@@ -1728,7 +1728,7 @@ SpellInfo const* Creature::reachWithSpellCure(Unit* pVictim)
     if (!pVictim)
         return NULL;
 
-    for (uint32 i=0; i < CREATURE_MAX_SPELLS; ++i)
+    for (uint8 i=0; i < CREATURE_MAX_SPELLS; ++i)
     {
         if (!m_spells[i])
             continue;
@@ -1740,7 +1740,7 @@ SpellInfo const* Creature::reachWithSpellCure(Unit* pVictim)
         }
 
         bool bcontinue = true;
-        for (uint32 j = 0; j < MAX_SPELL_EFFECTS; j++)
+        for (uint8 j = 0; j < MAX_SPELL_EFFECTS; j++)
         {
             if ((spellInfo->Effects[j].Effect == SPELL_EFFECT_HEAL))
             {
