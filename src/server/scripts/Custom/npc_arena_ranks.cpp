@@ -110,9 +110,9 @@ class npc_arena_ranks : public CreatureScript
 
         bool OnGossipHello(Player* player, Creature* creature)
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "2v2", GOSSIP_SENDER_MAIN, ARENA_2V2_LADDER);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "3v3", GOSSIP_SENDER_MAIN, ARENA_3V3_LADDER);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "5v5", GOSSIP_SENDER_MAIN, ARENA_5V5_LADDER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "|TInterface\\icons\\achievement_arena_2v2_7:30|t 2v2", GOSSIP_SENDER_MAIN, ARENA_2V2_LADDER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "|TInterface\\icons\\achievement_arena_3v3_7:30|t 3v3", GOSSIP_SENDER_MAIN, ARENA_3V3_LADDER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "|TInterface\\icons\\achievement_arena_5v5_7:30|t 5v5", GOSSIP_SENDER_MAIN, ARENA_5V5_LADDER);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             return true;
         }
