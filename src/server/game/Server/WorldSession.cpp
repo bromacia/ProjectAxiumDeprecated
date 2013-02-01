@@ -403,6 +403,13 @@ void WorldSession::LogoutPlayer(bool Save)
 
     if (_player)
     {
+        // Remove Silence (serverside)
+        _player->RemoveAura(2);
+
+        // Remove Shadow Dance
+        if (_player->HasAura(51713))
+            _player->RemoveAura(51713);
+
         if (uint64 lguid = _player->GetLootGUID())
             DoLootRelease(lguid);
 

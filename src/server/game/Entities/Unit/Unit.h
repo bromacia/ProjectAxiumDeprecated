@@ -1605,6 +1605,7 @@ class Unit : public WorldObject
         bool HasBreakableByDamageAuraType(AuraType type, uint32 excludeAura = 0) const;
         bool HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel = NULL) const;
         bool IsCrowdControlled() const;
+        void RemoveAllCrowdControlAuras();
 
         bool HasStealthAura()      const { return HasAuraType(SPELL_AURA_MOD_STEALTH); }
         bool HasInvisibilityAura() const { return HasAuraType(SPELL_AURA_MOD_INVISIBILITY); }

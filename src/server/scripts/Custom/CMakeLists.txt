@@ -16,6 +16,8 @@ set(scripts_STAT_SRCS
   Custom/npc_beastmaster.cpp
   Custom/npc_arena_ranks.cpp
   Custom/npc_transmog.cpp
+  Custom/npc_gossip_vendor.cpp
+  Custom/npc_class_trainer.cpp
 )
 
 message("  -> Prepared: Custom")

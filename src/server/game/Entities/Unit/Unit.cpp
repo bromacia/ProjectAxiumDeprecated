@@ -652,6 +652,16 @@ bool Unit::IsCrowdControlled() const
         || HasAuraType(SPELL_AURA_MOD_STUN);
 }
 
+void Unit::RemoveAllCrowdControlAuras()
+{
+    RemoveAurasByType(SPELL_AURA_MOD_POSSESS);
+    RemoveAurasByType(SPELL_AURA_MOD_CONFUSE);
+    RemoveAurasByType(SPELL_AURA_MOD_CHARM);
+    RemoveAurasByType(SPELL_AURA_AOE_CHARM);
+    RemoveAurasByType(SPELL_AURA_MOD_FEAR);
+    RemoveAurasByType(SPELL_AURA_MOD_STUN);
+}
+
 void Unit::DealDamageMods(Unit* victim, uint32 &damage, uint32* absorb)
 {
     if (!victim || !victim->isAlive() || victim->HasUnitState(UNIT_STATE_IN_FLIGHT) || (victim->GetTypeId() == TYPEID_UNIT && victim->ToCreature()->IsInEvadeMode()))

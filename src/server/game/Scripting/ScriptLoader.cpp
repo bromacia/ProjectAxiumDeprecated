@@ -223,6 +223,8 @@ void AddBattlegroundScripts()
     void AddSC_npc_beastmaster();
     void AddSC_npc_arena_ranks();
     void AddSC_npc_transmog();
+    void AddSC_npc_gossip_vendor();
+    void AddSC_npc_class_trainer();
 #endif
 
 void AddCustomScripts()
@@ -234,5 +236,7 @@ void AddCustomScripts()
     AddSC_npc_beastmaster();
     AddSC_npc_arena_ranks();
     AddSC_npc_transmog();
+    AddSC_npc_gossip_vendor();
+    AddSC_npc_class_trainer();
 #endif
 }

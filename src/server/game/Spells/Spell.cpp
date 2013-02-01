@@ -5786,6 +5786,10 @@ SpellCastResult Spell::CheckCast(bool strict)
         }
     }
     // Axium
+    // Silence (serverside spell)
+    if (m_caster->HasAura(2))
+        return SPELL_FAILED_SILENCED;
+
     // Spells that cant be used while rooted (Shadowstep, Charge, Intercept, Intervene, Feral Charge Cat/Bear)
     if (m_spellInfo->Id == 36554 || m_spellInfo->Id == 11578 || m_spellInfo->Id == 20252 || m_spellInfo->Id == 3411 || m_spellInfo->Id == 16979 || m_spellInfo->Id == 49376)
         if (m_caster->HasUnitState(UNIT_STATE_ROOT))

@@ -17164,17 +17164,29 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     if (!InArena() && !InBattleground())
     {
-        // Remove Demonic Circle aura
-        if (HasAura(48018))
-            RemoveAura(48018);
-
         // Revive Player
         if (!isAlive())
         {
             ResurrectPlayer(1.0f);
             SpawnCorpseBones();
         }
+
+        // Remove Demonic Circle aura
+        if (HasAura(48018))
+            RemoveAura(48018);
+
+        // Remove Crowd Control Effects
+        if (IsCrowdControlled())
+            RemoveAllCrowdControlAuras();
+
+        // Remove Shadow Dance
+        if (HasAura(51713))
+            RemoveAura(51713);
     }
+
+    // Remove Silence (serverside)
+    if (HasAura(2))
+        RemoveAura(2);
 
     return true;
 }
