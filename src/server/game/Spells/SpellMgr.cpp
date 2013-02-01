@@ -3180,23 +3180,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 58601: // Remove Flight Auras
                 spellInfo->Effect[2] = 0;
                 break;
-            case 80864: // Duel Cooldown
-                spellInfo->Category = 0;
-                spellInfo->Attributes |= SPELL_ATTR0_HIDDEN_CLIENTSIDE;
-                spellInfo->Attributes |= SPELL_ATTR0_CASTABLE_WHILE_DEAD;
-                spellInfo->Attributes |= SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY;
-                spellInfo->Attributes |= SPELL_ATTR0_CANT_CANCEL;
-                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_DEAD;
-                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
-                spellInfo->AttributesEx3 |= SPELL_ATTR3_DEATH_PERSISTENT;
-                spellInfo->DurationIndex = 4;
-                spellInfo->CategoryRecoveryTime = 0;
-                spellInfo->Effect[0] = SPELL_EFFECT_APPLY_AURA;
-                spellInfo->EffectBasePoints[0] = 1;
-                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
-                spellInfo->EffectImplicitTargetB[0] = 0;
-                spellInfo->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
-                break;
             case 1543:  // Flare
                 spellInfo->EffectRadiusIndex[0] = EFFECT_RADIUS_10_YARDS;
                 spellInfo->EffectRadiusIndex[1] = EFFECT_RADIUS_10_YARDS;
@@ -3270,6 +3253,12 @@ void SpellMgr::LoadDbcDataCorrections()
             case 60187: // Elemental Fury (Rank 4)
             case 60188: // Elemental Fury (Rank 5)
                 spellInfo->EffectSpellClassMask[0] = flag96(0xD1300003, 0x00043000, 0x00000004);
+                break;
+            case 54318: // Hearthstone
+                spellInfo->Effect[0] = SPELL_EFFECT_TELEPORT_UNITS;
+                spellInfo->EffectBasePoints[0] = 0;
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
+                spellInfo->EffectImplicitTargetB[0] = TARGET_DEST_HOME;
                 break;
             default:
                 break;

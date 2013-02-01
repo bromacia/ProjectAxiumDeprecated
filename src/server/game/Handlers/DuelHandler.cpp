@@ -67,8 +67,6 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     plTarget->SetPower(POWER_RUNIC_POWER, 0);
     player->RemoveAllPlayerSpellCooldowns();
     plTarget->RemoveAllPlayerSpellCooldowns();
-    player->AddAura(80864, player);
-    plTarget->AddAura(80864, plTarget);
     player->ClearDiminishings();
     plTarget->ClearDiminishings();
     player->ClearComboPoints();
