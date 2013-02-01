@@ -3224,7 +3224,7 @@ void SpellMgr::LoadDbcDataCorrections()
                 break;
             case 46924: // Bladestorm
             case 61851: // Killing Spree
-                spellInfo->Effect[1] = 0;
+                spellInfo->EffectMiscValue[1] = 0;
                 break;
             case 48506: // Earth and Moon (Rank 1)
             case 48510: // Earth and Moon (Rank 2)

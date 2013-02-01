@@ -1188,6 +1188,18 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
     if (unit->isAlive() != target->alive)
         return;
 
+    // For delayed spells immunity may be applied between missile launch and hit - check immunity for that case
+    // disable effects to which unit is immune
+    for (uint32 effectNumber = 0; effectNumber < MAX_SPELL_EFFECTS; ++effectNumber)
+        if (mask & (1 << effectNumber) && unit->IsImmunedToSpellEffect(m_spellInfo, effectNumber))
+            mask &= ~(1 << effectNumber);
+
+    if (!mask || (m_spellInfo->Speed && (unit->IsImmunedToDamage(m_spellInfo) || unit->IsImmunedToSpell(m_spellInfo))))
+    {
+        m_caster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_IMMUNE);
+        return;
+    }
+
     if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastSanctuaryTime)
     {
         if (m_spellInfo->Speed == 0)
@@ -1430,42 +1442,15 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             m_caster->SetInCombatWith(unit);
     }
 
-    // Bladestorm and Killing Spree should remove all slows
-    if (m_spellInfo->Id == 46924 || m_spellInfo->Id == 51690)
-    {
-        unit->RemoveAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
-        unit->RemoveAurasByType(SPELL_AURA_MOD_ROOT);
-        unit->RemoveAurasWithMechanic(MECHANIC_SNARE);
-        unit->RemoveAurasWithMechanic(MECHANIC_ROOT);
-    }
-
     // Bestial Wrath and Beast Within remove auras
     if (m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
     {
-        unit->RemoveAurasWithMechanic(MECHANIC_SNARE);
-        unit->RemoveAurasWithMechanic(MECHANIC_ROOT);
-        unit->RemoveAurasWithMechanic(MECHANIC_FEAR);
-        unit->RemoveAurasWithMechanic(MECHANIC_STUN);
-        unit->RemoveAurasWithMechanic(MECHANIC_SLEEP);
-        unit->RemoveAurasWithMechanic(MECHANIC_CHARM);
-        unit->RemoveAurasWithMechanic(MECHANIC_SAPPED);
-        unit->RemoveAurasWithMechanic(MECHANIC_HORROR);
-        unit->RemoveAurasWithMechanic(MECHANIC_POLYMORPH);
-        unit->RemoveAurasWithMechanic(MECHANIC_DISORIENTED);
-        unit->RemoveAurasWithMechanic(MECHANIC_FREEZE);
-        unit->RemoveAurasWithMechanic(MECHANIC_TURN);
-        unit->RemoveAurasWithMechanic(MECHANIC_BANISH);
-        unit->RemoveAurasWithMechanic(MECHANIC_BANISH);
-        unit->RemoveAurasWithMechanic(IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK);
-        unit->RemoveAurasByType(SPELL_AURA_MOD_STUN);
-        unit->RemoveAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
-        unit->RemoveAurasByType(SPELL_AURA_MOD_ROOT);
-        unit->RemoveAurasByType(SPELL_AURA_MOD_CONFUSE);
-        unit->RemoveAurasByType(SPELL_AURA_MOD_FEAR);
-        unit->RemoveAurasByType(SPELL_AURA_MOD_DISARM);
-
         if (!m_caster->HasAura(34471))
             m_caster->AddAura(34471, m_caster);
+
+        if (Pet* pet = m_caster->ToPlayer()->GetPet())
+            if (!pet->HasAura(19574))
+                pet->AddAura(19574, pet);
     }
 
     // Divine Shield, Divine Protection, Hand of Protection and Lay on Hands
@@ -1506,14 +1491,6 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
 {
     if (!unit || !effectMask)
         return SPELL_MISS_EVADE;
-
-    // For delayed spells immunity may be applied between missile launch and hit - check immunity for that case
-    // disable effects to which unit is immune
-    for (uint8 effectNumber = 0; effectNumber < MAX_SPELL_EFFECTS; ++effectNumber)
-        if (effectMask & (1 << effectNumber) && unit->IsImmunedToSpellEffect(m_spellInfo, effectNumber))
-            effectMask &= ~(1 << effectNumber);
-    if (!effectMask || (m_spellInfo->Speed && (unit->IsImmunedToDamage(m_spellInfo) || unit->IsImmunedToSpell(m_spellInfo))))
-        return SPELL_MISS_IMMUNE;
 
     PrepareScriptHitHandlers();
     CallScriptBeforeHitHandlers();
@@ -1564,27 +1541,6 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                     unit->RemoveAura(14325);
                     unit->RemoveAura(53338);
                 }
-
-                // Handle some immunities here instead of AuraEffect::HandleModStateImmunityMask
-                // Bladestorm, Killing Spree, Bestial Wrath and Beast Within immunities
-                if (unit->HasAura(46924) || unit->HasAura(51690) || unit->HasAura(19574) || unit->HasAura(34471))
-                    if (m_spellInfo->Mechanic == MECHANIC_SNARE || m_spellInfo->Mechanic == MECHANIC_ROOT ||
-                        m_spellInfo->Mechanic == MECHANIC_FEAR || m_spellInfo->Mechanic == MECHANIC_STUN ||
-                        m_spellInfo->Mechanic == MECHANIC_SLEEP || m_spellInfo->Mechanic == MECHANIC_CHARM ||
-                        m_spellInfo->Mechanic == MECHANIC_SAPPED || m_spellInfo->Mechanic == MECHANIC_HORROR ||
-                        m_spellInfo->Mechanic == MECHANIC_POLYMORPH || m_spellInfo->Mechanic == MECHANIC_DISORIENTED ||
-                        m_spellInfo->Mechanic == MECHANIC_FREEZE || m_spellInfo->Mechanic == MECHANIC_TURN ||
-                        m_spellInfo->Mechanic == MECHANIC_BANISH || m_spellInfo->Mechanic == IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK ||
-                        m_spellInfo->Effects[i].Effect == SPELL_EFFECT_KNOCK_BACK || m_spellInfo->Effects[i].Effect == SPELL_EFFECT_KNOCK_BACK_DEST ||
-                        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_DECREASE_SPEED ||
-                        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_ROOT || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CONFUSE ||
-                        m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR)
-                        return SPELL_MISS_IMMUNE;
-
-                // Killing Spree, Bestial Wrath and Beast Within immunity to disarm
-                if (unit->HasAura(51690) || unit->HasAura(19574) || unit->HasAura(34471))
-                    if (m_spellInfo->Mechanic == MECHANIC_DISARM || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_DISARM)
-                        return SPELL_MISS_IMMUNE;
             }
 
             bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);

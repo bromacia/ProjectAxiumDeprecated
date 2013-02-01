@@ -3567,6 +3567,39 @@ void AuraEffect::HandleModStateImmunityMask(AuraApplication const* aurApp, uint8
             break;
     }
 
+    // Bladestorm, Killing Spree, Bestial Wrath and Beast Within immunities
+    if (m_spellInfo->Id == 46924 || m_spellInfo->Id == 51690 || m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
+    {
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_SNARE, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_ROOT, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_FEAR, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_STUN, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_SLEEP, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_CHARM, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_SAPPED, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_HORROR, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_POLYMORPH, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_DISORIENTED, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_FREEZE, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_TURN, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_BANISH, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, apply);
+        target->ApplySpellImmune(GetId(), IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK_DEST, apply);
+        aura_immunity_list.push_back(SPELL_AURA_MOD_STUN);
+        aura_immunity_list.push_back(SPELL_AURA_MOD_DECREASE_SPEED);
+        aura_immunity_list.push_back(SPELL_AURA_MOD_ROOT);
+        aura_immunity_list.push_back(SPELL_AURA_MOD_CONFUSE);
+        aura_immunity_list.push_back(SPELL_AURA_MOD_FEAR);
+    }
+
+    // Killing Spree, Bestial Wrath and Beast Within immunity to disarm
+    if (m_spellInfo->Id == 51690 || m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
+    {
+        target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_DISARM, apply);
+        aura_immunity_list.push_back(SPELL_AURA_MOD_DISARM);
+    }
+
     if (aura_immunity_list.empty())
     {
         if (miscVal & (1<<10))
