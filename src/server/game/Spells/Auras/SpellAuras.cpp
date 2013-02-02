@@ -1378,6 +1378,18 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
             }
         }
 
+        switch (GetId())
+        {
+            case 75456: // Piercing Twilight (Normal)
+            case 75458: // Piercing Twilight (Heroic)
+                target->ToPlayer()->RemoveAura(35847);
+                break;
+            case 75466: // Twilight Flames (Normal)
+            case 75473: // Twilight Flames (Heroic)
+                target->ToPlayer()->RemoveAura(35838);
+                break;
+        }
+
         switch (GetSpellInfo()->SpellFamilyName)
         {
             case SPELLFAMILY_MAGE:

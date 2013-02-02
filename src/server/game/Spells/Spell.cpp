@@ -1442,6 +1442,20 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             m_caster->SetInCombatWith(unit);
     }
 
+    switch (m_spellInfo->Id)
+    {
+        case 75456: // Piercing Twilight (Normal)
+        case 75458: // Piercing Twilight (Heroic)
+            m_caster->AddAura(35847, m_caster);
+            m_caster->GetAura(35847, m_caster->GetGUID())->SetDurationAndMaxDuration(15 * IN_MILLISECONDS);
+            break;
+        case 75466: // Twilight Flames (Normal)
+        case 75473: // Twilight Flames (Heroic)
+            m_caster->AddAura(35838, m_caster);
+            m_caster->GetAura(35838, m_caster->GetGUID())->SetDurationAndMaxDuration(15 * IN_MILLISECONDS);
+            break;
+    }
+
     // Bestial Wrath and Beast Within remove auras
     if (m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
     {
