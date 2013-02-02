@@ -108,79 +108,21 @@ public:
     {
         Player* player = handler->GetSession()->GetPlayer();
 
-        if (player->InBattleground())
-        {
-            handler->PSendSysMessage("You cant do that while in a battleground.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-        if (player->InArena())
-        {
-            handler->PSendSysMessage("You cant do that while in arena.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-        if (player->IsDueling())
-        {
-            handler->PSendSysMessage("You cant do that while dueling.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-        if (player->isInCombat())
-        {
-            handler->PSendSysMessage("You cant do that while in combat.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-        if (player->IsMounted())
-        {
-            handler->PSendSysMessage("You cant do that while mounted.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
         if (player->IsSitState())
         {
             handler->PSendSysMessage("You cant do that while sitting.");
             handler->SetSentErrorMessage(true);
             return false;
         }
-        if (player->isInFlight())
-        {
-            handler->PSendSysMessage("You cant do that while in flight.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-        if (player->IsFlying())
-        {
-            handler->PSendSysMessage("You cant do that while flying.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-        if (player->IsInWater())
-        {
-            handler->PSendSysMessage("You cant do that while swimming.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-        if (player->HasUnitState(UNIT_STATE_CASTING))
-        {
-            handler->PSendSysMessage("You cant do that while casting.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-        if (player->IsCrowdControlled())
-        {
-            handler->PSendSysMessage("You cant do that while being crowd controlled.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
+
         if (player->HasAuraType(SPELL_AURA_TRANSFORM))
         {
             handler->PSendSysMessage("You cant do that while transformed.");
             handler->SetSentErrorMessage(true);
             return false;
         }
-        if ((player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT)))
+
+        if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
         {
             handler->PSendSysMessage("You cant do that while shapeshifted.");
             handler->SetSentErrorMessage(true);

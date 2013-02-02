@@ -111,7 +111,7 @@ public:
         {
             Player* player = itr->getSource();
 
-            if (!player || player == m_session->GetPlayer() || !player->GetSession())
+            if (!player || !player->GetSession())
                 continue;
 
             // check online security
@@ -184,7 +184,7 @@ public:
         for (GroupReference* itr = grp->GetFirstMember(); itr != NULL; itr = itr->next())
         {
             Player* player = itr->getSource();
-            if (!player || player == m_session->GetPlayer() || !player->GetSession())
+            if (!player || !player->GetSession())
                 continue;
 
             //stop combat + make player unattackable + duel stop + stop some spells
@@ -238,7 +238,7 @@ public:
         for (GroupReference* itr = grp->GetFirstMember(); itr != NULL; itr = itr->next())
         {
             Player* player = itr->getSource();
-            if (!player || player == m_session->GetPlayer() || !player->GetSession())
+            if (!player || !player->GetSession())
                 continue;
 
             //Reset player faction + allow combat + allow duels
@@ -277,7 +277,7 @@ public:
         for (GroupReference* itr = grp->GetFirstMember(); itr != NULL; itr = itr->next())
         {
             Player* player = itr->getSource();
-            if (!player || player == m_session->GetPlayer() || !player->GetSession())
+            if (!player || !player->GetSession())
                 continue;
 
             if (player)
