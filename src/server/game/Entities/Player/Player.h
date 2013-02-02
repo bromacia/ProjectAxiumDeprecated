@@ -2587,6 +2587,13 @@ class Player : public Unit, public GridObject<Player>
             //! TODO: Need a proper calculation for collision height when mounted
         }
 
+        // Axium
+        void SetVip(bool x) { m_vip = x; }
+        bool IsVip() const { return m_vip; }
+
+        void SetShowDBWTransformation(bool x) { m_show_dbw_transformation = x; }
+        bool ShowDBWTransformation() const { return m_show_dbw_transformation; }
+
     protected:
         // Gamemaster whisper whitelist
         WhisperListContainer WhisperList;
@@ -2922,8 +2929,10 @@ class Player : public Unit, public GridObject<Player>
         InstanceTimeMap _instanceResetTimes;
         uint32 _pendingBindId;
         uint32 _pendingBindTimer;
-        bool IsVip() const { return m_vip; }
+
+        // Axium
         bool m_vip;
+        bool m_show_dbw_transformation;
 };
 
 void AddItemsSetItem(Player*player, Item* item);
