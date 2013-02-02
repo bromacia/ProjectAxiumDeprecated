@@ -19738,7 +19738,7 @@ void Player::Whisper(const std::string& text, uint32 language, uint64 receiver)
     if (rPlayer->isAFK())
         ChatHandler(this).PSendSysMessage(LANG_PLAYER_AFK, rPlayer->GetName(), rPlayer->afkMsg.c_str());
     else if (rPlayer->isDND())
-        ChatHandler(GetSession()).PSendSysMessage(LANG_PLAYER_DND, rPlayer->GetName().c_str(), rPlayer->dndMsg.c_str());
+        ChatHandler(GetSession()).PSendSysMessage(LANG_PLAYER_DND, rPlayer->GetName(), rPlayer->dndMsg.c_str());
 }
 
 void Player::PetSpellInitialize()
