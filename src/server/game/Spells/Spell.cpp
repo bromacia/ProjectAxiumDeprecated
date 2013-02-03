@@ -1557,10 +1557,13 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                 }
             }
 
-            bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);
-            m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
-            if (m_resist >= 100)
-                return SPELL_MISS_RESIST;
+            if (!m_caster->IsFriendlyTo(unit) || !unit->IsFriendlyTo(m_caster))
+            {
+                bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);
+                m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
+                if (m_resist >= 100)
+                    return SPELL_MISS_RESIST;
+            }
 
             // Get Data Needed for Diminishing Returns, some effects may have multiple auras, so this must be done on spell hit, not aura add
             m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, m_triggeredByAuraSpell);
@@ -1595,10 +1598,13 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
     }
     else if (!m_spellInfo->IsPositive())
     {
-        bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);
-        m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
-        if (m_resist >= 100)
-            return SPELL_MISS_RESIST;
+        if (!m_caster->IsFriendlyTo(unit) || !unit->IsFriendlyTo(m_caster))
+        {
+            bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);
+            m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
+            if (m_resist >= 100)
+                return SPELL_MISS_RESIST;
+        }
     }
 
     uint8 aura_effmask = 0;
