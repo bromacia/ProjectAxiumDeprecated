@@ -13314,11 +13314,6 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
             {
                 case MOVE_WALK:
                 case MOVE_RUN:
-                case MOVE_RUN_BACK:
-                case MOVE_SWIM:
-                case MOVE_SWIM_BACK:
-                case MOVE_FLIGHT:
-                case MOVE_FLIGHT_BACK:
                     if (HasAura(19596)) // Boar's Speed
                         main_speed_mod = 30;
                     break;
@@ -18074,11 +18069,7 @@ void Unit::NearTeleportTo(float x, float y, float z, float orientation, bool cas
     if (GetTypeId() == TYPEID_PLAYER)
         ToPlayer()->TeleportTo(GetMapId(), x, y, z, orientation, TELE_TO_NOT_LEAVE_TRANSPORT | TELE_TO_NOT_LEAVE_COMBAT | TELE_TO_NOT_UNSUMMON_PET | (casting ? TELE_TO_SPELL : 0));
     else
-    {
-        // FIXME: this interrupts spell visual
-        DestroyForNearbyPlayers();
         UpdatePosition(x, y, z, orientation, true);
-    }
 }
 
 bool Unit::UpdatePosition(float x, float y, float z, float orientation, bool teleport)

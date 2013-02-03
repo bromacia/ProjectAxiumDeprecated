@@ -3199,6 +3199,10 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
 
                     summon->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
 
+                    summon->SetSpeed(MOVE_RUN, 1.2f, true);
+                    summon->UpdateSpeed(MOVE_RUN, true);
+                    summon->UpdateSpeed(MOVE_WALK, true);
+
                     summon->AI()->EnterEvadeMode();
                     break;
                 }
@@ -7306,6 +7310,10 @@ void Spell::SummonGuardian(uint32 i, uint32 entry, SummonPropertiesEntry const* 
             else
                 summon->SetDisplayId(1126);
         }
+
+        summon->SetSpeed(MOVE_RUN, 1.2f, true);
+        summon->UpdateSpeed(MOVE_RUN, true);
+        summon->UpdateSpeed(MOVE_WALK, true);
 
         summon->AI()->EnterEvadeMode();
 
