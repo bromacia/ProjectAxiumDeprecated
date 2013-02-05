@@ -184,6 +184,10 @@ void PetAI::UpdateAI(const uint32 diff)
                         spellUsed = true;
                     }
                 }
+
+                if (spellInfo->HasEffect(SPELL_EFFECT_JUMP_DEST))
+                    continue;
+
                 // No enemy, check friendly
                 if (!spellUsed)
                 {
