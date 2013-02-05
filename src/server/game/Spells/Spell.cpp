@@ -6005,7 +6005,7 @@ SpellCastResult Spell::CheckCasterAuras() const
                 Unit::AuraEffectList const& stunAuras = m_caster->GetAuraEffectsByType(SPELL_AURA_MOD_STUN);
                 for (Unit::AuraEffectList::const_iterator i = stunAuras.begin(); i != stunAuras.end(); ++i)
                 {
-                    if ((*i)->GetSpellInfo()->GetAllEffectsMechanicMask() && !((*i)->GetSpellInfo()->GetAllEffectsMechanicMask() & (1<<MECHANIC_STUN)))
+                    if ((*i)->GetSpellInfo()->GetAllEffectsMechanicMask() && !((*i)->GetSpellInfo()->GetAllEffectsMechanicMask() & ((1<<MECHANIC_STUN)|(1<<MECHANIC_FREEZE)))) // Freeze mechanics should be considered stuns aswell
                     {
                         foundNotStun = true;
                         break;
