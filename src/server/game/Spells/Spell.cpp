@@ -3111,8 +3111,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
         m_caster->ToPlayer()->SetSpellModTakingSpell(this, false);
 
-    // Instant cast spells
-    for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++) // Instant cast spells
     {
         if ((m_spellInfo->Effects[i].Effect == SPELL_EFFECT_ENCHANT_ITEM || // Enchants
             m_spellInfo->Effects[i].Effect == SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC || // Enhancements
@@ -5868,6 +5867,13 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (!m_caster->ToPlayer()->IsWithinLOS(fireTotem->GetPositionX(), fireTotem->GetPositionY(), fireTotem->GetPositionZ()))
                 return SPELL_FAILED_LINE_OF_SIGHT;
 
+    // Dont allow glyphs to be added while in duels
+    if (Player* player = m_caster->ToPlayer())
+        if (player->IsDueling())
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+                if (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH)
+                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
     // Blazing Hippogryph
     if (m_spellInfo->Id == 74856)
         if (m_originalCaster && m_originalCaster->GetTypeId() == TYPEID_PLAYER && m_originalCaster->isAlive())
@@ -5963,7 +5969,7 @@ SpellCastResult Spell::CheckCasterAuras() const
     // We use bitmasks so the loop is done only once and not on every aura check below.
     if (m_spellInfo->AttributesEx & SPELL_ATTR1_DISPEL_AURAS_ON_IMMUNITY)
     {
-        for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
             if (m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_SCHOOL_IMMUNITY)
                 school_immune |= uint32(m_spellInfo->Effects[i].MiscValue);
