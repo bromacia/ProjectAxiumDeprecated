@@ -167,6 +167,12 @@ void PetAI::UpdateAI(const uint32 diff)
 
             if (spellInfo->IsPositive())
             {
+                if (spellInfo->CanBeUsedInCombat())
+                {
+                    if (!me->GetCharmInfo()->IsCommandAttack())
+                        continue;
+                }
+
                 Spell* spell = new Spell(me, spellInfo, TRIGGERED_NONE, 0);
                 bool spellUsed = false;
 
