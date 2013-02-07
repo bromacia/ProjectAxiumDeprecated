@@ -3601,7 +3601,7 @@ void AuraEffect::HandleModStateImmunityMask(AuraApplication const* aurApp, uint8
     }
 
     // Bladestorm, Killing Spree, Bestial Wrath and Beast Within immunities
-    if (m_spellInfo->Id == 46924 || m_spellInfo->Id == 51690 || m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
+    if (m_spellInfo->Id == 46924 || m_spellInfo->Id == 61851 || m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
     {
         target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_SNARE, apply);
         target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_ROOT, apply);
@@ -3627,7 +3627,7 @@ void AuraEffect::HandleModStateImmunityMask(AuraApplication const* aurApp, uint8
     }
 
     // Killing Spree, Bestial Wrath and Beast Within immunity to disarm
-    if (m_spellInfo->Id == 51690 || m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
+    if (m_spellInfo->Id == 61851 || m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
     {
         target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_DISARM, apply);
         aura_immunity_list.push_back(SPELL_AURA_MOD_DISARM);
@@ -5866,6 +5866,7 @@ void AuraEffect::HandlePeriodicDummyAuraTick(Unit* target, Unit* caster) const
 
                     target->CastSpell(spellTarget, 57840, true);
                     target->CastSpell(spellTarget, 57841, true);
+                    target->CastSpell(target, 61851, true);
                     break;
                 }
             }

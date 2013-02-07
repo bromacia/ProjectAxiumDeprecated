@@ -3165,14 +3165,14 @@ void SpellMgr::LoadDbcDataCorrections()
             case 25202: // Demoralizing Shout (Rank 6)
             case 25203: // Demoralizing Shout (Rank 7)
             case 47437: // Demoralizing Shout (Rank 8)
-                spellInfo->DmgClass = 0;
+                spellInfo->DmgClass = SPELL_DAMAGE_CLASS_NONE;
                 break;
             case 1130: // Hunter's Mark (Rank 1)
             case 14323: // Hunter's Mark (Rank 2)
             case 14324: // Hunter's Mark (Rank 3)
             case 14325: // Hunter's Mark (Rank 4)
             case 53338: // Hunter's Mark (Rank 5)
-                spellInfo->DmgClass = 1;
+                spellInfo->DmgClass = SPELL_DAMAGE_CLASS_MAGIC;
                 break;
             case 58600: // Restricted Flight Area
                 spellInfo->DurationIndex = 27;
@@ -3259,6 +3259,13 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectBasePoints[0] = 0;
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
                 spellInfo->EffectImplicitTargetB[0] = TARGET_DEST_HOME;
+                break;
+            case 51690: // Killing Spree (Ability)
+                spellInfo->AttributesEx |= SPELL_ATTR1_NOT_BREAK_STEALTH;
+                break;
+            case 19574: // Bestial Wrath
+            case 34471: // The Beast Within
+                spellInfo->Effect[2] = SPELL_AURA_MECHANIC_IMMUNITY_MASK;
                 break;
             default:
                 break;

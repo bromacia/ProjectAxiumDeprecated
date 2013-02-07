@@ -1444,6 +1444,20 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
 
     switch (m_spellInfo->Id)
     {
+        case 19574: // Bestial Wrath
+        case 34471: // Beast Within
+            if (!m_caster->HasAura(34471))
+                m_caster->AddAura(34471, m_caster);
+            if (Pet* pet = m_caster->ToPlayer()->GetPet())
+                if (!pet->HasAura(19574))
+                    pet->AddAura(19574, pet);
+            break;
+        case 51690: // Killing Spree (Ability)
+            m_caster->CastSpell(m_caster, 61851, true);
+            break;
+        case 57841: // Killing Spree (Attack)
+            m_caster->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+            break;
         case 75456: // Piercing Twilight (Normal)
         case 75458: // Piercing Twilight (Heroic)
             m_caster->AddAura(35847, m_caster);
@@ -1454,17 +1468,6 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             m_caster->AddAura(35838, m_caster);
             m_caster->GetAura(35838, m_caster->GetGUID())->SetDurationAndMaxDuration(15 * IN_MILLISECONDS);
             break;
-    }
-
-    // Bestial Wrath and Beast Within remove auras
-    if (m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
-    {
-        if (!m_caster->HasAura(34471))
-            m_caster->AddAura(34471, m_caster);
-
-        if (Pet* pet = m_caster->ToPlayer()->GetPet())
-            if (!pet->HasAura(19574))
-                pet->AddAura(19574, pet);
     }
 
     // Divine Shield, Divine Protection, Hand of Protection and Lay on Hands
