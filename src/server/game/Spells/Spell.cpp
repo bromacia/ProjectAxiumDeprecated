@@ -1190,9 +1190,9 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
 
     // For delayed spells immunity may be applied between missile launch and hit - check immunity for that case
     // disable effects to which unit is immune
-    for (uint32 effectNumber = 0; effectNumber < MAX_SPELL_EFFECTS; ++effectNumber)
-        if (mask & (1 << effectNumber) && unit->IsImmunedToSpellEffect(m_spellInfo, effectNumber))
-            mask &= ~(1 << effectNumber);
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        if (mask & (1 << i) && unit->IsImmunedToSpellEffect(m_spellInfo, i))
+            mask &= ~(1 << i);
 
     if (!mask || (m_spellInfo->Speed && (unit->IsImmunedToDamage(m_spellInfo) || unit->IsImmunedToSpell(m_spellInfo))))
     {
@@ -1438,12 +1438,25 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
                     unit->SetStandState(UNIT_STAND_STATE_STAND);
         }
 
-        if (missInfo != SPELL_MISS_EVADE && unit != m_caster && m_caster->IsFriendlyTo(unit) && m_spellInfo->IsPositive() && unit->isInCombat())
+        if (missInfo != SPELL_MISS_EVADE && unit != m_caster && m_caster->IsFriendlyTo(unit) && m_spellInfo->IsPositive() &&
+            unit->isInCombat() && !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO))
             m_caster->SetInCombatWith(unit);
     }
 
     switch (m_spellInfo->Id)
     {
+        case 642:   // Divine Shield
+        case 498:   // Divine Protection
+        case 1022:  // Hand of Protection (Rank 1)
+        case 5599:  // Hand of Protection (Rank 2)
+        case 10278: // Hand of Protection (Rank 3)
+        case 633:   // Lay on Hands (Rank 1)
+        case 2800:  // Lay on Hands (Rank 2)
+        case 10310: // Lay on Hands (Rank 3)
+        case 27154: // Lay on Hands (Rank 4)
+        case 48788: // Lay on Hands (Rank 5)
+            m_caster->ToPlayer()->CastSpell(unit, 25771); // Forbearance
+            break;
         case 19574: // Bestial Wrath
         case 34471: // Beast Within
             if (!m_caster->HasAura(34471))
@@ -1469,11 +1482,6 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             m_caster->GetAura(35838, m_caster->GetGUID())->SetDurationAndMaxDuration(15 * IN_MILLISECONDS);
             break;
     }
-
-    // Divine Shield, Divine Protection, Hand of Protection and Lay on Hands
-    if (m_spellInfo->Id == 642 || m_spellInfo->Id == 498 || m_spellInfo->Id == 1022 || m_spellInfo->Id == 5599 || m_spellInfo->Id == 10278 ||
-        m_spellInfo->Id == 633 || m_spellInfo->Id == 2800 || m_spellInfo->Id == 10310 || m_spellInfo->Id == 27154 || m_spellInfo->Id == 48788)
-        m_caster->ToPlayer()->CastSpell(unit, 25771); // Forbearance
 
     if (spellHitTarget)
     {
