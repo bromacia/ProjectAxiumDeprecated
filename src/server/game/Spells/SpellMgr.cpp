@@ -1550,7 +1550,7 @@ void SpellMgr::LoadSpellTargetPositions()
             continue;
 
         bool found = false;
-        for (int j = 0; j < MAX_SPELL_EFFECTS; ++j)
+        for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
             switch (spellInfo->Effects[j].TargetA)
             {

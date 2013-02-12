@@ -750,7 +750,7 @@ void Battleground::EndBattleground(uint32 winner)
                 /** World of Warcraft Armory **/
                 uint32 maxChartID;
                 QueryResult result = CharacterDatabase.PQuery("SELECT MAX(gameid) FROM armory_game_chart");
-                if(!result)
+                if (!result)
                     maxChartID = 0;
                 else
                 {
