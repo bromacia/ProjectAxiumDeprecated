@@ -274,7 +274,7 @@ class npc_transmog : public CreatureScript
             {
                 ItemTemplate const* transmogItem = sObjectMgr->GetItemTemplate(transmog->mainhand_id);
                 ItemTemplate const* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate();
-                if (transmogItem->SubClass == inventoryItem->SubClass)
+                if (transmogItem->Class == inventoryItem->Class && transmogItem->SubClass == inventoryItem->SubClass)
                 {
                     CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u",
                     transmog->mainhand_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetGUIDLow());
@@ -288,7 +288,7 @@ class npc_transmog : public CreatureScript
             {
                 ItemTemplate const* transmogItem = sObjectMgr->GetItemTemplate(transmog->offhand_id);
                 ItemTemplate const* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetTemplate();
-                if (transmogItem->SubClass == inventoryItem->SubClass)
+                if (transmogItem->Class == inventoryItem->Class && transmogItem->SubClass == inventoryItem->SubClass)
                 {
                     CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u",
                     transmog->offhand_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetGUIDLow());
@@ -302,7 +302,7 @@ class npc_transmog : public CreatureScript
             {
                 ItemTemplate const* transmogItem = sObjectMgr->GetItemTemplate(transmog->ranged_id);
                 ItemTemplate const* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetTemplate();
-                if (transmogItem->SubClass == inventoryItem->SubClass)
+                if (transmogItem->Class == inventoryItem->Class && transmogItem->SubClass == inventoryItem->SubClass)
                 {
                     CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u",
                     transmog->ranged_id, player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED)->GetGUIDLow());
