@@ -84,11 +84,11 @@ class npc_arena_ranks : public CreatureScript
         std::string getPlayerStatus(uint32 guid)
         {
             Player* player = sObjectAccessor->FindPlayer(guid);
-            if(!player)
+            if (!player)
                 return "Offline";
-            if(player->isAFK()) 
+            if (player->isAFK()) 
                 return "Online, <AFK> " + player->afkMsg; 
-            if(player->isDND()) 
+            if (player->isDND()) 
                 return "Online, <Busy> " + player->dndMsg;
             return "Online";
         }
@@ -260,7 +260,6 @@ class npc_arena_ranks : public CreatureScript
                                 seasonWinPercentage = getWinPercent(seasonWins, seasonLosses);
                                 weekWinPercentage = getWinPercent(weekWins, weekLosses);
 
-                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "==============================", GOSSIP_SENDER_MAIN, ARENA_START_TEAM_LOOKUP + teamId);
                                 buf.str("");
                                 buf << "Player: " << name;
                                 if (guid == captainGuid) 
