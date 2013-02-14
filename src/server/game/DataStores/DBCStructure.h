@@ -946,16 +946,16 @@ struct FactionTemplateEntry
 
 struct GameObjectDisplayInfoEntry
 {
-    uint32      Displayid;                                  // 0        m_ID
-    // char* filename;                                      // 1
-    //uint32  unk1[10];   //2-11
-    float   minX;
-    float   minY;
-    float   minZ;
-    float   maxX;
-    float   maxY;
-    float   maxZ;
-    //uint32  transport;  //18
+    uint32  Displayid; // 0 m_ID
+    char*   filename;  // 1
+    //uint32  unk1[10];  // 2-11
+    float   minX;      // 12
+    float   minY;      // 13
+    float   minZ;      // 14
+    float   maxX;      // 15
+    float   maxY;      // 16
+    float   maxZ;      // 17
+    //uint32  transport; //18
 };
 
 struct GemPropertiesEntry

@@ -96,13 +96,13 @@ RandomMovementGenerator<Creature>::_setRandomLocation(Creature &creature)
 
             // The fastest way to get an accurate result 90% of the time.
             // Better result can be obtained like 99% accuracy with a ray light, but the cost is too high and the code is too long.
-            nz = map->GetHeight(nx, ny, Z+dist-2.0f, false); // Map check
+            nz = map->GetHeight(creature.GetPhaseMask(), nx, ny, Z+dist-2.0f, false);
             if (fabs(nz-Z)>dist)
             {
-                nz = map->GetHeight(nx, ny, Z-2.0f, true); // Vmap Horizontal or above
+                nz = map->GetHeight(creature.GetPhaseMask(), nx, ny, Z - 2.0f, true); // Vmap Horizontal or above
                 if (fabs(nz-Z)>dist)
                 {
-                    nz = map->GetHeight(nx, ny, Z+dist-2.0f, true); // Vmap Higher
+                    nz = map->GetHeight(creature.GetPhaseMask(), nx, ny, Z+dist-2.0f, true); // Vmap Higher
                     if (fabs(nz-Z)>dist)
                         continue; // let's forget this bad coords where a z cannot be find and retry at next tick
                 }

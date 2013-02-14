@@ -1,3 +1,6 @@
+#define _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_WARNINGS
+
 #ifndef MPQ_H
 #define MPQ_H
 
@@ -20,7 +23,8 @@ public:
     MPQArchive(const char* filename);
     void close();
 
-    void GetFileListTo(vector<string>& filelist) {
+    void GetFileListTo(vector<string>& filelist)
+    {
         uint32 filenum;
         if(libmpq__file_number(mpq_a, "(listfile)", &filenum)) return;
         libmpq__off_t size, transferred;

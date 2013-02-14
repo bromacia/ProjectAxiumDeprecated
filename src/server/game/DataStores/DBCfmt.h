@@ -19,6 +19,9 @@
 #ifndef TRINITY_DBCSFRM_H
 #define TRINITY_DBCSFRM_H
 
+// x - skip<uint32>, X - skip<uint8>, s - char*, f - float, i - uint32, b - uint8, d - index (not included)
+// n - index (included), l - bool, p - field present in sql dbc, a - field absent in sql dbc
+
 const char Achievementfmt[]="niixssssssssssssssssxxxxxxxxxxxxxxxxxxiixixxxxxxxxxxxxxxxxxxii";
 const std::string CustomAchievementfmt="pppaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaapapaaaaaaaaaaaaaaaaaapp";
 const std::string CustomAchievementIndex = "ID";
@@ -52,7 +55,7 @@ const char EmotesEntryfmt[]="nxxiiix";
 const char EmotesTextEntryfmt[]="nxixxxxxxxxxxxxxxxx";
 const char FactionEntryfmt[]="niiiiiiiiiiiiiiiiiiffixssssssssssssssssxxxxxxxxxxxxxxxxxx";
 const char FactionTemplateEntryfmt[]="niiiiiiiiiiiii";
-const char GameObjectDisplayInfofmt[]="nxxxxxxxxxxxffffffx";
+const char GameObjectDisplayInfofmt[]="nsxxxxxxxxxxffffffx";
 const char GemPropertiesEntryfmt[]="nixxi";
 const char GlyphPropertiesfmt[]="niii";
 const char GlyphSlotfmt[]="nii";
