@@ -1974,9 +1974,6 @@ void Spell::EffectTeleportUnits(SpellEffIndex /*effIndex*/)
     else if (unitTarget->GetTypeId() == TYPEID_PLAYER)
         unitTarget->ToPlayer()->TeleportTo(mapid, x, y, z, orientation, unitTarget == m_caster ? TELE_TO_SPELL : 0);
 
-    if (m_spellInfo->Id == 1953)
-        unitTarget->m_lastBlinkTime = getMSTime();
-
     // post effects for TARGET_DEST_DB
     switch (m_spellInfo->Id)
     {
@@ -6194,7 +6191,13 @@ void Spell::EffectLeap(SpellEffIndex /*effIndex*/)
     if (!m_targets.HasDst())
         return;
 
-    unitTarget->NearTeleportTo(m_targets.GetDst()->GetPositionX(), m_targets.GetDst()->GetPositionY(), m_targets.GetDst()->GetPositionZ(), m_targets.GetDst()->GetOrientation(), unitTarget == m_caster);
+    Position pos;
+    m_targets.GetDst()->GetPosition(&pos);
+    unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetDistance(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + 2.0f), 0.0f);
+    unitTarget->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation(), unitTarget == m_caster);
+
+    if (m_spellInfo->Id == 1953)
+        unitTarget->m_lastBlinkTime = getMSTime();
 }
 
 void Spell::EffectReputation(SpellEffIndex effIndex)
