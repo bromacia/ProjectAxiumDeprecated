@@ -253,7 +253,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     // ignore, waiting processing in WorldSession::HandleMoveWorldportAckOpcode and WorldSession::HandleMoveTeleportAck
     if (plMover && plMover->IsBeingTeleported())
     {
-        recv_data.rfinish();                   // prevent warnings spam
+        recv_data.rfinish(); // prevent warnings spam
         return;
     }
 
@@ -266,7 +266,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     movementInfo.guid = guid;
     ReadMovementInfo(recv_data, &movementInfo);
 
-    recv_data.rfinish();                   // prevent warnings spam
+    recv_data.rfinish(); // prevent warnings spam
 
     // prevent tampered movement data
     if (guid != mover->GetGUID())
@@ -274,21 +274,30 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
     if (!movementInfo.pos.IsPositionValid())
     {
-        recv_data.rfinish();                   // prevent warnings spam
+        recv_data.rfinish(); // prevent warnings spam
         return;
     }
 
-    if (opcode == MSG_MOVE_JUMP && plMover)
+    if (plMover)
     {
-        if (plMover->IsJumping())
+        if (opcode == MSG_MOVE_JUMP)
         {
-            sLog->outDetail("Player %s attempted to use Air Jump hack, kicking.", plMover->GetName());
-            plMover->m_session->KickPlayer();
-            recv_data.rfinish();                   // prevent warnings spam
-            return;
-        }
+            if (!plMover->IsOnGround())
+            {
+                sWorld->SendGMText(LANG_GM_BROADCAST, "Player %s attempted to use Air Jump hack, kicking.", plMover->GetName());
+                plMover->m_session->KickPlayer();
+                recv_data.rfinish(); // prevent warnings spam
+                return;
+            }
 
-        plMover->m_isJumping = true;
+            if (plMover->IsFalling())
+            {
+                recv_data.rfinish(); // prevent warnings spam
+                return;
+            }
+
+            plMover->SetIsOnGround(false);
+        }
     }
 	
     if (mover->IsSitState() && movementInfo.GetMovementFlags() & (MOVEMENTFLAG_MASK_MOVING | MOVEMENTFLAG_MASK_TURNING))
@@ -301,14 +310,14 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         // (also received at zeppelin leave by some reason with t_* as absolute in continent coordinates, can be safely skipped)
         if (movementInfo.t_pos.GetPositionX() > 50 || movementInfo.t_pos.GetPositionY() > 50 || movementInfo.t_pos.GetPositionZ() > 50)
         {
-            recv_data.rfinish();                   // prevent warnings spam
+            recv_data.rfinish(); // prevent warnings spam
             return;
         }
 
         if (!Trinity::IsValidMapCoord(movementInfo.pos.GetPositionX() + movementInfo.t_pos.GetPositionX(), movementInfo.pos.GetPositionY() + movementInfo.t_pos.GetPositionY(),
             movementInfo.pos.GetPositionZ() + movementInfo.t_pos.GetPositionZ(), movementInfo.pos.GetOrientation() + movementInfo.t_pos.GetOrientation()))
         {
-            recv_data.rfinish();                   // prevent warnings spam
+            recv_data.rfinish(); // prevent warnings spam
             return;
         }
 
@@ -334,7 +343,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
                 movementInfo.flags &= ~MOVEMENTFLAG_ONTRANSPORT;
         }
     }
-    else if (plMover && plMover->GetTransport())                // if we were on a transport, leave
+    else if (plMover && plMover->GetTransport()) // if we were on a transport, leave
     {
         plMover->m_transport->RemovePassenger(plMover);
         plMover->m_transport = NULL;
@@ -346,12 +355,12 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     // fall damage generation (ignore in flight case that can be triggered also at lags in moment teleportation to another map).
     if (opcode == MSG_MOVE_FALL_LAND && plMover && !plMover->isInFlight())
     {
-        plMover->m_isJumping = false;
+        plMover->SetIsOnGround(true);
         plMover->HandleFall(movementInfo);
     }
 
     if (opcode == MSG_MOVE_START_SWIM && plMover)
-        plMover->m_isJumping = false;
+        plMover->SetIsOnGround(true);
 
     if (plMover && ((movementInfo.flags & MOVEMENTFLAG_SWIMMING) != 0) != plMover->IsInWater())
     {
@@ -390,7 +399,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
     mover->UpdatePosition(movementInfo.pos);
 
-    if (plMover)                                            // nothing is charmed, or player charmed
+    if (plMover) // nothing is charmed, or player charmed
     {
         plMover->UpdateFallInformationIfNeed(movementInfo, opcode);
 
