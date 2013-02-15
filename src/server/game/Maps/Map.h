@@ -136,7 +136,8 @@ enum ZLiquidStatus
 
 struct LiquidData
 {
-    uint32 type;
+    uint32 type_flags;
+    uint32 entry;
     float  level;
     float  depth_level;
 };
@@ -150,12 +151,14 @@ class GridMap
     // Height level data
     float   m_gridHeight;
     float   m_gridIntHeightMultiplier;
-    union{
+    union
+    {
         float  *m_V9;
         uint16 *m_uint16_V9;
         uint8  *m_uint8_V9;
     };
-    union{
+    union
+    {
         float  *m_V8;
         uint16 *m_uint16_V8;
         uint8  *m_uint8_V8;
@@ -167,6 +170,8 @@ class GridMap
     uint8   m_liquid_width;
     uint8   m_liquid_height;
     float   m_liquidLevel;
+    uint16 *m_liquidEntry;
+    uint8  *m_liquidFlags;
     uint8  *m_liquid_type;
     float  *m_liquid_map;
 
