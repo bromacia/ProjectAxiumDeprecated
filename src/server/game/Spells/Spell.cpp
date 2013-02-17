@@ -1455,7 +1455,11 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         case 10310: // Lay on Hands (Rank 3)
         case 27154: // Lay on Hands (Rank 4)
         case 48788: // Lay on Hands (Rank 5)
-            m_caster->ToPlayer()->CastSpell(unit, 25771); // Forbearance
+            m_caster->CastSpell(unit, 25771); // Forbearance
+            break;
+        case 19244: // Spell Lock (Rank 1)
+        case 19647: // Spell Lock (Rank 2)
+            m_caster->AddAura(24259, unit); // Spell Lock (Silence)
             break;
         case 19574: // Bestial Wrath
         case 34471: // Beast Within
@@ -1466,19 +1470,19 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
                     pet->AddAura(19574, pet);
             break;
         case 51690: // Killing Spree (Ability)
-            m_caster->CastSpell(m_caster, 61851, true);
+            m_caster->CastSpell(m_caster, 61851, true); // Killing Spree (Immunity)
             break;
         case 57841: // Killing Spree (Attack)
             m_caster->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
             break;
         case 75456: // Piercing Twilight (Normal)
         case 75458: // Piercing Twilight (Heroic)
-            m_caster->AddAura(35847, m_caster);
+            m_caster->AddAura(35847, m_caster); // Ghost Visual Red
             m_caster->GetAura(35847, m_caster->GetGUID())->SetDurationAndMaxDuration(15 * IN_MILLISECONDS);
             break;
         case 75466: // Twilight Flames (Normal)
         case 75473: // Twilight Flames (Heroic)
-            m_caster->AddAura(35838, m_caster);
+            m_caster->AddAura(35838, m_caster); // Ghost Visual Blue
             m_caster->GetAura(35838, m_caster->GetGUID())->SetDurationAndMaxDuration(15 * IN_MILLISECONDS);
             break;
     }
@@ -7891,32 +7895,23 @@ bool Spell::IsSilenceDelaySpell() const
     // Arcane Torrent - Runic Power
     m_spellInfo->Id == 50613 ||
 //------------Warrior--------------
-    // Pummel
-    m_spellInfo->Id == 6552 ||
-    // Shield Bash
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARRIOR && m_spellInfo->SpellFamilyFlags[0] == 0x800) ||
+    // Silenced - Gag Order
+    m_spellInfo->Id == 18498 ||
 //---------Death Knight------------
-    // Mind Freeze
-    m_spellInfo->Id == 47528 ||
     // Strangulate
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->SpellFamilyFlags[0] == 0x200) ||
-//------------Shaman---------------
-    // Wind Shear
-    m_spellInfo->Id == 57994 ||
 //------------Rogue----------------
-    // Kick
-    (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[0] == 0x10) ||
+    // Silenced - Improved Kick
+    m_spellInfo->Id == 18425 ||
 //------------Priest---------------
     // Silence
     m_spellInfo->Id == 15487 ||
 //------------Mage-----------------
-    // Counterspell
-    m_spellInfo->Id == 2139 ||
+    // Silenced - Improved Counterspell
+    (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags[1] == 0x40000000) ||
 //----------Warlock----------------
-    // Spell Lock (Rank 1)
-    m_spellInfo->Id == 19244 ||
-    // Spell Lock (Rank 2)
-    m_spellInfo->Id == 19247;
+    // Spell Lock
+    m_spellInfo->Id == 24259;
 }
 
 bool Spell::IsCrowdControlSpell() const

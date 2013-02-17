@@ -3118,9 +3118,6 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectBasePoints[0] = -1.5*IN_MILLISECONDS*0.66;
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
                 break;
-            case 24259: // Spell Lock
-                spellInfo->speed = 1000;
-                break;
             case 63311: // Glyph of Shadowflame
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CONE_ENEMY_104;
                 spellInfo->EffectRadiusIndex[0] = 13;
@@ -3266,6 +3263,10 @@ void SpellMgr::LoadDbcDataCorrections()
             case 19574: // Bestial Wrath
             case 34471: // The Beast Within
                 spellInfo->Effect[2] = SPELL_AURA_MECHANIC_IMMUNITY_MASK;
+                break;
+            case 19244: // Spell Lock (Rank 1)
+            case 19647: // Spell Lock (Rank 2)
+                spellInfo->Effect[1] = 0;
                 break;
             default:
                 break;
