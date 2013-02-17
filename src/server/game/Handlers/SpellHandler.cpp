@@ -432,24 +432,28 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     if (!spellInfo)
         return;
 
-    // not allow remove spells with attr SPELL_ATTR0_CANT_CANCEL
-    if (spellInfo->Attributes & SPELL_ATTR0_CANT_CANCEL)
-        return;
-
-    // channeled spell case (it currently casted then)
-    if (spellInfo->IsChanneled())
+    // Slice and Dice (Rank 1, Rank 2) and Savage Roar
+    if (spellInfo->Id != 5171 && spellInfo->Id != 6774 && spellInfo->Id != 52610)
     {
-        if (Spell* curSpell = _player->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
-            if (curSpell->m_spellInfo->Id == spellId)
-                _player->InterruptSpell(CURRENT_CHANNELED_SPELL);
-        return;
-    }
+        // not allow remove spells with attr SPELL_ATTR0_CANT_CANCEL
+        if (spellInfo->Attributes & SPELL_ATTR0_CANT_CANCEL)
+            return;
 
-    // non channeled case:
-    // don't allow remove non positive spells
-    // don't allow cancelling passive auras (some of them are visible)
-    if (!spellInfo->IsPositive() || spellInfo->IsPassive())
-        return;
+        // channeled spell case (it currently casted then)
+        if (spellInfo->IsChanneled())
+        {
+            if (Spell* curSpell = _player->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
+                if (curSpell->m_spellInfo->Id == spellId)
+                    _player->InterruptSpell(CURRENT_CHANNELED_SPELL);
+            return;
+        }
+
+        // non channeled case:
+        // don't allow remove non positive spells
+        // don't allow cancelling passive auras (some of them are visible)
+        if (!spellInfo->IsPositive() || spellInfo->IsPassive())
+            return;
+    }
 
     // maybe should only remove one buff when there are multiple?
     _player->RemoveOwnedAura(spellId, 0, 0, AURA_REMOVE_BY_CANCEL);
