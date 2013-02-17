@@ -2473,9 +2473,7 @@ void Player::RegenerateAll()
         if (!isInCombat() || IsPolymorphed() || m_baseHealthRegen ||
             HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT) ||
             HasAuraType(SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT))
-        {
             RegenerateHealth();
-        }
 
         Regenerate(POWER_RAGE);
         if (getClass() == CLASS_DEATH_KNIGHT)
@@ -2621,8 +2619,7 @@ void Player::RegenerateHealth()
 
     // polymorphed case
     if (IsPolymorphed())
-        //addvalue = (float)GetMaxHealth()/10;
-        addvalue = (float)GetMaxHealth()/3;
+        addvalue = (float)GetMaxHealth()/5;
     // normal regen case (maybe partly in combat case)
     else if (!isInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT))
     {
