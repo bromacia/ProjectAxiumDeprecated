@@ -1380,13 +1380,16 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
 
         switch (GetId())
         {
+            case 51690: // Killing Spree (Ability)
+                target->RemoveAura(61851); // Killing Spree Immunity
+                break;
             case 75456: // Piercing Twilight (Normal)
             case 75458: // Piercing Twilight (Heroic)
-                target->ToPlayer()->RemoveAura(35847);
+                target->RemoveAura(35847);
                 break;
             case 75466: // Twilight Flames (Normal)
             case 75473: // Twilight Flames (Heroic)
-                target->ToPlayer()->RemoveAura(35838);
+                target->RemoveAura(35838);
                 break;
         }
 
