@@ -5788,9 +5788,9 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     // Dont allow health funnel to be casted if the pet isnt within LoS of the owner
     if (m_spellInfo->AttributesEx2 & SPELL_ATTR2_HEALTH_FUNNEL)
-        if (Player* playerCaster = m_caster->ToPlayer())
-            if (Pet* playerPet = playerCaster->GetPet())
-                if (!m_caster->IsWithinLOSInMap(playerPet))
+        if (Player* player = m_caster->ToPlayer())
+            if (Pet* pet = player->GetPet())
+                if (!m_caster->IsWithinLOSInMap(pet))
                     return SPELL_FAILED_LINE_OF_SIGHT;
 
     // Dont allow bandage to be casted if the caster or target has Recently Bandaged aura
@@ -5802,13 +5802,13 @@ SpellCastResult Spell::CheckCast(bool strict)
     // Dont allow anything to be cast while in Cyclone besides PvP Trinket or Ever Man for Himself
     if (m_spellInfo->Id != 42292 && m_spellInfo->Id != 65547 && m_spellInfo->Id != 59752 &&
         m_spellInfo->Id != 19574 && m_spellInfo->Id != 34471)
-        if (Player* playerCaster = m_caster->ToPlayer())
-            if (playerCaster->HasAura(33786))
+        if (Player* player = m_caster->ToPlayer())
+            if (player->HasAura(33786))
                 return SPELL_FAILED_DONT_REPORT;
 
     // Dont allow anything to be casted if the target has Zangarmarsh Banish aura
-    if (Player* playerCaster = m_caster->ToPlayer())
-        if (playerCaster->HasAura(30231))
+    if (Player* player = m_caster->ToPlayer())
+        if (player->HasAura(30231))
             return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
     // Dont allow any procs from Frostbite if the target is already frozen
@@ -5833,14 +5833,14 @@ SpellCastResult Spell::CheckCast(bool strict)
     if (m_spellInfo->Id == 1784 || m_spellInfo->Id == 66
         || (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252)
         || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 103))
-        if (Player* playerCaster = m_caster->ToPlayer())
-            if (playerCaster->HasAura(1543))
+        if (Player* player = m_caster->ToPlayer())
+            if (player->HasAura(1543))
                 return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
     // Dont allow Heroism or Bloodlust to be casted if the caster has Exhaustion or Sated
     if (m_spellInfo->Id == 32182 || m_spellInfo->Id == 2825)
-        if (Player* playerCaster = m_caster->ToPlayer())
-            if (playerCaster->HasAura(57723) || playerCaster->HasAura(57724))
+        if (Player* player = m_caster->ToPlayer())
+            if (player->HasAura(57723) || player->HasAura(57724))
                 return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
     // Dont allow levitate to be casted if the player is mounted
@@ -5852,15 +5852,15 @@ SpellCastResult Spell::CheckCast(bool strict)
     // Dont allow PvP Trinket or Every Man for Himself to be casted
     // if Will of the Forsaken Cooldown Trigger (WOTF) has been triggerd
     if (m_spellInfo->Id == 42292 || m_spellInfo->Id == 59752)
-        if (Player* playerCaster = m_caster->ToPlayer())
-            if (playerCaster->HasSpellCooldown(72757))
+        if (Player* player = m_caster->ToPlayer())
+            if (player->HasSpellCooldown(72757))
                 return SPELL_FAILED_NOT_READY;
 
     // Dont allow Will of the Forsaken to be casted
     // if Will of the Forsaken Cooldown Trigger has been triggerd
     if (m_spellInfo->Id == 7744)
-        if (Player* playerCaster = m_caster->ToPlayer())
-            if (playerCaster->HasSpellCooldown(72752))
+        if (Player* player = m_caster->ToPlayer())
+            if (player->HasSpellCooldown(72752))
                 return SPELL_FAILED_NOT_READY;
 
     // Dont allow movement effects to be used while the player is in Arena or Battleground Preparation
@@ -5884,10 +5884,10 @@ SpellCastResult Spell::CheckCast(bool strict)
                 return SPELL_FAILED_LINE_OF_SIGHT;
 
     // Dont allow glyphs to be added while in duels
-    if (Player* player = m_caster->ToPlayer())
-        if (player->IsDueling())
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
-                if (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH)
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+        if (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH)
+            if (Player* player = m_caster->ToPlayer())
+                if (player->IsDueling())
                     return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
     // Blazing Hippogryph

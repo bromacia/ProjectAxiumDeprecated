@@ -1387,8 +1387,6 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     // Glyph of Healing Stream Totem
                     if (AuraEffect const* aurEff = owner->GetAuraEffect(55456, EFFECT_0))
                         AddPctN(damage, aurEff->GetAmount());
-
-                    damage = int32(unitTarget->SpellHealingBonusTaken(m_caster, m_triggeredByAuraSpell, damage, HEAL));
                 }
                 m_caster->CastCustomSpell(unitTarget, 52042, &damage, 0, 0, true, 0, 0, m_originalCasterGUID);
                 return;
