@@ -5885,9 +5885,9 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     // Dont allow glyphs to be added while in duels
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
-        if (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH)
-            if (Player* player = m_caster->ToPlayer())
-                if (player->IsDueling())
+        if (Player* player = m_caster->ToPlayer())
+            if (player->IsDueling())
+                if (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH)
                     return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
     // Blazing Hippogryph

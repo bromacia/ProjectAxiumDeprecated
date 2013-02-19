@@ -2173,27 +2173,30 @@ void AuraEffect::HandleAuraTransform(AuraApplication const* aurApp, uint8 mode, 
 
     if (apply)
     {
-        switch (m_spellInfo->Id)
+        if (target->GetTypeId() == TYPEID_PLAYER)
         {
-            case DBW_PROC_STR_NORMAL:
-            case DBW_PROC_AP_NORMAL:
-            case DBW_PROC_AGI_NORMAL:
-            case DBW_PROC_HASTE_NORMAL:
-            case DBW_PROC_CRIT_NORMAL:
-            case DBW_PROC_ARP_NORMAL:
-            case DBW_PROC_STR_HEROIC:
-            case DBW_PROC_AP_HEROIC:
-            case DBW_PROC_AGI_HEROIC:
-            case DBW_PROC_HASTE_HEROIC:
-            case DBW_PROC_CRIT_HEROIC:
-            case DBW_PROC_ARP_HEROIC:
-                if (!target->ToPlayer()->ShowDBWTransformation())
-                {
-                    target->ToPlayer()->AddAura(39947, target->ToPlayer());
-                    target->ToPlayer()->GetAura(39947, target->ToPlayer()->GetGUID())->SetDurationAndMaxDuration(30 * IN_MILLISECONDS);
-                    return;
-                }
-                break;
+            switch (m_spellInfo->Id)
+            {
+                case DBW_PROC_STR_NORMAL:
+                case DBW_PROC_AP_NORMAL:
+                case DBW_PROC_AGI_NORMAL:
+                case DBW_PROC_HASTE_NORMAL:
+                case DBW_PROC_CRIT_NORMAL:
+                case DBW_PROC_ARP_NORMAL:
+                case DBW_PROC_STR_HEROIC:
+                case DBW_PROC_AP_HEROIC:
+                case DBW_PROC_AGI_HEROIC:
+                case DBW_PROC_HASTE_HEROIC:
+                case DBW_PROC_CRIT_HEROIC:
+                case DBW_PROC_ARP_HEROIC:
+                    if (!target->ToPlayer()->ShowDBWTransformation())
+                    {
+                        target->ToPlayer()->AddAura(39947, target->ToPlayer());
+                        target->ToPlayer()->GetAura(39947, target->ToPlayer()->GetGUID())->SetDurationAndMaxDuration(30 * IN_MILLISECONDS);
+                        return;
+                    }
+                    break;
+            }
         }
 
         // update active transform spell only when transform or shapeshift not set or not overwriting negative by positive case
@@ -2383,23 +2386,27 @@ void AuraEffect::HandleAuraTransform(AuraApplication const* aurApp, uint8 mode, 
     }
     else
     {
-        switch (m_spellInfo->Id)
+        if (target->GetTypeId() == TYPEID_PLAYER)
         {
-            case DBW_PROC_STR_NORMAL:
-            case DBW_PROC_AP_NORMAL:
-            case DBW_PROC_AGI_NORMAL:
-            case DBW_PROC_HASTE_NORMAL:
-            case DBW_PROC_CRIT_NORMAL:
-            case DBW_PROC_ARP_NORMAL:
-            case DBW_PROC_STR_HEROIC:
-            case DBW_PROC_AP_HEROIC:
-            case DBW_PROC_AGI_HEROIC:
-            case DBW_PROC_HASTE_HEROIC:
-            case DBW_PROC_CRIT_HEROIC:
-            case DBW_PROC_ARP_HEROIC:
-                target->ToPlayer()->RemoveAura(39947);
-                break;
+            switch (m_spellInfo->Id)
+            {
+                case DBW_PROC_STR_NORMAL:
+                case DBW_PROC_AP_NORMAL:
+                case DBW_PROC_AGI_NORMAL:
+                case DBW_PROC_HASTE_NORMAL:
+                case DBW_PROC_CRIT_NORMAL:
+                case DBW_PROC_ARP_NORMAL:
+                case DBW_PROC_STR_HEROIC:
+                case DBW_PROC_AP_HEROIC:
+                case DBW_PROC_AGI_HEROIC:
+                case DBW_PROC_HASTE_HEROIC:
+                case DBW_PROC_CRIT_HEROIC:
+                case DBW_PROC_ARP_HEROIC:
+                    target->ToPlayer()->RemoveAura(39947);
+                    break;
+            }
         }
+
         // HandleEffect(this, AURA_EFFECT_HANDLE_SEND_FOR_CLIENT, true) will reapply it if need
         if (target->getTransForm() == GetId())
             target->setTransForm(0);
