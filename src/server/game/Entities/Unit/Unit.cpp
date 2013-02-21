@@ -15569,7 +15569,7 @@ void Unit::RestoreDisplayId()
         {
             if (AuraApplication const* aurApp = (*i)->GetBase()->GetApplicationOfTarget(GetGUID()))
             {
-                if (GetTypeId() != TYPEID_PLAYER)
+                if (GetTypeId() == TYPEID_PLAYER)
                 {
                     switch (aurApp->GetBase()->GetSpellInfo()->Id)
                     {
