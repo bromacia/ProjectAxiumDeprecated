@@ -84,11 +84,8 @@ void ConfusedMovementGenerator<T>::Initialize(T &unit)
         }
     }
 
-    unit.SetTarget(0);
     unit.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
     unit.CastStop();
-    unit.StopMoving();
-    unit.AddUnitMovementFlag(MOVEMENTFLAG_WALKING); // Should actually be splineflag
     unit.AddUnitState(UNIT_STATE_CONFUSED);
 }
 
@@ -112,7 +109,6 @@ void ConfusedMovementGenerator<T>::Reset(T &unit)
     i_nextMove = 1;
     i_nextMoveTime.Reset(0);
     i_destinationHolder.ResetUpdate();
-    unit.StopMoving();
 }
 
 template<class T>
@@ -136,7 +132,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 diff)
                 unit.ClearUnitState(UNIT_STATE_MOVE);
 
                 i_nextMove = urand(1, MAX_CONF_WAYPOINTS);
-                i_nextMoveTime.Reset(100);
+                i_nextMoveTime.Reset(50);
             }
         }
     }

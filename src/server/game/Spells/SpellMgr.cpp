@@ -3268,6 +3268,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 19647: // Spell Lock (Rank 2)
                 spellInfo->Effect[1] = 0;
                 break;
+            case 2094:  // Blind
+                spellInfo->EffectBasePoints[0] = -40;
+                break;
             default:
                 break;
         }

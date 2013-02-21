@@ -183,7 +183,7 @@ FleeingMovementGenerator<T>::_getPoint(T &owner, float &x, float &y, float &z)
             {
                 float new_z_left = _map->GetHeight(owner.GetPhaseMask(), temp_x + 1.0f*cos(angle+static_cast<float>(M_PI/2)),temp_y + 1.0f*sin(angle+static_cast<float>(M_PI/2)),z,true);
                 float new_z_right = _map->GetHeight(owner.GetPhaseMask(), temp_x + 1.0f*cos(angle-static_cast<float>(M_PI/2)),temp_y + 1.0f*sin(angle-static_cast<float>(M_PI/2)),z,true);
-                if (fabs(new_z_left - new_z) < 1.2f && fabs(new_z_right - new_z) < 1.2f)
+                if (fabs(new_z_left - new_z) < 1.2f && fabs(new_z_right - new_z) < 1.2f && fabs(new_z - owner.GetPositionZ()) < 3.0f)
                 {
                     x = temp_x;
                     y = temp_y;
@@ -370,6 +370,7 @@ FleeingMovementGenerator<T>::Update(T &owner, const uint32 time_diff)
 {
     if (!&owner || !owner.isAlive())
         return false;
+
     if (owner.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED))
         return true;
 
