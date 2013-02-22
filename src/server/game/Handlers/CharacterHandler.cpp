@@ -1574,7 +1574,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     recv_data >> gender >> skin >> hairColor >> hairStyle >> facialHair >> face >> race;
 
     uint32 lowGuid = GUID_LOPART(guid);
-    QueryResult result = CharacterDatabase.PQuery("SELECT class, level, at_login FROM characters WHERE guid ='%u'", lowGuid);
+    QueryResult result = CharacterDatabase.PQuery("SELECT class, level, at_login, knownTitles FROM characters WHERE guid ='%u'", lowGuid);
     if (!result)
     {
         WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
@@ -1588,6 +1588,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     uint32 level = fields[1].GetUInt32();
     uint32 at_loginFlags = fields[2].GetUInt16();
     uint32 used_loginFlag = ((recv_data.GetOpcode() == CMSG_CHAR_RACE_CHANGE) ? AT_LOGIN_CHANGE_RACE : AT_LOGIN_CHANGE_FACTION);
+    char const* knownTitlesStr = fields[3].GetCString();
 
     if (!sObjectMgr->GetPlayerInfo(race, playerClass))
     {
@@ -1851,10 +1852,10 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
         trans->Append(stmt);
 
         // Achievement conversion
-        for (std::map<uint32, uint32>::const_iterator it = sObjectMgr->factionchange_achievements.begin(); it != sObjectMgr->factionchange_achievements.end(); ++it)
+        for (std::map<uint32, uint32>::const_iterator itr = sObjectMgr->FactionChange_Achievements.begin(); itr != sObjectMgr->FactionChange_Achievements.end(); ++itr)
         {
-            uint32 achiev_alliance = it->first;
-            uint32 achiev_horde = it->second;
+            uint32 achiev_alliance = itr->first;
+            uint32 achiev_horde = itr->second;
             trans->PAppend("DELETE FROM `character_achievement` WHERE `achievement`=%u AND `guid`=%u",
                             team == BG_TEAM_ALLIANCE ? achiev_alliance : achiev_horde, lowGuid);
             trans->PAppend("UPDATE `character_achievement` SET achievement = '%u' where achievement = '%u' AND guid = '%u'",
@@ -1862,19 +1863,19 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
         }
 
         // Item conversion
-        for (std::map<uint32, uint32>::const_iterator it = sObjectMgr->factionchange_items.begin(); it != sObjectMgr->factionchange_items.end(); ++it)
+        for (std::map<uint32, uint32>::const_iterator itr = sObjectMgr->FactionChange_Items.begin(); itr != sObjectMgr->FactionChange_Items.end(); ++itr)
         {
-            uint32 item_alliance = it->first;
-            uint32 item_horde = it->second;
+            uint32 item_alliance = itr->first;
+            uint32 item_horde = itr->second;
             trans->PAppend("UPDATE `item_instance` ii, `character_inventory` ci SET ii.itemEntry = '%u' WHERE ii.itemEntry = '%u' AND ci.guid = '%u' AND ci.item = ii.guid",
                 team == BG_TEAM_ALLIANCE ? item_alliance : item_horde, team == BG_TEAM_ALLIANCE ? item_horde : item_alliance, guid);
         }
 
         // Spell conversion
-        for (std::map<uint32, uint32>::const_iterator it = sObjectMgr->factionchange_spells.begin(); it != sObjectMgr->factionchange_spells.end(); ++it)
+        for (std::map<uint32, uint32>::const_iterator itr = sObjectMgr->FactionChange_Spells.begin(); itr != sObjectMgr->FactionChange_Spells.end(); ++itr)
         {
-            uint32 spell_alliance = it->first;
-            uint32 spell_horde = it->second;
+            uint32 spell_alliance = itr->first;
+            uint32 spell_horde = itr->second;
             trans->PAppend("DELETE FROM `character_spell` WHERE `spell`=%u AND `guid`=%u",
                             team == BG_TEAM_ALLIANCE ? spell_alliance : spell_horde, lowGuid);
             trans->PAppend("UPDATE `character_spell` SET spell = '%u' where spell = '%u' AND guid = '%u'",
@@ -1882,18 +1883,347 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
         }
 
         // Reputation conversion
-        for (std::map<uint32, uint32>::const_iterator it = sObjectMgr->factionchange_reputations.begin(); it != sObjectMgr->factionchange_reputations.end(); ++it)
+        for (std::map<uint32, uint32>::const_iterator itr = sObjectMgr->FactionChange_Reputations.begin(); itr != sObjectMgr->FactionChange_Reputations.end(); ++itr)
         {
-            uint32 reputation_alliance = it->first;
-            uint32 reputation_horde = it->second;
+            uint32 reputation_alliance = itr->first;
+            uint32 reputation_horde = itr->second;
             trans->PAppend("DELETE FROM character_reputation WHERE faction = '%u' AND guid = '%u'",
                 team == BG_TEAM_ALLIANCE ? reputation_alliance : reputation_horde, lowGuid);
             trans->PAppend("UPDATE `character_reputation` SET faction = '%u' where faction = '%u' AND guid = '%u'",
                 team == BG_TEAM_ALLIANCE ? reputation_alliance : reputation_horde, team == BG_TEAM_ALLIANCE ? reputation_horde : reputation_alliance, lowGuid);
         }
 
-        // Remove All Transmogrifications
-        trans->PAppend("UPDATE item_instance SET TransmogEntry = 0 WHERE owner_guid = %u", lowGuid);
+        // Title conversion
+        if (knownTitlesStr)
+        {
+            const uint32 ktcount = KNOWN_TITLES_SIZE * 2;
+            uint32 knownTitles[ktcount];
+            Tokens tokens(knownTitlesStr, ' ', ktcount);
+
+            if (tokens.size() != ktcount)
+                return;
+
+            for (uint32 index = 0; index < ktcount; ++index)
+                knownTitles[index] = atol(tokens[index]);
+
+            for (std::map<uint32, uint32>::const_iterator itr = sObjectMgr->FactionChange_Titles.begin(); itr != sObjectMgr->FactionChange_Titles.end(); ++itr)
+            {
+                uint32 title_alliance = itr->first;
+                uint32 title_horde = itr->second;
+                CharTitlesEntry const* atitleInfo = sCharTitlesStore.LookupEntry(title_alliance);
+                CharTitlesEntry const* htitleInfo = sCharTitlesStore.LookupEntry(title_horde);
+
+                    if (team == BG_TEAM_ALLIANCE)
+                    {
+                        uint32 bitIndex = htitleInfo->bit_index;
+                        uint32 index = bitIndex / 32;
+                        uint32 old_flag = 1 << (bitIndex % 32);
+                        uint32 new_flag = 1 << (atitleInfo->bit_index % 32);
+                        if (knownTitles[index] & old_flag)
+                        {
+                            knownTitles[index] &= ~old_flag;
+                            knownTitles[atitleInfo->bit_index / 32] |= new_flag;
+                        }
+                    }
+                    else
+                    {
+                        uint32 bitIndex = atitleInfo->bit_index;
+                        uint32 index = bitIndex / 32;
+                        uint32 old_flag = 1 << (bitIndex % 32);
+                        uint32 new_flag = 1 << (htitleInfo->bit_index % 32);
+                        if (knownTitles[index] & old_flag)
+                        {
+                            knownTitles[index] &= ~old_flag;
+                            knownTitles[htitleInfo->bit_index / 32] |= new_flag;
+                        }
+                }
+
+                std::ostringstream ss;
+                for (uint32 index = 0; index < ktcount; ++index)
+                    ss << knownTitles[index] << ' ';
+
+                PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHAR_TITLES_FACTION_CHANGE);
+                stmt->setString(0, ss.str().c_str());
+                stmt->setUInt32(1, lowGuid);
+                trans->Append(stmt);
+
+                // unset any currently chosen title
+                stmt = CharacterDatabase.GetPreparedStatement(CHAR_RES_CHAR_TITLES_FACTION_CHANGE);
+                stmt->setUInt32(0, lowGuid);
+                trans->Append(stmt);
+            }
+        }
+
+        // Transmogrification conversion
+        switch (team)
+        {
+            case BG_TEAM_ALLIANCE:
+                switch (playerClass)
+                {
+                    case CLASS_WARRIOR:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23314 WHERE TransmogEntry = 23244 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23315 WHERE TransmogEntry = 23243 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23300 WHERE TransmogEntry = 22872 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23286 WHERE TransmogEntry = 22868 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23301 WHERE TransmogEntry = 22873 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16411 WHERE TransmogEntry = 16511 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23287 WHERE TransmogEntry = 22858 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16478 WHERE TransmogEntry = 16542 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16480 WHERE TransmogEntry = 16544 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16477 WHERE TransmogEntry = 16541 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16484 WHERE TransmogEntry = 16548 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16479 WHERE TransmogEntry = 16543 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16470 WHERE TransmogEntry = 16547 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16483 WHERE TransmogEntry = 16545 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_PALADIN:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23314 WHERE TransmogEntry = 23244 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23315 WHERE TransmogEntry = 23243 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23300 WHERE TransmogEntry = 22872 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23286 WHERE TransmogEntry = 22868 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23301 WHERE TransmogEntry = 22873 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16411 WHERE TransmogEntry = 16470 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23287 WHERE TransmogEntry = 22858 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16478 WHERE TransmogEntry = 16542 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16480 WHERE TransmogEntry = 16544 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16477 WHERE TransmogEntry = 16541 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16484 WHERE TransmogEntry = 16548 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16479 WHERE TransmogEntry = 16543 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16511 WHERE TransmogEntry = 16547 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16483 WHERE TransmogEntry = 16545 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_HUNTER:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23306 WHERE TransmogEntry = 23251 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23307 WHERE TransmogEntry = 23252 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23292 WHERE TransmogEntry = 22874 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23279 WHERE TransmogEntry = 22862 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23293 WHERE TransmogEntry = 22875 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 24878 WHERE TransmogEntry = 16572 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23278 WHERE TransmogEntry = 22843 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16465 WHERE TransmogEntry = 16566 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16468 WHERE TransmogEntry = 16568 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16466 WHERE TransmogEntry = 16565 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16463 WHERE TransmogEntry = 16571 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16467 WHERE TransmogEntry = 16567 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16400 WHERE TransmogEntry = 16520 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16462 WHERE TransmogEntry = 16569 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_ROGUE:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23308 WHERE TransmogEntry = 23257 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23309 WHERE TransmogEntry = 23258 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23294 WHERE TransmogEntry = 22879 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23280 WHERE TransmogEntry = 22864 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23295 WHERE TransmogEntry = 22880 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16398 WHERE TransmogEntry = 16556 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23281 WHERE TransmogEntry = 22856 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16451 WHERE TransmogEntry = 16561 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16449 WHERE TransmogEntry = 16562 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16452 WHERE TransmogEntry = 16563 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16448 WHERE TransmogEntry = 16560 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16450 WHERE TransmogEntry = 16564 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16447 WHERE TransmogEntry = 16500 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16459 WHERE TransmogEntry = 16558 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_DRUID:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23308 WHERE TransmogEntry = 23253 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23309 WHERE TransmogEntry = 23254 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23294 WHERE TransmogEntry = 22877 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23280 WHERE TransmogEntry = 22863 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23295 WHERE TransmogEntry = 22878 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16398 WHERE TransmogEntry = 16500 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23281 WHERE TransmogEntry = 22852 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16451 WHERE TransmogEntry = 16550 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16449 WHERE TransmogEntry = 16551 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16452 WHERE TransmogEntry = 16549 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16448 WHERE TransmogEntry = 16555 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16450 WHERE TransmogEntry = 16552 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16447 WHERE TransmogEntry = 16500 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16459 WHERE TransmogEntry = 16554 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_PRIEST:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23316 WHERE TransmogEntry = 23261 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23317 WHERE TransmogEntry = 23262 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23303 WHERE TransmogEntry = 22885 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23288 WHERE TransmogEntry = 22869 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23302 WHERE TransmogEntry = 22882 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16367 WHERE TransmogEntry = 16537 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23289 WHERE TransmogEntry = 22859 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17602 WHERE TransmogEntry = 17623 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17604 WHERE TransmogEntry = 17622 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17605 WHERE TransmogEntry = 17624 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17608 WHERE TransmogEntry = 17620 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17603 WHERE TransmogEntry = 17625 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 50263 WHERE TransmogEntry = 16537 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17607 WHERE TransmogEntry = 17618 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_MAGE:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23318 WHERE TransmogEntry = 23263 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23319 WHERE TransmogEntry = 23264 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23305 WHERE TransmogEntry = 22886 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16391 WHERE TransmogEntry = 22870 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23304 WHERE TransmogEntry = 22883 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16367 WHERE TransmogEntry = 16537 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23291 WHERE TransmogEntry = 22860 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16441 WHERE TransmogEntry = 16533 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16444 WHERE TransmogEntry = 16536 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16443 WHERE TransmogEntry = 16535 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16440 WHERE TransmogEntry = 16540 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16442 WHERE TransmogEntry = 16534 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16802 WHERE TransmogEntry = 16537 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16437 WHERE TransmogEntry = 16539 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_WARLOCK:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23310 WHERE TransmogEntry = 23255 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23311 WHERE TransmogEntry = 23256 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23297 WHERE TransmogEntry = 22884 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23282 WHERE TransmogEntry = 22865 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23296 WHERE TransmogEntry = 22881 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16439 WHERE TransmogEntry = 16488 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23283 WHERE TransmogEntry = 22855 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17578 WHERE TransmogEntry = 17591 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17580 WHERE TransmogEntry = 17590 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17581 WHERE TransmogEntry = 17592 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17584 WHERE TransmogEntry = 17588 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17579 WHERE TransmogEntry = 17593 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 10103 WHERE TransmogEntry = 16488 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17583 WHERE TransmogEntry = 17586 AND owner_guid = '%u'", lowGuid);
+                        break;
+                }
+                break;
+            case BG_TEAM_HORDE:
+                switch (playerClass)
+                {
+                    case CLASS_WARRIOR:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23244 WHERE TransmogEntry = 23314 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23243 WHERE TransmogEntry = 23315 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22872 WHERE TransmogEntry = 23300 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22868 WHERE TransmogEntry = 23286 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22873 WHERE TransmogEntry = 23301 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16511 WHERE TransmogEntry = 16411 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22858 WHERE TransmogEntry = 23287 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16542 WHERE TransmogEntry = 16478 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16544 WHERE TransmogEntry = 16480 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16541 WHERE TransmogEntry = 16477 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16548 WHERE TransmogEntry = 16484 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16543 WHERE TransmogEntry = 16479 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16547 WHERE TransmogEntry = 16470 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16545 WHERE TransmogEntry = 16483 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_PALADIN:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23244 WHERE TransmogEntry = 23314 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23243 WHERE TransmogEntry = 23315 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22872 WHERE TransmogEntry = 23300 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22868 WHERE TransmogEntry = 23286 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22873 WHERE TransmogEntry = 23301 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16470 WHERE TransmogEntry = 16411 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22858 WHERE TransmogEntry = 23287 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16542 WHERE TransmogEntry = 16478 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16544 WHERE TransmogEntry = 16480 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16541 WHERE TransmogEntry = 16477 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16548 WHERE TransmogEntry = 16484 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16543 WHERE TransmogEntry = 16479 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16547 WHERE TransmogEntry = 16511 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16545 WHERE TransmogEntry = 16483 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_HUNTER:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23251 WHERE TransmogEntry = 23306 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23252 WHERE TransmogEntry = 23307 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22874 WHERE TransmogEntry = 23292 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22862 WHERE TransmogEntry = 23279 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22875 WHERE TransmogEntry = 23293 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16572 WHERE TransmogEntry = 24878 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22843 WHERE TransmogEntry = 23278 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16566 WHERE TransmogEntry = 16465 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16568 WHERE TransmogEntry = 16468 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16565 WHERE TransmogEntry = 16466 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16571 WHERE TransmogEntry = 16463 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16567 WHERE TransmogEntry = 16467 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16520 WHERE TransmogEntry = 16400 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16569 WHERE TransmogEntry = 16462 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_ROGUE:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23257 WHERE TransmogEntry = 23308 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23258 WHERE TransmogEntry = 23309 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22879 WHERE TransmogEntry = 23294 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22864 WHERE TransmogEntry = 23280 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22880 WHERE TransmogEntry = 23295 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16556 WHERE TransmogEntry = 16398 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22856 WHERE TransmogEntry = 23281 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16561 WHERE TransmogEntry = 16451 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16562 WHERE TransmogEntry = 16449 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16563 WHERE TransmogEntry = 16452 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16560 WHERE TransmogEntry = 16448 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16564 WHERE TransmogEntry = 16450 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16500 WHERE TransmogEntry = 16447 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16558 WHERE TransmogEntry = 16459 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_DRUID:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23253 WHERE TransmogEntry = 23308 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23254 WHERE TransmogEntry = 23309 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22877 WHERE TransmogEntry = 23294 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22863 WHERE TransmogEntry = 23280 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22878 WHERE TransmogEntry = 23295 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16500 WHERE TransmogEntry = 16398 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22852 WHERE TransmogEntry = 23281 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16550 WHERE TransmogEntry = 16451 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16551 WHERE TransmogEntry = 16449 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16549 WHERE TransmogEntry = 16452 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16555 WHERE TransmogEntry = 16448 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16552 WHERE TransmogEntry = 16450 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16500 WHERE TransmogEntry = 16447 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16554 WHERE TransmogEntry = 16459 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_PRIEST:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23261 WHERE TransmogEntry = 23316 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23262 WHERE TransmogEntry = 23317 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22885 WHERE TransmogEntry = 23303 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22869 WHERE TransmogEntry = 23288 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22882 WHERE TransmogEntry = 23302 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16537 WHERE TransmogEntry = 16367 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22859 WHERE TransmogEntry = 23289 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17623 WHERE TransmogEntry = 17602 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17622 WHERE TransmogEntry = 17604 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17624 WHERE TransmogEntry = 17605 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17620 WHERE TransmogEntry = 17608 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17625 WHERE TransmogEntry = 17603 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16537 WHERE TransmogEntry = 50263 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17618 WHERE TransmogEntry = 17607 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_MAGE:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23263 WHERE TransmogEntry = 23318 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23264 WHERE TransmogEntry = 23319 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22886 WHERE TransmogEntry = 23305 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22870 WHERE TransmogEntry = 16391 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22883 WHERE TransmogEntry = 23304 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16537 WHERE TransmogEntry = 16367 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22860 WHERE TransmogEntry = 23291 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16533 WHERE TransmogEntry = 16441 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16536 WHERE TransmogEntry = 16444 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16535 WHERE TransmogEntry = 16443 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16540 WHERE TransmogEntry = 16440 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16534 WHERE TransmogEntry = 16442 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16537 WHERE TransmogEntry = 16802 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16539 WHERE TransmogEntry = 16437 AND owner_guid = '%u'", lowGuid);
+                        break;
+                    case CLASS_WARLOCK:
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23255 WHERE TransmogEntry = 23310 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 23256 WHERE TransmogEntry = 23311 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22884 WHERE TransmogEntry = 23297 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22865 WHERE TransmogEntry = 23282 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22881 WHERE TransmogEntry = 23296 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16488 WHERE TransmogEntry = 16439 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 22855 WHERE TransmogEntry = 23283 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17591 WHERE TransmogEntry = 17578 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17590 WHERE TransmogEntry = 17580 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17592 WHERE TransmogEntry = 17581 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17588 WHERE TransmogEntry = 17584 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17593 WHERE TransmogEntry = 17579 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 16488 WHERE TransmogEntry = 10103 AND owner_guid = '%u'", lowGuid);
+                        trans->PAppend("UPDATE `item_instance` SET TransmogEntry = 17586 WHERE TransmogEntry = 17583 AND owner_guid = '%u'", lowGuid);
+                        break;
+                }
+                break;
+        }
     }
 
     CharacterDatabase.CommitTransaction(trans);

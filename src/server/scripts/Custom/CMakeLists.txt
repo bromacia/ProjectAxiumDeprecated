@@ -18,6 +18,7 @@ set(scripts_STAT_SRCS
   Custom/npc_transmog.cpp
   Custom/npc_gossip_vendor.cpp
   Custom/npc_class_trainer.cpp
+  Custom/pvp_titles.cpp
 )
 
 message("  -> Prepared: Custom")

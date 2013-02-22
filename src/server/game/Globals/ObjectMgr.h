@@ -1240,15 +1240,17 @@ class ObjectMgr
                 value = data[loc_idx];
         }
 
-        CharacterConversionMap factionchange_achievements;
-        CharacterConversionMap factionchange_items;
-        CharacterConversionMap factionchange_spells;
-        CharacterConversionMap factionchange_reputations;
+        CharacterConversionMap FactionChange_Achievements;
+        CharacterConversionMap FactionChange_Items;
+        CharacterConversionMap FactionChange_Spells;
+        CharacterConversionMap FactionChange_Reputations;
+        CharacterConversionMap FactionChange_Titles;
 
         void LoadFactionChangeAchievements();
         void LoadFactionChangeItems();
         void LoadFactionChangeSpells();
         void LoadFactionChangeReputations();
+        void LoadFactionChangeTitles();
         
         void LoadMailQueue();
 

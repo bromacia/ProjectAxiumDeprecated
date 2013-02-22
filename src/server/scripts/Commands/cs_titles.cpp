@@ -91,7 +91,7 @@ public:
 
         std::string tNameLink = handler->GetNameLink(target);
 
-        target->SetTitle(titleInfo);                            // to be sure that title now known
+        target->SetTitle(titleInfo); // to be sure that title now known
         target->SetUInt32Value(PLAYER_CHOSEN_TITLE, titleInfo->bit_index);
 
         handler->PSendSysMessage(LANG_TITLE_CURRENT_RES, id, titleInfo->name[handler->GetSessionDbcLocale()], tNameLink.c_str());
@@ -228,9 +228,9 @@ public:
             if (CharTitlesEntry const* tEntry = sCharTitlesStore.LookupEntry(i))
                 titles2 &= ~(uint64(1) << tEntry->bit_index);
 
-        titles &= ~titles2;                                     // remove not existed titles
+        titles &= ~titles2; // remove not existed titles
 
-        target->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, titles);
+        target->SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES, titles);
         handler->SendSysMessage(LANG_DONE);
 
         if (!target->HasTitle(target->GetInt32Value(PLAYER_CHOSEN_TITLE)))

@@ -1712,6 +1712,9 @@ void World::SetInitialWorldSettings()
     sLog->outString("Loading faction change reputation pairs...");
     sObjectMgr->LoadFactionChangeReputations();
 
+    sLog->outString("Loading faction change title pairs...");
+    sObjectMgr->LoadFactionChangeTitles();
+
     sLog->outString("Loading GM tickets...");
     sTicketMgr->LoadTickets();
 

@@ -8915,7 +8915,7 @@ void ObjectMgr::LoadFactionChangeAchievements()
         else if (!sAchievementStore.LookupEntry(horde))
             sLog->outErrorDb("Achievement %u referenced in `player_factionchange_achievement` does not exist, pair skipped!", horde);
         else
-            factionchange_achievements[alliance] = horde;
+            FactionChange_Achievements[alliance] = horde;
 
         ++count;
     }
@@ -8952,7 +8952,7 @@ void ObjectMgr::LoadFactionChangeItems()
         else if (!GetItemTemplate(horde))
             sLog->outErrorDb("Item %u referenced in `player_factionchange_items` does not exist, pair skipped!", horde);
         else
-            factionchange_items[alliance] = horde;
+            FactionChange_Items[alliance] = horde;
 
         ++count;
     }
@@ -8989,7 +8989,7 @@ void ObjectMgr::LoadFactionChangeSpells()
         else if (!sSpellMgr->GetSpellInfo(horde))
             sLog->outErrorDb("Spell %u referenced in `player_factionchange_spells` does not exist, pair skipped!", horde);
         else
-            factionchange_spells[alliance] = horde;
+            FactionChange_Spells[alliance] = horde;
 
         ++count;
     }
@@ -9026,13 +9026,50 @@ void ObjectMgr::LoadFactionChangeReputations()
         else if (!sFactionStore.LookupEntry(horde))
             sLog->outErrorDb("Reputation %u referenced in `player_factionchange_reputations` does not exist, pair skipped!", horde);
         else
-            factionchange_reputations[alliance] = horde;
+            FactionChange_Reputations[alliance] = horde;
 
         ++count;
     }
     while (result->NextRow());
 
     sLog->outString(">> Loaded %u faction change reputation pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    sLog->outString();
+}
+
+void ObjectMgr::LoadFactionChangeTitles()
+{
+    uint32 oldMSTime = getMSTime();
+
+    QueryResult result = WorldDatabase.Query("SELECT alliance_id, horde_id FROM player_factionchange_titles");
+
+    if (!result)
+    {
+        sLog->outString(">> Loaded 0 faction change title pairs. DB table `player_factionchange_title` is empty.");
+        sLog->outString();
+        return;
+    }
+
+    uint32 count = 0;
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint32 alliance = fields[0].GetUInt32();
+        uint32 horde = fields[1].GetUInt32();
+
+        if (!sCharTitlesStore.LookupEntry(alliance))
+            sLog->outErrorDb("Title %u referenced in `player_factionchange_title` does not exist, pair skipped!", alliance);
+        else if (!sCharTitlesStore.LookupEntry(horde))
+            sLog->outErrorDb("Title %u referenced in `player_factionchange_title` does not exist, pair skipped!", horde);
+        else
+            FactionChange_Titles[alliance] = horde;
+
+        ++count;
+    }
+    while (result->NextRow());
+
+    sLog->outString(">> Loaded %u faction change title pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     sLog->outString();
 }
 
