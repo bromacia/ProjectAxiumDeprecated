@@ -2329,16 +2329,18 @@ bool SpellInfo::_IsPositiveEffect(uint8 effIndex, bool deep) const
             break;
         case SPELLFAMILY_MAGE:
             // Amplify Magic, Dampen Magic
-            if (SpellFamilyFlags[0] == 0x00002000)
+            if (SpellFamilyFlags[0] & 0x2000)
                 return true;
             // Ignite
             if (SpellIconID == 45)
                 return true;
             // Arcane Missiles
-            if (SpellFamilyFlags[0] == 0x00200000)
+            if (SpellFamilyFlags[0] & 0x200000)
                 return false;
             break;
         case SPELLFAMILY_PRIEST:
+            if (SpellFamilyFlags[1] & 0x8000)
+                return false;
             switch (Id)
             {
                 case 64844: // Divine Hymn
@@ -2362,10 +2364,10 @@ bool SpellInfo::_IsPositiveEffect(uint8 effIndex, bool deep) const
             switch (Id)
             {
                 // Envenom must be considered as a positive effect even though it deals damage
-                case 32645:     // Envenom (Rank 1)
-                case 32684:     // Envenom (Rank 2)
-                case 57992:     // Envenom (Rank 3)
-                case 57993:     // Envenom (Rank 4)
+                case 32645: // Envenom (Rank 1)
+                case 32684: // Envenom (Rank 2)
+                case 57992: // Envenom (Rank 3)
+                case 57993: // Envenom (Rank 4)
                     return true;
                 default:
                     break;
