@@ -34,6 +34,17 @@ enum TransmogOptions
 
 class npc_transmog : public CreatureScript
 {
+    private:
+        uint16 GetTeamById(uint8 Id)
+        {
+            switch (Id)
+            {
+                case 1:  return ALLIANCE;
+                case 2:  return HORDE;
+                default: return NULL;
+            }
+        }
+
     public:
         npc_transmog() : CreatureScript("npc_transmog") {}
 
@@ -97,8 +108,8 @@ class npc_transmog : public CreatureScript
 
         bool ShowTransmogArmorSets(Player* player, Creature* creature)
         {
-            QueryResult result = WorldDatabase.PQuery("SELECT option_name, id, team_id, account_id "
-            "FROM transmog_armor_sets WHERE class = '%d' OR class = '0' ORDER BY id ASC", player->getClass());
+            QueryResult result = WorldDatabase.PQuery("SELECT option_name, id, required_faction, account "
+            "FROM transmog_armor_sets WHERE required_class = '%d' OR required_class = '0' ORDER BY id ASC", player->getClass());
 
             if (!result)
             {
@@ -110,7 +121,7 @@ class npc_transmog : public CreatureScript
             do
             {
                 Field* fields = result->Fetch();
-                if (fields[2].GetUInt32() == player->GetTeam() || fields[2].GetUInt32() == 0)
+                if (GetTeamById(fields[2].GetUInt32()) == player->GetTeam() || !fields[2].GetUInt32())
                     if (fields[3].GetUInt32() == player->GetSession()->GetAccountId() || fields[3].GetUInt32() == 0)
                         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, fields[0].GetString(), TRANSMOG_ACTION_SHOW_ARMOR, fields[1].GetUInt32());
             }
@@ -125,8 +136,8 @@ class npc_transmog : public CreatureScript
 
         bool ShowTransmogWeapons(Player* player, Creature* creature)
         {
-            QueryResult result = WorldDatabase.PQuery("SELECT option_name, id, team_id, account_id "
-            "FROM transmog_weapons WHERE class = '%d' OR class = '0' ORDER BY id ASC", player->getClass());
+            QueryResult result = WorldDatabase.PQuery("SELECT option_name, id, required_faction, account "
+            "FROM transmog_weapons WHERE required_class = '%d' OR required_class = '0' ORDER BY id ASC", player->getClass());
 
             if (!result)
             {
@@ -138,7 +149,7 @@ class npc_transmog : public CreatureScript
             do
             {
                 Field* fields = result->Fetch();
-                if (fields[2].GetUInt32() == player->GetTeam() || fields[2].GetUInt32() == 0)
+                if (GetTeamById(fields[2].GetUInt32()) == player->GetTeam() || !fields[2].GetUInt32())
                     if (fields[3].GetUInt32() == player->GetSession()->GetAccountId() || fields[3].GetUInt32() == 0)
                         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, fields[0].GetString(), TRANSMOG_ACTION_SHOW_WEAPONS, fields[1].GetUInt32());
             }
