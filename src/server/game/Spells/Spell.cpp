@@ -1475,6 +1475,9 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         case 57841: // Killing Spree (Attack)
             m_caster->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
             break;
+        case 64044: // Psychic Horror
+            m_caster->AddAura(64058, unit);
+            break;
         case 75456: // Piercing Twilight (Normal)
         case 75458: // Piercing Twilight (Heroic)
             m_caster->AddAura(35847, m_caster); // Ghost Visual Red

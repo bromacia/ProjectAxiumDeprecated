@@ -3266,6 +3266,7 @@ void SpellMgr::LoadDbcDataCorrections()
                 break;
             case 19244: // Spell Lock (Rank 1)
             case 19647: // Spell Lock (Rank 2)
+            case 64044: // Psychic Horror
                 spellInfo->Effect[1] = 0;
                 break;
             case 2094:  // Blind
