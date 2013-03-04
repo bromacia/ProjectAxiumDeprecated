@@ -1200,7 +1200,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         return;
     }
 
-    if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastSanctuaryTime)
+    if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay + 100) <= unit->m_lastSanctuaryTime)
     {
         if (m_spellInfo->Speed == 0)
         {
