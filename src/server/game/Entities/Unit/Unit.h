@@ -481,7 +481,6 @@ enum DeathState
     CORPSE      = 2,
     DEAD        = 3,
     JUST_ALIVED = 4,
-    DEAD_FALLING= 5
 };
 
 enum UnitState
@@ -509,14 +508,23 @@ enum UnitState
     UNIT_STATE_MOVE              = 0x00100000,
     UNIT_STATE_ROTATING          = 0x00200000,
     UNIT_STATE_EVADE             = 0x00400000,
+    UNIT_STATE_ROAMING_MOVE      = 0x00800000,
+    UNIT_STATE_CONFUSED_MOVE     = 0x01000000,
+    UNIT_STATE_FLEEING_MOVE      = 0x02000000,
+    UNIT_STATE_CHASE_MOVE        = 0x04000000,
+    UNIT_STATE_FOLLOW_MOVE       = 0x08000000,
     UNIT_STATE_UNATTACKABLE      = (UNIT_STATE_IN_FLIGHT | UNIT_STATE_ONVEHICLE),
-    UNIT_STATE_MOVING            = (UNIT_STATE_ROAMING | UNIT_STATE_CHASE),
+    //UNIT_STATE_MOVING            = (UNIT_STATE_ROAMING | UNIT_STATE_CHASE),
+    // for real move using movegen check and stop (except unstoppable flight)
+    UNIT_STATE_MOVING            = UNIT_STATE_ROAMING_MOVE | UNIT_STATE_CONFUSED_MOVE | UNIT_STATE_FLEEING_MOVE| UNIT_STATE_CHASE_MOVE | UNIT_STATE_FOLLOW_MOVE ,
     UNIT_STATE_CONTROLLED        = (UNIT_STATE_CONFUSED | UNIT_STATE_STUNNED | UNIT_STATE_FLEEING),
     UNIT_STATE_LOST_CONTROL      = (UNIT_STATE_CONTROLLED | UNIT_STATE_JUMPING | UNIT_STATE_CHARGING),
     UNIT_STATE_SIGHTLESS         = (UNIT_STATE_LOST_CONTROL | UNIT_STATE_EVADE),
     UNIT_STATE_CANNOT_AUTOATTACK = (UNIT_STATE_LOST_CONTROL | UNIT_STATE_CASTING),
     UNIT_STATE_CANNOT_TURN       = (UNIT_STATE_LOST_CONTROL | UNIT_STATE_ROTATING),
-    UNIT_STATE_ALL_STATE         = 0xffffffff // (UNIT_STATE_STOPPED | UNIT_STATE_MOVING | UNIT_STATE_IN_COMBAT | UNIT_STATE_IN_FLIGHT)
+    // stay by different reasons
+    UNIT_STATE_NOT_MOVE          = UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DIED | UNIT_STATE_DISTRACTED,
+    UNIT_STATE_ALL_STATE         = 0xffffffff                      //(UNIT_STATE_STOPPED | UNIT_STATE_MOVING | UNIT_STATE_IN_COMBAT | UNIT_STATE_IN_FLIGHT)
 };
 
 enum UnitMoveType
@@ -735,59 +743,18 @@ enum MovementFlags2
     MOVEMENTFLAG2_UNK15                    = 0x00004000,
     MOVEMENTFLAG2_UNK16                    = 0x00008000,
 };
+
 enum SplineFlags
 {
-    SPLINEFLAG_NONE           = 0x00000000,
-    SPLINEFLAG_FORWARD        = 0x00000001,
-    SPLINEFLAG_BACKWARD       = 0x00000002,
-    SPLINEFLAG_STRAFE_LEFT    = 0x00000004,
-    SPLINEFLAG_STRAFE_RIGHT   = 0x00000008,
-    SPLINEFLAG_LEFT           = 0x00000010,
-    SPLINEFLAG_RIGHT          = 0x00000020,
-    SPLINEFLAG_PITCH_UP       = 0x00000040,
-    SPLINEFLAG_PITCH_DOWN     = 0x00000080,
-    SPLINEFLAG_DONE           = 0x00000100,
-    SPLINEFLAG_FALLING        = 0x00000200,
-    SPLINEFLAG_NO_SPLINE      = 0x00000400,
-    SPLINEFLAG_TRAJECTORY     = 0x00000800,
-    SPLINEFLAG_WALKING        = 0x00001000,
-    SPLINEFLAG_FLYING         = 0x00002000,
-    SPLINEFLAG_KNOCKBACK      = 0x00004000,
-    SPLINEFLAG_FINAL_POINT    = 0x00008000,
-    SPLINEFLAG_FINAL_TARGET   = 0x00010000,
-    SPLINEFLAG_FINAL_FACING   = 0x00020000,
-    SPLINEFLAG_CATMULL_ROM    = 0x00040000,
-    SPLINEFLAG_UNKNOWN20      = 0x00080000,
-    SPLINEFLAG_UNKNOWN21      = 0x00100000,
-    SPLINEFLAG_ANIMATIONTIER  = 0x00200000,
-    SPLINEFLAG_UNKNOWN23      = 0x00400000,
-    SPLINEFLAG_TRANSPORT      = 0x00800000,
-    SPLINEFLAG_EXIT_VEHICLE   = 0x01000000,
-    SPLINEFLAG_UNKNOWN26      = 0x02000000,
-    SPLINEFLAG_UNKNOWN27      = 0x04000000,
-    SPLINEFLAG_UNKNOWN28      = 0x08000000,
-    SPLINEFLAG_UNKNOWN29      = 0x10000000,
-    SPLINEFLAG_ANIMATION      = 0x20000000,
-    SPLINEFLAG_UNKNOWN31      = 0x40000000,
-    SPLINEFLAG_UNKNOWN32      = 0x80000000,
-
-    SPLINEFLAG_GLIDE = SPLINEFLAG_WALKING | SPLINEFLAG_FLYING,
-};
-
-enum SplineMode
-{
-    SPLINEMODE_LINEAR       = 0,
-    SPLINEMODE_CATMULL_ROM  = 1,
-    SPLINEMODE_BEZIER3      = 2
+    SPLINEFLAG_WALKMODE     = 0x00001000,
+    SPLINEFLAG_FLYING       = 0x00002000,
+    SPLINEFLAG_TRANSPORT    = 0x00800000,
+    SPLINEFLAG_EXIT_VEHICLE = 0x01000000,
 };
 
 enum SplineType
 {
-    SPLINETYPE_NORMAL        = 0,
-    SPLINETYPE_STOP          = 1,
-    SPLINETYPE_FACING_SPOT   = 2,
-    SPLINETYPE_FACING_TARGET = 3,
-    SPLINETYPE_FACING_ANGLE  = 4
+    SPLINETYPE_FACING_ANGLE  = 4,
 };
 
 enum UnitTypeMask
@@ -804,6 +771,10 @@ enum UnitTypeMask
     UNIT_MASK_CONTROLABLE_GUARDIAN  = 0x00000100,
     UNIT_MASK_ACCESSORY             = 0x00000200,
 };
+
+namespace Movement{
+    class MoveSpline;
+}
 
 enum DiminishingLevels
 {
@@ -1669,20 +1640,18 @@ class Unit : public WorldObject
         void JumpTo(float speedXY, float speedZ, bool forward = true);
         void JumpTo(WorldObject* obj, float speedZ);
 
-        void SetFacing(float ori, WorldObject* obj = NULL);
-        void SendMonsterStop(bool on_death = false);
-        void SendMonsterMove(float NewPosX, float NewPosY, float NewPosZ, uint32 Time, Player* player = NULL);
-        void SendMonsterMove(float NewPosX, float NewPosY, float NewPosZ, uint32 MoveFlags, uint32 time, float speedZ, Player* player = NULL);
-        void SendMonsterMove(MonsterMoveData const& moveData, Player* receiver = NULL);
+        void MonsterMoveWithSpeed(float x, float y, float z, float speed);
+        //void SetFacing(float ori, WorldObject* obj = NULL);
         void SendMonsterMoveExitVehicle(Position const* newPos);
         //void SendMonsterMove(float NewPosX, float NewPosY, float NewPosZ, uint8 type, uint32 MovementFlags, uint32 Time, Player* player = NULL);
         void SendMonsterMoveTransport(Unit* vehicleOwner);
-        void SendMonsterMoveWithSpeed(float x, float y, float z, uint32 transitTime = 0, Player* player = NULL);
-        void SendMonsterMoveWithSpeedToCurrentDestination(Player* player = NULL);
         void SendMovementFlagUpdate();
+        bool IsLevitating() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_LEVITATING);}
+        bool IsWalking() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING);}
 
-        template<typename PathElem, typename PathNode>
-        void SendMonsterMoveByPath(Path<PathElem, PathNode> const& path, uint32 start, uint32 end);
+        void SetInFront(Unit const* target);
+        void SetFacingTo(float ori);
+        void SetFacingToObject(WorldObject* pObject);
 
         void SendChangeCurrentVictimOpcode(HostileReference* pHostileReference);
         void SendClearThreatListOpcode();
@@ -1997,13 +1966,7 @@ class Unit : public WorldObject
         void SetBaseWeaponDamage(WeaponAttackType attType, WeaponDamageRange damageRange, float value) { m_weaponDamage[attType][damageRange] = value; }
 
         bool isInFrontInMap(Unit const* target, float distance, float arc = M_PI) const;
-        void SetInFront(Unit const* target)
-        {
-            if (!HasUnitState(UNIT_STATE_CANNOT_TURN))
-                SetOrientation(GetAngle(target));
-        }
         bool isInBackInMap(Unit const* target, float distance, float arc = M_PI) const;
-        void SetFacingToObject(WorldObject* pObject);
 
         // Visibility system
         bool IsVisible() const { return (m_serverSideVisibility.GetValue(SERVERSIDE_VISIBILITY_GM) > SEC_PLAYER) ? false : true; }
@@ -2291,6 +2254,9 @@ class Unit : public WorldObject
                 SetUInt64Value(UNIT_FIELD_TARGET, 0);
         }
 
+        // Movement info
+        Movement::MoveSpline * movespline;
+
         float m_positiveCastTimePrecent;
 
     protected:
@@ -2366,6 +2332,8 @@ class Unit : public WorldObject
 
         bool IsAlwaysVisibleFor(WorldObject const* seer) const;
         bool IsAlwaysDetectableFor(WorldObject const* seer) const;
+
+        void DisableSpline();
     private:
         bool IsTriggeredAtSpellProcEvent(Unit* pVictim, Aura* aura, SpellInfo const* procSpell, uint32 procFlag, uint32 procExtra, WeaponAttackType attType, bool isVictim, bool active, SpellProcEventEntry const* & spellProcEvent);
         bool HandleDummyAuraProc(Unit* pVictim, uint32 damage, AuraEffect* triggeredByAura, SpellInfo const* procSpell, uint32 procFlag, uint32 procEx, uint32 cooldown);
@@ -2378,6 +2346,8 @@ class Unit : public WorldObject
         bool HandleOverrideClassScriptAuraProc(Unit* pVictim, uint32 damage, AuraEffect* triggeredByAura, SpellInfo const* procSpell, uint32 cooldown);
         bool HandleAuraRaidProcFromChargeWithValue(AuraEffect* triggeredByAura);
         bool HandleAuraRaidProcFromCharge(AuraEffect* triggeredByAura);
+
+        void UpdateSplineMovement(uint32 t_diff);
 
         // player or player's pet
         float GetCombatRatingReduction(CombatRating cr) const;
@@ -2393,6 +2363,7 @@ class Unit : public WorldObject
         uint32 m_state;                                     // Even derived shouldn't modify
         uint32 m_CombatTimer;
         uint32 m_lastManaUse;                               // msecs
+        TimeTrackerSmall m_movesplineTimer;
 
         Diminishing m_Diminishing;
         // Manage all Units that are threatened by us
@@ -2444,32 +2415,5 @@ namespace Trinity
         private:
             const bool m_ascending;
     };
-}
-
-template<typename Elem, typename Node>
-inline void Unit::SendMonsterMoveByPath(Path<Elem, Node> const& path, uint32 start, uint32 end)
-{
-    uint32 traveltime = uint32(path.GetTotalLength(start, end) * 32);
-    uint32 pathSize = end - start;
-    WorldPacket data(SMSG_MONSTER_MOVE, (GetPackGUID().size()+1+4+4+4+4+1+4+4+4+pathSize*4*3));
-    data.append(GetPackGUID());
-    data << uint8(0);
-    data << GetPositionX();
-    data << GetPositionY();
-    data << GetPositionZ();
-    data << uint32(getMSTime());
-    data << uint8(0);
-    data << uint32(((GetUnitMovementFlags() & MOVEMENTFLAG_LEVITATING) || isInFlight()) ? (SPLINEFLAG_FLYING|SPLINEFLAG_WALKING) : SPLINEFLAG_WALKING);
-    data << uint32(traveltime);
-    data << uint32(pathSize);
-
-    for (uint32 i = start; i < end; ++i)
-    {
-        data << float(path[i].x);
-        data << float(path[i].y);
-        data << float(path[i].z);
-    }
-
-    SendMessageToSet(&data, true);
 }
 #endif

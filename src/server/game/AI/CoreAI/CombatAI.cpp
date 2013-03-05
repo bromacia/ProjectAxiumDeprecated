@@ -205,6 +205,14 @@ void CasterAI::UpdateAI(const uint32 diff)
         return;
     }
 
+    if (!me->IsWithinLOS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
+    {
+        me->InterruptNonMeleeSpells(false);
+        me->StopMoving();
+        me->GetMotionMaster()->Clear();
+        me->GetMotionMaster()->MoveChase(target);
+    }
+
     if (me->HasUnitState(UNIT_STATE_CASTING))
         return;
 
