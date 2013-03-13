@@ -27,7 +27,7 @@ EndScriptData */
 #include "Chat.h"
 #include "Transport.h"
 #include "CreatureGroups.h"
-#include "TargetedMovementGenerator.h"                      // for HandleNpcUnFollowCommand
+#include "TargetedMovementGenerator.h" // for HandleNpcUnFollowCommand
 
 class npc_commandscript : public CommandScript
 {

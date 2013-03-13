@@ -32,9 +32,9 @@ void PointMovementGenerator<T>::Initialize(T &unit)
     if (!unit.IsStopped())
         unit.StopMoving();
 
-    unit.AddUnitState(UNIT_STATE_ROAMING|UNIT_STATE_ROAMING_MOVE);
+    unit.AddUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
     Movement::MoveSplineInit init(unit);
-    init.MoveTo(i_x, i_y, i_z);
+    init.MoveTo(i_x, i_y, i_z, m_generatePath);
     if (speed > 0.0f)
         init.SetVelocity(speed);
     init.Launch();
@@ -46,10 +46,19 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
     if (!&unit)
         return false;
 
-    if(unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED))
+    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED))
     {
         unit.ClearUnitState(UNIT_STATE_ROAMING_MOVE);
         return true;
+    }
+
+    if (!unit.movespline->Finalized())
+    {
+        Movement::MoveSplineInit init(unit);
+        init.MoveTo(i_x, i_y, i_z, m_generatePath);
+        if (speed > 0.0f)
+            init.SetVelocity(speed);
+        init.Launch();
     }
 
     unit.AddUnitState(UNIT_STATE_ROAMING_MOVE);
@@ -59,7 +68,7 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 template<class T>
 void PointMovementGenerator<T>:: Finalize(T &unit)
 {
-    unit.ClearUnitState(UNIT_STATE_ROAMING|UNIT_STATE_ROAMING_MOVE);
+    unit.ClearUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
 
     if (unit.movespline->Finalized())
         MovementInform(unit);
@@ -81,11 +90,6 @@ void PointMovementGenerator<T>::MovementInform(T & /*unit*/)
 
 template <> void PointMovementGenerator<Creature>::MovementInform(Creature &unit)
 {
-    //if (id == EVENT_FALL_GROUND)
-    //{
-    //    unit.setDeathState(JUST_DIED);
-    //    unit.SetFlying(true);
-    //}
     if (unit.AI())
         unit.AI()->MovementInform(POINT_MOTION_TYPE, id);
 }
@@ -119,12 +123,4 @@ void EffectMovementGenerator::Finalize(Unit &unit)
 
     if (((Creature&)unit).AI() && unit.movespline->Finalized())
         ((Creature&)unit).AI()->MovementInform(EFFECT_MOTION_TYPE, m_Id);
-    // Need restore previous movement since we have no proper states system
-    //if (unit.isAlive() && !unit.HasUnitState(UNIT_STATE_CONFUSED|UNIT_STATE_FLEEING))
-    //{
-    //    if (Unit * victim = unit.getVictim())
-    //        unit.GetMotionMaster()->MoveChase(victim);
-    //    else
-    //        unit.GetMotionMaster()->Initialize();
-    //}
 }

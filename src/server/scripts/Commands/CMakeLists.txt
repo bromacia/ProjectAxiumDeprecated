@@ -22,6 +22,7 @@ set(scripts_STAT_SRCS
   Commands/cs_group.cpp
   Commands/cs_honor.cpp
   Commands/cs_learn.cpp
+  Commands/cs_mmaps.cpp
   Commands/cs_misc.cpp
   Commands/cs_modify.cpp
   Commands/cs_morph.cpp

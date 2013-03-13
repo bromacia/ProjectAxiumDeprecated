@@ -6181,6 +6181,7 @@ void Spell::EffectLeap(SpellEffIndex /*effIndex*/)
     unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetDistance(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + 2.0f), 0.0f);
     unitTarget->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation(), unitTarget == m_caster);
 
+    // Blink
     if (m_spellInfo->Id == 1953)
         unitTarget->m_lastBlinkTime = getMSTime();
 }

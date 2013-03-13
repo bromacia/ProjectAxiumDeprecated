@@ -1530,22 +1530,28 @@ void WorldObject::GetRandomPoint(const Position &pos, float distance, float &ran
 
     Trinity::NormalizeMapCoord(rand_x);
     Trinity::NormalizeMapCoord(rand_y);
-    UpdateGroundPositionZ(rand_x, rand_y, rand_z);            // update to LOS height if available
 }
 
 void WorldObject::UpdateGroundPositionZ(float x, float y, float &z) const
 {
-    /*float new_z = GetBaseMap()->GetHeight(GetPhaseMask(), x, y, z, true);
+    float new_z = GetBaseMap()->GetHeight(GetPhaseMask(), x, y, z, true);
     if (new_z > INVALID_HEIGHT)
-        z = new_z+ 0.05f;*/
+        z = new_z+ 0.05f;
 }
 
 void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z) const
 {
-    /*switch (GetTypeId())
+    switch (GetTypeId())
     {
         case TYPEID_UNIT:
         {
+            Unit* victim = ToCreature()->getVictim();
+            if (victim)
+            {
+                // anyway creature move to victim for thinly Z distance (shun some VMAP wrong ground calculating)
+                if (fabs(GetPositionZ() - victim->GetPositionZ()) < 5.0f)
+                    return;
+            }
             // non fly unit don't must be in air
             // non swim unit must be at ground (mostly speedup, because it don't must be in water and water level check less fast
             if (!ToCreature()->canFly())
@@ -1601,7 +1607,7 @@ void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z) const
                 z = ground_z;
             break;
         }
-    }*/
+    }
 }
 
 bool Position::IsPositionValid() const
@@ -2540,10 +2546,7 @@ void WorldObject::GetNearPoint(WorldObject const* /*searcher*/, float &x, float 
     /*
     // if detection disabled, return first point
     if (!sWorld->getIntConfig(CONFIG_DETECT_POS_COLLISION))
-    {
-        UpdateGroundPositionZ(x, y, z);                       // update to LOS height if available
         return;
-    }
 
     // or remember first point
     float first_x = x;
@@ -2573,8 +2576,6 @@ void WorldObject::GetNearPoint(WorldObject const* /*searcher*/, float &x, float 
     // maybe can just place in primary position
     if (selector.CheckOriginal())
     {
-        UpdateGroundPositionZ(x, y, z);                       // update to LOS height if available
-
         if (IsWithinLOS(x, y, z))
             return;
 
@@ -2588,7 +2589,6 @@ void WorldObject::GetNearPoint(WorldObject const* /*searcher*/, float &x, float 
     {
         GetNearPoint2D(x, y, distance2d, absAngle+angle);
         z = GetPositionZ();
-        UpdateGroundPositionZ(x, y, z);                       // update to LOS height if available
 
         if (IsWithinLOS(x, y, z))
             return;
@@ -2602,7 +2602,6 @@ void WorldObject::GetNearPoint(WorldObject const* /*searcher*/, float &x, float 
     {
         GetNearPoint2D(x, y, distance2d, absAngle+angle);
         z = GetPositionZ();
-        UpdateGroundPositionZ(x, y, z);                       // update to LOS height if available
 
         if (IsWithinLOS(x, y, z))
             return;
@@ -2612,13 +2611,7 @@ void WorldObject::GetNearPoint(WorldObject const* /*searcher*/, float &x, float 
     // Attempt find _used_ pos without LOS problem
 
     if (!first_los_conflict)
-    {
-        x = first_x;
-        y = first_y;
-
-        UpdateGroundPositionZ(x, y, z);                       // update to LOS height if available
         return;
-    }
 
     // special case when one from list empty and then empty side preferred
     if (selector.IsNonBalanced())
@@ -2627,7 +2620,6 @@ void WorldObject::GetNearPoint(WorldObject const* /*searcher*/, float &x, float 
         {
             GetNearPoint2D(x, y, distance2d, absAngle+angle);
             z = GetPositionZ();
-            UpdateGroundPositionZ(x, y, z);                   // update to LOS height if available
 
             if (IsWithinLOS(x, y, z))
                 return;
@@ -2642,7 +2634,6 @@ void WorldObject::GetNearPoint(WorldObject const* /*searcher*/, float &x, float 
     {
         GetNearPoint2D(x, y, distance2d, absAngle+angle);
         z = GetPositionZ();
-        UpdateGroundPositionZ(x, y, z);                       // update to LOS height if available
 
         if (IsWithinLOS(x, y, z))
             return;
@@ -2651,8 +2642,6 @@ void WorldObject::GetNearPoint(WorldObject const* /*searcher*/, float &x, float 
     // BAD BAD NEWS: all found pos (free and used) have LOS problem :(
     x = first_x;
     y = first_y;
-
-    UpdateGroundPositionZ(x, y, z);                           // update to LOS height if available
     */
 }
 
@@ -2663,7 +2652,6 @@ void WorldObject::MovePosition(Position &pos, float dist, float angle)
     pos.m_positionY += dist * sin(angle);
     Trinity::NormalizeMapCoord(pos.m_positionX);
     Trinity::NormalizeMapCoord(pos.m_positionY);
-    UpdateGroundPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
     pos.m_orientation = m_orientation;
 }
 
@@ -2724,7 +2712,6 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
 
     Trinity::NormalizeMapCoord(pos.m_positionX);
     Trinity::NormalizeMapCoord(pos.m_positionY);
-    UpdateGroundPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
     pos.m_orientation = m_orientation;
 }
 

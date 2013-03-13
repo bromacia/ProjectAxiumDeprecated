@@ -22,19 +22,15 @@
 #include "MovementGenerator.h"
 
 template<class T>
-class FleeingMovementGenerator
-: public MovementGeneratorMedium< T, FleeingMovementGenerator<T> >
+class FleeingMovementGenerator : public MovementGeneratorMedium<T, FleeingMovementGenerator<T>>
 {
     public:
-        FleeingMovementGenerator(uint64 fright) : i_frightGUID(fright), i_nextCheckTime(0) {}
-
+        FleeingMovementGenerator(uint64 fright) : i_frightGUID(fright), i_nextCheckTime(0) { }
         void Initialize(T &);
         void Finalize(T &);
         void Reset(T &);
         bool Update(T &, const uint32 &);
-
         MovementGeneratorType GetMovementGeneratorType() { return FLEEING_MOTION_TYPE; }
-
     private:
         void _setTargetLocation(T &owner);
         bool _getPoint(T &owner, float &x, float &y, float &z);
@@ -55,14 +51,10 @@ class FleeingMovementGenerator
         TimeTracker i_nextCheckTime;
 };
 
-class TimedFleeingMovementGenerator
-: public FleeingMovementGenerator<Creature>
+class TimedFleeingMovementGenerator : public FleeingMovementGenerator<Creature>
 {
     public:
-        TimedFleeingMovementGenerator(uint64 fright, uint32 time) :
-            FleeingMovementGenerator<Creature>(fright),
-            i_totalFleeTime(time) {}
-
+        TimedFleeingMovementGenerator(uint64 fright, uint32 time) : FleeingMovementGenerator<Creature>(fright), i_totalFleeTime(time) { }
         MovementGeneratorType GetMovementGeneratorType() { return TIMED_FLEEING_MOTION_TYPE; }
         bool Update(Unit &, const uint32);
         void Finalize(Unit &);
@@ -72,4 +64,3 @@ class TimedFleeingMovementGenerator
 };
 
 #endif
-

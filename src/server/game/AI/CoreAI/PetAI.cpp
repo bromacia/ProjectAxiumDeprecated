@@ -467,7 +467,7 @@ void PetAI::DoAttack(Unit* target, bool chase)
             me->GetCharmInfo()->SetIsFollowing(false);
             me->GetCharmInfo()->SetIsReturning(false);
             me->GetMotionMaster()->Clear();
-            me->GetMotionMaster()->MoveChase(target);
+            me->GetMotionMaster()->MoveChase(target, MELEE_RANGE, me->GetAngle(target) + frand(-(float)M_PI / 4.0f, (float)M_PI / 4.0f));
         }
     }
     else // (Stay && ((Aggressive || Defensive) && In Melee Range)))

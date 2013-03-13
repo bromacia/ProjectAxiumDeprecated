@@ -44,14 +44,7 @@ namespace Movement
     void PacketBuilder::WriteCommonMonsterMovePart(const MoveSpline& move_spline, WorldPacket& data)
     {
         MoveSplineFlag splineflags = move_spline.splineflags;
-        /*if (mov.IsBoarded())
-        {
-            data.SetOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
-            data << mov.GetTransport()->Owner.GetPackGUID();
-            data << int8(mov.m_unused.transport_seat);
-        }*/
-
-        data << uint8(0);
+        data << uint8(0); // sets/unsets MOVEMENTFLAG2_UNK7 (0x40)
         data << move_spline.spline.getPoint(move_spline.spline.first());
         data << move_spline.GetId();
 
@@ -91,6 +84,14 @@ namespace Movement
             data << move_spline.vertical_acceleration;
             data << move_spline.effect_start_time;
         }
+    }
+
+    void PacketBuilder::WriteStopMovement(Vector3 const& pos, uint32 splineId, ByteBuffer& data)
+    {
+        data << uint8(0);                                       // sets/unsets MOVEMENTFLAG2_UNK7 (0x40)
+        data << pos;
+        data << splineId;
+        data << uint8(MonsterMoveStop);
     }
 
     void WriteLinearPath(const Spline<int32>& spline, ByteBuffer& data)

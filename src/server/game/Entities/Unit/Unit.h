@@ -485,46 +485,47 @@ enum DeathState
 
 enum UnitState
 {
-    UNIT_STATE_DIED              = 0x00000001,                     // player has fake death aura
-    UNIT_STATE_MELEE_ATTACKING   = 0x00000002,                     // player is melee attacking someone
-    //UNIT_STATE_MELEE_ATTACK_BY   = 0x00000004,                     // player is melee attack by someone
-    UNIT_STATE_STUNNED           = 0x00000008,
-    UNIT_STATE_ROAMING           = 0x00000010,
-    UNIT_STATE_CHASE             = 0x00000020,
-    //UNIT_STATE_SEARCHING         = 0x00000040,
-    UNIT_STATE_FLEEING           = 0x00000080,
-    UNIT_STATE_IN_FLIGHT         = 0x00000100,                     // player is in flight mode
-    UNIT_STATE_FOLLOW            = 0x00000200,
-    UNIT_STATE_ROOT              = 0x00000400,
-    UNIT_STATE_CONFUSED          = 0x00000800,
-    UNIT_STATE_DISTRACTED        = 0x00001000,
-    UNIT_STATE_ISOLATED          = 0x00002000,                     // area auras do not affect other players
-    UNIT_STATE_ATTACK_PLAYER     = 0x00004000,
-    UNIT_STATE_CASTING           = 0x00008000,
-    UNIT_STATE_POSSESSED         = 0x00010000,
-    UNIT_STATE_CHARGING          = 0x00020000,
-    UNIT_STATE_JUMPING           = 0x00040000,
-    UNIT_STATE_ONVEHICLE         = 0x00080000,
-    UNIT_STATE_MOVE              = 0x00100000,
-    UNIT_STATE_ROTATING          = 0x00200000,
-    UNIT_STATE_EVADE             = 0x00400000,
-    UNIT_STATE_ROAMING_MOVE      = 0x00800000,
-    UNIT_STATE_CONFUSED_MOVE     = 0x01000000,
-    UNIT_STATE_FLEEING_MOVE      = 0x02000000,
-    UNIT_STATE_CHASE_MOVE        = 0x04000000,
-    UNIT_STATE_FOLLOW_MOVE       = 0x08000000,
-    UNIT_STATE_UNATTACKABLE      = (UNIT_STATE_IN_FLIGHT | UNIT_STATE_ONVEHICLE),
-    //UNIT_STATE_MOVING            = (UNIT_STATE_ROAMING | UNIT_STATE_CHASE),
+    UNIT_STATE_DIED               = 0x00000001, // player has fake death aura
+    UNIT_STATE_MELEE_ATTACKING    = 0x00000002, // player is melee attacking someone
+    //UNIT_STATE_MELEE_ATTACK_BY    = 0x00000004, // player is melee attack by someone
+    UNIT_STATE_STUNNED            = 0x00000008,
+    UNIT_STATE_ROAMING            = 0x00000010,
+    UNIT_STATE_CHASE              = 0x00000020,
+    //UNIT_STATE_SEARCHING          = 0x00000040,
+    UNIT_STATE_FLEEING            = 0x00000080,
+    UNIT_STATE_IN_FLIGHT          = 0x00000100, // player is in flight mode
+    UNIT_STATE_FOLLOW             = 0x00000200,
+    UNIT_STATE_ROOT               = 0x00000400,
+    UNIT_STATE_CONFUSED           = 0x00000800,
+    UNIT_STATE_DISTRACTED         = 0x00001000,
+    UNIT_STATE_ISOLATED           = 0x00002000, // area auras do not affect other players
+    UNIT_STATE_ATTACK_PLAYER      = 0x00004000,
+    UNIT_STATE_CASTING            = 0x00008000,
+    UNIT_STATE_POSSESSED          = 0x00010000,
+    UNIT_STATE_CHARGING           = 0x00020000,
+    UNIT_STATE_JUMPING            = 0x00040000,
+    UNIT_STATE_ONVEHICLE          = 0x00080000,
+    UNIT_STATE_MOVE               = 0x00100000,
+    UNIT_STATE_ROTATING           = 0x00200000,
+    UNIT_STATE_EVADE              = 0x00400000,
+    UNIT_STATE_ROAMING_MOVE       = 0x00800000,
+    UNIT_STATE_CONFUSED_MOVE      = 0x01000000,
+    UNIT_STATE_FLEEING_MOVE       = 0x02000000,
+    UNIT_STATE_CHASE_MOVE         = 0x04000000,
+    UNIT_STATE_FOLLOW_MOVE        = 0x08000000,
+    UNIT_STATE_IGNORE_PATHFINDING = 0x10000000, // do not use pathfinding in any MovementGenerator
+    UNIT_STATE_UNATTACKABLE       = (UNIT_STATE_IN_FLIGHT | UNIT_STATE_ONVEHICLE),
+    //UNIT_STATE_MOVING             = (UNIT_STATE_ROAMING | UNIT_STATE_CHASE),
     // for real move using movegen check and stop (except unstoppable flight)
-    UNIT_STATE_MOVING            = UNIT_STATE_ROAMING_MOVE | UNIT_STATE_CONFUSED_MOVE | UNIT_STATE_FLEEING_MOVE| UNIT_STATE_CHASE_MOVE | UNIT_STATE_FOLLOW_MOVE ,
-    UNIT_STATE_CONTROLLED        = (UNIT_STATE_CONFUSED | UNIT_STATE_STUNNED | UNIT_STATE_FLEEING),
-    UNIT_STATE_LOST_CONTROL      = (UNIT_STATE_CONTROLLED | UNIT_STATE_JUMPING | UNIT_STATE_CHARGING),
-    UNIT_STATE_SIGHTLESS         = (UNIT_STATE_LOST_CONTROL | UNIT_STATE_EVADE),
-    UNIT_STATE_CANNOT_AUTOATTACK = (UNIT_STATE_LOST_CONTROL | UNIT_STATE_CASTING),
-    UNIT_STATE_CANNOT_TURN       = (UNIT_STATE_LOST_CONTROL | UNIT_STATE_ROTATING),
+    UNIT_STATE_MOVING             = UNIT_STATE_ROAMING_MOVE | UNIT_STATE_CONFUSED_MOVE | UNIT_STATE_FLEEING_MOVE| UNIT_STATE_CHASE_MOVE | UNIT_STATE_FOLLOW_MOVE ,
+    UNIT_STATE_CONTROLLED         = (UNIT_STATE_CONFUSED | UNIT_STATE_STUNNED | UNIT_STATE_FLEEING),
+    UNIT_STATE_LOST_CONTROL       = (UNIT_STATE_CONTROLLED | UNIT_STATE_JUMPING | UNIT_STATE_CHARGING),
+    UNIT_STATE_SIGHTLESS          = (UNIT_STATE_LOST_CONTROL | UNIT_STATE_EVADE),
+    UNIT_STATE_CANNOT_AUTOATTACK  = (UNIT_STATE_LOST_CONTROL | UNIT_STATE_CASTING),
+    UNIT_STATE_CANNOT_TURN        = (UNIT_STATE_LOST_CONTROL | UNIT_STATE_ROTATING),
     // stay by different reasons
-    UNIT_STATE_NOT_MOVE          = UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DIED | UNIT_STATE_DISTRACTED,
-    UNIT_STATE_ALL_STATE         = 0xffffffff                      //(UNIT_STATE_STOPPED | UNIT_STATE_MOVING | UNIT_STATE_IN_COMBAT | UNIT_STATE_IN_FLIGHT)
+    UNIT_STATE_NOT_MOVE           = UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DIED | UNIT_STATE_DISTRACTED,
+    UNIT_STATE_ALL_STATE          = 0xffffffff //(UNIT_STATE_STOPPED | UNIT_STATE_MOVING | UNIT_STATE_IN_COMBAT | UNIT_STATE_IN_FLIGHT)
 };
 
 enum UnitMoveType
@@ -742,19 +743,6 @@ enum MovementFlags2
     MOVEMENTFLAG2_UNK14                    = 0x00002000,
     MOVEMENTFLAG2_UNK15                    = 0x00004000,
     MOVEMENTFLAG2_UNK16                    = 0x00008000,
-};
-
-enum SplineFlags
-{
-    SPLINEFLAG_WALKMODE     = 0x00001000,
-    SPLINEFLAG_FLYING       = 0x00002000,
-    SPLINEFLAG_TRANSPORT    = 0x00800000,
-    SPLINEFLAG_EXIT_VEHICLE = 0x01000000,
-};
-
-enum SplineType
-{
-    SPLINETYPE_FACING_ANGLE  = 4,
 };
 
 enum UnitTypeMask
@@ -1639,12 +1627,10 @@ class Unit : public WorldObject
         void KnockbackFrom(float x, float y, float speedXY, float speedZ);
         void JumpTo(float speedXY, float speedZ, bool forward = true);
         void JumpTo(WorldObject* obj, float speedZ);
-
-        void MonsterMoveWithSpeed(float x, float y, float z, float speed);
+        bool SetPosition(float x, float y, float z, float orientation, bool teleport = false);
+        void MonsterMoveWithSpeed(float x, float y, float z, float speed, bool generatePath = false, bool forceDestination = false);
         //void SetFacing(float ori, WorldObject* obj = NULL);
-        void SendMonsterMoveExitVehicle(Position const* newPos);
         //void SendMonsterMove(float NewPosX, float NewPosY, float NewPosZ, uint8 type, uint32 MovementFlags, uint32 Time, Player* player = NULL);
-        void SendMonsterMoveTransport(Unit* vehicleOwner);
         void SendMovementFlagUpdate();
         bool IsLevitating() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_LEVITATING);}
         bool IsWalking() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING);}
@@ -1990,6 +1976,7 @@ class Unit : public WorldObject
         void AddThreat(Unit* pVictim, float fThreat, SpellSchoolMask schoolMask = SPELL_SCHOOL_MASK_NORMAL, SpellInfo const* threatSpell = NULL);
         float ApplyTotalThreatModifier(float fThreat, SpellSchoolMask schoolMask = SPELL_SCHOOL_MASK_NORMAL);
         void DeleteThreatList();
+        void DeleteFromThreatList(Unit* victim);
         void TauntApply(Unit* pVictim);
         void TauntFadeOut(Unit* taunter);
         ThreatManager& getThreatManager() { return m_ThreatManager; }
@@ -2121,6 +2108,15 @@ class Unit : public WorldObject
         uint16 HasExtraUnitMovementFlag(uint16 f) const { return m_movementInfo.flags2 & f; }
         uint16 GetExtraUnitMovementFlags() const { return m_movementInfo.flags2; }
         void SetExtraUnitMovementFlags(uint16 f) { m_movementInfo.flags2 = f; }
+
+        float GetPositionZMinusOffset() const
+        {
+            float offset = 0.0f;
+            if (HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
+                offset = GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+
+            return GetPositionZ() - offset;
+        }
 
         void SetControlled(bool apply, UnitState state);
 
@@ -2348,6 +2344,7 @@ class Unit : public WorldObject
         bool HandleAuraRaidProcFromCharge(AuraEffect* triggeredByAura);
 
         void UpdateSplineMovement(uint32 t_diff);
+        void UpdateSplinePosition();
 
         // player or player's pet
         float GetCombatRatingReduction(CombatRating cr) const;

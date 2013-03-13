@@ -58,6 +58,7 @@ void AddSC_gps_commandscript();
 void AddSC_morph_commandscript();
 void AddSC_utility_commandscript();
 void AddSC_group_commandscript();
+void AddSC_mmaps_commandscript();
 
 #ifdef SCRIPTS
 //world
@@ -150,6 +151,7 @@ void AddCommandScripts()
     AddSC_morph_commandscript();
     AddSC_utility_commandscript();
     AddSC_group_commandscript();
+    AddSC_mmaps_commandscript();
 }
 
 void AddWorldScripts()

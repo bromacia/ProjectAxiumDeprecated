@@ -27,11 +27,11 @@ namespace Movement
     class MoveSpline;
     class PacketBuilder
     {
-        static void WriteCommonMonsterMovePart(const MoveSpline& mov, WorldPacket& data);
-    public:
-
-        static void WriteMonsterMove(const MoveSpline& mov, WorldPacket& data);
-        static void WriteCreate(const MoveSpline& mov, ByteBuffer& data);
+        public:
+            static void WriteCommonMonsterMovePart(const MoveSpline& mov, WorldPacket& data);
+            static void WriteStopMovement(Vector3 const& loc, uint32 splineId, ByteBuffer& data);
+            static void WriteMonsterMove(const MoveSpline& mov, WorldPacket& data);
+            static void WriteCreate(const MoveSpline& mov, ByteBuffer& data);
     };
 }
 #endif // TRINITYSERVER_PACKET_BUILDER_H
