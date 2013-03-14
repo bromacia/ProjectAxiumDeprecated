@@ -184,11 +184,37 @@ void PathFinderMovementGenerator::_buildPolyPath(const Vector3 &startPos, const 
     // its up to caller how he will use this info
     if (startPoly == INVALID_POLYREF || endPoly == INVALID_POLYREF)
     {
-        sLog->outDebug(LOG_FILTER_MAPS, "++ BuildPolyPath :: (startPoly == 0 || endPoly == 0)\n");
-        _buildShortcut();
-        _type = (_sourceUnit->GetTypeId() == TYPEID_UNIT && ((Creature*)_sourceUnit)->canFly())
-                    ? PathType(PATHFIND_NORMAL | PATHFIND_NOT_USING_PATH) : PATHFIND_NOPATH;
-        return;
+        if (_sourceUnit->GetTypeId() == TYPEID_PLAYER)
+            _type = PathType(PATHFIND_NORMAL | PATHFIND_NOT_USING_PATH);
+        else
+        {
+            sLog->outDebug(LOG_FILTER_MAPS, "++ BuildPolyPath :: (startPoly == 0 || endPoly == 0)\n");
+            _buildShortcut();
+            bool path = _sourceUnit->GetTypeId() == TYPEID_UNIT && _sourceUnit->ToCreature()->canFly();
+
+            bool waterPath = _sourceUnit->GetTypeId() == TYPEID_UNIT && _sourceUnit->ToCreature()->canSwim();
+            if (waterPath)
+            {
+                if (_pathPoints.size() > UINT16_MAX)
+                    return;
+
+                // Check both start and end points, if they're both in water, then we can *safely* let the creature move
+                for (uint16 i = 0; i < _pathPoints.size(); ++i)
+                {
+                    LiquidData data;
+                    _sourceUnit->GetBaseMap()->getLiquidStatus(_pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, MAP_ALL_LIQUIDS, &data);
+                    // One of the points is not in the water, cancel movement.
+                    if (data.type_flags == MAP_LIQUID_TYPE_NO_WATER)
+                    {
+                        waterPath = false;
+                        break;
+                    }
+                }
+            }
+
+            _type = (path || waterPath) ? PathType(PATHFIND_NORMAL | PATHFIND_NOT_USING_PATH) : PATHFIND_NOPATH;
+            return;
+        }
     }
 
     // we may need a better number here

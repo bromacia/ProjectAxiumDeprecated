@@ -174,6 +174,7 @@ namespace Movement
         if (generatePath)
         {
             PathFinderMovementGenerator path(&unit);
+            path.SetUseStrightPath(true);
             path.Calculate(dest.x, dest.y, dest.z, forceDestination);
             MovebyPath(path.GetPath());
         }

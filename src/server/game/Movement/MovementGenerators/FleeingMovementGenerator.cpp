@@ -194,7 +194,7 @@ bool FleeingMovementGenerator<T>::_getPoint(T &owner, float &x, float &y, float 
         }
     }
     i_to_distance_from_caster = 0.0f;
-    i_nextCheckTime.Reset( urand(500,1000) );
+    i_nextCheckTime.Reset(urand(500,1000));
     return false;
 }
 
