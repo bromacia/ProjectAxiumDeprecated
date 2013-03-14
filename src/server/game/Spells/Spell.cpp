@@ -1200,11 +1200,11 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         case 10310: // Lay on Hands (Rank 3)
         case 27154: // Lay on Hands (Rank 4)
         case 48788: // Lay on Hands (Rank 5)
-            m_caster->CastSpell(unit, 25771); // Forbearance
+            m_caster->CastSpell(unit, 25771, true); // Forbearance
             break;
         case 19244: // Spell Lock (Rank 1)
         case 19647: // Spell Lock (Rank 2)
-            m_caster->AddAura(24259, unit); // Spell Lock (Silence)
+            m_caster->CastSpell(unit, 24259, true); // Spell Lock (Silence)
             break;
         case 19574: // Bestial Wrath
         case 34471: // Beast Within
@@ -1220,8 +1220,8 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         case 57841: // Killing Spree (Attack)
             m_caster->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
             break;
-        case 64044: // Psychic Horror
-            m_caster->AddAura(64058, unit);
+        case 64044: // Psychic Horror (Stun)
+            m_caster->CastSpell(unit, 64058, true); // Psychic Horror (Disarm)
             break;
         case 75456: // Piercing Twilight (Normal)
         case 75458: // Piercing Twilight (Heroic)
