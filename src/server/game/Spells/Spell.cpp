@@ -3445,10 +3445,19 @@ void Spell::handle_immediate()
         int32 duration = m_spellInfo->GetDuration();
         if (duration)
         {
-            // First mod_duration then haste - see Missile Barrage
+            // Apply diminishing mod
+            if (Unit* target = m_targets.GetUnitTarget())
+            {
+                m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, false);
+                m_diminishLevel = target->GetDiminishing(m_diminishGroup);
+                int32 limitduration = GetDiminishingReturnsLimitDuration(m_diminishGroup, m_spellInfo);
+                target->ApplyDiminishingToDuration(m_diminishGroup, duration, m_caster, m_diminishLevel, limitduration);
+            }
+
             // Apply duration mod
             if (Player* modOwner = m_caster->GetSpellModOwner())
                 modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_DURATION, duration);
+
             // Apply haste mods
             if (m_spellInfo->AttributesEx5 & SPELL_ATTR5_HASTE_AFFECT_DURATION)
                 m_caster->ModSpellCastTime(m_spellInfo, duration, this);
