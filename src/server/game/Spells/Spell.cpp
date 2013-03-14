@@ -1188,6 +1188,53 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
     if (unit->isAlive() != target->alive)
         return;
 
+    switch (m_spellInfo->Id)
+    {
+        case 642:   // Divine Shield
+        case 498:   // Divine Protection
+        case 1022:  // Hand of Protection (Rank 1)
+        case 5599:  // Hand of Protection (Rank 2)
+        case 10278: // Hand of Protection (Rank 3)
+        case 633:   // Lay on Hands (Rank 1)
+        case 2800:  // Lay on Hands (Rank 2)
+        case 10310: // Lay on Hands (Rank 3)
+        case 27154: // Lay on Hands (Rank 4)
+        case 48788: // Lay on Hands (Rank 5)
+            m_caster->CastSpell(unit, 25771); // Forbearance
+            break;
+        case 19244: // Spell Lock (Rank 1)
+        case 19647: // Spell Lock (Rank 2)
+            m_caster->AddAura(24259, unit); // Spell Lock (Silence)
+            break;
+        case 19574: // Bestial Wrath
+        case 34471: // Beast Within
+            if (!m_caster->HasAura(34471))
+                m_caster->AddAura(34471, m_caster);
+            if (Pet* pet = m_caster->ToPlayer()->GetPet())
+                if (!pet->HasAura(19574))
+                    pet->AddAura(19574, pet);
+            break;
+        case 51690: // Killing Spree (Ability)
+            m_caster->CastSpell(m_caster, 61851, true); // Killing Spree (Immunity)
+            break;
+        case 57841: // Killing Spree (Attack)
+            m_caster->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+            break;
+        case 64044: // Psychic Horror
+            m_caster->AddAura(64058, unit);
+            break;
+        case 75456: // Piercing Twilight (Normal)
+        case 75458: // Piercing Twilight (Heroic)
+            m_caster->AddAura(35847, m_caster); // Ghost Visual Red
+            m_caster->GetAura(35847, m_caster->GetGUID())->SetDurationAndMaxDuration(15 * IN_MILLISECONDS);
+            break;
+        case 75466: // Twilight Flames (Normal)
+        case 75473: // Twilight Flames (Heroic)
+            m_caster->AddAura(35838, m_caster); // Ghost Visual Blue
+            m_caster->GetAura(35838, m_caster->GetGUID())->SetDurationAndMaxDuration(15 * IN_MILLISECONDS);
+            break;
+    }
+
     // For delayed spells immunity may be applied between missile launch and hit - check immunity for that case
     // disable effects to which unit is immune
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -1441,53 +1488,6 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         if (missInfo != SPELL_MISS_EVADE && unit != m_caster && m_caster->IsFriendlyTo(unit) && m_spellInfo->IsPositive() &&
             unit->isInCombat() && !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO))
             m_caster->SetInCombatWith(unit);
-    }
-
-    switch (m_spellInfo->Id)
-    {
-        case 642:   // Divine Shield
-        case 498:   // Divine Protection
-        case 1022:  // Hand of Protection (Rank 1)
-        case 5599:  // Hand of Protection (Rank 2)
-        case 10278: // Hand of Protection (Rank 3)
-        case 633:   // Lay on Hands (Rank 1)
-        case 2800:  // Lay on Hands (Rank 2)
-        case 10310: // Lay on Hands (Rank 3)
-        case 27154: // Lay on Hands (Rank 4)
-        case 48788: // Lay on Hands (Rank 5)
-            m_caster->CastSpell(unit, 25771); // Forbearance
-            break;
-        case 19244: // Spell Lock (Rank 1)
-        case 19647: // Spell Lock (Rank 2)
-            m_caster->AddAura(24259, unit); // Spell Lock (Silence)
-            break;
-        case 19574: // Bestial Wrath
-        case 34471: // Beast Within
-            if (!m_caster->HasAura(34471))
-                m_caster->AddAura(34471, m_caster);
-            if (Pet* pet = m_caster->ToPlayer()->GetPet())
-                if (!pet->HasAura(19574))
-                    pet->AddAura(19574, pet);
-            break;
-        case 51690: // Killing Spree (Ability)
-            m_caster->CastSpell(m_caster, 61851, true); // Killing Spree (Immunity)
-            break;
-        case 57841: // Killing Spree (Attack)
-            m_caster->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
-            break;
-        case 64044: // Psychic Horror
-            m_caster->AddAura(64058, unit);
-            break;
-        case 75456: // Piercing Twilight (Normal)
-        case 75458: // Piercing Twilight (Heroic)
-            m_caster->AddAura(35847, m_caster); // Ghost Visual Red
-            m_caster->GetAura(35847, m_caster->GetGUID())->SetDurationAndMaxDuration(15 * IN_MILLISECONDS);
-            break;
-        case 75466: // Twilight Flames (Normal)
-        case 75473: // Twilight Flames (Heroic)
-            m_caster->AddAura(35838, m_caster); // Ghost Visual Blue
-            m_caster->GetAura(35838, m_caster->GetGUID())->SetDurationAndMaxDuration(15 * IN_MILLISECONDS);
-            break;
     }
 
     if (spellHitTarget)
