@@ -3128,8 +3128,11 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_DEATH_PERSISTENT;
                 break;
-            case 73313: // Crimson Deathcharger
+            case 13819: // Warhorse
+            case 23214: // Charger
             case 48778: // Acherus Deathcharger
+            case 66906: // Argent Charger
+            case 73313: // Crimson Deathcharger
                 spellInfo->SpellFamilyName = SPELLFAMILY_GENERIC;
                 break;
             case 8178: // Grounding Totem
