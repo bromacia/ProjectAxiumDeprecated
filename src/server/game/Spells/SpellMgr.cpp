@@ -3071,9 +3071,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 53313: // Entangling Roots (Rank 8) -- Nature's Grasp Proc
                 spellInfo->CastingTimeIndex = 1;
                 break;
-// ----------------------------------------------------------------------
-// -------------------------------Axium----------------------------------
-// ----------------------------------------------------------------------
             case 5171: // Slice and Dice (Rank 1)
             case 6774: // Slice and Dice (Rank 2)
             case 52610: // Savage Roar
@@ -3099,34 +3096,28 @@ void SpellMgr::LoadDbcDataCorrections()
             case 44461: // Living Bomb Final Tic (Rank 1)
             case 55361: // Living Bomb Final Tic (Rank 2)
             case 55362: // Living Bomb Final Tic (Rank 3)
-                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->AttributesEx |= SPELL_ATTR0_CASTABLE_WHILE_DEAD;
+                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
                 spellInfo->rangeIndex = 13;
                 break;
             case 18754: // Improved Succubus (Rank 1)
                 spellInfo->EffectApplyAuraName[0] = SPELL_AURA_ADD_FLAT_MODIFIER;
-                spellInfo->EffectBasePoints[0] = -1.5*IN_MILLISECONDS*0.22;
+                spellInfo->EffectBasePoints[0] = -1.5 * IN_MILLISECONDS * 0.22;
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
                 break;
             case 18755: // Improved Succubus (Rank 2)
                 spellInfo->EffectApplyAuraName[0] = SPELL_AURA_ADD_FLAT_MODIFIER;
-                spellInfo->EffectBasePoints[0] = -1.5*IN_MILLISECONDS*0.44;
+                spellInfo->EffectBasePoints[0] = -1.5 * IN_MILLISECONDS * 0.44;
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
                 break;
             case 18756: // Improved Succubus (Rank 3)
                 spellInfo->EffectApplyAuraName[0] = SPELL_AURA_ADD_FLAT_MODIFIER;
-                spellInfo->EffectBasePoints[0] = -1.5*IN_MILLISECONDS*0.66;
+                spellInfo->EffectBasePoints[0] = -1.5 * IN_MILLISECONDS * 0.66;
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
                 break;
             case 63311: // Glyph of Shadowflame
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CONE_ENEMY_104;
                 spellInfo->EffectRadiusIndex[0] = 13;
-                break;
-            case 6277: // Bind Sight
-                spellInfo->AttributesEx |= SPELL_ATTR0_CASTABLE_WHILE_DEAD;
-                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_DEAD;
-                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
-                spellInfo->AttributesEx3 |= SPELL_ATTR3_DEATH_PERSISTENT;
                 break;
             case 13819: // Warhorse
             case 23214: // Charger
@@ -3139,6 +3130,7 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->procFlags = 0;
                 break;
             case 30231: // Zangarmarsh Banish
+                spellInfo->AttributesEx |= SPELL_ATTR0_CANT_CANCEL;
                 spellInfo->Mechanic = 0;
                 spellInfo->DurationIndex = 9;
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
@@ -3151,7 +3143,6 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectBasePoints[2] = 99999;
                 spellInfo->EffectApplyAuraName[2] = SPELL_AURA_MOD_STEALTH;
                 spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_CASTER;
-                spellInfo->AttributesEx |= SPELL_ATTR0_CANT_CANCEL;
                 break;
             case 45524: // Chains of Ice
                 spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_TARGET_ENEMY;
@@ -3274,6 +3265,12 @@ void SpellMgr::LoadDbcDataCorrections()
                 break;
             case 2094:  // Blind
                 spellInfo->EffectBasePoints[0] = -40;
+                break;
+            case 33786: // Cyclone
+                spellInfo->AttributesEx &= ~SPELL_ATTR1_UNAFFECTED_BY_SCHOOL_IMMUNE;
+                break;
+            case 23218: // Feral Move Speed Increase
+                spellInfo->DurationIndex = 21;
                 break;
             default:
                 break;

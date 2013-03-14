@@ -5783,7 +5783,6 @@ SpellCastResult Spell::CheckCast(bool strict)
                 break;
         }
     }
-    // Axium
     // Silence (serverside spell)
     if (m_caster->HasAura(2))
         return SPELL_FAILED_SILENCED;
