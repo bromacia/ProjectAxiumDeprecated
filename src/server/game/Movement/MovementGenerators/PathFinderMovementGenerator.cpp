@@ -22,7 +22,6 @@
 #include "MMapFactory.h"
 #include "MMapManager.h"
 #include "Log.h"
-
 #include "DetourCommon.h"
 #include "DetourNavMeshQuery.h"
 
