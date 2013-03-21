@@ -1966,10 +1966,6 @@ class Unit : public WorldObject
 
         uint32 m_lastSanctuaryTime;
         uint32 m_lastBlinkTime;
-        uint32 DivineShieldCooldown;
-        uint32 DivineProtectionCooldown;
-        uint32 HandOfProtectionCooldown;
-        uint32 LayOnHandsCooldown;
 
         // Threat related methods
         bool CanHaveThreatList() const;

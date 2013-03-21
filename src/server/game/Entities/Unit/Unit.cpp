@@ -145,10 +145,23 @@ _hitMask(hitMask), _spell(spell), _damageInfo(damageInfo), _healInfo(healInfo)
 #pragma warning(disable:4355)
 #endif
 Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
-m_movedPlayer(NULL), m_lastSanctuaryTime(0), m_lastBlinkTime(0), DivineShieldCooldown(0), DivineProtectionCooldown(0), HandOfProtectionCooldown(0), LayOnHandsCooldown(0),
-IsAIEnabled(false), NeedChangeAI(false), m_ControlledByPlayer(false), i_AI(NULL), i_disabledAI(NULL), m_procDeep(0),
-m_removedAurasCount(0), i_motionMaster(this), m_ThreatManager(this), m_vehicle(NULL),
-m_vehicleKit(NULL), m_unitTypeMask(UNIT_MASK_NONE), m_HostileRefManager(this), movespline(new Movement::MoveSpline())
+    m_movedPlayer(NULL),
+    m_lastSanctuaryTime(0),
+    m_lastBlinkTime(0),
+    IsAIEnabled(false),
+    NeedChangeAI(false),
+    m_ControlledByPlayer(false),
+    i_AI(NULL),
+    i_disabledAI(NULL),
+    m_procDeep(0),
+    m_removedAurasCount(0),
+    i_motionMaster(this),
+    m_ThreatManager(this),
+    m_vehicle(NULL),
+    m_vehicleKit(NULL),
+    m_unitTypeMask(UNIT_MASK_NONE),
+    m_HostileRefManager(this),
+    movespline(new Movement::MoveSpline())
 {
 #ifdef _MSC_VER
 #pragma warning(default:4355)
