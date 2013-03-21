@@ -7946,5 +7946,6 @@ bool Spell::IsNegativeAuraSpell() const
         return m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_AURA &&
             !(m_spellInfo->AttributesEx4 & SPELL_ATTR4_UNK21) && !m_spellInfo->IsPassive() &&
             (!m_spellInfo->IsPositive() || !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT)) &&
-            !m_spellInfo->IsPositive() && m_spellInfo->Id != 7267;
+            !m_spellInfo->IsPositive() && m_spellInfo->Id != 7267 ||
+            (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && (m_spellInfo->SpellFamilyFlags[0] & 0x2000000));
 }
