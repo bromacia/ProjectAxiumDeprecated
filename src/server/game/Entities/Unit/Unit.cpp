@@ -501,6 +501,36 @@ bool Unit::IsWithinMeleeRange(const Unit* obj, float dist) const
     return distsq < maxdist * maxdist;
 }
 
+bool Unit::IsWithinContactDistance(const Unit* obj, float dist) const
+{
+    if (!obj || !IsInMap(obj) || !InSamePhase(obj))
+        return false;
+
+    float dx = GetPositionX() - obj->GetPositionX();
+    float dy = GetPositionY() - obj->GetPositionY();
+    float dz = GetPositionZ() - obj->GetPositionZ();
+    float distsq = dx*dx + dy*dy + dz*dz;
+
+    float maxdist = dist;
+
+    return distsq < maxdist * maxdist;
+}
+
+bool Unit::IsWithinCloseRange(const Unit* obj, float dist) const
+{
+    if (!obj || !IsInMap(obj) || !InSamePhase(obj))
+        return false;
+
+    float dx = GetPositionX() - obj->GetPositionX();
+    float dy = GetPositionY() - obj->GetPositionY();
+    float dz = GetPositionZ() - obj->GetPositionZ();
+    float distsq = dx*dx + dy*dy + dz*dz;
+
+    float maxdist = dist;
+
+    return distsq < maxdist * maxdist;
+}
+
 void Unit::GetRandomContactPoint(const Unit* obj, float &x, float &y, float &z, float distance2dMin, float distance2dMax) const
 {
     float combat_reach = GetCombatReach();

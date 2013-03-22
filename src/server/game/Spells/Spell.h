@@ -736,19 +736,12 @@ namespace Trinity
 
                 switch (i_push_type)
                 {
-                    case PUSH_SRC_CENTER:
-                    case PUSH_DST_CENTER:
-                    case PUSH_CHAIN:
-                    default:
-                        if (target->IsWithinDist3d(i_pos, i_radius))
-                            i_data->push_back(target);
-                        break;
                     case PUSH_IN_FRONT:
-                        if (i_source->isInFront(target, i_radius, static_cast<float>(M_PI/2)))
+                        if (i_source->isInFront(target, i_radius, static_cast<float>(M_PI/2)) || target->IsWithinCloseRange(i_source))
                             i_data->push_back(target);
                         break;
                     case PUSH_IN_BACK:
-                        if (i_source->isInBack(target, i_radius, static_cast<float>(M_PI/2)))
+                        if (i_source->isInBack(target, i_radius, static_cast<float>(M_PI/2)) || target->IsWithinCloseRange(i_source))
                             i_data->push_back(target);
                         break;
                     case PUSH_IN_LINE:
@@ -757,6 +750,13 @@ namespace Trinity
                         break;
                     case PUSH_IN_THIN_LINE: // only traj
                         if (i_pos->HasInLine(target, i_radius, 0))
+                            i_data->push_back(target);
+                        break;
+                    case PUSH_SRC_CENTER:
+                    case PUSH_DST_CENTER:
+                    case PUSH_CHAIN:
+                    default:
+                        if (target->IsWithinDist3d(i_pos, i_radius))
                             i_data->push_back(target);
                         break;
                 }
