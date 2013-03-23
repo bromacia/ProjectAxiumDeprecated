@@ -183,7 +183,7 @@ void PathFinderMovementGenerator::_buildPolyPath(const Vector3 &startPos, const 
     // its up to caller how he will use this info
     if (startPoly == INVALID_POLYREF || endPoly == INVALID_POLYREF)
     {
-        if (_sourceUnit->GetTypeId() == TYPEID_PLAYER)
+        if (_sourceUnit->GetTypeId() == TYPEID_PLAYER || _sourceUnit->isPet() || _sourceUnit->isGuardian() || _sourceUnit->isSummon() || _sourceUnit->isHunterPet())
             _type = PathType(PATHFIND_NORMAL | PATHFIND_NOT_USING_PATH);
         else
         {
