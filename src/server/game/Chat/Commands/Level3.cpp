@@ -3742,7 +3742,7 @@ bool ChatHandler::HandleServerPLimitCommand(const char* args)
         if (strncmp(param, "player", l) == 0)
             sWorld->SetPlayerSecurityLimit(SEC_PLAYER);
         else if (strncmp(param, "moderator", l) == 0)
-            sWorld->SetPlayerSecurityLimit(SEC_MODERATOR);
+            sWorld->SetPlayerSecurityLimit(SEC_GAMEMASTER);
         else if (strncmp(param, "gamemaster", l) == 0)
             sWorld->SetPlayerSecurityLimit(SEC_GAMEMASTER);
         else if (strncmp(param, "administrator", l) == 0)
@@ -3768,9 +3768,10 @@ bool ChatHandler::HandleServerPLimitCommand(const char* args)
     switch (allowedAccountType)
     {
         case SEC_PLAYER:        secName = "Player";        break;
-        case SEC_MODERATOR:     secName = "Moderator";     break;
+        case SEC_VIP:           secName = "VIP";           break;
         case SEC_GAMEMASTER:    secName = "Gamemaster";    break;
         case SEC_ADMINISTRATOR: secName = "Administrator"; break;
+        case SEC_CONSOLE:       secName = "Console";       break;
         default:                secName = "<unknown>";     break;
     }
 
@@ -4673,135 +4674,5 @@ bool ChatHandler::HandleUnbindSightCommand(const char* /*args*/)
         return false;
 
     m_session->GetPlayer()->InterruptSpell(CURRENT_CHANNELED_SPELL);
-    return true;
-}
-
-// Adds a personal queue spot in your current location to the selected 
-// player, or person you type in (e.g. .addpersonalqueue Takenbacon)
-bool ChatHandler::HandleAddPersonalQueueCommand(const char* args)
-{
-    std::string name;
-    Player* player;
-    char *TargetName = strtok((char*)args, " ");
-    if (!TargetName)
-    {
-        player = getSelectedPlayer();
-        if (player)
-        {
-            name = player->GetName();
-            normalizePlayerName(name);
-        }
-    }
-    else
-    {
-        name = TargetName;
-        normalizePlayerName(name);
-        player = sObjectAccessor->FindPlayerByName(name.c_str());
-    }
-
-    if (!player)
-        return false;
-
-    CharacterDatabase.EscapeString(name);
-
-    QueryResult result = CharacterDatabase.PQuery("SELECT account FROM characters WHERE name='%s'", name.c_str());
-
-    if (!result)
-    {
-        PSendSysMessage("Unable to find player.");
-        SetSentErrorMessage(true);
-        return false;
-    }
-
-    float x = player->GetPositionX();
-    float y = player->GetPositionY();
-    float z = player->GetPositionZ();
-    uint32 map = player->GetMapId();
-    float o = player->GetOrientation();
-
-    Field* fields = result->Fetch();
-    uint32 accid = fields[0].GetUInt32();
-
-    QueryResult result2 = CharacterDatabase.PQuery("SELECT x, y, z, map, orientation FROM character_personalqueue WHERE accid='%u'", accid);
-
-    if (!result2) // Could not find a personal queue spot
-        CharacterDatabase.PExecute("INSERT INTO character_personalqueue (accid, x, y, z, map, orientation) VALUES ('%u', '%f', '%f', '%f', '%u', '%f')", accid, finiteAlways(x), finiteAlways(y), finiteAlways(z), map, finiteAlways(o));
-    else // Found personal queue spot - Update old one
-        CharacterDatabase.PExecute("UPDATE character_personalqueue SET x = '%f', y = '%f', z = '%f', map = '%u', orientation = '%f' WHERE accid='%u'", finiteAlways(x), finiteAlways(y), finiteAlways(z), map, finiteAlways(o), accid);
-
-    PSendSysMessage("Personal queue spot saved.");
-    SetSentErrorMessage(true);
-
-    return true;
-}
-
-bool ChatHandler::HandleWarpCommand(const char* args)
-{
-    if (!*args)
-        return false;
-
-    Player* player = m_session->GetPlayer();
-
-    char* arg1 = strtok((char*)args, " ");
-    char* arg2 = strtok(NULL, " ");
-
-    if (! arg1)
-        return false;
-
-    if (! arg2)
-        return false;
-
-    char dir = arg1[0];
-    uint32 value = (int)atoi(arg2);
-    float x = player->GetPositionX();
-    float y = player->GetPositionY();
-    float z = player->GetPositionZ();
-    float o = player->GetOrientation();
-    uint32 mapid = player->GetMapId();
-    Map const *warpmap = sMapMgr->CreateBaseMap(mapid);
-
-    if (!MapManager::IsValidMapCoord(mapid,x,y,z))
-    {
-        PSendSysMessage(LANG_INVALID_TARGET_COORD,x,y,mapid);
-        SetSentErrorMessage(true);
-        return false;
-    }
-    if (player->isInFlight())
-    {
-        player->GetMotionMaster()->MovementExpired();
-        player->CleanupAfterTaxiFlight();
-    }
-    else
-        player->SaveRecallPosition();
-
-    switch (dir)
-    {
-    case 'u':
-        {
-            player->TeleportTo(mapid, x, y, z + value, o);
-        }
-        break;
-    case 'd':
-        {
-            player->TeleportTo(mapid, x, y, z - value, o);
-        }
-        break;
-    case 'f':
-        {
-            float fx = x + cosf(o)*value;
-            float fy = y + sinf(o)*value; 
-            //float fz = std::max(warpmap->GetHeight(fx, fy, MAX_HEIGHT), warpmap->GetWaterLevel(fx, fy));
-            player->TeleportTo(mapid, fx, fy, z, o);
-        }
-        break;
-    case 'b':
-        {
-            float bx = x - cosf(o)*value;
-            float by = y - sinf(o)*value;
-            //float bz = std::max(warpmap->GetHeight(bx, by, MAX_HEIGHT), warpmap->GetWaterLevel(bx, by));
-            player->TeleportTo(mapid, bx, by, z, o);
-        }
-        break;
-    }
     return true;
 }

@@ -674,29 +674,3 @@ bool ChatHandler::HandleSendMailCommand(const char* args)
     PSendSysMessage(LANG_MAIL_SENT, nameLink.c_str());
     return true;
 }
-
-// Personal queueing area command
-bool ChatHandler::HandlePersonalQueueCommand(const char* /*args*/)
-{
-    uint32 accid = m_session->GetAccountId();
-
-    QueryResult result = CharacterDatabase.PQuery("SELECT x, y, z, map, orientation FROM character_personalqueue WHERE accid='%u'", accid);
-    if (!result)
-    {
-        PSendSysMessage("You do not have a personal queuing area.");
-        SetSentErrorMessage(true);
-        return false;
-    }
-
-    Field* fields = result->Fetch();
-    float x = fields[0].GetFloat();
-    float y = fields[1].GetFloat();
-    float z = fields[2].GetFloat();
-    int mapId = fields[3].GetUInt16();
-    float ort = fields[4].GetFloat();
-
-    Player* player = m_session->GetPlayer();
-    player->TeleportTo(mapId, x, y, z, ort);
-
-    return true;
-}
