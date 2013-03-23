@@ -1,5 +1,26 @@
 #include "Chat.h"
 
+enum MorphIds
+{
+    NOG      = 7550,
+    HUM      = 19723,
+    HUF      = 19724,
+    DWM      = 20317,
+    NEM      = 20318,
+    GNM      = 20580,
+    GNF      = 20581,
+    DRF      = 20323,
+    ORCM     = 21267,
+    ORCF     = 20316,
+    TAM      = 20585,
+    TAF      = 20584,
+    TRM      = 20321,
+    BEM      = 20578,
+    BEF      = 20579,
+    GOBM     = 20582,
+    GOBF     = 20583
+};
+
 class morph_commandscript : public CommandScript
 {
 public:
@@ -9,58 +30,39 @@ public:
     {
         static ChatCommand morphCommandTable[] =
         {
-            { "nog",             SEC_PLAYER,         false, &HandleMorphNoggenfoggerCommand,         "", NULL },
-            { "hum",             SEC_MODERATOR,      false, &HandleMorphHumanMaleCommand,            "", NULL },
-            { "huf",             SEC_MODERATOR,      false, &HandleMorphHumanFemaleCommand,          "", NULL },
-            { "dwm",             SEC_MODERATOR,      false, &HandleMorphDwarfMaleCommand,            "", NULL },
-            { "nem",             SEC_MODERATOR,      false, &HandleMorphNightElfMaleCommand,         "", NULL },
-            { "gnm",             SEC_MODERATOR,      false, &HandleMorphGnomeMaleCommand,            "", NULL },
-            { "gnf",             SEC_MODERATOR,      false, &HandleMorphGnomeFemaleCommand,          "", NULL },
-            { "drf",             SEC_MODERATOR,      false, &HandleMorphDraeneiFemaleCommand,        "", NULL },
-            { "orcm",            SEC_MODERATOR,      false, &HandleMorphFelOrcMaleCommand,           "", NULL },
-            { "orcf",            SEC_MODERATOR,      false, &HandleMorphOrcFemaleCommand,            "", NULL },
-            { "tam",             SEC_MODERATOR,      false, &HandleMorphTaurenMaleCommand,           "", NULL },
-            { "taf",             SEC_MODERATOR,      false, &HandleMorphTaurenFemaleCommand,         "", NULL },
-            { "trm",             SEC_MODERATOR,      false, &HandleMorphTrollMaleCommand,            "", NULL },
-            { "bem",             SEC_MODERATOR,      false, &HandleMorphBloodElfMaleCommand,         "", NULL },
-            { "bef",             SEC_MODERATOR,      false, &HandleMorphBloodElfFemaleCommand,       "", NULL },
-            { "gobm",            SEC_MODERATOR,      false, &HandleMorphGoblinMaleCommand,           "", NULL },
-            { "gobf",            SEC_MODERATOR,      false, &HandleMorphGoblinFemaleCommand,         "", NULL },
-            { "none",            SEC_MODERATOR,      false, &HandleMorphNoneCommand,                 "", NULL },
-            { NULL,              0,                  false, NULL,                                    "", NULL }
+            { "nog",             SEC_PLAYER,      false, &HandleMorphNoggenfoggerCommand,        "", NULL },
+            { "hum",             SEC_VIP,         false, &HandleMorphHumanMaleCommand,           "", NULL },
+            { "huf",             SEC_VIP,         false, &HandleMorphHumanFemaleCommand,         "", NULL },
+            { "dwm",             SEC_VIP,         false, &HandleMorphDwarfMaleCommand,           "", NULL },
+            { "nem",             SEC_VIP,         false, &HandleMorphNightElfMaleCommand,        "", NULL },
+            { "gnm",             SEC_VIP,         false, &HandleMorphGnomeMaleCommand,           "", NULL },
+            { "gnf",             SEC_VIP,         false, &HandleMorphGnomeFemaleCommand,         "", NULL },
+            { "drf",             SEC_VIP,         false, &HandleMorphDraeneiFemaleCommand,       "", NULL },
+            { "orcm",            SEC_VIP,         false, &HandleMorphFelOrcMaleCommand,          "", NULL },
+            { "orcf",            SEC_VIP,         false, &HandleMorphOrcFemaleCommand,           "", NULL },
+            { "tam",             SEC_VIP,         false, &HandleMorphTaurenMaleCommand,          "", NULL },
+            { "taf",             SEC_VIP,         false, &HandleMorphTaurenFemaleCommand,        "", NULL },
+            { "trm",             SEC_VIP,         false, &HandleMorphTrollMaleCommand,           "", NULL },
+            { "bem",             SEC_VIP,         false, &HandleMorphBloodElfMaleCommand,        "", NULL },
+            { "bef",             SEC_VIP,         false, &HandleMorphBloodElfFemaleCommand,      "", NULL },
+            { "gobm",            SEC_VIP,         false, &HandleMorphGoblinMaleCommand,          "", NULL },
+            { "gobf",            SEC_VIP,         false, &HandleMorphGoblinFemaleCommand,        "", NULL },
+            { "none",            SEC_VIP,         false, &HandleMorphNoneCommand,                "", NULL },
+            { "help",            SEC_PLAYER,      false, &HandleMorphHelpCommand,                "", NULL },
+            { NULL,              0,               false, NULL,                                   "", NULL }
         };
         static ChatCommand commandTable[] =
         {
-            { "morph",           SEC_MODERATOR,      false, NULL,                       "", morphCommandTable },
-            { NULL,              0,                  false, NULL,                                    "", NULL }
+            { "morph",           SEC_GAMEMASTER,  false, NULL,                      "", morphCommandTable },
+            { NULL,              0,               false, NULL,                                   "", NULL }
         };
         return commandTable;
     }
-    
-    enum MorphIds
-    {
-        NOG      = 7550,
-        HUM      = 19723,
-        HUF      = 19724,
-        DWM      = 20317,
-        NEM      = 20318,
-        GNM      = 20580,
-        GNF      = 20581,
-        DRF      = 20323,
-        ORCM     = 21267,
-        ORCF     = 20316,
-        TAM      = 20585,
-        TAF      = 20584,
-        TRM      = 20321,
-        BEM      = 20578,
-        BEF      = 20579,
-        GOBM     = 20582,
-        GOBF     = 20583
-    };
 
     static void Morph(ChatHandler* handler, uint32 morphId)
     {
         Player* player = handler->GetSession()->GetPlayer();
+
         if (player->HasAuraType(SPELL_AURA_TRANSFORM))
         {
             handler->PSendSysMessage("You cannot morph when you are transformed.");
@@ -77,13 +79,16 @@ public:
             return;
         }
         else
+        {
             player->SetNativeDisplayId(morphId);
             player->SetDisplayId(morphId);
+        }
     }
 
     static void Demorph(ChatHandler* handler)
     {
         Player* player = handler->GetSession()->GetPlayer();
+
         if (player->HasAuraType(SPELL_AURA_TRANSFORM))
         {
             handler->PSendSysMessage("You cannot demorph when you are transformed.");
@@ -105,7 +110,19 @@ public:
 
     static bool HandleMorphNoggenfoggerCommand(ChatHandler* handler, const char* /*args*/)
     {
-        Morph(handler, NOG);
+        Player* player = handler->GetSession()->GetPlayer();
+
+        if (!player->IsNoggenfoggerMorphed())
+        {
+            Morph(handler, NOG);
+            player->SetNoggenfoggerMorphed(true);
+        }
+        else
+        {
+            Demorph(handler);
+            player->SetNoggenfoggerMorphed(false);
+        }
+
         return true;
     }
 
@@ -208,6 +225,37 @@ public:
     static bool HandleMorphNoneCommand(ChatHandler* handler, const char* /*args*/)
     {
         Demorph(handler);
+        return true;
+    }
+
+    static bool HandleMorphHelpCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Player* player = handler->GetSession()->GetPlayer();
+
+        if (player->IsVip())
+        {
+            handler->PSendSysMessage("As a VIP you have access to morphs. The naming structure for morphs "
+                                     "is based on the first two/three letters of the race and the first letter "
+                                     "of the gender with the only exception being `nog` which stands for Noggenfogger. (e.g. Human Male = Hum)");
+            handler->PSendSysMessage("In order to demorph type in `.morph none`. When morphed into a Skeleton via the "
+                                     "`.morph nog` command you can type the command in again to demorph, just remember "
+                                     "that this will only work for the `.morph nog` command.");
+            handler->PSendSysMessage("You are also unable to use morph commands in an arena match or "
+                                     "while already transformed. (e.g. Druid Forms, Deathbringer's will procs, etc.)");
+            handler->PSendSysMessage("Another thing to note is that when you morph you will remain morphed until you "
+                                     "demorph, logout or until you enter an arena match");
+            handler->PSendSysMessage("If you have any additional questions feel free to create a ticket "
+                                     "and a staff member will assist you when he/she is available.");
+        }
+        else
+        {
+            handler->PSendSysMessage("As a player you have access to `.morph nog`. When morphed into a "
+                                     "Skeleton you can type in `.morph nog` again to demorph. Other commands "
+                                     "such as race morph commands are only available for VIPs.");
+            handler->PSendSysMessage("If you have any additional questions feel free to create a ticket "
+                                     "and a staff member will assist you when he/she is available.");
+        }
+
         return true;
     }
 };

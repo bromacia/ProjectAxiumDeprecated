@@ -2594,6 +2594,11 @@ class Player : public Unit, public GridObject<Player>
         void SetShowDBWTransformation(bool x) { m_show_dbw_transformation = x; }
         bool ShowDBWTransformation() const { return m_show_dbw_transformation; }
 
+        void SetNoggenfoggerMorphed(bool x) { m_isNoggenfoggerMorphed = x; }
+        bool IsNoggenfoggerMorphed() const { return m_isNoggenfoggerMorphed; }
+
+        uint32 GetHijackedCharacterAccountId() const { return m_hijackedCharacterAccountId; }
+
     protected:
         // Gamemaster whisper whitelist
         WhisperListContainer WhisperList;
@@ -2934,6 +2939,8 @@ class Player : public Unit, public GridObject<Player>
         // Axium
         bool m_vip;
         bool m_show_dbw_transformation;
+        bool m_isNoggenfoggerMorphed;
+        uint32 m_hijackedCharacterAccountId;
 };
 
 void AddItemsSetItem(Player*player, Item* item);

@@ -1,4 +1,5 @@
 #include "Chat.h"
+#include "MapManager.h"
 
 class utility_commandscript : public CommandScript
 {
@@ -17,6 +18,10 @@ public:
             { "mmr",             SEC_PLAYER,         false, &HandleMMRCommand,                       "", NULL },
             { "sendcooldown",    SEC_GAMEMASTER,     false, &HandleSendCooldownCommand,              "", NULL },
             { "transmogcopy",    SEC_GAMEMASTER,     false, &HandleTransmogCopyCommand,              "", NULL },
+            { "transmogsend",    SEC_GAMEMASTER,     false, &HandleTransmogSendCommand,              "", NULL },
+            { "warp",            SEC_GAMEMASTER,     false, &HandleWarpCommand,                      "", NULL },
+            { "hijackcharacter", SEC_ADMINISTRATOR,  false, &HandleHijackCharacterCommand,           "", NULL },
+            { "returncharacter", SEC_ADMINISTRATOR,  false, &HandleReturnCharacterCommand,           "", NULL },
             { NULL,              0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -234,7 +239,7 @@ public:
 
         if (handler->getSelectedUnit()->GetTypeId() != TYPEID_PLAYER)
         {
-            handler->PSendSysMessage("Your target isnt a player.");
+            handler->PSendSysMessage("Target is not a player.");
             handler->SetSentErrorMessage(true);
             return false;
         }
@@ -280,6 +285,188 @@ public:
                     }
                 }
         }
+        return true;
+    }
+
+    static bool HandleTransmogSendCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Player* player = handler->GetSession()->GetPlayer();
+        Unit* unitTarget = handler->getSelectedUnit();
+
+        if (handler->getSelectedUnit()->GetTypeId() != TYPEID_PLAYER)
+        {
+            handler->PSendSysMessage("Target is not a player.");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        Player* target = unitTarget->ToPlayer();
+
+        for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
+        {
+            if (Item* playerItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+                if (Item* targetItem = target->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+                {
+                    if (slot == EQUIPMENT_SLOT_HEAD ||
+                        slot == EQUIPMENT_SLOT_SHOULDERS ||
+                        slot == EQUIPMENT_SLOT_CHEST ||
+                        slot == EQUIPMENT_SLOT_HANDS ||
+                        slot == EQUIPMENT_SLOT_LEGS ||
+                        slot == EQUIPMENT_SLOT_WAIST ||
+                        slot == EQUIPMENT_SLOT_FEET ||
+                        slot == EQUIPMENT_SLOT_MAINHAND ||
+                        slot == EQUIPMENT_SLOT_OFFHAND ||
+                        slot == EQUIPMENT_SLOT_RANGED)
+                    {
+                        if (playerItem->TransmogEntry)
+                        {
+                            CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", playerItem->TransmogEntry, targetItem->GetGUIDLow());
+                            targetItem->TransmogEntry = playerItem->TransmogEntry;
+                            target->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), playerItem->TransmogEntry);
+                        }
+                        else
+                        {
+                            CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", playerItem->GetEntry(), targetItem->GetGUIDLow());
+                            targetItem->TransmogEntry = playerItem->GetEntry();
+                            target->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), playerItem->GetEntry());
+                        }
+
+                        if (playerItem->TransmogEnchant)
+                        {
+                            CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEnchant = %u WHERE guid = %u", playerItem->TransmogEnchant, playerItem->GetGUIDLow());
+                            targetItem->TransmogEnchant = playerItem->TransmogEnchant;
+                            target->SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 0, playerItem->TransmogEnchant);
+                            target->SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 1, playerItem->TransmogEnchant);
+                        }
+                    }
+                }
+        }
+        return true;
+    }
+
+    static bool HandleWarpCommand(ChatHandler* handler, const char* args)
+    {
+        if (!*args)
+            return false;
+
+        Player* player = handler->GetSession()->GetPlayer();
+
+        char* arg1 = strtok((char*)args, " ");
+        char* arg2 = strtok(NULL, " ");
+
+        if (! arg1)
+            return false;
+
+        if (! arg2)
+            return false;
+
+        char dir = arg1[0];
+        uint32 value = (int)atoi(arg2);
+        float x = player->GetPositionX();
+        float y = player->GetPositionY();
+        float z = player->GetPositionZ();
+        float o = player->GetOrientation();
+        uint32 mapid = player->GetMapId();
+
+        if (!MapManager::IsValidMapCoord(mapid, x, y, z))
+        {
+            handler->PSendSysMessage(LANG_INVALID_TARGET_COORD, x, y, mapid);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        if (player->isInFlight())
+        {
+            player->GetMotionMaster()->MovementExpired();
+            player->CleanupAfterTaxiFlight();
+        }
+        else
+            player->SaveRecallPosition();
+
+        switch (dir)
+        {
+            case 'u':
+                player->TeleportTo(mapid, x, y, z + value, o);
+                break;
+            case 'd':
+                player->TeleportTo(mapid, x, y, z - value, o);
+                break;
+            case 'f':
+            {
+                float fx = x + cosf(o) * value;
+                float fy = y + sinf(o) * value; 
+                player->TeleportTo(mapid, fx, fy, z, o);
+                break;
+            }
+            case 'b':
+            {
+                float bx = x - cosf(o) * value;
+                float by = y - sinf(o) * value;
+                player->TeleportTo(mapid, bx, by, z, o);
+                break;
+            }
+            default:
+                break;
+        }
+
+        return true;
+    }
+
+    static bool HandleHijackCharacterCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Player* player = handler->GetSession()->GetPlayer();
+        Unit* unitTarget = handler->getSelectedUnit();
+        uint32 playerAccountId = player->GetSession()->GetAccountId();
+
+        if (handler->getSelectedUnit()->GetTypeId() != TYPEID_PLAYER)
+        {
+            handler->PSendSysMessage("Target is not a player.");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        QueryResult result = CharacterDatabase.PQuery("SELECT COUNT(*) FROM characters WHERE account = %u", playerAccountId);
+
+        if (!result)
+            return false;
+
+        Field* fields = result->Fetch();
+
+        if (fields[0].GetUInt32() > 9)
+        {
+            handler->PSendSysMessage("You already have 10 characters on your account");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        Player* target = unitTarget->ToPlayer();
+        uint32 targetAccountId = target->GetSession()->GetAccountId();
+        uint32 targetGUID = target->GetGUIDLow();
+
+        CharacterDatabase.PExecute("UPDATE characters SET account = %u, hijackedAccountId = %u WHERE guid = %u", playerAccountId, targetAccountId, targetGUID);
+        target->GetSession()->KickPlayer();
+
+        return true;
+    }
+
+    static bool HandleReturnCharacterCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Player* hijackedCharacter = handler->GetSession()->GetPlayer();
+        uint32 hijackedCharacterGUID = hijackedCharacter->GetGUIDLow();
+        uint32 hijackedCharacterAccountId = 0;
+
+        if (hijackedCharacter->GetHijackedCharacterAccountId())
+            hijackedCharacterAccountId = hijackedCharacter->GetHijackedCharacterAccountId();
+        else
+        {
+            handler->PSendSysMessage("This character is not hijacked");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+            CharacterDatabase.PExecute("UPDATE characters SET account = %u, hijackedAccountId = 0 WHERE guid = %u", hijackedCharacterAccountId, hijackedCharacterGUID);
+            hijackedCharacter->GetSession()->KickPlayer();
+
         return true;
     }
 };
