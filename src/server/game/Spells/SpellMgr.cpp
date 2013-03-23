@@ -3276,6 +3276,10 @@ void SpellMgr::LoadDbcDataCorrections()
             case 23218: // Feral Move Speed Increase
                 spellInfo->DurationIndex = 21;
                 break;
+            case 71838: // Drain Life (Bryntroll Normal)
+            case 71839: // Drain Life (Bryntroll Heroic)
+                spellInfo->AttributesEx2 |= SPELL_ATTR2_CANT_CRIT;
+                break;
             default:
                 break;
         }
