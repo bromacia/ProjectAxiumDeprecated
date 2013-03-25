@@ -417,10 +417,20 @@ public:
         Player* player = handler->GetSession()->GetPlayer();
         Unit* unitTarget = handler->getSelectedUnit();
         uint32 playerAccountId = player->GetSession()->GetAccountId();
+        Player* target = unitTarget->ToPlayer();
+        uint32 targetAccountId = target->GetSession()->GetAccountId();
+        uint32 targetGUID = target->GetGUIDLow();
 
         if (handler->getSelectedUnit()->GetTypeId() != TYPEID_PLAYER)
         {
             handler->PSendSysMessage("Target is not a player.");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        if (target->GetHijackedCharacterAccountId())
+        {
+            handler->PSendSysMessage("You cant hijack a character that has already been hijacked");
             handler->SetSentErrorMessage(true);
             return false;
         }
@@ -438,10 +448,6 @@ public:
             handler->SetSentErrorMessage(true);
             return false;
         }
-
-        Player* target = unitTarget->ToPlayer();
-        uint32 targetAccountId = target->GetSession()->GetAccountId();
-        uint32 targetGUID = target->GetGUIDLow();
 
         CharacterDatabase.PExecute("UPDATE characters SET account = %u, hijackedAccountId = %u WHERE guid = %u", playerAccountId, targetAccountId, targetGUID);
         target->GetSession()->KickPlayer();
