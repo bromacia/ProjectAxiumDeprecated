@@ -1573,10 +1573,6 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                     unit->RemoveAura(14325);
                     unit->RemoveAura(53338);
                 }
-
-                if (m_spellInfo->Id == 605)
-                    if (unit->HasAura(46924) || unit->HasAura(61851) || unit->HasAura(19574) || unit->HasAura(34471))
-                        return SPELL_MISS_IMMUNE;
             }
 
             if (!m_caster->IsFriendlyTo(unit) || !unit->IsFriendlyTo(m_caster))
@@ -7726,6 +7722,8 @@ bool Spell::IsSpellDelaySpell() const
     // Hibernate
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 44) ||
 //------------Priest---------------
+    // Mind Control
+    m_spellInfo->Id == 605 ||
     // Psychic Scream
     (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && m_spellInfo->SpellFamilyFlags[0] == 0x10000) ||
     // Psychic Horror - Trigger and Stun

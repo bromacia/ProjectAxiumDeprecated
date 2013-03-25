@@ -3280,6 +3280,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 71839: // Drain Life (Bryntroll Heroic)
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CANT_CRIT;
                 break;
+            case 605:  // Mind Control
+                spellInfo->EffectMechanic[2] = 0;
+                break;
             default:
                 break;
         }
