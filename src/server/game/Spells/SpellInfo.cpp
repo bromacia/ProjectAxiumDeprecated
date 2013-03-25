@@ -1255,6 +1255,11 @@ bool SpellInfo::CanPierceImmuneAura(SpellInfo const* aura) const
         && !(aura && (aura->Mechanic == MECHANIC_IMMUNE_SHIELD || aura->Mechanic == MECHANIC_INVULNERABILITY)))
         return true;
 
+    // If the aura and spell have positive effects
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+        if (aura && (aura->IsPositive() && IsPositive()) || (aura->_IsPositiveEffect(i, false) && _IsPositiveEffect(i, false)))
+            return true;
+
     return false;
 }
 
