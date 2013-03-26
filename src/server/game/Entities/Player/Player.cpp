@@ -11368,10 +11368,8 @@ InventoryResult Player::CanEquipItem(uint8 slot, uint16 &dest, Item* pItem, bool
             // check this only in game
             if (not_loading)
             {
-                // May be here should be more stronger checks; STUNNED checked
-                // ROOT, CONFUSED, DISTRACTED, FLEEING this needs to be checked.
-                if (HasUnitState(UNIT_STATE_STUNNED))
-                    return EQUIP_ERR_YOU_ARE_STUNNED;
+                if (IsCrowdControlled())
+                    return EQUIP_ERR_CANT_DO_RIGHT_NOW;
 
                 // do not allow equipping gear except weapons, offhands, projectiles, relics in
                 // - combat
