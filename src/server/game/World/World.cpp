@@ -1221,8 +1221,11 @@ void World::LoadConfigSettings(bool reload)
     // Mail queue
     m_int_configs[CONFIG_MAIL_QUEUE_TIMER] = ConfigMgr::GetIntDefault("MailQueue.Timer", 2);
 
+    // Limits the use of Bauble of True Blood to healers only
+    m_bool_configs[CONFIG_HEALER_ONLY_BAUBLE] = ConfigMgr::GetBoolDefault("HealerOnlyBauble", false);
+
     // Class Global Damage/Heal Adjustment
-    m_bool_configs[CONFIG_GLOBAL_ADJUSTMENT]           = ConfigMgr::GetBoolDefault("GlobalAdjustment.On", false);
+    m_bool_configs[CONFIG_GLOBAL_ADJUSTMENT] = ConfigMgr::GetBoolDefault("GlobalAdjustment.On", false);
 
     /* ========== Damage ========== */
     // Warrior

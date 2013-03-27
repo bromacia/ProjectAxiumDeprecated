@@ -4463,13 +4463,57 @@ bool Player::resetTalents(bool no_cost)
         m_resetTalentsTime = time(NULL);
     }
 
-    /* when prev line will dropped use next line
-    if (Pet* pet = GetPet())
+    if (sWorld->getBoolConfig(CONFIG_HEALER_ONLY_BAUBLE))
     {
-        if (pet->getPetType() == HUNTER_PET && !pet->GetCreatureInfo()->isTameable(CanTameExoticPets()))
-            RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
+        if (Item* item = GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1))
+        {
+            if (!IsHealingSpec() && (item->GetEntry() == 50354 || item->GetEntry() == 50726))
+            {
+                ItemPosCountVec dest;
+                uint8 msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
+                if (msg == EQUIP_ERR_OK)
+                {
+                    ChatHandler(this).PSendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    RemoveItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1, true);
+                    item = StoreItem(dest, item, true);
+                }
+                else
+                {
+                    ChatHandler(this).PSendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+                    MailDraft draft("Bauble of True Blood", "");
+                    draft.AddItem(item);
+                    draft.SendMailTo(trans, this, MailSender(this, MAIL_STATIONERY_GM), MAIL_CHECK_MASK_COPIED);
+                    CharacterDatabase.CommitTransaction(trans);
+                    DestroyItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1, true);
+                }
+            }
+        }
+        if (Item* item = GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET2))
+        {
+            if (!IsHealingSpec() && (item->GetEntry() == 50354 || item->GetEntry() == 50726))
+            {
+                ItemPosCountVec dest;
+                uint8 msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
+                if (msg == EQUIP_ERR_OK)
+                {
+                    ChatHandler(this).PSendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    RemoveItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET2, true);
+                    item = StoreItem(dest, item, true);
+                }
+                else
+                {
+                    ChatHandler(this).PSendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+                    MailDraft draft("Bauble of True Blood", "");
+                    draft.AddItem(item);
+                    draft.SendMailTo(trans, this, MailSender(this, MAIL_STATIONERY_GM), MAIL_CHECK_MASK_COPIED);
+                    CharacterDatabase.CommitTransaction(trans);
+                    DestroyItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET2, true);
+                }
+            }
+        }
     }
-    */
 
     return true;
 }
@@ -11468,6 +11512,14 @@ InventoryResult Player::CanEquipItem(uint8 slot, uint16 &dest, Item* pItem, bool
                         return swap ? EQUIP_ERR_ITEMS_CANT_BE_SWAPPED : EQUIP_ERR_INVENTORY_FULL;
                 }
             }
+
+            if (sWorld->getBoolConfig(CONFIG_HEALER_ONLY_BAUBLE))
+                if (IsInWorld() && !IsHealingSpec() && (pItem->GetTemplate()->ItemId == 50354 || pItem->GetTemplate()->ItemId == 50726))
+                {
+                    ChatHandler(GetSession()).PSendSysMessage("You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    return EQUIP_ERR_NONE;
+                }
+
             dest = ((INVENTORY_SLOT_BAG_0 << 8) | eslot);
             return EQUIP_ERR_OK;
         }
@@ -17140,6 +17192,58 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     m_vip = fields2[0].GetBool();
 
     m_playerSpec = GetTalentSpec();
+
+    if (sWorld->getBoolConfig(CONFIG_HEALER_ONLY_BAUBLE))
+    {
+        if (Item* item = GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1))
+        {
+            if (!IsHealingSpec() && (item->GetEntry() == 50354 || item->GetEntry() == 50726))
+            {
+                ItemPosCountVec dest;
+                uint8 msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
+                if (msg == EQUIP_ERR_OK)
+                {
+                    ChatHandler(this).PSendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    RemoveItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1, true);
+                    item = StoreItem(dest, item, true);
+                }
+                else
+                {
+                    ChatHandler(this).PSendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+                    MailDraft draft("Bauble of True Blood", "");
+                    draft.AddItem(item);
+                    draft.SendMailTo(trans, this, MailSender(this, MAIL_STATIONERY_GM), MAIL_CHECK_MASK_COPIED);
+                    CharacterDatabase.CommitTransaction(trans);
+                    DestroyItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1, true);
+                }
+            }
+        }
+        if (Item* item = GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET2))
+        {
+            if (!IsHealingSpec() && (item->GetEntry() == 50354 || item->GetEntry() == 50726))
+            {
+                ItemPosCountVec dest;
+                uint8 msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
+                if (msg == EQUIP_ERR_OK)
+                {
+                    ChatHandler(this).PSendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    RemoveItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET2, true);
+                    item = StoreItem(dest, item, true);
+                }
+                else
+                {
+                    ChatHandler(this).PSendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+                    MailDraft draft("Bauble of True Blood", "");
+                    draft.AddItem(item);
+                    draft.SendMailTo(trans, this, MailSender(this, MAIL_STATIONERY_GM), MAIL_CHECK_MASK_COPIED);
+                    CharacterDatabase.CommitTransaction(trans);
+                    DestroyItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET2, true);
+                }
+            }
+        }
+    }
 
     if (!InArena() && !InBattleground())
     {
@@ -24794,6 +24898,58 @@ void Player::ActivateSpec(uint8 spec)
     SetPower(pw, 0);
 
     m_playerSpec = GetTalentSpec();
+
+    if (sWorld->getBoolConfig(CONFIG_HEALER_ONLY_BAUBLE))
+    {
+        if (Item* item = GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1))
+        {
+            if (!IsHealingSpec() && (item->GetEntry() == 50354 || item->GetEntry() == 50726))
+            {
+                ItemPosCountVec dest;
+                uint8 msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
+                if (msg == EQUIP_ERR_OK)
+                {
+                    ChatHandler(this).PSendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    RemoveItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1, true);
+                    item = StoreItem(dest, item, true);
+                }
+                else
+                {
+                    ChatHandler(this).PSendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+                    MailDraft draft("Bauble of True Blood", "");
+                    draft.AddItem(item);
+                    draft.SendMailTo(trans, this, MailSender(this, MAIL_STATIONERY_GM), MAIL_CHECK_MASK_COPIED);
+                    CharacterDatabase.CommitTransaction(trans);
+                    DestroyItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1, true);
+                }
+            }
+        }
+        if (Item* item = GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET2))
+        {
+            if (!IsHealingSpec() && (item->GetEntry() == 50354 || item->GetEntry() == 50726))
+            {
+                ItemPosCountVec dest;
+                uint8 msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
+                if (msg == EQUIP_ERR_OK)
+                {
+                    ChatHandler(this).PSendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    RemoveItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET2, true);
+                    item = StoreItem(dest, item, true);
+                }
+                else
+                {
+                    ChatHandler(this).PSendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+                    MailDraft draft("Bauble of True Blood", "");
+                    draft.AddItem(item);
+                    draft.SendMailTo(trans, this, MailSender(this, MAIL_STATIONERY_GM), MAIL_CHECK_MASK_COPIED);
+                    CharacterDatabase.CommitTransaction(trans);
+                    DestroyItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET2, true);
+                }
+            }
+        }
+    }
 }
 
 void Player::ResetTimeSync()
@@ -25147,4 +25303,30 @@ void Player::CreateWowarmoryFeed(uint32 type, uint32 data, uint32 item_guid, uin
     feed.date = time(NULL);
     sLog->outDebug(LOG_FILTER_UNITS, "[Wowarmory]: create wowarmory feed (GUID: %u, type: %d, data: %u).", feed.guid, feed.type, feed.data);
     m_wowarmory_feeds.push_back(feed);
+}
+
+bool Player::IsDamageSpec() const
+{
+    return m_playerSpec == PLAYERSPEC_WARRIOR_ARMS || m_playerSpec == PLAYERSPEC_WARRIOR_FURY ||
+        m_playerSpec == PLAYERSPEC_PALADIN_RETRIBUTION ||
+        m_playerSpec == PLAYERSPEC_DEATHKNIGHT_FROST || m_playerSpec == PLAYERSPEC_DEATHKNIGHT_UNHOLY ||
+        m_playerSpec == PLAYERSPEC_HUNTER_BEASTMASTERY || m_playerSpec == PLAYERSPEC_HUNTER_MARKSMANSHIP || m_playerSpec == PLAYERSPEC_HUNTER_SURVIVAL ||
+        m_playerSpec == PLAYERSPEC_SHAMAN_ELEMENTAL || m_playerSpec == PLAYERSPEC_SHAMAN_ENHANCEMENT ||
+        m_playerSpec == PLAYERSPEC_ROGUE_ASSASSINATION || m_playerSpec == PLAYERSPEC_ROGUE_COMBAT || m_playerSpec == PLAYERSPEC_ROGUE_SUBLETY ||
+        m_playerSpec == PLAYERSPEC_DRUID_BALANCE || m_playerSpec == PLAYERSPEC_DRUID_FERALCOMBAT ||
+        m_playerSpec == PLAYERSPEC_PRIEST_SHADOW ||
+        m_playerSpec == PLAYERSPEC_MAGE_ARCANE || m_playerSpec == PLAYERSPEC_MAGE_FIRE || m_playerSpec == PLAYERSPEC_MAGE_FROST ||
+        m_playerSpec == PLAYERSPEC_WARLOCK_AFFLICTION || m_playerSpec == PLAYERSPEC_WARLOCK_DEMONOLOGY || m_playerSpec == PLAYERSPEC_WARLOCK_DESTRUCTION;
+}
+
+bool Player::IsTankingSpec() const
+{
+    return m_playerSpec == PLAYERSPEC_WARRIOR_PROTECTION || m_playerSpec == PLAYERSPEC_PALADIN_PROTECTION ||
+        m_playerSpec == PLAYERSPEC_DEATHKNIGHT_BLOOD;
+}
+
+bool Player::IsHealingSpec() const
+{
+    return m_playerSpec == PLAYERSPEC_PALADIN_HOLY || m_playerSpec == PLAYERSPEC_SHAMAN_RESTORATION ||
+        m_playerSpec == PLAYERSPEC_DRUID_RESTORATION || m_playerSpec == PLAYERSPEC_PRIEST_DISCIPLINE || m_playerSpec == PLAYERSPEC_PRIEST_HOLY;
 }

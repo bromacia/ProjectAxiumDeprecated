@@ -2600,6 +2600,10 @@ class Player : public Unit, public GridObject<Player>
 
         uint32 GetHijackedCharacterAccountId() const { return m_hijackedCharacterAccountId; }
 
+        bool IsDamageSpec() const;
+        bool IsTankingSpec() const;
+        bool IsHealingSpec() const;
+
     protected:
         // Gamemaster whisper whitelist
         WhisperListContainer WhisperList;
