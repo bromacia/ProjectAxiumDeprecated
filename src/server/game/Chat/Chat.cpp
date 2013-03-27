@@ -621,6 +621,27 @@ void ChatHandler::PSendSysMessage(const char *format, ...)
     SendSysMessage(str);
 }
 
+void ChatHandler::PSendGlobalGMSysMessage(int32 entry, ...)
+{
+    const char *format = GetTrinityString(entry);
+    va_list ap;
+    char str [2048];
+    va_start(ap, entry);
+    vsnprintf(str, 2048, format, ap);
+    va_end(ap);
+    SendGlobalGMSysMessage(str);
+}
+
+void ChatHandler::PSendGlobalGMSysMessage(const char *format, ...)
+{
+    va_list ap;
+    char str [2048];
+    va_start(ap, format);
+    vsnprintf(str, 2048, format, ap);
+    va_end(ap);
+    SendGlobalGMSysMessage(str);
+}
+
 bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, const std::string& fullcmd)
 {
     char const* oldtext = text;

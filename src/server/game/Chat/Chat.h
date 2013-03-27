@@ -72,6 +72,8 @@ class ChatHandler
         void SendSysMessage(int32     entry);
         void PSendSysMessage(const char *format, ...) ATTR_PRINTF(2, 3);
         void PSendSysMessage(int32     entry, ...);
+        void PSendGlobalGMSysMessage(const char *format, ...) ATTR_PRINTF(2, 3);
+        void PSendGlobalGMSysMessage(int32     entry, ...);
         std::string PGetParseString(int32 entry, ...) const;
 
         bool ParseCommands(const char* text);

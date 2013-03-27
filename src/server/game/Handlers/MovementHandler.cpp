@@ -30,6 +30,7 @@
 #include "WaypointMovementGenerator.h"
 #include "InstanceSaveMgr.h"
 #include "ObjectMgr.h"
+#include "Chat.h"
 
 void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket & /*recv_data*/)
 {
@@ -284,8 +285,8 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         {
             if (!plMover->IsOnGround())
             {
-                sWorld->SendGMText(LANG_GM_BROADCAST, "Player %s attempted to use Air Jump hack, kicking.", plMover->GetName());
-                plMover->m_session->KickPlayer();
+                ChatHandler(plMover->GetSession()).PSendGlobalGMSysMessage("Player: %s [GUID: %u] attempted to use Air Jump hack, kicking.", plMover->GetName(), plMover->GetGUIDLow());
+                plMover->GetSession()->KickPlayer();
                 recv_data.rfinish(); // prevent warnings spam
                 return;
             }

@@ -263,7 +263,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                 sender->TextEmote(msg);
             else if (type == CHAT_MSG_YELL)
                 sender->Yell(msg, lang);
-        } break;
+        }
+        break;
         case CHAT_MSG_WHISPER:
         {
             if (sender->getLevel() < sWorld->getIntConfig(CONFIG_CHAT_WHISPER_LEVEL_REQ))
@@ -305,7 +306,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                 sender->AddWhisperWhiteList(receiver->GetGUID());
 
             GetPlayer()->Whisper(msg, lang, receiver->GetGUID());
-        } break;
+        }
+        break;
         case CHAT_MSG_PARTY:
         case CHAT_MSG_PARTY_LEADER:
         {
@@ -326,7 +328,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, uint8(type), lang, NULL, 0, msg.c_str(), NULL);
             group->BroadcastPacket(&data, false, group->GetMemberGroup(GetPlayer()->GetGUID()));
-        } break;
+        }
+        break;
         case CHAT_MSG_GUILD:
         {
             if (GetPlayer()->GetGuildId())
@@ -338,7 +341,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                     guild->BroadcastToGuild(this, false, msg, lang == LANG_ADDON ? LANG_ADDON : LANG_UNIVERSAL);
                 }
             }
-        } break;
+        }
+        break;
         case CHAT_MSG_OFFICER:
         {
             if (GetPlayer()->GetGuildId())
@@ -350,7 +354,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                     guild->BroadcastToGuild(this, true, msg, lang == LANG_ADDON ? LANG_ADDON : LANG_UNIVERSAL);
                 }
             }
-        } break;
+        }
+        break;
         case CHAT_MSG_RAID:
         {
             // if player is in battleground, he cannot say to battleground members by /ra
@@ -367,7 +372,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_RAID, lang, "", 0, msg.c_str(), NULL);
             group->BroadcastPacket(&data, false);
-        } break;
+        }
+        break;
         case CHAT_MSG_RAID_LEADER:
         {
             // if player is in battleground, he cannot say to battleground members by /ra
@@ -384,7 +390,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_RAID_LEADER, lang, "", 0, msg.c_str(), NULL);
             group->BroadcastPacket(&data, false);
-        } break;
+        }
+        break;
         case CHAT_MSG_RAID_WARNING:
         {
             Group* group = GetPlayer()->GetGroup();
@@ -397,7 +404,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             //in battleground, raid warning is sent only to players in battleground - code is ok
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_RAID_WARNING, lang, "", 0, msg.c_str(), NULL);
             group->BroadcastPacket(&data, false);
-        } break;
+        }
+        break;
         case CHAT_MSG_BATTLEGROUND:
         {
             //battleground raid is always in Player->GetGroup(), never in GetOriginalGroup()
@@ -410,7 +418,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_BATTLEGROUND, lang, "", 0, msg.c_str(), NULL);
             group->BroadcastPacket(&data, false);
-        } break;
+        }
+        break;
         case CHAT_MSG_BATTLEGROUND_LEADER:
         {
             // battleground raid is always in Player->GetGroup(), never in GetOriginalGroup()
@@ -423,7 +432,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_BATTLEGROUND_LEADER, lang, "", 0, msg.c_str(), NULL);
             group->BroadcastPacket(&data, false);
-        } break;
+        }
+        break;
         case CHAT_MSG_CHANNEL:
         {
             if (AccountMgr::IsPlayerAccount(GetSecurity()))
@@ -445,7 +455,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                     chn->Say(_player->GetGUID(), msg.c_str(), lang);
                 }
             }
-        } break;
+        }
+        break;
         case CHAT_MSG_AFK:
         {
             if ((msg.empty() || !_player->isAFK()) && !_player->isInCombat())
@@ -463,7 +474,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                 if (_player->isAFK() && _player->isDND())
                     _player->ToggleDND();
             }
-        } break;
+        }
+        break;
         case CHAT_MSG_DND:
         {
             if (msg.empty() || !_player->isDND())
@@ -481,7 +493,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                 if (_player->isDND() && _player->isAFK())
                     _player->ToggleAFK();
             }
-        } break;
+        }
+        break;
         default:
             sLog->outError("CHAT: unknown message type %u, lang: %u", type, lang);
             break;
