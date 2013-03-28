@@ -1255,10 +1255,9 @@ bool SpellInfo::CanPierceImmuneAura(SpellInfo const* aura) const
         && !(aura && (aura->Mechanic == MECHANIC_IMMUNE_SHIELD || aura->Mechanic == MECHANIC_INVULNERABILITY)))
         return true;
 
-    // If the aura and spell have positive effects
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
-        if (aura && (aura->IsPositive() && IsPositive()) || (aura->_IsPositiveEffect(i, false) && _IsPositiveEffect(i, false)))
-            return true;
+    // If the aura and spell are positive
+    if (aura && aura->_IsPositiveSpell() && _IsPositiveSpell())
+        return true;
 
     return false;
 }
@@ -2317,13 +2316,13 @@ bool SpellInfo::_IsPositiveEffect(uint8 effIndex, bool deep) const
         case SPELLFAMILY_GENERIC:
             switch (Id)
             {
+                case 30231: // Zangarmarsh Banish
                 case 34700: // Allergic Reaction
+                case 34709: // Shadow Sight
                 case 61716: // Rabbit Costume
                 case 61734: // Noblegarden Bunny
                 case 61987: // Avenging Wrath Marker
                 case 62532: // Conservator's Grip
-                case 34709: // Shadow Sight
-                case 30231: // Zangarmarsh Banish
                     return false;
                 case 30877: // Tag Murloc
                 case 62344: // Fists of Stone
@@ -2344,6 +2343,7 @@ bool SpellInfo::_IsPositiveEffect(uint8 effIndex, bool deep) const
                 return false;
             break;
         case SPELLFAMILY_PRIEST:
+            // Penance (Damage)
             if (SpellFamilyFlags[1] & 0x8000)
                 return false;
             switch (Id)
