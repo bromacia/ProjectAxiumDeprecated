@@ -1016,23 +1016,24 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
         if (m_delayMoment == 0 || m_delayMoment > targetInfo.timeDelay)
             m_delayMoment = targetInfo.timeDelay;
     }
-    else if (IsSpellDelaySpell())
+    else
+        targetInfo.timeDelay = 0LL;
+
+    if (IsSpellDelaySpell())
     {
         targetInfo.timeDelay = 150;
         m_delayMoment = targetInfo.timeDelay;
     }
-    else if (IsMovementDelaySpell())
+    if (IsMovementDelaySpell())
     {
         targetInfo.timeDelay = 10;
         m_delayMoment = targetInfo.timeDelay;
     }
-    else if (IsSilenceDelaySpell())
+    if (IsSilenceDelaySpell())
     {
         targetInfo.timeDelay = 10;
         m_delayMoment = targetInfo.timeDelay;
     }
-    else
-        targetInfo.timeDelay = 0LL;
 
     // If target reflect spell back to caster
     if (targetInfo.missCondition == SPELL_MISS_REFLECT)
@@ -1233,18 +1234,6 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             m_caster->AddAura(35838, m_caster); // Ghost Visual Blue
             m_caster->GetAura(35838, m_caster->GetGUID())->SetDurationAndMaxDuration(15 * IN_MILLISECONDS);
             break;
-    }
-
-    // For delayed spells immunity may be applied between missile launch and hit - check immunity for that case
-    // disable effects to which unit is immune
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        if (mask & (1 << i) && unit->IsImmunedToSpellEffect(m_spellInfo, i))
-            mask &= ~(1 << i);
-
-    if (!mask || (m_spellInfo->Speed && (unit->IsImmunedToDamage(m_spellInfo) || unit->IsImmunedToSpell(m_spellInfo))))
-    {
-        m_caster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_IMMUNE);
-        return;
     }
 
     if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay + 100) <= unit->m_lastSanctuaryTime)
@@ -1524,6 +1513,15 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
     if (!unit || !effectMask)
         return SPELL_MISS_EVADE;
 
+    // For delayed spells immunity may be applied between missile launch and hit - check immunity for that case
+    // disable effects to which unit is immune
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+        if (effectMask & (1 << i) && unit->IsImmunedToSpellEffect(m_spellInfo, i))
+            effectMask &= ~(1 << i);
+    if (!effectMask || ((m_spellInfo->Speed || IsSpellDelaySpell() || IsMovementDelaySpell() || IsSilenceDelaySpell()) &&
+        (unit->IsImmunedToDamage(m_spellInfo) || unit->IsImmunedToSpell(m_spellInfo))))
+        return SPELL_MISS_IMMUNE;
+
     PrepareScriptHitHandlers();
     CallScriptBeforeHitHandlers();
 
@@ -1543,7 +1541,8 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
     if (m_caster != unit)
     {
         // Recheck UNIT_FLAG_NON_ATTACKABLE for delayed spells
-        if (m_spellInfo->Speed > 0.0f && unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
+        if ((m_spellInfo->Speed > 0.0f || IsSpellDelaySpell() || IsMovementDelaySpell() || IsSilenceDelaySpell()) &&
+            unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
             return SPELL_MISS_EVADE;
 
         if (!unit->HasAura(32727)) // Arena Preparation
@@ -1597,7 +1596,8 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         {
             // for delayed spells ignore negative spells (after duel end) for friendly targets
             // TODO: this cause soul transfer bugged
-            if (m_spellInfo->Speed > 0.0f && unit->GetTypeId() == TYPEID_PLAYER && !m_spellInfo->IsPositive())
+            if ((m_spellInfo->Speed > 0.0f || IsSpellDelaySpell() || IsMovementDelaySpell() || IsSilenceDelaySpell()) &&
+                unit->GetTypeId() == TYPEID_PLAYER && !m_spellInfo->IsPositive())
                 return SPELL_MISS_EVADE;
 
             // assisting case, healing and resurrection
@@ -6819,7 +6819,8 @@ bool Spell::IsAutoActionResetSpell() const
 bool Spell::IsNeedSendToClient() const
 {
     return m_spellInfo->SpellVisual[0] || m_spellInfo->SpellVisual[1] || m_spellInfo->IsChanneled() ||
-        m_spellInfo->Speed > 0.0f || (!m_triggeredByAuraSpell && !IsTriggered());
+        (!m_triggeredByAuraSpell && !IsTriggered()) || m_spellInfo->Speed > 0.0f ||
+        IsSpellDelaySpell() || IsMovementDelaySpell() || IsSilenceDelaySpell();
 }
 
 bool Spell::HaveTargetsForEffect(uint8 effect) const
