@@ -1975,6 +1975,12 @@ class Unit : public WorldObject
         uint32 m_lastSanctuaryTime;
         uint32 m_lastBlinkTime;
 
+        time_t m_lastAvengingWrathCooldown;
+        time_t m_lastDivineShieldCooldown;
+        time_t m_lastDivineProtectionCooldown;
+        time_t m_lastHandofProtectionCooldown;
+        time_t m_lastLayOnHandsCooldown;
+
         // Threat related methods
         bool CanHaveThreatList() const;
         void AddThreat(Unit* pVictim, float fThreat, SpellSchoolMask schoolMask = SPELL_SCHOOL_MASK_NORMAL, SpellInfo const* threatSpell = NULL);
