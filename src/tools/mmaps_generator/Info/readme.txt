@@ -4,6 +4,7 @@ Generator command line args
                                     Format must be: (see offmesh_example.txt)
                                     "map_id tile_x,tile_y (start_x start_y start_z) (end_x end_y end_z) size  //optional comments"
                                     Single mesh connection per line.
+                                    ex: 0 31,59 (-14429.889648 450.344452 15.430828) (-14424.218750 444.332855 12.773965) 2.5 // booty bay dock
 
 --silent                            Make us script friendly. Do not wait for user input
                                     on error or completion.
