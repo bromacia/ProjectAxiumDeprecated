@@ -132,8 +132,8 @@ void GameObject::AddToWorld()
 
         sObjectAccessor->AddObject(this);
         bool startOpen = (GetGoType() == GAMEOBJECT_TYPE_DOOR || GetGoType() == GAMEOBJECT_TYPE_BUTTON ? GetGOInfo()->door.startOpen : false);
-        if (m_model/* && (GetGoType() == GAMEOBJECT_TYPE_DOOR || GetGoType() == GAMEOBJECT_TYPE_BUTTON ? !GetGOInfo()->door.startOpen : true)*/)
-            GetMap()->Insert(*m_model);
+        if (m_model)
+            GetMap()->InsertGameObjectModel(*m_model);
         if (startOpen)
             EnableCollision(false);
         WorldObject::AddToWorld();
@@ -150,8 +150,8 @@ void GameObject::RemoveFromWorld()
 
         RemoveFromOwner();
         if (m_model)
-            if (GetMap()->Contains(*m_model))
-                GetMap()->Remove(*m_model);
+            if (GetMap()->ContainsGameObjectModel(*m_model))
+                GetMap()->RemoveGameObjectModel(*m_model);
         WorldObject::RemoveFromWorld();
         sObjectAccessor->RemoveObject(this);
     }
@@ -1949,8 +1949,8 @@ void GameObject::EnableCollision(bool enable)
     if (!m_model)
         return;
     
-    /*if (enable && !GetMap()->Contains(*m_model))
-        GetMap()->Insert(*m_model);*/
+    /*if (enable && !GetMap()->ContainsGameObjectModel(*m_model))
+        GetMap()->InsertGameObjectModel(*m_model);*/
 
     m_model->enable(enable ? GetPhaseMask() : 0);
 }
@@ -1960,10 +1960,10 @@ void GameObject::UpdateModel()
     if (!IsInWorld())
         return;
     if (m_model)
-        if (GetMap()->Contains(*m_model))
-            GetMap()->Remove(*m_model);
+        if (GetMap()->ContainsGameObjectModel(*m_model))
+            GetMap()->RemoveGameObjectModel(*m_model);
     delete m_model;
     m_model = GameObjectModel::Create(*this);
     if (m_model)
-        GetMap()->Insert(*m_model);
+        GetMap()->InsertGameObjectModel(*m_model);
 }
