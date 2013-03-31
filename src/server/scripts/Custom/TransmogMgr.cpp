@@ -246,8 +246,13 @@ bool Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
                     if (vItemTemplate->Class != pItemTemplate->Class || vItemTemplate->InventoryType != pItemTemplate->InventoryType || vItemTemplate->Material != pItemTemplate->Material)
                         continue;
                 if (IsWeapon(vItemTemplate))
+                {
                     if (vItemTemplate->Class != pItemTemplate->Class || vItemTemplate->SubClass != pItemTemplate->SubClass)
                         continue;
+                    // Special case for Fist Weapons because the models for the right hand and left hand are different
+                    if (vItemTemplate->SubClass == ITEM_SUBCLASS_WEAPON_FIST && (vItemTemplate->InventoryType != pItemTemplate->InventoryType))
+                        continue;
+                }
 
                 ++count;
                 data << uint32(count + 1);                       // Client expects counting to start at 1
