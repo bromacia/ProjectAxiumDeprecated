@@ -1881,71 +1881,6 @@ void ObjectMgr::RemoveGameobjectFromGrid(uint32 guid, GameObjectData const* data
     }
 }
 
-void ObjectMgr::LoadCreatureRespawnTimes()
-{
-    uint32 oldMSTime = getMSTime();
-
-    uint32 count = 0;
-
-    PreparedQueryResult result = CharacterDatabase.Query(CharacterDatabase.GetPreparedStatement(CHAR_SEL_CREATURE_RESPAWNS));
-    if (!result)
-    {
-        sLog->outString(">> Loaded 0 creature respawn time.");
-        sLog->outString();
-        return;
-    }
-
-    do
-    {
-        Field* fields = result->Fetch();
-
-        uint32 loguid       = fields[0].GetUInt32();
-        uint32 respawn_time = fields[1].GetUInt32();
-        uint32 instance     = fields[2].GetUInt32();
-
-        mCreatureRespawnTimes[MAKE_PAIR64(loguid, instance)] = time_t(respawn_time);
-
-        ++count;
-    } while (result->NextRow());
-
-    sLog->outString(">> Loaded %lu creature respawn times in %u ms", (unsigned long)mCreatureRespawnTimes.size(), GetMSTimeDiffToNow(oldMSTime));
-    sLog->outString();
-}
-
-void ObjectMgr::LoadGameobjectRespawnTimes()
-{
-    uint32 oldMSTime = getMSTime();
-
-    // Remove outdated data
-    CharacterDatabase.DirectExecute(CharacterDatabase.GetPreparedStatement(CHAR_DEL_EXPIRED_GO_RESPAWNS));
-
-    uint32 count = 0;
-
-    PreparedQueryResult result = CharacterDatabase.Query(CharacterDatabase.GetPreparedStatement(CHAR_SEL_GO_RESPAWNS));
-    if (!result)
-    {
-        sLog->outString(">> Loaded 0 gameobject respawn times. DB table `gameobject_respawn` is empty!");
-        sLog->outString();
-        return;
-    }
-
-    do
-    {
-        Field* fields = result->Fetch();
-
-        uint32 loguid       = fields[0].GetUInt32();
-        uint32 respawn_time = fields[1].GetUInt32();
-        uint32 instance     = fields[2].GetUInt32();
-
-        mGORespawnTimes[MAKE_PAIR64(loguid, instance)] = time_t(respawn_time);
-
-        ++count;
-    } while (result->NextRow());
-
-    sLog->outString();
-    sLog->outString(">> Loaded %lu gameobject respawn times in %u ms", (unsigned long)mGORespawnTimes.size(), GetMSTimeDiffToNow(oldMSTime));
-}
-
 Player* ObjectMgr::GetPlayerByLowGUID(uint32 lowguid) const
 {
     uint64 guid = MAKE_NEW_GUID(lowguid, 0, HIGHGUID_PLAYER);
@@ -7212,44 +7147,6 @@ void ObjectMgr::LoadNPCSpellClickSpells()
     sLog->outString();
 }
 
-void ObjectMgr::SaveCreatureRespawnTime(uint32 loguid, uint32 instance, time_t t)
-{
-    if (!t)
-    {
-        // Delete only
-        RemoveCreatureRespawnTime(loguid, instance);
-        return;
-    }
-
-    // This function can be called from various map threads concurrently
-    {
-        m_CreatureRespawnTimesMtx.acquire();
-        mCreatureRespawnTimes[MAKE_PAIR64(loguid, instance)] = t;
-        m_CreatureRespawnTimesMtx.release();
-    }
-
-    PreparedStatement *stmt = CharacterDatabase.GetPreparedStatement(CHAR_REP_CREATURE_RESPAWN);
-    stmt->setUInt32(0, loguid);
-    stmt->setUInt64(1, uint64(t));
-    stmt->setUInt32(2, instance);
-    CharacterDatabase.Execute(stmt);
-}
-
-void ObjectMgr::RemoveCreatureRespawnTime(uint32 loguid, uint32 instance)
-{
-    // This function can be called from various map threads concurrently
-    {
-        m_CreatureRespawnTimesMtx.acquire();
-        mCreatureRespawnTimes[MAKE_PAIR64(loguid, instance)] = 0;
-        m_CreatureRespawnTimesMtx.release();
-    }
-
-    PreparedStatement *stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CREATURE_RESPAWN);
-    stmt->setUInt32(0, loguid);
-    stmt->setUInt32(1, instance);
-    CharacterDatabase.Execute(stmt);
-}
-
 void ObjectMgr::DeleteCreatureData(uint32 guid)
 {
     // remove mapid*cellid -> guid_set map
@@ -7258,81 +7155,6 @@ void ObjectMgr::DeleteCreatureData(uint32 guid)
         RemoveCreatureFromGrid(guid, data);
 
     mCreatureDataMap.erase(guid);
-}
-
-void ObjectMgr::SaveGORespawnTime(uint32 loguid, uint32 instance, time_t t)
-{
-    if (!t)
-    {
-        // Delete only
-        RemoveGORespawnTime(loguid, instance);
-        return;
-    }
-
-    // This function can be called from different map threads concurrently
-    {
-        m_GORespawnTimesMtx.acquire();
-        mGORespawnTimes[MAKE_PAIR64(loguid, instance)] = t;
-        m_GORespawnTimesMtx.release();
-    }
-
-    PreparedStatement *stmt = CharacterDatabase.GetPreparedStatement(CHAR_REP_GO_RESPAWN);
-    stmt->setUInt32(0, loguid);
-    stmt->setUInt64(1, uint64(t));
-    stmt->setUInt32(2, instance);
-    CharacterDatabase.Execute(stmt);
-}
-
-void ObjectMgr::RemoveGORespawnTime(uint32 loguid, uint32 instance)
-{
-    // This function can be called from different map threads concurrently
-    {
-        m_GORespawnTimesMtx.acquire();
-        mGORespawnTimes[MAKE_PAIR64(loguid, instance)] = 0;
-        m_GORespawnTimesMtx.release();
-    }
-
-    PreparedStatement *stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_GO_RESPAWN);
-    stmt->setUInt32(0, loguid);
-    stmt->setUInt32(1, instance);
-    CharacterDatabase.Execute(stmt);
-}
-
-void ObjectMgr::DeleteRespawnTimeForInstance(uint32 instance)
-{
-    // This function can be called from different map threads concurrently
-    RespawnTimes::iterator next;
-
-    {
-        m_GORespawnTimesMtx.acquire();
-        for (RespawnTimes::iterator itr = mGORespawnTimes.begin(); itr != mGORespawnTimes.end(); itr = next)
-        {
-            next = itr;
-            ++next;
-
-            if (GUID_HIPART(itr->first) == instance)
-                mGORespawnTimes.erase(itr);
-        }
-        m_GORespawnTimesMtx.release();
-    }
-    {
-        m_CreatureRespawnTimesMtx.acquire();
-        for (RespawnTimes::iterator itr = mCreatureRespawnTimes.begin(); itr != mCreatureRespawnTimes.end(); itr = next)
-        {
-            next = itr;
-            ++next;
-
-            if (GUID_HIPART(itr->first) == instance)
-                mCreatureRespawnTimes.erase(itr);
-        }
-        m_CreatureRespawnTimesMtx.release();
-    }
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CREATURE_RESPAWN_BY_INSTANCE);
-    stmt->setUInt32(0, instance);
-    CharacterDatabase.Execute(stmt);
-    stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_GO_RESPAWN_BY_INSTANCE);
-    stmt->setUInt32(0, instance);
-    CharacterDatabase.Execute(stmt);
 }
 
 void ObjectMgr::DeleteGOData(uint32 guid)

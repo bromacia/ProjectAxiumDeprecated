@@ -110,6 +110,7 @@ Map* MapManager::CreateBaseMap(uint32 id)
         else
         {
             m = new Map(id, i_gridCleanUpDelay, 0, REGULAR_DIFFICULTY);
+            m->LoadRespawnTimes();
         }
         i_maps[id] = m;
     }

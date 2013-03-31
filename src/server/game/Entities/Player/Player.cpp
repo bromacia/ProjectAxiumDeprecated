@@ -1350,7 +1350,7 @@ void Player::HandleDrowning(uint32 time_diff)
         return;
 
     // In water
-    if (m_MirrorTimerFlags & UNDERWATER_INWATER)
+    if (m_MirrorTimerFlags & UNDERWATER_INLAVA && !(_lastLiquid && _lastLiquid->SpellId))
     {
         // Breath timer not activated - activate it
         if (m_MirrorTimer[BREATH_TIMER] == DISABLED_MIRROR_TIMER)
@@ -1360,7 +1360,7 @@ void Player::HandleDrowning(uint32 time_diff)
         }
         else                                                              // If activated - do tick
         {
-            m_MirrorTimer[BREATH_TIMER]-=time_diff;
+            m_MirrorTimer[BREATH_TIMER] -= time_diff;
             // Timer limit - need deal damage
             if (m_MirrorTimer[BREATH_TIMER] < 0)
             {

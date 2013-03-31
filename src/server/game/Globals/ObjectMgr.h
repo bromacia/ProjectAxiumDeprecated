@@ -372,8 +372,6 @@ struct CellObjectGuids
 typedef UNORDERED_MAP<uint32/*cell_id*/, CellObjectGuids> CellObjectGuidsMap;
 typedef UNORDERED_MAP<uint32/*(mapid, spawnMode) pair*/, CellObjectGuidsMap> MapObjectGuids;
 
-typedef UNORDERED_MAP<uint64/*(instance, guid) pair*/, time_t> RespawnTimes;
-
 // Trinity string ranges
 #define MIN_TRINITY_STRING_ID           1                    // 'trinity_string'
 #define MAX_TRINITY_STRING_ID           2000000000
@@ -913,13 +911,11 @@ class ObjectMgr
         void LoadCreatures();
         void LoadLinkedRespawn();
         bool SetCreatureLinkedRespawn(uint32 guid, uint32 linkedGuid);
-        void LoadCreatureRespawnTimes();
         void LoadCreatureAddons();
         void LoadCreatureModelInfo();
         void LoadEquipmentTemplates();
         void LoadGameObjectLocales();
         void LoadGameobjects();
-        void LoadGameobjectRespawnTimes();
         void LoadItemTemplates();
         void LoadItemLocales();
         void LoadItemSetNames();
@@ -1118,36 +1114,6 @@ class ObjectMgr
 
         void AddCorpseCellData(uint32 mapid, uint32 cellid, uint32 player_guid, uint32 instance);
         void DeleteCorpseCellData(uint32 mapid, uint32 cellid, uint32 player_guid);
-
-        time_t GetLinkedRespawnTime(uint64 guid, uint32 instance)
-        {
-            uint64 linkedGuid = GetLinkedRespawnGuid(guid);
-            switch (GUID_HIPART(linkedGuid))
-            {
-                case HIGHGUID_UNIT:
-                    return GetCreatureRespawnTime(GUID_LOPART(linkedGuid), instance);
-                case HIGHGUID_GAMEOBJECT:
-                    return GetGORespawnTime(GUID_LOPART(linkedGuid), instance);
-                default:
-                    return 0;
-             }
-        }
-
-        time_t GetCreatureRespawnTime(uint32 loguid, uint32 instance)
-        {
-            TRINITY_GUARD(ACE_Thread_Mutex, m_CreatureRespawnTimesMtx);
-            return mCreatureRespawnTimes[MAKE_PAIR64(loguid, instance)];
-        }
-        void SaveCreatureRespawnTime(uint32 loguid, uint32 instance, time_t t);
-        void RemoveCreatureRespawnTime(uint32 loguid, uint32 instance);
-        time_t GetGORespawnTime(uint32 loguid, uint32 instance)
-        {
-            TRINITY_GUARD(ACE_Thread_Mutex, m_GORespawnTimesMtx);
-            return mGORespawnTimes[MAKE_PAIR64(loguid, instance)];
-        }
-        void SaveGORespawnTime(uint32 loguid, uint32 instance, time_t t);
-        void RemoveGORespawnTime(uint32 loguid, uint32 instance);
-        void DeleteRespawnTimeForInstance(uint32 instance);
 
         // grid objects
         void AddCreatureToGrid(uint32 guid, CreatureData const* data);
@@ -1392,10 +1358,6 @@ class ObjectMgr
         TrinityStringLocaleMap mTrinityStringLocaleMap;
         GossipMenuItemsLocaleMap mGossipMenuItemsLocaleMap;
         PointOfInterestLocaleMap mPointOfInterestLocaleMap;
-        RespawnTimes mCreatureRespawnTimes;
-        ACE_Thread_Mutex m_CreatureRespawnTimesMtx;
-        RespawnTimes mGORespawnTimes;
-        ACE_Thread_Mutex m_GORespawnTimesMtx;
 
         CacheVendorItemMap m_mCacheVendorItemMap;
         CacheTrainerSpellMap m_mCacheTrainerSpellMap;
