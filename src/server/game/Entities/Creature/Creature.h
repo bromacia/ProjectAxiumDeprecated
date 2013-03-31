@@ -342,7 +342,7 @@ struct VendorItemData
         return m_items[slot];
     }
     bool Empty() const { return m_items.empty(); }
-    uint8 GetItemCount() const { return m_items.size(); }
+    uint16 GetItemCount() const { return m_items.size(); }
     void AddItem(uint32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost)
     {
         m_items.push_back(new VendorItem(item, maxcount, ptime, ExtendedCost));
@@ -467,6 +467,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapCreature
         bool isTrigger() const { return GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_TRIGGER; }
         bool isGuard() const { return GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_GUARD; }
         bool IsVipVendor() const { return GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_VIP_VENDOR; }
+        bool IsTransmogrifier() const;
         bool canWalk() const { return GetCreatureInfo()->InhabitType & INHABIT_GROUND; }
         bool canSwim() const { return GetCreatureInfo()->InhabitType & INHABIT_WATER; }
         //bool canFly()  const { return GetCreatureInfo()->InhabitType & INHABIT_AIR; }

@@ -8444,7 +8444,7 @@ void ObjectMgr::LoadArmorTransmogs()
 
     mTransmogArmor.clear();
 
-    QueryResult result = WorldDatabase.Query("SELECT id, head_id, shoulder_id, chest_id, gloves_id, belt_id, legs_id, boots_id FROM transmog_armor_sets");
+    QueryResult result = WorldDatabase.Query("SELECT id, head_id, shoulders_id, chest_id, gloves_id, waist_id, legs_id, boots_id FROM transmog_armor_sets");
 
     if (!result)
     {
@@ -8465,10 +8465,10 @@ void ObjectMgr::LoadArmorTransmogs()
 
         transmog.id             = id;
         transmog.head_id        = fields[1].GetUInt32();
-        transmog.shoulder_id    = fields[2].GetUInt32();
+        transmog.shoulders_id   = fields[2].GetUInt32();
         transmog.chest_id       = fields[3].GetUInt32();
         transmog.gloves_id      = fields[4].GetUInt32();
-        transmog.belt_id        = fields[5].GetUInt32();
+        transmog.waist_id       = fields[5].GetUInt32();
         transmog.legs_id        = fields[6].GetUInt32();
         transmog.boots_id       = fields[7].GetUInt32();
 

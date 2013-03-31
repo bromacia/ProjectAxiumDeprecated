@@ -73,6 +73,7 @@
 #include "InstanceScript.h"
 #include <cmath>
 #include "AccountMgr.h"
+#include "../../../scripts/Custom/TransmogMgr.h"
 
 #define ZONE_UPDATE_INTERVAL (1*IN_MILLISECONDS)
 
@@ -20838,6 +20839,12 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
     {
         sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: BuyItemFromVendor - Unit (GUID: %u) not found or you can't interact with him.", uint32(GUID_LOPART(vendorguid)));
         SendBuyError(BUY_ERR_DISTANCE_TOO_FAR, NULL, item, 0);
+        return false;
+    }
+
+    if (creature->IsTransmogrifier())
+    {
+        Transmogrification::TransmogrifyIndividual(this, creature, item);
         return false;
     }
 

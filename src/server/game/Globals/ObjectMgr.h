@@ -491,11 +491,11 @@ struct TransmogArmor
 {
     uint32 id;
     uint32 head_id;
-    uint32 shoulder_id;
+    uint32 shoulders_id;
     uint32 chest_id;
     uint32 gloves_id;
     uint32 legs_id;
-    uint32 belt_id;
+    uint32 waist_id;
     uint32 boots_id;
 };
 

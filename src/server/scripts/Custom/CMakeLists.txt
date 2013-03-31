@@ -10,12 +10,13 @@
 
 set(scripts_STAT_SRCS
   ${scripts_STAT_SRCS}
+  Custom/TransmogMgr.cpp
+  Custom/TransmogMgr.h
   Custom/reset_onduelend.cpp
   Custom/npc_teleport.cpp
   Custom/npc_prof.cpp
   Custom/npc_beastmaster.cpp
   Custom/npc_arena_ranks.cpp
-  Custom/npc_transmog.cpp
   Custom/npc_gossip_vendor.cpp
   Custom/npc_class_trainer.cpp
   Custom/pvp_titles.cpp

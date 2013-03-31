@@ -2475,3 +2475,8 @@ void Creature::SetLevitate(bool enable)
     data.append(GetPackGUID());
     SendMessageToSet(&data, true);
 }
+
+bool Creature::IsTransmogrifier() const
+{
+    return GetScriptName() == "Transmogrifier";
+}
