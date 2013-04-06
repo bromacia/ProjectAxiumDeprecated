@@ -71,7 +71,7 @@ float CONF_flat_height_delta_limit = 0.005f; // If max - min less this value - s
 float CONF_flat_liquid_delta_limit = 0.001f; // If max - min less this value - liquid surface is flat
 
 // List MPQ for extract from
-char *CONF_mpq_list[]={
+const char *CONF_mpq_list[]={ 
     "common.MPQ",
     "common-2.MPQ",
     "lichking.MPQ",
@@ -83,7 +83,7 @@ char *CONF_mpq_list[]={
     "patch-5.MPQ",
 };
 
-static char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
+static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
 #define LANG_COUNT 12
 
 void CreateDir( const std::string& Path )
@@ -684,7 +684,7 @@ bool ConvertADT(char *filename, char *filename2, int cell_y, int cell_x, uint32 
     {
         for (int i = 0; i < ADT_CELLS_PER_GRID; i++)
         {
-            for(int j = 0;j < ADT_CELLS_PER_GRID; j++)
+            for (int j = 0; j < ADT_CELLS_PER_GRID; j++)
             {
                 adt_liquid_header *h = h2o->getLiquidData(i,j);
                 if (!h)
@@ -753,9 +753,9 @@ bool ConvertADT(char *filename, char *filename2, int cell_y, int cell_x, uint32 
     //============================================
     uint8 type = liquid_flags[0][0];
     bool fullType = false;
-    for (int y=0;y<ADT_CELLS_PER_GRID;y++)
+    for (int y = 0; y < ADT_CELLS_PER_GRID; y++)
     {
-        for(int x=0;x<ADT_CELLS_PER_GRID;x++)
+        for(int x = 0; x < ADT_CELLS_PER_GRID; x++)
         {
             if (liquid_flags[y][x]!=type)
             {
@@ -806,8 +806,8 @@ bool ConvertADT(char *filename, char *filename2, int cell_y, int cell_x, uint32 
         liquidHeader.liquidType = 0;
         liquidHeader.offsetX = minX;
         liquidHeader.offsetY = minY;
-        liquidHeader.width   = maxX - minX + 2;
-        liquidHeader.height  = maxY - minY + 2;
+        liquidHeader.width   = maxX - minX + 1 + 1;
+        liquidHeader.height  = maxY - minY + 1 + 1;
         liquidHeader.liquidLevel = minHeight;
 
         if (maxHeight == minHeight)

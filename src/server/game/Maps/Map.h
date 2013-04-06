@@ -148,8 +148,8 @@ class GridMap
 {
     uint32  m_flags;
     // Area data
-    uint16  m_gridArea;
-    uint16 *m_area_map;
+    uint16 m_gridArea;
+    uint16 *m_areaMap;
     // Height level data
     float   m_gridHeight;
     float   m_gridIntHeightMultiplier;
@@ -166,16 +166,15 @@ class GridMap
         uint8  *m_uint8_V8;
     };
     // Liquid data
-    uint16  m_liquidType;
-    uint8   m_liquid_offX;
-    uint8   m_liquid_offY;
-    uint8   m_liquid_width;
-    uint8   m_liquid_height;
-    float   m_liquidLevel;
-    uint16 *m_liquidEntry;
-    uint8  *m_liquidFlags;
-    uint8  *m_liquid_type;
-    float  *m_liquid_map;
+    float m_liquidLevel;
+    uint16* m_liquidEntry;
+    uint8* m_liquidFlags;
+    float* m_liquidMap;
+    uint16 m_liquidType;
+    uint8 m_liquidOffX;
+    uint8 m_liquidOffY;
+    uint8 m_liquidWidth;
+    uint8 m_liquidHeight;
 
     bool  loadAreaData(FILE* in, uint32 offset, uint32 size);
     bool  loadHeightData(FILE* in, uint32 offset, uint32 size);
