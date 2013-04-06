@@ -30,31 +30,31 @@ public:
     {
         static ChatCommand morphCommandTable[] =
         {
-            { "nog",             SEC_PLAYER,      false, &HandleMorphNoggenfoggerCommand,        "", NULL },
-            { "hum",             SEC_VIP,         false, &HandleMorphHumanMaleCommand,           "", NULL },
-            { "huf",             SEC_VIP,         false, &HandleMorphHumanFemaleCommand,         "", NULL },
-            { "dwm",             SEC_VIP,         false, &HandleMorphDwarfMaleCommand,           "", NULL },
-            { "nem",             SEC_VIP,         false, &HandleMorphNightElfMaleCommand,        "", NULL },
-            { "gnm",             SEC_VIP,         false, &HandleMorphGnomeMaleCommand,           "", NULL },
-            { "gnf",             SEC_VIP,         false, &HandleMorphGnomeFemaleCommand,         "", NULL },
-            { "drf",             SEC_VIP,         false, &HandleMorphDraeneiFemaleCommand,       "", NULL },
-            { "orcm",            SEC_VIP,         false, &HandleMorphFelOrcMaleCommand,          "", NULL },
-            { "orcf",            SEC_VIP,         false, &HandleMorphOrcFemaleCommand,           "", NULL },
-            { "tam",             SEC_VIP,         false, &HandleMorphTaurenMaleCommand,          "", NULL },
-            { "taf",             SEC_VIP,         false, &HandleMorphTaurenFemaleCommand,        "", NULL },
-            { "trm",             SEC_VIP,         false, &HandleMorphTrollMaleCommand,           "", NULL },
-            { "bem",             SEC_VIP,         false, &HandleMorphBloodElfMaleCommand,        "", NULL },
-            { "bef",             SEC_VIP,         false, &HandleMorphBloodElfFemaleCommand,      "", NULL },
-            { "gobm",            SEC_VIP,         false, &HandleMorphGoblinMaleCommand,          "", NULL },
-            { "gobf",            SEC_VIP,         false, &HandleMorphGoblinFemaleCommand,        "", NULL },
-            { "none",            SEC_VIP,         false, &HandleMorphNoneCommand,                "", NULL },
-            { "help",            SEC_PLAYER,      false, &HandleMorphHelpCommand,                "", NULL },
-            { NULL,              0,               false, NULL,                                   "", NULL }
+            { "nog",        SEC_PLAYER,         false, &HandleMorphNoggenfoggerCommand,     "", NULL },
+            { "hum",        SEC_VIP,            false, &HandleMorphHumanMaleCommand,        "", NULL },
+            { "huf",        SEC_VIP,            false, &HandleMorphHumanFemaleCommand,      "", NULL },
+            { "dwm",        SEC_VIP,            false, &HandleMorphDwarfMaleCommand,        "", NULL },
+            { "nem",        SEC_VIP,            false, &HandleMorphNightElfMaleCommand,     "", NULL },
+            { "gnm",        SEC_VIP,            false, &HandleMorphGnomeMaleCommand,        "", NULL },
+            { "gnf",        SEC_VIP,            false, &HandleMorphGnomeFemaleCommand,      "", NULL },
+            { "drf",        SEC_VIP,            false, &HandleMorphDraeneiFemaleCommand,    "", NULL },
+            { "orcm",       SEC_VIP,            false, &HandleMorphFelOrcMaleCommand,       "", NULL },
+            { "orcf",       SEC_VIP,            false, &HandleMorphOrcFemaleCommand,        "", NULL },
+            { "tam",        SEC_VIP,            false, &HandleMorphTaurenMaleCommand,       "", NULL },
+            { "taf",        SEC_VIP,            false, &HandleMorphTaurenFemaleCommand,     "", NULL },
+            { "trm",        SEC_VIP,            false, &HandleMorphTrollMaleCommand,        "", NULL },
+            { "bem",        SEC_VIP,            false, &HandleMorphBloodElfMaleCommand,     "", NULL },
+            { "bef",        SEC_VIP,            false, &HandleMorphBloodElfFemaleCommand,   "", NULL },
+            { "gobm",       SEC_VIP,            false, &HandleMorphGoblinMaleCommand,       "", NULL },
+            { "gobf",       SEC_VIP,            false, &HandleMorphGoblinFemaleCommand,     "", NULL },
+            { "none",       SEC_VIP,            false, &HandleMorphNoneCommand,             "", NULL },
+            { "help",       SEC_PLAYER,         false, &HandleMorphHelpCommand,             "", NULL },
+            { NULL,         0,                  false, NULL,                                "", NULL }
         };
         static ChatCommand commandTable[] =
         {
-            { "morph",           SEC_GAMEMASTER,  false, NULL,                      "", morphCommandTable },
-            { NULL,              0,               false, NULL,                                   "", NULL }
+            { "morph",      SEC_GAMEMASTER,     false, NULL,                   "", morphCommandTable },
+            { NULL,         0,                  false, NULL,                                "", NULL }
         };
         return commandTable;
     }
@@ -105,7 +105,10 @@ public:
             return;
         }
         else
+        {
             player->InitDisplayIds();
+            player->SetNoggenfoggerMorphed(false);
+        }
     }
 
     static bool HandleMorphNoggenfoggerCommand(ChatHandler* handler, const char* /*args*/)
@@ -118,10 +121,7 @@ public:
             player->SetNoggenfoggerMorphed(true);
         }
         else
-        {
             Demorph(handler);
-            player->SetNoggenfoggerMorphed(false);
-        }
 
         return true;
     }

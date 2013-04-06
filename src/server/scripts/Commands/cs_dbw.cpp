@@ -9,14 +9,14 @@ public:
     {
         static ChatCommand dbwCommandTable[] =
         {
-            { "showtransformation", SEC_PLAYER,         false, &HandleShowTransformationCommand,        "", NULL },
-            { "help",               SEC_PLAYER,         false, &HandleHelpCommand,                      "", NULL },
-            { NULL,                 0,                  false, NULL,                                    "", NULL }
+            { "showtransformation",     SEC_PLAYER,     false, &HandleShowTransformationCommand,    "", NULL },
+            { "help",                   SEC_PLAYER,     false, &HandleHelpCommand,                  "", NULL },
+            { NULL,                     0,              false, NULL,                                "", NULL }
         };
         static ChatCommand commandTable[] =
         {
-            { "dbw",                SEC_PLAYER,         false, NULL,                         "", dbwCommandTable },
-            { NULL,                 0,                  false, NULL,                                    "", NULL }
+            { "dbw",                    SEC_PLAYER,     false, NULL,                     "", dbwCommandTable },
+            { NULL,                     0,              false, NULL,                                "", NULL }
         };
         return commandTable;
     }
