@@ -24,7 +24,7 @@ enum TransmogSlots
 
 enum TransmogOptions
 {
-    TRANSMOG_ACTION_SHOW_ARMOR = 1,
+    TRANSMOG_ACTION_SHOW_ARMOR = 10000,
     TRANSMOG_ACTION_SHOW_INDIVIDUAL,
     TRANSMOG_ACTION_SHOW_ENCHANTS,
     TRANSMOG_ACTION_SHOW_INDIVIDUAL_HEAD,
@@ -85,6 +85,7 @@ class Transmogrification : public CreatureScript
     private:
         static bool IsArmor(ItemTemplate const* itemTemplate) { return itemTemplate->Class == ITEM_CLASS_ARMOR; }
         static bool IsWeapon(ItemTemplate const* itemTemplate) { return itemTemplate->Class == ITEM_CLASS_WEAPON; }
+        static bool CheckItem(Player* player, ItemTemplate const* vItemTemplate, ItemTemplate const* pItemTemplate);
         static uint16 GetTeamById(uint8 Id)
         {
             switch (Id)
@@ -94,7 +95,7 @@ class Transmogrification : public CreatureScript
                 default: return NULL;
             }
         }
-        static uint8 GetItemSlotByAction(uint8 action)
+        static uint8 GetItemSlotByAction(uint16 action)
         {
             switch (action)
             {

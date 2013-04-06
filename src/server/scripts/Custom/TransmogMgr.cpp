@@ -242,17 +242,8 @@ bool Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
         {
             if (ItemTemplate const* vItemTemplate = sObjectMgr->GetItemTemplate(vItem->item))
             {
-                if (IsArmor(vItemTemplate))
-                    if (vItemTemplate->Class != pItemTemplate->Class || vItemTemplate->InventoryType != pItemTemplate->InventoryType || vItemTemplate->Material != pItemTemplate->Material)
-                        continue;
-                if (IsWeapon(vItemTemplate))
-                {
-                    if (vItemTemplate->Class != pItemTemplate->Class || vItemTemplate->SubClass != pItemTemplate->SubClass)
-                        continue;
-                    // Special case for Fist Weapons because the models for the right hand and left hand are different
-                    if (vItemTemplate->SubClass == ITEM_SUBCLASS_WEAPON_FIST && (vItemTemplate->InventoryType != pItemTemplate->InventoryType))
-                        continue;
-                }
+                if (!CheckItem(player, vItemTemplate, pItemTemplate))
+                    continue;
 
                 ++count;
                 data << uint32(count + 1);                       // Client expects counting to start at 1
@@ -269,6 +260,7 @@ bool Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
 
     if (!count)
     {
+        itemSlot = 0;
         ChatHandler(player).PSendSysMessage("Unable to find item data");
         player->CLOSE_GOSSIP_MENU();
         return false;
@@ -365,14 +357,23 @@ bool Transmogrification::TransmogrifyArmor(Player* player, uint16 action)
 
 bool Transmogrification::TransmogrifyIndividual(Player* player, Creature* creature, uint32 item)
 {
-    ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(item);
+    ItemTemplate const* vItemTemplate = sObjectMgr->GetItemTemplate(item);
     uint16 transmogSlot = GetTransmogSlotByEquipSlot(itemSlot);
     if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot))
     {
         Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot);
-        CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", itemTemplate->ItemId, item->GetGUIDLow());
-        item->TransmogEntry = itemTemplate->ItemId;
-        player->SetUInt32Value(transmogSlot, itemTemplate->ItemId);
+        ItemTemplate const* pItemTemplate = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot)->GetTemplate();
+
+        if (!CheckItem(player, vItemTemplate, pItemTemplate))
+        {
+            player->SEND_GOSSIP_MENU(1, creature->GetGUID());
+            player->CLOSE_GOSSIP_MENU();
+            return false;
+        }
+
+        CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = %u WHERE guid = %u", vItemTemplate->ItemId, item->GetGUIDLow());
+        item->TransmogEntry = vItemTemplate->ItemId;
+        player->SetUInt32Value(transmogSlot, vItemTemplate->ItemId);
         player->SEND_GOSSIP_MENU(1, creature->GetGUID());
         player->CLOSE_GOSSIP_MENU();
     }
@@ -551,6 +552,27 @@ bool Transmogrification::RemoveAllTransmog(Player* player)
     }
 
     player->CLOSE_GOSSIP_MENU();
+    return true;
+}
+
+bool Transmogrification::CheckItem(Player* player, ItemTemplate const* vItemTemplate, ItemTemplate const* pItemTemplate)
+{
+    if (IsArmor(vItemTemplate))
+        if (vItemTemplate->Class != pItemTemplate->Class || vItemTemplate->InventoryType != pItemTemplate->InventoryType || vItemTemplate->Material != pItemTemplate->Material)
+            return false;
+
+    if (IsWeapon(vItemTemplate))
+    {
+        if (vItemTemplate->Class != pItemTemplate->Class || vItemTemplate->SubClass != pItemTemplate->SubClass)
+            return false;
+        // Special case for Fist Weapons because the models for the right hand and left hand are different
+        if (vItemTemplate->SubClass == ITEM_SUBCLASS_WEAPON_FIST && (vItemTemplate->InventoryType != pItemTemplate->InventoryType))
+            return false;
+    }
+
+    if (((vItemTemplate->Flags2 & ITEM_FLAGS_EXTRA_HORDE_ONLY && player->GetTeam() == ALLIANCE) || (vItemTemplate->Flags2 == ITEM_FLAGS_EXTRA_ALLIANCE_ONLY && player->GetTeam() == HORDE)))
+        return false;
+
     return true;
 }
 
