@@ -582,11 +582,11 @@ class WorldObject : public Object, public WorldLocation
         }
 
         void GetNearPoint2D(float &x, float &y, float distance, float absAngle) const;
-        void GetNearPoint(WorldObject const* searcher, float &x, float &y, float &z, float searcher_size, float distance2d, float absAngle) const;
-        void GetClosePoint(float &x, float &y, float &z, float size, float distance2d = 0, float angle = 0) const
+        void GetNearPoint(WorldObject const* searcher, float &x, float &y, float &z, float searcher_size, float distance2d, float absAngle, bool updateZ = false) const;
+        void GetClosePoint(float &x, float &y, float &z, float size, float distance2d = 0, float angle = 0, bool updateZ = false) const
         {
             // angle calculated from current orientation
-            GetNearPoint(NULL, x, y, z, size, distance2d, GetOrientation() + angle);
+            GetNearPoint(NULL, x, y, z, size, distance2d, GetOrientation() + angle, updateZ);
         }
         void MovePosition(Position &pos, float dist, float angle);
         void GetNearPosition(Position &pos, float dist, float angle)
@@ -594,11 +594,11 @@ class WorldObject : public Object, public WorldLocation
             GetPosition(&pos);
             MovePosition(pos, dist, angle);
         }
-        void MovePositionToFirstCollision(Position &pos, float dist, float angle);
-        void GetFirstCollisionPosition(Position &pos, float dist, float angle)
+        void MovePositionToFirstCollision(Position &pos, float dist, float angle, bool updateZ = false);
+        void GetFirstCollisionPosition(Position &pos, float dist, float angle, bool updateZ = false)
         {
             GetPosition(&pos);
-            MovePositionToFirstCollision(pos, dist, angle);
+            MovePositionToFirstCollision(pos, dist, angle, updateZ);
         }
         void GetRandomNearPosition(Position &pos, float radius)
         {
@@ -616,7 +616,7 @@ class WorldObject : public Object, public WorldLocation
         {
             return (m_valuesCount > UNIT_FIELD_COMBATREACH) ? m_floatValues[UNIT_FIELD_COMBATREACH] : DEFAULT_WORLD_OBJECT_SIZE;
         }
-        void UpdateGroundPositionZ(float x, float y, float &z) const;
+        void UpdateGroundOrWaterPositionZ(float x, float y, float &z) const;
         void UpdateAllowedPositionZ(float x, float y, float &z) const;
 
         void GetRandomPoint(const Position &srcPos, float distance, float &rand_x, float &rand_y, float &rand_z) const;

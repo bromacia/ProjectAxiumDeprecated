@@ -1970,7 +1970,10 @@ void Spell::EffectTeleportUnits(SpellEffIndex /*effIndex*/)
     if (mapid == unitTarget->GetMapId())
         unitTarget->NearTeleportTo(x, y, z, orientation, unitTarget == m_caster);
     else if (unitTarget->GetTypeId() == TYPEID_PLAYER)
+    {
+        unitTarget->UpdateGroundOrWaterPositionZ(x, y, z);
         unitTarget->ToPlayer()->TeleportTo(mapid, x, y, z, orientation, unitTarget == m_caster ? TELE_TO_SPELL : 0);
+    }
 
     // post effects for TARGET_DEST_DB
     switch (m_spellInfo->Id)
@@ -6178,7 +6181,7 @@ void Spell::EffectLeap(SpellEffIndex /*effIndex*/)
 
     Position pos;
     m_targets.GetDst()->GetPosition(&pos);
-    unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetDistance(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + 2.0f), 0.0f);
+    unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetDistance(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + 2.0f), 0.0f, true);
     unitTarget->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation(), unitTarget == m_caster);
 
     // Blink
@@ -6328,7 +6331,7 @@ void Spell::EffectCharge(SpellEffIndex /*effIndex*/)
         Position pos;
 
         unitTarget->GetContactPoint(m_caster, pos.m_positionX, pos.m_positionY, pos.m_positionZ);
-        unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), angle);
+        unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), angle, true);
 
         m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ + unitTarget->GetObjectSize());
     }
@@ -6360,7 +6363,7 @@ void Spell::EffectChargeDest(SpellEffIndex /*effIndex*/)
         m_targets.GetDst()->GetPosition(&pos);
         float angle = m_caster->GetRelativeAngle(pos.GetPositionX(), pos.GetPositionY());
         float dist = m_caster->GetDistance(pos);
-        m_caster->GetFirstCollisionPosition(pos, dist, angle);
+        m_caster->GetFirstCollisionPosition(pos, dist, angle, true);
 
         m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
     }
