@@ -259,11 +259,6 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
 
     m_lastSanctuaryTime = 0;
     m_lastBlinkTime = 0;
-    m_lastAvengingWrathCooldown = NULL;
-    m_lastDivineShieldCooldown = NULL;
-    m_lastDivineProtectionCooldown = NULL;
-    m_lastHandofProtectionCooldown = NULL;
-    m_lastLayOnHandsCooldown = NULL;
 }
 
 ////////////////////////////////////////////////////////////
@@ -16442,92 +16437,6 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
     {
         if (Player* killed = victim->ToPlayer())
             sScriptMgr->OnPlayerKilledByCreature(killerCre, killed);
-    }
-
-    if (Player* player = victim->ToPlayer())
-    {
-        time_t t = time(NULL);
-        // Avenging Wrath
-        if (t > player->m_lastAvengingWrathCooldown)
-        {
-            player->RemoveSpellCooldown(31884, true);
-            player->m_lastAvengingWrathCooldown = NULL;
-        }
-        else
-        {
-            player->RemoveSpellCooldown(31884, true);
-            player->AddSpellCooldown(31884, NULL, player->m_lastAvengingWrathCooldown, true);
-            player->m_lastAvengingWrathCooldown = NULL;
-        }
-
-        // Divine Shield
-        if (t > player->m_lastDivineShieldCooldown)
-        {
-            player->RemoveSpellCooldown(642, true);
-            player->m_lastDivineShieldCooldown = NULL;
-        }
-        else
-        {
-            player->RemoveSpellCooldown(642, true);
-            player->AddSpellCooldown(642, NULL, player->m_lastDivineShieldCooldown, true);
-            player->m_lastDivineShieldCooldown = NULL;
-        }
-
-        // Divine Protection
-        if (t > player->m_lastDivineProtectionCooldown)
-        {
-            player->RemoveSpellCooldown(498, true);
-            player->m_lastDivineProtectionCooldown = NULL;
-        }
-        else
-        {
-            player->RemoveSpellCooldown(498, true);
-            player->AddSpellCooldown(498, NULL, player->m_lastDivineProtectionCooldown, true);
-            player->m_lastDivineProtectionCooldown = NULL;
-        }
-
-        // Hand of Protection
-        if (t > player->m_lastHandofProtectionCooldown)
-        {
-            player->RemoveSpellCooldown(1022, true);
-            player->RemoveSpellCooldown(5599, true);
-            player->RemoveSpellCooldown(10278, true);
-            player->m_lastHandofProtectionCooldown = NULL;
-        }
-        else
-        {
-            player->RemoveSpellCooldown(1022, true);
-            player->RemoveSpellCooldown(5599, true);
-            player->RemoveSpellCooldown(10278, true);
-            player->AddSpellCooldown(1022,  NULL, player->m_lastHandofProtectionCooldown, true);
-            player->AddSpellCooldown(5599,  NULL, player->m_lastHandofProtectionCooldown, true);
-            player->AddSpellCooldown(10278, NULL, player->m_lastHandofProtectionCooldown, true);
-            player->m_lastHandofProtectionCooldown = NULL;
-        }
-
-        // Lay On Hands
-        if (t > player->m_lastLayOnHandsCooldown)
-        {
-            player->RemoveSpellCooldown(633, true);
-            player->RemoveSpellCooldown(2800, true);
-            player->RemoveSpellCooldown(10310, true);
-            player->RemoveSpellCooldown(27154, true);
-            player->RemoveSpellCooldown(48788, true);
-            player->m_lastLayOnHandsCooldown = NULL;
-        }
-        else
-        {
-            player->RemoveSpellCooldown(633, true);
-            player->RemoveSpellCooldown(2800, true);
-            player->RemoveSpellCooldown(10310, true);
-            player->RemoveSpellCooldown(27154, true);
-            player->RemoveSpellCooldown(48788, true);
-            player->AddSpellCooldown(633,   NULL, player->m_lastLayOnHandsCooldown, true);
-            player->AddSpellCooldown(2800,  NULL, player->m_lastLayOnHandsCooldown, true);
-            player->AddSpellCooldown(10310, NULL, player->m_lastLayOnHandsCooldown, true);
-            player->AddSpellCooldown(27154, NULL, player->m_lastLayOnHandsCooldown, true);
-            player->AddSpellCooldown(48788, NULL, player->m_lastLayOnHandsCooldown, true);
-        }
     }
 
     if (victim->GetVehicle())

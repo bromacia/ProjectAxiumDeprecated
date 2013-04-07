@@ -2322,6 +2322,7 @@ bool SpellInfo::_IsPositiveEffect(uint8 effIndex, bool deep) const
                 case 61716: // Rabbit Costume
                 case 61734: // Noblegarden Bunny
                 case 61987: // Avenging Wrath Marker
+                case 61988: // Divine Shield exclude aura
                 case 62532: // Conservator's Grip
                     return false;
                 case 30877: // Tag Murloc

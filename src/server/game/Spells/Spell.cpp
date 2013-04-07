@@ -1492,228 +1492,6 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         if (unit->IsPvP() && m_caster->GetTypeId() == TYPEID_PLAYER)
             m_caster->ToPlayer()->UpdatePvP(true);
 
-        if (Player* player = m_caster->ToPlayer())
-        {
-            time_t t = time(NULL);
-            switch (m_spellInfo->Id)
-            {
-                case 31884: // Avenging Wrath
-                    // Divine Shield
-                    if (player->GetSpellCooldownDelay(642) > 30)
-                        player->m_lastDivineShieldCooldown = player->GetSpellCooldownDelay(642) + t;
-                    else
-                    {
-                        player->m_lastDivineShieldCooldown = player->GetSpellCooldownDelay(642) + t;
-                        player->AddSpellCooldown(642, NULL, 30 + t, true);
-                    }
-                    // Divine Protection
-                    if (player->GetSpellCooldownDelay(498) > 30)
-                        player->m_lastDivineProtectionCooldown = player->GetSpellCooldownDelay(498) + t;
-                    else
-                    {
-                        player->m_lastDivineProtectionCooldown = player->GetSpellCooldownDelay(498) + t;
-                        player->AddSpellCooldown(498, NULL, 30 + t, true);
-                    }
-                    // Hand of Protection
-                    if (player->GetSpellCooldownDelay(1022) > 30)
-                        player->m_lastHandofProtectionCooldown = player->GetSpellCooldownDelay(1022) + t;
-                    else
-                    {
-                        player->m_lastHandofProtectionCooldown = player->GetSpellCooldownDelay(1022) + t;
-                        player->AddSpellCooldown(1022,  NULL, 30 + t, true);
-                        player->AddSpellCooldown(5599,  NULL, 30 + t, true);
-                        player->AddSpellCooldown(10278, NULL, 30 + t, true);
-                    }
-                    // Lay On Hands
-                    if (player->GetSpellCooldownDelay(633) > 30)
-                        player->m_lastLayOnHandsCooldown = player->GetSpellCooldownDelay(633) + t;
-                    else
-                    {
-                        player->m_lastLayOnHandsCooldown = player->GetSpellCooldownDelay(633) + t;
-                        player->AddSpellCooldown(633,   NULL, 30 + t, true);
-                        player->AddSpellCooldown(2800,  NULL, 30 + t, true);
-                        player->AddSpellCooldown(10310, NULL, 30 + t, true);
-                        player->AddSpellCooldown(27154, NULL, 30 + t, true);
-                        player->AddSpellCooldown(48788, NULL, 30 + t, true);
-                    }
-                    player->m_lastAvengingWrathCooldown = player->GetSpellCooldownDelay(31884) + t;
-                    break;
-                case 642: // Divine Shield
-                    // Avenging Wrath
-                    if (player->GetSpellCooldownDelay(31884) > 120)
-                        player->m_lastAvengingWrathCooldown = player->GetSpellCooldownDelay(31884) + t;
-                    else
-                    {
-                        player->m_lastAvengingWrathCooldown = player->GetSpellCooldownDelay(31884) + t;
-                        player->AddSpellCooldown(31884, NULL, 120 + t, true);
-                    }
-                    // Divine Protection
-                    if (player->GetSpellCooldownDelay(498) > 120)
-                        player->m_lastDivineProtectionCooldown = player->GetSpellCooldownDelay(498) + t;
-                    else
-                    {
-                        player->m_lastDivineProtectionCooldown = player->GetSpellCooldownDelay(498) + t;
-                        player->AddSpellCooldown(498, NULL, 120 + t, true);
-                    }
-                    // Hand of Protection
-                    if (player->GetSpellCooldownDelay(1022) > 120)
-                        player->m_lastHandofProtectionCooldown = player->GetSpellCooldownDelay(1022) + t;
-                    else
-                    {
-                        player->m_lastHandofProtectionCooldown = player->GetSpellCooldownDelay(1022) + t;
-                        player->AddSpellCooldown(1022,  NULL, 120 + t, true);
-                        player->AddSpellCooldown(5599,  NULL, 120 + t, true);
-                        player->AddSpellCooldown(10278, NULL, 120 + t, true);
-                    }
-                    // Lay On Hands
-                    if (player->GetSpellCooldownDelay(633) > 120)
-                        player->m_lastLayOnHandsCooldown = player->GetSpellCooldownDelay(633) + t;
-                    else
-                    {
-                        player->m_lastLayOnHandsCooldown = player->GetSpellCooldownDelay(633) + t;
-                        player->AddSpellCooldown(633,   NULL, 120 + t, true);
-                        player->AddSpellCooldown(2800,  NULL, 120 + t, true);
-                        player->AddSpellCooldown(10310, NULL, 120 + t, true);
-                        player->AddSpellCooldown(27154, NULL, 120 + t, true);
-                        player->AddSpellCooldown(48788, NULL, 120 + t, true);
-                    }
-                    player->m_lastDivineShieldCooldown = player->GetSpellCooldownDelay(642) + t;
-                    player->CastSpell(player, 25771, true); // Forbearance
-                    break;
-                case 498: // Divine Protection
-                    // Avenging Wrath
-                    if (player->GetSpellCooldownDelay(31884) > 120)
-                        player->m_lastAvengingWrathCooldown = player->GetSpellCooldownDelay(31884) + t;
-                    else
-                    {
-                        player->m_lastAvengingWrathCooldown = player->GetSpellCooldownDelay(31884) + t;
-                        player->AddSpellCooldown(31884, NULL, 120 + t, true);
-                    }
-                    // Divine Shield
-                    if (player->GetSpellCooldownDelay(642) > 120)
-                        player->m_lastDivineShieldCooldown = player->GetSpellCooldownDelay(642) + t;
-                    else
-                    {
-                        player->m_lastDivineShieldCooldown = player->GetSpellCooldownDelay(642) + t;
-                        player->AddSpellCooldown(642, NULL, 120 + t, true);
-                    }
-                    // Hand of Protection
-                    if (player->GetSpellCooldownDelay(1022) > 120)
-                        player->m_lastHandofProtectionCooldown = player->GetSpellCooldownDelay(1022) + t;
-                    else
-                    {
-                        player->m_lastHandofProtectionCooldown = player->GetSpellCooldownDelay(1022) + t;
-                        player->AddSpellCooldown(1022,  NULL, 120 + t, true);
-                        player->AddSpellCooldown(5599,  NULL, 120 + t, true);
-                        player->AddSpellCooldown(10278, NULL, 120 + t, true);
-                    }
-                    // Lay On Hands
-                    if (player->GetSpellCooldownDelay(633) > 120)
-                        player->m_lastLayOnHandsCooldown = player->GetSpellCooldownDelay(633) + t;
-                    else
-                    {
-                        player->m_lastLayOnHandsCooldown = player->GetSpellCooldownDelay(633) + t;
-                        player->AddSpellCooldown(633,   NULL, 120 + t, true);
-                        player->AddSpellCooldown(2800,  NULL, 120 + t, true);
-                        player->AddSpellCooldown(10310, NULL, 120 + t, true);
-                        player->AddSpellCooldown(27154, NULL, 120 + t, true);
-                        player->AddSpellCooldown(48788, NULL, 120 + t, true);
-                    }
-                    player->m_lastDivineProtectionCooldown = player->GetSpellCooldownDelay(498) + t;
-                    break;
-                case 1022:  // Hand of Protection (Rank 1)
-                case 5599:  // Hand of Protection (Rank 2)
-                case 10278: // Hand of Protection (Rank 3)
-                    if (unit == player)
-                    {
-                        // Avenging Wrath
-                        if (player->GetSpellCooldownDelay(31884) > 120)
-                            player->m_lastAvengingWrathCooldown = player->GetSpellCooldownDelay(31884) + t;
-                        else
-                        {
-                            player->m_lastAvengingWrathCooldown = player->GetSpellCooldownDelay(31884) + t;
-                            player->AddSpellCooldown(31884, NULL, 120 + t, true);
-                        }
-                        // Divine Shield
-                        if (player->GetSpellCooldownDelay(642) > 120)
-                            player->m_lastDivineShieldCooldown = player->GetSpellCooldownDelay(642) + t;
-                        else
-                        {
-                            player->m_lastDivineShieldCooldown = player->GetSpellCooldownDelay(642) + t;
-                            player->AddSpellCooldown(642, NULL, 120 + t, true);
-                        }
-                        // Divine Protection
-                        if (player->GetSpellCooldownDelay(498) > 120)
-                            player->m_lastDivineProtectionCooldown = player->GetSpellCooldownDelay(498) + t;
-                        else
-                        {
-                            player->m_lastDivineProtectionCooldown = player->GetSpellCooldownDelay(498) + t;
-                            player->AddSpellCooldown(498, NULL, 120 + t, true);
-                        }
-                        // Lay On Hands
-                        if (player->GetSpellCooldownDelay(633) > 120)
-                            player->m_lastLayOnHandsCooldown = player->GetSpellCooldownDelay(633) + t;
-                        else
-                        {
-                            player->m_lastLayOnHandsCooldown = player->GetSpellCooldownDelay(633) + t;
-                            player->AddSpellCooldown(633,   NULL, 120 + t, true);
-                            player->AddSpellCooldown(2800,  NULL, 120 + t, true);
-                            player->AddSpellCooldown(10310, NULL, 120 + t, true);
-                            player->AddSpellCooldown(27154, NULL, 120 + t, true);
-                            player->AddSpellCooldown(48788, NULL, 120 + t, true);
-                        }
-                    }
-                    player->m_lastHandofProtectionCooldown = player->GetSpellCooldownDelay(1022) + t;
-                    player->CastSpell(unit, 25771, true); // Forbearance
-                    break;
-                case 633:   // Lay on Hands (Rank 1)
-                case 2800:  // Lay on Hands (Rank 2)
-                case 10310: // Lay on Hands (Rank 3)
-                case 27154: // Lay on Hands (Rank 4)
-                case 48788: // Lay on Hands (Rank 5)
-                    if (unit == player)
-                    {
-                        // Avenging Wrath
-                        if (player->GetSpellCooldownDelay(31884) > 120)
-                            player->m_lastAvengingWrathCooldown = player->GetSpellCooldownDelay(31884) + t;
-                        else
-                        {
-                            player->m_lastAvengingWrathCooldown = player->GetSpellCooldownDelay(31884) + t;
-                            player->AddSpellCooldown(31884, NULL, 120 + t, true);
-                        }
-                        // Divine Shield
-                        if (player->GetSpellCooldownDelay(642) > 120)
-                            player->m_lastDivineShieldCooldown = player->GetSpellCooldownDelay(642) + t;
-                        else
-                        {
-                            player->m_lastDivineShieldCooldown = player->GetSpellCooldownDelay(642) + t;
-                            player->AddSpellCooldown(642, NULL, 120 + t, true);
-                        }
-                        // Divine Protection
-                        if (player->GetSpellCooldownDelay(498) > 120)
-                            player->m_lastDivineProtectionCooldown = player->GetSpellCooldownDelay(498) + t;
-                        else
-                        {
-                            player->m_lastDivineProtectionCooldown = player->GetSpellCooldownDelay(498) + t;
-                            player->AddSpellCooldown(498, NULL, 120 + t, true);
-                        }
-                        // Hand of Protection
-                        if (player->GetSpellCooldownDelay(1022) > 120)
-                            player->m_lastHandofProtectionCooldown = player->GetSpellCooldownDelay(1022) + t;
-                        else
-                        {
-                            player->m_lastHandofProtectionCooldown = player->GetSpellCooldownDelay(1022) + t;
-                            player->AddSpellCooldown(1022,  NULL, 120 + t, true);
-                            player->AddSpellCooldown(5599,  NULL, 120 + t, true);
-                            player->AddSpellCooldown(10278, NULL, 120 + t, true);
-                        }
-                    }
-                    player->m_lastLayOnHandsCooldown = player->GetSpellCooldownDelay(633) + t;
-                    player->CastSpell(unit, 25771, true); // Forbearance
-                    break;
-            }
-        }
-
         CallScriptAfterHitHandlers();
     }
 }
@@ -1978,6 +1756,20 @@ void Spell::DoTriggersOnSpellHit(Unit* unit, uint8 effMask)
     // TODO: move this code to scripts
     if (m_preCastSpell)
     {
+        // Paladin immunity shields
+        if (m_preCastSpell == 61988)
+        {
+            // Cast Forbearance
+            m_caster->CastSpell(unit, 25771, true);
+            // Cast Avenging Wrath Marker
+            unit->CastSpell(unit, 61987, true);
+        }
+
+        // Avenging Wrath
+        if (m_preCastSpell == 61987)
+            // Cast the serverside immunity shield marker
+            m_caster->CastSpell(unit, 61988, true);
+
         if (sSpellMgr->GetSpellInfo(m_preCastSpell))
             // Blizz seems to just apply aura without bothering to cast
             m_caster->AddAura(m_preCastSpell, unit);
@@ -5184,6 +4976,16 @@ SpellCastResult Spell::CheckCast(bool strict)
 
             if (!(m_spellInfo->AttributesEx6 & SPELL_ATTR6_CAN_TARGET_INVISIBLE) && !m_caster->canSeeOrDetect(target) && m_casttime != 0 && !target->HasAura(200008))
                 return SPELL_FAILED_BAD_TARGETS;
+        }
+        else
+        {
+            if (m_caster->GetTypeId() == TYPEID_PLAYER) // Target - is player caster
+            {
+                // Lay on Hands - cannot be self-cast on paladin with Forbearance or after using Avenging Wrath
+                if (m_spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN && m_spellInfo->SpellFamilyFlags[0] & 0x0008000)
+                    if (target->HasAura(61988)) // Immunity shield marker
+                        return SPELL_FAILED_TARGET_AURASTATE;
+            }
         }
     }
 

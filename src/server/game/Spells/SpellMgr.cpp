@@ -3236,12 +3236,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 33750: // Windfury Attack (Off Hand)
                 spellInfo->speed = 150;
                 break;
-            case 642:   // Divine Shield
-                spellInfo->excludeCasterAuraSpell = 25771;
-                break;
-            case 31884: // Avenging Wrath
-                spellInfo->excludeCasterAuraSpell = 0;
-                break;
             case 16089: // Elemental Fury (Rank 1)
             case 60184: // Elemental Fury (Rank 2)
             case 60185: // Elemental Fury (Rank 3)
