@@ -558,22 +558,27 @@ bool Transmogrification::RemoveAllTransmog(Player* player)
 bool Transmogrification::CheckItem(Player* player, ItemTemplate const* vItemTemplate, ItemTemplate const* pItemTemplate)
 {
     if (IsArmor(vItemTemplate))
-        if (vItemTemplate->Class != pItemTemplate->Class || vItemTemplate->InventoryType != pItemTemplate->InventoryType || vItemTemplate->Material != pItemTemplate->Material)
-            return false;
+        if (vItemTemplate->Class == pItemTemplate->Class && vItemTemplate->Material == pItemTemplate->Material && (vItemTemplate->InventoryType == pItemTemplate->InventoryType ||
+            // Special case for Chest/Robe InventoryTypes because for some reason they are the same thing but handled differently
+            (vItemTemplate->InventoryType == INVTYPE_CHEST && pItemTemplate->InventoryType == INVTYPE_ROBE) ||
+            (vItemTemplate->InventoryType == INVTYPE_ROBE && pItemTemplate->InventoryType == INVTYPE_CHEST)))
+            return true;
 
     if (IsWeapon(vItemTemplate))
     {
-        if (vItemTemplate->Class != pItemTemplate->Class || vItemTemplate->SubClass != pItemTemplate->SubClass)
-            return false;
+        if (vItemTemplate->Class == pItemTemplate->Class && vItemTemplate->SubClass == pItemTemplate->SubClass)
+            return true;
         // Special case for Fist Weapons because the models for the right hand and left hand are different
-        if (vItemTemplate->SubClass == ITEM_SUBCLASS_WEAPON_FIST && (vItemTemplate->InventoryType != pItemTemplate->InventoryType))
-            return false;
+        if (vItemTemplate->SubClass == ITEM_SUBCLASS_WEAPON_FIST && vItemTemplate->InventoryType == pItemTemplate->InventoryType)
+            return true;
     }
 
-    if (((vItemTemplate->Flags2 & ITEM_FLAGS_EXTRA_HORDE_ONLY && player->GetTeam() == ALLIANCE) || (vItemTemplate->Flags2 == ITEM_FLAGS_EXTRA_ALLIANCE_ONLY && player->GetTeam() == HORDE)))
-        return false;
+    // Faction specific items
+    if ((vItemTemplate->Flags2 == ITEM_FLAGS_EXTRA_ALLIANCE_ONLY && player->GetTeam() == ALLIANCE) &&
+        (vItemTemplate->Flags2 & ITEM_FLAGS_EXTRA_HORDE_ONLY && player->GetTeam() == HORDE))
+        return true;
 
-    return true;
+    return false;
 }
 
 void AddSC_Transmogrification()
