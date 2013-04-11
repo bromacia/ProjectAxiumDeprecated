@@ -957,7 +957,16 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     m_caster->AttackStop();
                     m_caster->CombatStop();
                     if (m_caster->ToPlayer())
+                    {
                         m_caster->ToPlayer()->SendAttackSwingCancelAttack();
+                        if (Pet* pet = m_caster->ToPlayer()->GetPet())
+                        {
+                            pet->InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
+                            pet->InterruptSpell(CURRENT_CHANNELED_SPELL);
+                            pet->AttackStop();
+                            pet->CombatStop();
+                        }
+                    }
                     return;
                 }
                 // Demon Broiled Surprise
