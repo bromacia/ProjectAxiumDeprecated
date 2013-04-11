@@ -88,7 +88,12 @@ class MotionMaster //: private std::stack<MovementGenerator *>
         typedef std::vector<_Ty> ExpireList;
         int i_top;
 
-        void pop() { Impl[i_top] = NULL; --i_top; }
+        void pop()
+        {
+            Impl[i_top] = NULL;
+            while (!top())
+                --i_top;
+        }
         void push(_Ty _Val) { ++i_top; Impl[i_top] = _Val; }
 
         bool needInitTop() const { return needInit[i_top]; }

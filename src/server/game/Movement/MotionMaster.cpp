@@ -391,33 +391,25 @@ void MotionMaster::MoveJump(float x, float y, float z, float speedXY, float spee
     float max_height = -Movement::computeFallElevation(moveTimeHalf,false,-speedZ);
 
     Movement::MoveSplineInit init(*i_owner);
-    init.MoveTo(x,y,z);
+    init.MoveTo(x, y, z);
     init.SetParabolic(max_height,0);
     init.SetVelocity(speedXY);
     init.Launch();
-    if (i_owner->GetTypeId() == TYPEID_PLAYER)
-        Mutate(new EffectMovementGenerator(id), MOTION_SLOT_CONTROLLED);
-    else
-        Mutate(new EffectMovementGenerator(id), MOTION_SLOT_ACTIVE);
+    Mutate(new EffectMovementGenerator(id), MOTION_SLOT_CONTROLLED);
 }
 
 void MotionMaster::MoveFall(uint32 id/*=0*/)
 {
     // use larger distance for vmap height search than in most other cases
-    float tz = i_owner->GetMap()->GetHeight(i_owner->GetPositionX(), i_owner->GetPositionY(), i_owner->GetPositionZ(), true, MAX_FALL_DISTANCE);
-
-    if (tz <= INVALID_HEIGHT)
-    {
-        // try fall down to ground
-        tz = i_owner->GetMap()->GetHeight(i_owner->GetPhaseMask(), i_owner->GetPositionX(), i_owner->GetPositionY(), i_owner->GetPositionZ(), false, MAX_FALL_DISTANCE);
-    }
+    float groundz = i_owner->GetPositionZ();
+    float tz = i_owner->GetMap()->GetWaterOrGroundLevel(i_owner->GetPositionX(), i_owner->GetPositionY(), i_owner->GetPositionZ(), &groundz, true);
 
     // Abort too if the ground is very near
     if (fabs(i_owner->GetPositionZ() - tz) < 0.1f)
         return;
 
     Movement::MoveSplineInit init(*i_owner);
-    init.MoveTo(i_owner->GetPositionX(),i_owner->GetPositionY(),tz);
+    init.MoveTo(i_owner->GetPositionX(), i_owner->GetPositionY(), tz);
     init.SetFall();
     init.Launch();
     Mutate(new EffectMovementGenerator(id), MOTION_SLOT_CONTROLLED);
