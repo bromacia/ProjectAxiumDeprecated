@@ -129,7 +129,7 @@ void ScriptedAI::UpdateAI(uint32 const /*diff*/)
     if (me->isAttackReady())
     {
         //If we are within range melee the target
-        if (me->IsWithinMeleeRange(me->getVictim()))
+        if (me->IsWithinObjectSizeDistance(me->getVictim(), MELEE_RANGE))
         {
             me->AttackerStateUpdate(me->getVictim());
             me->resetAttackTimer();

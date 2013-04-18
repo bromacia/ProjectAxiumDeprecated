@@ -44,25 +44,29 @@ void FleeingMovementGenerator<T>::_setTargetLocation(T &owner)
     if (!_getPoint(owner, x, y, z))
         return;
 
-    float i_x, i_y, i_z;
-    i_x = owner.GetPositionX();
-    i_y = owner.GetPositionY();
-    i_z = owner.GetPositionZ();
-
     owner.AddUnitState(UNIT_STATE_FLEEING_MOVE);
 
-    PathFinderMovementGenerator path(&owner);
-    path.SetUseStrightPath(true);
-
-    if (!path.Calculate(x, y, z) || path.GetPathType() & PATHFIND_NOPATH)
+    if (owner.GetMap()->IsUnderWater(x, y, z))
     {
-        i_nextCheckTime.Reset(urand(500, 1500));
-        return;
+        Movement::MoveSplineInit init(owner);
+        init.MoveTo(x, y, z);
+        init.Launch();
     }
+    else
+    {
+        PathFinderMovementGenerator path(&owner);
+        path.SetUseStrightPath(true);
 
-    Movement::MoveSplineInit init(owner);
-    init.MovebyPath(path.GetPath());
-    init.Launch();
+        if (!path.Calculate(x, y, z) || path.GetPathType() & PATHFIND_NOPATH)
+        {
+            i_nextCheckTime.Reset(urand(500, 1500));
+            return;
+        }
+
+        Movement::MoveSplineInit init(owner);
+        init.MovebyPath(path.GetPath());
+        init.Launch();
+    }
 }
 
 template<class T>

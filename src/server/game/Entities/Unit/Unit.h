@@ -1269,9 +1269,8 @@ class Unit : public WorldObject
         float GetCombatReach() const { return m_floatValues[UNIT_FIELD_COMBATREACH]; }
         float GetMeleeReach() const { float reach = m_floatValues[UNIT_FIELD_COMBATREACH]; return reach > MIN_MELEE_REACH ? reach : MIN_MELEE_REACH; }
         bool IsWithinCombatRange(const Unit* obj, float dist2compare) const;
-        bool IsWithinMeleeRange(const Unit* obj, float dist = MELEE_RANGE) const;
-        bool IsWithinContactDistance(const Unit* obj, float dist = CONTACT_DISTANCE) const;
-        bool IsWithinCloseRange(const Unit* obj, float dist = 1.5f) const;
+        bool IsWithinObjectSizeDistance(const Unit* obj, float dist) const;
+        bool IsWithinRawDistance(const Unit* obj, float dist) const;
         void GetRandomContactPoint(const Unit* target, float &x, float &y, float &z, float distance2dMin, float distance2dMax) const;
         uint32 m_extraAttacks;
         bool m_canDualWield;

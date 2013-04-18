@@ -91,7 +91,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
     {
         // waiting for next move
         i_nextMoveTime.Update(diff);
-        if(i_nextMoveTime.Passed() )
+        if (i_nextMoveTime.Passed())
         {
             // start moving
             unit.AddUnitState(UNIT_STATE_CONFUSED_MOVE);
@@ -101,18 +101,27 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
             float y = i_waypoints[i_nextMove][1];
             float z = i_waypoints[i_nextMove][2];
 
-            PathFinderMovementGenerator path(&unit);
-            path.SetUseStrightPath(true);
-
-            if (!unit.IsWithinLOS(x, y, z) || !path.Calculate(x, y, z) || path.GetPathType() & PATHFIND_NOPATH)
+            if (unit.GetMap()->IsUnderWater(x, y, z))
             {
-                i_nextMoveTime.Reset(50);
-                return true;
+                Movement::MoveSplineInit init(unit);
+                init.MoveTo(x, y, z);
+                init.Launch();
             }
+            else
+            {
+                PathFinderMovementGenerator path(&unit);
+                path.SetUseStrightPath(true);
 
-            Movement::MoveSplineInit init(unit);
-            init.MovebyPath(path.GetPath());
-            init.Launch();
+                if (!unit.IsWithinLOS(x, y, z) || !path.Calculate(x, y, z) || path.GetPathType() & PATHFIND_NOPATH)
+                {
+                    i_nextMoveTime.Reset(50);
+                    return true;
+                }
+
+                Movement::MoveSplineInit init(unit);
+                init.MovebyPath(path.GetPath());
+                init.Launch();
+            }
         }
     }
 

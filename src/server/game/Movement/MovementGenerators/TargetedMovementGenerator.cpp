@@ -91,31 +91,39 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
         }
     }
 
-    if (!i_path)
-        i_path = new PathFinderMovementGenerator(&owner);
-
-    i_path->SetUseStrightPath(true);
-    bool result = i_path->Calculate(x, y, z);
-    if (!result || (i_path->GetPathType() & PATHFIND_NOPATH))
+    if (owner.GetMap()->IsUnderWater(x, y, z))
     {
-        // Cant reach target
-        i_recalculateTravel = true;
-        return;
+        Movement::MoveSplineInit init(owner);
+        init.MoveTo(x, y, z);
+        init.Launch();
+    }
+    else
+    {
+        if (!i_path)
+            i_path = new PathFinderMovementGenerator(&owner);
+
+        i_path->SetUseStrightPath(true);
+        bool result = i_path->Calculate(x, y, z);
+        if (!result || (i_path->GetPathType() & PATHFIND_NOPATH))
+        {
+            // Cant reach target
+            i_recalculateTravel = true;
+            return;
+        }
+
+        Movement::MoveSplineInit init(owner);
+        init.MovebyPath(i_path->GetPath());
+        // Using the same condition for facing target as the one that is used for SetInFront on movement end
+        // - applies to ChaseMovementGenerator mostly
+        if (i_angle == 0.0f)
+            init.SetFacing(i_target.getTarget());
+        init.Launch();
     }
 
     D::_addUnitStateMove(owner);
     i_targetReached = false;
     i_recalculateTravel = false;
     owner.AddUnitState(UNIT_STATE_CHASE);
-
-    Movement::MoveSplineInit init(owner);
-    init.MovebyPath(i_path->GetPath());
-    // Using the same condition for facing target as the one that is used for SetInFront on movement end
-    // - applies to ChaseMovementGenerator mostly
-    if (i_angle == 0.0f)
-        init.SetFacing(i_target.getTarget());
-
-    init.Launch();
 }
 
 template<class T, typename D>
@@ -198,7 +206,7 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
 template<class T>
 void ChaseMovementGenerator<T>::_reachTarget(T &owner)
 {
-    if (owner.IsWithinMeleeRange(i_target.getTarget()))
+    if (owner.IsWithinObjectSizeDistance(i_target.getTarget(), MELEE_RANGE))
         owner.Attack(i_target.getTarget(), true);
 }
 

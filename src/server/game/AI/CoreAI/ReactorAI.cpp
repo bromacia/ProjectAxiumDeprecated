@@ -48,7 +48,7 @@ ReactorAI::UpdateAI(const uint32 /*time_diff*/)
 
     if (me->isAttackReady())
     {
-        if (me->IsWithinMeleeRange(me->getVictim()))
+        if (me->IsWithinObjectSizeDistance(me->getVictim(), MELEE_RANGE))
         {
             me->AttackerStateUpdate(me->getVictim());
             me->resetAttackTimer();

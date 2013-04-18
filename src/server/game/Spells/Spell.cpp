@@ -4962,13 +4962,13 @@ SpellCastResult Spell::CheckCast(bool strict)
         {
             if (target->GetEntry() != 31144)
             {
-                // Must be behind the target
-                if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_REQ_CASTER_BEHIND_TARGET) && target->HasInArc(static_cast<float>(M_PI), m_caster))
-                    return SPELL_FAILED_NOT_BEHIND;
-
                 // Target must be facing you
                 if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_REQ_TARGET_FACING_CASTER) && !target->HasInArc(static_cast<float>(M_PI), m_caster))
                     return SPELL_FAILED_NOT_INFRONT;
+
+                // Must be behind the target
+                if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_REQ_CASTER_BEHIND_TARGET) && target->HasInArc(static_cast<float>(M_PI), m_caster))
+                    return SPELL_FAILED_NOT_BEHIND;
             }
 
             if (!(m_spellInfo->AttributesEx2 & SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS) && VMAP::VMapFactory::checkSpellForLoS(m_spellInfo->Id) && !m_caster->IsWithinLOSInMap(target))
@@ -6068,7 +6068,7 @@ SpellCastResult Spell::CheckRange(bool strict)
         if (range_type == SPELL_RANGE_MELEE)
         {
             // Because of lag, we can not check too strictly here.
-            if (!m_caster->IsWithinMeleeRange(target, max_range))
+            if (!m_caster->IsWithinObjectSizeDistance(target, max_range))
                 return !(_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_OUT_OF_RANGE : SPELL_FAILED_DONT_REPORT;
         }
         else if (!m_caster->IsWithinCombatRange(target, max_range))
@@ -6076,7 +6076,7 @@ SpellCastResult Spell::CheckRange(bool strict)
 
         if (range_type == SPELL_RANGE_RANGED)
         {
-            if (m_caster->IsWithinMeleeRange(target))
+            if (m_caster->IsWithinObjectSizeDistance(target, MELEE_RANGE))
                 return !(_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_TOO_CLOSE : SPELL_FAILED_DONT_REPORT;
         }
         else if (min_range && m_caster->IsWithinCombatRange(target, min_range)) // skip this check if min_range = 0

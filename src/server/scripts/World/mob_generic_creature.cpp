@@ -49,7 +49,7 @@ public:
 
         void EnterCombat(Unit* who)
         {
-            if (!me->IsWithinMeleeRange(who))
+            if (!me->IsWithinObjectSizeDistance(who, MELEE_RANGE))
                 IsSelfRooted = true;
         }
 
@@ -88,7 +88,7 @@ public:
                 return;
 
             //If we are within range melee the target
-            if (me->IsWithinMeleeRange(me->getVictim()))
+            if (me->IsWithinObjectSizeDistance(me->getVictim(), MELEE_RANGE))
             {
                 //Make sure our attack is ready and we arn't currently casting
                 if (me->isAttackReady() && !me->IsNonMeleeSpellCasted(false))

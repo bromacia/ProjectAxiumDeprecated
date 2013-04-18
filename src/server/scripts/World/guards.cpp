@@ -106,7 +106,7 @@ public:
             if (me->isAttackReady() && !me->IsNonMeleeSpellCasted(false))
             {
                 //If we are within range melee the target
-                if (me->IsWithinMeleeRange(me->getVictim()))
+                if (me->IsWithinObjectSizeDistance(me->getVictim(), MELEE_RANGE))
                 {
                     bool healing = false;
                     SpellInfo const* info = NULL;

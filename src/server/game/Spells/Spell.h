@@ -652,7 +652,7 @@ class Spell
         // effect helpers
         void GetSummonPosition(uint32 i, Position &pos, float radius = 0.0f, uint32 count = 0);
         void SummonGuardian(uint32 i, uint32 entry, SummonPropertiesEntry const* properties, uint32 numSummons);
-        void CalculateJumpSpeeds(uint8 i, float dist, float & speedxy, float & speedz);
+        void CalculateJumpSpeeds(uint8 i, float speedRate, float & speedxy, float & speedz);
 
         SpellCastResult CanOpenLock(uint32 effIndex, uint32 lockid, SkillType& skillid, int32& reqSkillValue, int32& skillValue);
         // -------------------------------------------
@@ -737,11 +737,11 @@ namespace Trinity
                 switch (i_push_type)
                 {
                     case PUSH_IN_FRONT:
-                        if (i_source->isInFront(target, i_radius, static_cast<float>(M_PI/2)) || target->IsWithinCloseRange(i_source))
+                        if (i_source->isInFront(target, i_radius, static_cast<float>(M_PI/2)) || target->IsWithinRawDistance(i_source, 1.5f))
                             i_data->push_back(target);
                         break;
                     case PUSH_IN_BACK:
-                        if (i_source->isInBack(target, i_radius, static_cast<float>(M_PI/2)) || target->IsWithinCloseRange(i_source))
+                        if (i_source->isInBack(target, i_radius, static_cast<float>(M_PI/2)) || target->IsWithinRawDistance(i_source, 1.5f))
                             i_data->push_back(target);
                         break;
                     case PUSH_IN_LINE:

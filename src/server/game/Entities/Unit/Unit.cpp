@@ -486,7 +486,7 @@ bool Unit::IsWithinCombatRange(const Unit* obj, float dist2compare) const
     return distsq < maxdist * maxdist;
 }
 
-bool Unit::IsWithinMeleeRange(const Unit* obj, float dist) const
+bool Unit::IsWithinObjectSizeDistance(const Unit* obj, float dist) const
 {
     if (!obj || !IsInMap(obj) || !InSamePhase(obj))
         return false;
@@ -502,22 +502,7 @@ bool Unit::IsWithinMeleeRange(const Unit* obj, float dist) const
     return distsq < maxdist * maxdist;
 }
 
-bool Unit::IsWithinContactDistance(const Unit* obj, float dist) const
-{
-    if (!obj || !IsInMap(obj) || !InSamePhase(obj))
-        return false;
-
-    float dx = GetPositionX() - obj->GetPositionX();
-    float dy = GetPositionY() - obj->GetPositionY();
-    float dz = GetPositionZ() - obj->GetPositionZ();
-    float distsq = dx*dx + dy*dy + dz*dz;
-
-    float maxdist = dist;
-
-    return distsq < maxdist * maxdist;
-}
-
-bool Unit::IsWithinCloseRange(const Unit* obj, float dist) const
+bool Unit::IsWithinRawDistance(const Unit* obj, float dist) const
 {
     if (!obj || !IsInMap(obj) || !InSamePhase(obj))
         return false;

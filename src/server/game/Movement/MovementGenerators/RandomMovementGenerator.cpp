@@ -95,20 +95,31 @@ void RandomMovementGenerator<Creature>::_setRandomLocation(Creature &creature)
         }
     }
 
-    PathFinderMovementGenerator path(&creature);
+    int32 traveltime = 0;
 
-    if (!path.Calculate(destX, destY, destZ) || path.GetPathType() & PATHFIND_NOPATH)
+    if (creature.GetMap()->IsUnderWater(destX, destY, destZ))
     {
-        i_nextMoveTime.Reset(urand(500, 1500));
-        return;
+        Movement::MoveSplineInit init(creature);
+        init.MoveTo(destX, destY, destZ);
+        init.Launch();
+    }
+    else
+    {
+        PathFinderMovementGenerator path(&creature);
+
+        if (!path.Calculate(destX, destY, destZ) || path.GetPathType() & PATHFIND_NOPATH)
+        {
+            i_nextMoveTime.Reset(urand(500, 1500));
+            return;
+        }
+
+        Movement::MoveSplineInit init(creature);
+        init.MovebyPath(path.GetPath());
+        init.SetWalk((irand(0, RUNNING_CHANCE_RANDOMMV) > 0) ? true : false);
+        traveltime = init.Launch();
     }
 
     creature.AddUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
-
-    Movement::MoveSplineInit init(creature);
-    init.MovebyPath(path.GetPath());
-    init.SetWalk((irand(0, RUNNING_CHANCE_RANDOMMV) > 0) ? true : false);
-    int32 traveltime = init.Launch();
 
     if (is_air_ok)
         i_nextMoveTime.Reset(0);

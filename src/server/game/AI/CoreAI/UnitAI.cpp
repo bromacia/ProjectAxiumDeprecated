@@ -45,13 +45,13 @@ void UnitAI::DoMeleeAttackIfReady()
 
     Unit* victim = me->getVictim();
     //Make sure our attack is ready and we aren't currently casting before checking distance
-    if (me->isAttackReady() && me->IsWithinMeleeRange(victim))
+    if (me->isAttackReady() && me->IsWithinObjectSizeDistance(victim, MELEE_RANGE))
     {
         me->AttackerStateUpdate(victim);
         me->resetAttackTimer();
     }
 
-    if (me->haveOffhandWeapon() && me->isAttackReady(OFF_ATTACK) && me->IsWithinMeleeRange(victim))
+    if (me->haveOffhandWeapon() && me->isAttackReady(OFF_ATTACK) && me->IsWithinObjectSizeDistance(victim, MELEE_RANGE))
     {
         me->AttackerStateUpdate(victim, OFF_ATTACK);
         me->resetAttackTimer(OFF_ATTACK);
@@ -272,7 +272,7 @@ bool SpellTargetSelector::operator()(Unit const* target) const
         if (range_type == SPELL_RANGE_MELEE)
         {
             // Because of lag, we can not check too strictly here.
-            if (!_caster->IsWithinMeleeRange(target, max_range))
+            if (!_caster->IsWithinObjectSizeDistance(target, max_range))
                 return false;
         }
         else if (!_caster->IsWithinCombatRange(target, max_range))
@@ -280,7 +280,7 @@ bool SpellTargetSelector::operator()(Unit const* target) const
 
         if (range_type == SPELL_RANGE_RANGED)
         {
-            if (_caster->IsWithinMeleeRange(target))
+            if (_caster->IsWithinObjectSizeDistance(target, MELEE_RANGE))
                 return false;
         }
         else if (min_range && _caster->IsWithinCombatRange(target, min_range)) // skip this check if min_range = 0

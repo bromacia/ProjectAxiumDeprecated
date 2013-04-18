@@ -1855,7 +1855,7 @@ void Spell::EffectJump(SpellEffIndex effIndex)
     unitTarget->GetContactPoint(m_caster, x, y, z, CONTACT_DISTANCE);
 
     float speedXY, speedZ;
-    CalculateJumpSpeeds(effIndex, m_caster->GetExactDist2d(x, y), speedXY, speedZ);
+    CalculateJumpSpeeds(effIndex, m_caster->GetSpeedRate(MOVE_RUN), speedXY, speedZ);
     m_caster->GetMotionMaster()->MoveJump(x, y, z, speedXY, speedZ);
 }
 
@@ -1875,41 +1875,23 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
     m_targets.GetDst()->GetPosition(x, y, z);
 
     float speedXY, speedZ;
-    CalculateJumpSpeeds(effIndex, m_caster->GetExactDist2d(x, y), speedXY, speedZ);
+    CalculateJumpSpeeds(effIndex, m_caster->GetSpeedRate(MOVE_RUN), speedXY, speedZ);
     m_caster->GetMotionMaster()->MoveJump(x, y, z, speedXY, speedZ);
 }
 
-void Spell::CalculateJumpSpeeds(uint8 i, float dist, float & speedXY, float & speedZ)
+void Spell::CalculateJumpSpeeds(uint8 i, float speedRate, float &speedXY, float &speedZ)
 {
-    if (m_spellInfo->Id == 49575)
-    {
-        bool fspeed = false;
-        if (m_spellInfo->Effects[i].MiscValue)
-            speedZ = float(m_spellInfo->Effects[i].MiscValue)/10;
-        else if (m_spellInfo->Effects[i].MiscValueB)
-        {
-            speedXY = float(m_spellInfo->Effects[i].MiscValueB)/10;
-            fspeed = true;
-        }
-        else
-            speedZ = 10.0f;
-        if (fspeed)
-        {
-            if (m_spellInfo->Effects[i].ValueMultiplier > 0)
-                speedXY *= m_spellInfo->Effects[i].ValueMultiplier;
-            speedZ = dist / speedXY;
-        }
-    }
+    if (m_spellInfo->Effects[i].MiscValueB)
+        speedXY = float(m_spellInfo->Effects[i].MiscValueB);
     else
-    {
-        if (m_spellInfo->Effects[i].MiscValue)
-            speedZ = float(m_spellInfo->Effects[i].MiscValue)/10;
-        else if (m_spellInfo->Effects[i].MiscValueB)
-            speedZ = float(m_spellInfo->Effects[i].MiscValueB)/10;
-        else
-            speedZ = 10.0f;
-        speedXY = dist * 10.0f / speedZ;
-    }
+        speedXY = 100.0f;
+
+    if (m_spellInfo->Effects[i].MiscValue)
+        speedZ = float(m_spellInfo->Effects[i].MiscValue)/10;
+    else
+        speedZ = 1.0f;
+
+    speedXY /= speedRate;
 }
 
 void Spell::EffectTeleportUnits(SpellEffIndex /*effIndex*/)
@@ -6349,7 +6331,10 @@ void Spell::EffectCharge(SpellEffIndex /*effIndex*/)
         Position pos;
 
         unitTarget->GetContactPoint(m_caster, pos.m_positionX, pos.m_positionY, pos.m_positionZ);
-        unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), angle, true);
+        if (unitTarget->GetMap()->IsUnderWater(unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ()))
+            unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), angle);
+        else
+            unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), angle, true);
 
         m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ + unitTarget->GetObjectSize());
     }

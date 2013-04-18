@@ -124,7 +124,7 @@ void GuardAI::UpdateAI(const uint32 /*diff*/)
 
     if (me->isAttackReady())
     {
-        if (me->IsWithinMeleeRange(victim))
+        if (me->IsWithinObjectSizeDistance(victim, MELEE_RANGE))
         {
             me->AttackerStateUpdate(victim);
             me->resetAttackTimer();

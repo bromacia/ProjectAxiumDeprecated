@@ -369,7 +369,7 @@ HostileReference* ThreatContainer::selectNextVictim(Creature* attacker, HostileR
 
                 if (currentRef->getThreat() > 1.3f * currentVictim->getThreat() ||
                     (currentRef->getThreat() > 1.1f * currentVictim->getThreat() &&
-                    attacker->IsWithinMeleeRange(target)))
+                    attacker->IsWithinObjectSizeDistance(target, MELEE_RANGE)))
                 {                                           //implement 110% threat rule for targets in melee range
                     found = true;                           //and 130% rule for targets in ranged distances
                     break;                                  //for selecting alive targets

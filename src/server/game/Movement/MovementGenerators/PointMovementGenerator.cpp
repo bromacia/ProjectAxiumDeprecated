@@ -32,12 +32,30 @@ void PointMovementGenerator<T>::Initialize(T &unit)
     if (!unit.IsStopped())
         unit.StopMoving();
 
+    if (unit.GetMap()->IsUnderWater(i_x, i_y, i_z))
+    {
+        Movement::MoveSplineInit init(unit);
+        init.MoveTo(i_x, i_y, i_z);
+        if (speed > 0.0f)
+            init.SetVelocity(speed);
+        init.Launch();
+    }
+    else
+    {
+        PathFinderMovementGenerator path(&unit);
+        path.SetUseStrightPath(true);
+
+        if (!unit.IsWithinLOS(i_x, i_y, i_z) || !path.Calculate(i_x, i_y, i_z) || path.GetPathType() & PATHFIND_NOPATH)
+            return;
+
+        Movement::MoveSplineInit init(unit);
+        init.MovebyPath(path.GetPath());
+        if (speed > 0.0f)
+            init.SetVelocity(speed);
+        init.Launch();
+    }
+
     unit.AddUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
-    Movement::MoveSplineInit init(unit);
-    init.MoveTo(i_x, i_y, i_z, m_generatePath);
-    if (speed > 0.0f)
-        init.SetVelocity(speed);
-    init.Launch();
 }
 
 template<class T>
@@ -54,11 +72,28 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 
     if (!unit.movespline->Finalized())
     {
-        Movement::MoveSplineInit init(unit);
-        init.MoveTo(i_x, i_y, i_z, m_generatePath);
-        if (speed > 0.0f)
-            init.SetVelocity(speed);
-        init.Launch();
+        if (unit.GetMap()->IsUnderWater(i_x, i_y, i_z))
+        {
+            Movement::MoveSplineInit init(unit);
+            init.MoveTo(i_x, i_y, i_z);
+            if (speed > 0.0f)
+                init.SetVelocity(speed);
+            init.Launch();
+        }
+        else
+        {
+            PathFinderMovementGenerator path(&unit);
+            path.SetUseStrightPath(true);
+
+            if (!unit.IsWithinLOS(i_x, i_y, i_z) || !path.Calculate(i_x, i_y, i_z) || path.GetPathType() & PATHFIND_NOPATH)
+                return true;
+
+            Movement::MoveSplineInit init(unit);
+            init.MovebyPath(path.GetPath());
+            if (speed > 0.0f)
+                init.SetVelocity(speed);
+            init.Launch();
+        }
     }
 
     unit.AddUnitState(UNIT_STATE_ROAMING_MOVE);

@@ -182,39 +182,7 @@ void PathFinderMovementGenerator::_buildPolyPath(const Vector3 &startPos, const 
     // make shortcut path and mark it as NOPATH ( with flying exception )
     // its up to caller how he will use this info
     if (startPoly == INVALID_POLYREF || endPoly == INVALID_POLYREF)
-    {
-        if (_sourceUnit->GetTypeId() == TYPEID_PLAYER || _sourceUnit->isPet() || _sourceUnit->isGuardian() || _sourceUnit->isSummon() || _sourceUnit->isHunterPet())
-            _type = PathType(PATHFIND_NORMAL | PATHFIND_NOT_USING_PATH);
-        else
-        {
-            sLog->outDebug(LOG_FILTER_MAPS, "++ BuildPolyPath :: (startPoly == 0 || endPoly == 0)\n");
-            _buildShortcut();
-            bool path = _sourceUnit->GetTypeId() == TYPEID_UNIT && _sourceUnit->ToCreature()->canFly();
-
-            bool waterPath = _sourceUnit->GetTypeId() == TYPEID_UNIT && _sourceUnit->ToCreature()->canSwim();
-            if (waterPath)
-            {
-                if (_pathPoints.size() > UINT16_MAX)
-                    return;
-
-                // Check both start and end points, if they're both in water, then we can *safely* let the creature move
-                for (uint16 i = 0; i < _pathPoints.size(); ++i)
-                {
-                    LiquidData data;
-                    _sourceUnit->GetBaseMap()->getLiquidStatus(_pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, MAP_ALL_LIQUIDS, &data);
-                    // One of the points is not in the water, cancel movement.
-                    if (data.type_flags == MAP_LIQUID_TYPE_NO_WATER)
-                    {
-                        waterPath = false;
-                        break;
-                    }
-                }
-            }
-
-            _type = (path || waterPath) ? PathType(PATHFIND_NORMAL | PATHFIND_NOT_USING_PATH) : PATHFIND_NOPATH;
-            return;
-        }
-    }
+        _type = PathType(PATHFIND_NORMAL | PATHFIND_NOT_USING_PATH);
 
     // we may need a better number here
     bool farFromPoly = (distToStartPoly > 7.0f || distToEndPoly > 7.0f);
@@ -464,9 +432,13 @@ void PathFinderMovementGenerator::_buildPointPath(const float *startPoint, const
         return;
     }
 
+    float ground_z = 0.0f;
     _pathPoints.resize(pointCount);
     for (uint32 i = 0; i < pointCount; ++i)
+    {
         _pathPoints[i] = Vector3(pathPoints[i*VERTEX_SIZE+2], pathPoints[i*VERTEX_SIZE], pathPoints[i*VERTEX_SIZE+1]);
+        _pathPoints[i].z = _sourceUnit->GetMap()->GetWaterOrGroundLevel(_pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, &ground_z, true);
+    }
 
     // first point is always our current location - we need the next one
     _setActualEndPosition(_pathPoints[pointCount-1]);
