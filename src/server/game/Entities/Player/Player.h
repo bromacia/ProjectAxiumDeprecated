@@ -2598,6 +2598,9 @@ class Player : public Unit, public GridObject<Player>
         void SetNoggenfoggerMorphed(bool x) { m_isNoggenfoggerMorphed = x; }
         bool IsNoggenfoggerMorphed() const { return m_isNoggenfoggerMorphed; }
 
+        void SetSelectedTransmogItemSlot(uint8 slot) { m_selectedTransmogItemSlot = slot; }
+        uint8 GetSelectedTransmogItemSlot() const { return m_selectedTransmogItemSlot; }
+
         uint32 GetHijackedCharacterAccountId() const { return m_hijackedCharacterAccountId; }
 
         bool IsDamageSpec() const;
@@ -2946,6 +2949,7 @@ class Player : public Unit, public GridObject<Player>
         bool m_show_dbw_transformation;
         bool m_isNoggenfoggerMorphed;
         uint32 m_hijackedCharacterAccountId;
+        uint8 m_selectedTransmogItemSlot;
 };
 
 void AddItemsSetItem(Player*player, Item* item);

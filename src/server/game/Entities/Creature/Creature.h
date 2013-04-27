@@ -319,13 +319,16 @@ enum ChatType
 // Vendors
 struct VendorItem
 {
-    VendorItem(uint32 _item, int32 _maxcount, uint32 _incrtime, uint32 _ExtendedCost)
-        : item(_item), maxcount(_maxcount), incrtime(_incrtime), ExtendedCost(_ExtendedCost) {}
+    VendorItem(uint32 _item, int32 _maxcount, uint32 _incrtime, uint32 _ExtendedCost, uint8 _TransmogEquipSlot, uint8 _TransmogClass, uint8 _TransmogSubClass)
+        : item(_item), maxcount(_maxcount), incrtime(_incrtime), ExtendedCost(_ExtendedCost), TransmogEquipSlot(_TransmogEquipSlot), TransmogClass(_TransmogClass), TransmogSubClass(_TransmogSubClass) {}
 
     uint32 item;
-    uint32  maxcount;                                       // 0 for infinity item amount
-    uint32 incrtime;                                        // time for restore items amount if maxcount != 0
+    uint32 maxcount;            // 0 for infinity item amount
+    uint32 incrtime;            // time for restore items amount if maxcount != 0
     uint32 ExtendedCost;
+    uint8 TransmogEquipSlot;
+    uint8 TransmogClass;
+    uint8 TransmogSubClass;
 
     //helpers
     bool IsGoldRequired(ItemTemplate const* pProto) const { return pProto->Flags2 & ITEM_FLAGS_EXTRA_EXT_COST_REQUIRES_GOLD || !ExtendedCost; }
@@ -343,9 +346,9 @@ struct VendorItemData
     }
     bool Empty() const { return m_items.empty(); }
     uint16 GetItemCount() const { return m_items.size(); }
-    void AddItem(uint32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost)
+    void AddItem(uint32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost, uint8 TransmogEquipSlot, uint8 TransmogClass, uint8 TransmogSubClass)
     {
-        m_items.push_back(new VendorItem(item, maxcount, ptime, ExtendedCost));
+        m_items.push_back(new VendorItem(item, maxcount, ptime, ExtendedCost, TransmogEquipSlot, TransmogClass, TransmogSubClass));
     }
     bool RemoveItem(uint32 item_id);
     VendorItem const* FindItemCostPair(uint32 item_id, uint32 extendedCost) const;
@@ -405,8 +408,6 @@ typedef std::map<uint32, time_t> CreatureSpellCooldowns;
 
 // max different by z coordinate for creature aggro reaction
 #define CREATURE_Z_ATTACK_RANGE 3
-
-#define MAX_VENDOR_ITEMS 150                                // Limitation in 3.x.x item count in SMSG_LIST_INVENTORY
 
 enum CreatureCellMoveState
 {

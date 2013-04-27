@@ -866,6 +866,8 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_playerSpec = 0;
 
     m_isNoggenfoggerMorphed = false;
+
+    m_selectedTransmogItemSlot = NULL;
 }
 
 Player::~Player ()
@@ -20851,6 +20853,7 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
         SendBuyError(BUY_ERR_CANT_FIND_ITEM, creature, item, 0);
         return false;
     }
+
 
     if (vendorslot >= vItems->GetItemCount())
     {
