@@ -1717,6 +1717,7 @@ class Unit : public WorldObject
         ControlList m_Controlled;
         Unit* GetFirstControlled() const;
         void RemoveAllControlled();
+        void RemoveAllTempSummons();
 
         bool isCharmed() const { return GetCharmerGUID() != 0; }
         bool isPossessed() const { return HasUnitState(UNIT_STATE_POSSESSED); }
@@ -2254,9 +2255,17 @@ class Unit : public WorldObject
         }
 
         // Movement info
-        Movement::MoveSpline * movespline;
+        Movement::MoveSpline* movespline;
 
         float m_positiveCastTimePrecent;
+
+        void SetIsDueling(bool x)
+        {
+            m_isDueling = x;
+            for (ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
+                (*itr)->m_isDueling = x;
+        }
+        bool IsDueling() const { return m_isDueling; }
 
     protected:
         explicit Unit (bool isWorldObject);
@@ -2381,6 +2390,8 @@ class Unit : public WorldObject
 
         Spell const* _focusSpell;
         bool _targetLocked; // locks the target during spell cast for proper facing
+
+        bool m_isDueling;
 };
 
 namespace Trinity

@@ -113,23 +113,30 @@ public:
     {
         Player* player = handler->GetSession()->GetPlayer();
 
+        if (player->IsMorphed())
+        {
+            handler->PSendSysMessage("You can't do that while morphed");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
         if (player->IsSitState())
         {
-            handler->PSendSysMessage("You cant do that while sitting.");
+            handler->PSendSysMessage("You cant do that while sitting");
             handler->SetSentErrorMessage(true);
             return false;
         }
 
         if (player->HasAuraType(SPELL_AURA_TRANSFORM))
         {
-            handler->PSendSysMessage("You cant do that while transformed.");
+            handler->PSendSysMessage("You cant do that while transformed");
             handler->SetSentErrorMessage(true);
             return false;
         }
 
         if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
         {
-            handler->PSendSysMessage("You cant do that while shapeshifted.");
+            handler->PSendSysMessage("You cant do that while shapeshifted");
             handler->SetSentErrorMessage(true);
             return false;
         }

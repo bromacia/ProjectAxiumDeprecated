@@ -865,6 +865,7 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
 
     m_playerSpec = 0;
 
+    m_isMorphed = false;
     m_isNoggenfoggerMorphed = false;
 
     m_selectedTransmogItemSlot = NULL;

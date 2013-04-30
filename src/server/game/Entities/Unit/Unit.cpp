@@ -259,6 +259,8 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
 
     m_lastSanctuaryTime = 0;
     m_lastBlinkTime = 0;
+
+    m_isDueling = false;
 }
 
 ////////////////////////////////////////////////////////////
@@ -10310,6 +10312,27 @@ void Unit::RemoveAllControlled()
         sLog->outCrash("Unit %u is not able to release its minion " UI64FMTD, GetEntry(), GetMinionGUID());
     if (GetCharmGUID())
         sLog->outCrash("Unit %u is not able to release its charm " UI64FMTD, GetEntry(), GetCharmGUID());
+}
+
+void Unit::RemoveAllTempSummons()
+{
+    if (GetTypeId() == TYPEID_PLAYER)
+        ToPlayer()->StopCastingCharm();
+
+    if (!m_Controlled.empty())
+    {
+        for (ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
+        {
+            if (TempSummon* tempSummon = (*itr)->ToTempSummon())
+                if (tempSummon && tempSummon->GetTimer())
+                {
+                    m_Controlled.erase(tempSummon);
+                    if (tempSummon->GetCharmerGUID() == GetGUID())
+                        tempSummon->RemoveCharmAuras();
+                    tempSummon->setDeathState(JUST_DIED);
+                }
+        }
+    }
 }
 
 Unit* Unit::GetNextRandomRaidMemberOrPet(float radius)

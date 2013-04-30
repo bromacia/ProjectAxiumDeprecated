@@ -29,9 +29,9 @@
 #include "ScriptMgr.h"
 #include "CreatureAISelector.h"
 #include "Group.h"
-
 #include "GameObjectModel.h"
 #include "DynamicTree.h"
+#include "Chat.h"
 
 GameObject::GameObject() : WorldObject(false), m_goValue(new GameObjectValue), m_AI(NULL), m_model(NULL)
 {
@@ -409,7 +409,7 @@ void GameObject::Update(uint32 diff)
                     }
                     // Type 0 and 1 - trap (type 0 will not get removed after casting a spell)
                     Unit* owner = GetOwner();
-                    Unit* ok = NULL;                            // pointer to appropriate target if found any
+                    Unit* target = NULL;
 
                     bool IsBattlegroundTrap = false;
                     //FIXME: this is activation radius (in different casting radius that must be selected from spell data)
@@ -434,14 +434,15 @@ void GameObject::Update(uint32 diff)
 
                     // Note: this hack with search required until GO casting not implemented
                     // search unfriendly creature
-                    if (owner)                    // hunter trap
+                    if (owner) // Hunter trap
                     {
                         Trinity::AnyUnfriendlyNoTotemUnitInObjectRangeCheck checker(this, owner, radius);
-                        Trinity::UnitSearcher<Trinity::AnyUnfriendlyNoTotemUnitInObjectRangeCheck> searcher(this, ok, checker);
+                        Trinity::UnitSearcher<Trinity::AnyUnfriendlyNoTotemUnitInObjectRangeCheck> searcher(this, target, checker);
                         VisitNearbyGridObject(radius, searcher);
-                        if (!ok) VisitNearbyWorldObject(radius, searcher);
+                        if (!target)
+                            VisitNearbyWorldObject(radius, searcher);
                     }
-                    else                                        // environmental trap
+                    else // Environmental trap
                     {
                         // environmental damage spells already have around enemies targeting but this not help in case not existed GO casting support
                         // affect only players
@@ -449,25 +450,25 @@ void GameObject::Update(uint32 diff)
                         Trinity::AnyPlayerInObjectRangeCheck checker(this, radius);
                         Trinity::PlayerSearcher<Trinity::AnyPlayerInObjectRangeCheck> searcher(this, player, checker);
                         VisitNearbyWorldObject(radius, searcher);
-                        ok = player;
+                        target = player;
                     }
 
-                    if (ok)
+                    if (target)
                     {
                         // some traps do not have spell but should be triggered
                         if (goInfo->trap.spellId)
-                            CastSpell(ok, goInfo->trap.spellId);
+                            CastSpell(target, goInfo->trap.spellId);
 
-                        m_cooldownTime = time(NULL) + (goInfo->trap.cooldown ? goInfo->trap.cooldown :  uint32(4));   // template or 4 seconds
+                        m_cooldownTime = time(NULL) + (goInfo->trap.cooldown ? goInfo->trap.cooldown : uint32(4));   // template or 4 seconds
 
                         if (goInfo->trap.type == 1)
                             SetLootState(GO_JUST_DEACTIVATED);
 
-                        if (IsBattlegroundTrap && ok->GetTypeId() == TYPEID_PLAYER)
+                        if (IsBattlegroundTrap && target->GetTypeId() == TYPEID_PLAYER)
                         {
-                            //Battleground gameobjects case
-                            if (ok->ToPlayer()->InBattleground())
-                                if (Battleground* bg = ok->ToPlayer()->GetBattleground())
+                            // Battleground gameobjects case
+                            if (target->ToPlayer()->InBattleground())
+                                if (Battleground* bg = target->ToPlayer()->GetBattleground())
                                     bg->HandleTriggerBuff(GetGUID());
                         }
                     }
@@ -1588,6 +1589,13 @@ void GameObject::Use(Unit* user)
                 return;
 
             Player* player = user->ToPlayer();
+
+            // Prevent client crashes
+            if (player->IsMorphed())
+            {
+                ChatHandler(player).PSendSysMessage("You can't do that while morphed");
+                return;
+            }
 
             // fallback, will always work
             player->TeleportTo(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation(), TELE_TO_NOT_LEAVE_TRANSPORT | TELE_TO_NOT_LEAVE_COMBAT | TELE_TO_NOT_UNSUMMON_PET);

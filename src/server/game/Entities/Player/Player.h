@@ -1870,7 +1870,6 @@ class Player : public Unit, public GridObject<Player>
         void CheckDuelDistance(time_t currTime);
         void DuelComplete(DuelCompleteType type);
         void SendDuelCountdown(uint32 counter);
-        bool IsDueling() const { return duel != NULL; }
 
         bool IsGroupVisibleFor(Player const* p) const;
         bool IsInSameGroupWith(Player const* p) const;
@@ -2588,13 +2587,14 @@ class Player : public Unit, public GridObject<Player>
             //! TODO: Need a proper calculation for collision height when mounted
         }
 
-        // Axium
         void SetVip(bool x) { m_vip = x; }
         bool IsVip() const { return m_vip; }
 
         void SetShowDBWTransformation(bool x) { m_show_dbw_transformation = x; }
         bool ShowDBWTransformation() const { return m_show_dbw_transformation; }
 
+        void SetIsMorphed(bool x) { m_isMorphed = x; }
+        bool IsMorphed() const { return m_isMorphed; }
         void SetNoggenfoggerMorphed(bool x) { m_isNoggenfoggerMorphed = x; }
         bool IsNoggenfoggerMorphed() const { return m_isNoggenfoggerMorphed; }
 
@@ -2944,11 +2944,15 @@ class Player : public Unit, public GridObject<Player>
         uint32 _pendingBindId;
         uint32 _pendingBindTimer;
 
-        // Axium
         bool m_vip;
+
         bool m_show_dbw_transformation;
+
+        bool m_isMorphed;
         bool m_isNoggenfoggerMorphed;
+
         uint32 m_hijackedCharacterAccountId;
+
         uint8 m_selectedTransmogItemSlot;
 };
 

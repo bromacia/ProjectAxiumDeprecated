@@ -68,21 +68,23 @@ public:
             handler->PSendSysMessage("You cannot morph when you are transformed.");
             return;
         }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
+
+        if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
         {
             handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
             return;
         }
-        else if (player->InArena())
+
+        if (player->InArena())
         {
             handler->PSendSysMessage("You cannot morph when you are in arena.");
             return;
         }
-        else
-        {
-            player->SetNativeDisplayId(morphId);
-            player->SetDisplayId(morphId);
-        }
+
+        player->SetNativeDisplayId(morphId);
+        player->SetDisplayId(morphId);
+        player->SetIsMorphed(true);
+
     }
 
     static void Demorph(ChatHandler* handler)
@@ -94,21 +96,22 @@ public:
             handler->PSendSysMessage("You cannot demorph when you are transformed.");
             return;
         }
-        else if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
+
+        if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
         {
             handler->PSendSysMessage("You cannot demorph when you are shapeshifted.");
             return;
         }
-        else if (player->InArena())
+
+        if (player->InArena())
         {
             handler->PSendSysMessage("You cannot demorph when you are in arena.");
             return;
         }
-        else
-        {
-            player->InitDisplayIds();
-            player->SetNoggenfoggerMorphed(false);
-        }
+
+        player->InitDisplayIds();
+        player->SetNoggenfoggerMorphed(false);
+        player->SetIsMorphed(false);
     }
 
     static bool HandleMorphNoggenfoggerCommand(ChatHandler* handler, const char* /*args*/)

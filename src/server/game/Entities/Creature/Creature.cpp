@@ -1490,11 +1490,11 @@ void Creature::setDeathState(DeathState s)
 
     if (s == JUST_DIED)
     {
-        // make player summoned creatures despawn 5 sec after death
         if (GetOwner() && GetOwner()->GetTypeId() == TYPEID_PLAYER && isSummon())
-            m_corpseDelay = 5;
+            m_corpseDelay = 3;
         else
             m_corpseDelay = m_corpseDelay;
+
          m_corpseRemoveTime = time(NULL) + m_corpseDelay;
          m_respawnTime = time(NULL) + m_respawnDelay + m_corpseDelay;
 

@@ -53,6 +53,7 @@
 #include "SpellScript.h"
 #include "InstanceScript.h"
 #include "SpellInfo.h"
+#include "Chat.h"
 
 extern pEffect SpellEffects[TOTAL_SPELL_EFFECTS];
 
@@ -5505,7 +5506,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                     //Savage Roar
                     case 52610:
                     {
-                        if (m_caster->GetTypeId() != TYPEID_PLAYER || m_caster->ToPlayer()->GetShapeshiftForm()!=FORM_CAT)
+                        if (m_caster->GetTypeId() != TYPEID_PLAYER || m_caster->ToPlayer()->GetShapeshiftForm() != FORM_CAT)
                             return SPELL_FAILED_ONLY_SHAPESHIFT;
                         break;
                     }
@@ -5672,6 +5673,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 break;
         }
     }
+
     // Silence (serverside spell)
     if (m_caster->HasAura(2))
         return SPELL_FAILED_SILENCED;
@@ -5778,21 +5780,23 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (!m_caster->ToPlayer()->IsWithinLOS(fireTotem->GetPositionX(), fireTotem->GetPositionY(), fireTotem->GetPositionZ()))
                 return SPELL_FAILED_LINE_OF_SIGHT;
 
-    // Dont allow glyphs to be added while in duels
-    if (Player* player = m_caster->ToPlayer())
-        if (player->IsDueling())
+    // Duel Checks
+    if (m_caster->IsDueling())
+        if (Player* player = m_caster->ToPlayer())
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+                // Dont allow glyphs to be added while in duels
                 if (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH)
-                    return SPELL_FAILED_NO_DUELING;
+                {
+                    ChatHandler(player).PSendSysMessage("You can't do that while dueling");
+                    return SPELL_FAILED_DONT_REPORT;
+                }
 
     // Blazing Hippogryph
     if (m_spellInfo->Id == 74856)
         if (m_originalCaster && m_originalCaster->GetTypeId() == TYPEID_PLAYER && m_originalCaster->isAlive())
-        {
             if (AreaTableEntry const* pArea = GetAreaEntryByAreaID(m_originalCaster->GetAreaId()))
                 if (pArea->flags & AREA_FLAG_NO_FLY_ZONE)
                     return (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_NOT_HERE;
-        }
 
     // check trade slot case (last, for allow catch any another cast problems)
     if (m_targets.GetTargetMask() & TARGET_FLAG_TRADE_ITEM)
