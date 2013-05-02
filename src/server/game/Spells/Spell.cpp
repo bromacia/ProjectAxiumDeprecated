@@ -53,7 +53,6 @@
 #include "SpellScript.h"
 #include "InstanceScript.h"
 #include "SpellInfo.h"
-#include "Chat.h"
 
 extern pEffect SpellEffects[TOTAL_SPELL_EFFECTS];
 
@@ -5678,6 +5677,11 @@ SpellCastResult Spell::CheckCast(bool strict)
     if (m_caster->HasAura(2))
         return SPELL_FAILED_SILENCED;
 
+    // Prevent spells from being casting on players that are dueling by non-dueling players
+    if (Unit* target = m_targets.GetUnitTarget())
+        if (!m_caster->IsDueling() && target->IsDueling())
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
     // Spells that cant be used while rooted (Shadowstep, Charge, Intercept, Intervene, Feral Charge Cat/Bear)
     if (m_spellInfo->Id == 36554 || m_spellInfo->Id == 11578 || m_spellInfo->Id == 20252 || m_spellInfo->Id == 3411 || m_spellInfo->Id == 16979 || m_spellInfo->Id == 49376)
         if (m_caster->HasUnitState(UNIT_STATE_ROOT))
@@ -5787,7 +5791,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 // Dont allow glyphs to be added while in duels
                 if (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH)
                 {
-                    ChatHandler(player).PSendSysMessage("You can't do that while dueling");
+                    player->GetSession()->SendAreaTriggerMessage("You can't do that while dueling");
                     return SPELL_FAILED_DONT_REPORT;
                 }
 
