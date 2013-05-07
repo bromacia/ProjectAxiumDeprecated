@@ -53,6 +53,7 @@ namespace AccountMgr
         bool IsPlayerAccount(uint32 gmlevel);
         bool IsModeratorAccount(uint32 gmlevel);
         bool IsGMAccount(uint32 gmlevel);
+        bool IsHGMAccount(uint32 gmlevel);
         bool IsAdminAccount(uint32 gmlevel);
         bool IsConsoleAccount(uint32 gmlevel);
 };

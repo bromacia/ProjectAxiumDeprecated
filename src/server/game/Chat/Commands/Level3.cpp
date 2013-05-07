@@ -3741,10 +3741,12 @@ bool ChatHandler::HandleServerPLimitCommand(const char* args)
 
         if (strncmp(param, "player", l) == 0)
             sWorld->SetPlayerSecurityLimit(SEC_PLAYER);
-        else if (strncmp(param, "moderator", l) == 0)
-            sWorld->SetPlayerSecurityLimit(SEC_GAMEMASTER);
+        else if (strncmp(param, "vip", l) == 0)
+            sWorld->SetPlayerSecurityLimit(SEC_VIP);
         else if (strncmp(param, "gamemaster", l) == 0)
             sWorld->SetPlayerSecurityLimit(SEC_GAMEMASTER);
+        else if (strncmp(param, "head gamemaster", l) == 0)
+            sWorld->SetPlayerSecurityLimit(SEC_HEAD_GAMEMASTER);
         else if (strncmp(param, "administrator", l) == 0)
             sWorld->SetPlayerSecurityLimit(SEC_ADMINISTRATOR);
         else if (strncmp(param, "reset", l) == 0)
@@ -3767,12 +3769,13 @@ bool ChatHandler::HandleServerPLimitCommand(const char* args)
     char const* secName = "";
     switch (allowedAccountType)
     {
-        case SEC_PLAYER:        secName = "Player";        break;
-        case SEC_VIP:           secName = "VIP";           break;
-        case SEC_GAMEMASTER:    secName = "Gamemaster";    break;
-        case SEC_ADMINISTRATOR: secName = "Administrator"; break;
-        case SEC_CONSOLE:       secName = "Console";       break;
-        default:                secName = "<unknown>";     break;
+        case SEC_PLAYER:            secName = "Player";             break;
+        case SEC_VIP:               secName = "VIP";                break;
+        case SEC_GAMEMASTER:        secName = "Gamemaster";         break;
+        case SEC_HEAD_GAMEMASTER:   secName = "Head Gamemaster";    break;
+        case SEC_ADMINISTRATOR:     secName = "Administrator";      break;
+        case SEC_CONSOLE:           secName = "Console";            break;
+        default:                    secName = "<unknown>";          break;
     }
 
     PSendSysMessage("Player limits: amount %u, min. security level %s.", pLimit, secName);

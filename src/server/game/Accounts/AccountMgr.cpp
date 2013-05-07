@@ -248,6 +248,11 @@ bool IsGMAccount(uint32 gmlevel)
     return gmlevel >= SEC_GAMEMASTER && gmlevel <= SEC_CONSOLE;
 }
 
+bool IsHGMAccount(uint32 gmlevel)
+{
+    return gmlevel >= SEC_HEAD_GAMEMASTER && gmlevel <= SEC_CONSOLE;
+}
+
 bool IsAdminAccount(uint32 gmlevel)
 {
     return gmlevel >= SEC_ADMINISTRATOR && gmlevel <= SEC_CONSOLE;
