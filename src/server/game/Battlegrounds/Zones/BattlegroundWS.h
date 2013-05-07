@@ -87,7 +87,9 @@ enum BG_WS_ObjectTypes
     BG_WS_OBJECT_REGENBUFF_2    = 15,
     BG_WS_OBJECT_BERSERKBUFF_1  = 16,
     BG_WS_OBJECT_BERSERKBUFF_2  = 17,
-    BG_WS_OBJECT_MAX            = 18
+    BG_WS_OBJECT_READY_MARKER_A = 18,
+    BG_WS_OBJECT_READY_MARKER_B = 19,
+    BG_WS_OBJECT_MAX            = 20
 };
 
 enum BG_WS_ObjectEntry

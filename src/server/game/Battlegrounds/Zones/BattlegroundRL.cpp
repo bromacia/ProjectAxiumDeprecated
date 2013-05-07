@@ -139,14 +139,22 @@ void BattlegroundRL::Reset()
 
 bool BattlegroundRL::SetupBattleground()
 {
-    // gates
-    if (!AddObject(BG_RL_OBJECT_DOOR_1, BG_RL_OBJECT_TYPE_DOOR_1, 1293.561f, 1601.938f, 31.60557f, -1.457349f, 0, 0, -0.6658813f, 0.7460576f, RESPAWN_IMMEDIATELY)
-        || !AddObject(BG_RL_OBJECT_DOOR_2, BG_RL_OBJECT_TYPE_DOOR_2, 1278.648f, 1730.557f, 31.60557f, 1.684245f, 0, 0, 0.7460582f, 0.6658807f, RESPAWN_IMMEDIATELY)
-    // buffs
-        || !AddObject(BG_RL_OBJECT_BUFF_1, BG_RL_OBJECT_TYPE_BUFF_1, 1328.719971f, 1632.719971f, 36.730400f, -1.448624f, 0, 0, 0.6626201f, -0.7489557f, 120)
-        || !AddObject(BG_RL_OBJECT_BUFF_2, BG_RL_OBJECT_TYPE_BUFF_2, 1243.300049f, 1699.170044f, 34.872601f, -0.06981307f, 0, 0, 0.03489945f, -0.9993908f, 120))
+    // Gates
+    if (!AddObject(BG_RL_OBJECT_DOOR_1, BG_RL_OBJECT_TYPE_DOOR_1, 1293.561f, 1601.938f, 31.60557f, -1.457349f, 0, 0, -0.6658813f, 0.7460576f, RESPAWN_IMMEDIATELY) ||
+        !AddObject(BG_RL_OBJECT_DOOR_2, BG_RL_OBJECT_TYPE_DOOR_2, 1278.648f, 1730.557f, 31.60557f, 1.684245f, 0, 0, 0.7460582f, 0.6658807f, RESPAWN_IMMEDIATELY) ||
+    // Buffs
+        !AddObject(BG_RL_OBJECT_BUFF_1, BG_RL_OBJECT_TYPE_BUFF_1, 1328.719971f, 1632.719971f, 34.9f, -1.448624f, 0, 0, 0.6626201f, -0.7489557f, 120) ||
+        !AddObject(BG_RL_OBJECT_BUFF_2, BG_RL_OBJECT_TYPE_BUFF_2, 1243.300049f, 1699.170044f, 34.9f, -0.06981307f, 0, 0, 0.03489945f, -0.9993908f, 120))
     {
         sLog->outErrorDb("BatteGroundRL: Failed to spawn some object!");
+        return false;
+    }
+
+    // Ready Markers
+    if (!AddObject(BG_RL_OBJECT_READY_MARKER_A, BG_OBJECTID_READY_MARKER, 1274.0f, 1734.34f, 31.6f, 1.64f, 0, 0, 0, 0, RESPAWN_IMMEDIATELY) ||
+        !AddObject(BG_RL_OBJECT_READY_MARKER_B, BG_OBJECTID_READY_MARKER, 1298.2f, 1598.0f, 31.61f, 4.8f, 0, 0, 0, 0, RESPAWN_IMMEDIATELY))
+    {
+        sLog->outErrorDb("BatteGroundRL: Failed to spawn Ready Markers Battleground not created!");
         return false;
     }
 

@@ -20,6 +20,7 @@ set(scripts_STAT_SRCS
   Custom/npc_gossip_vendor.cpp
   Custom/npc_class_trainer.cpp
   Custom/pvp_titles.cpp
+  Custom/PrematureStart.cpp
 )
 
 message("  -> Prepared: Custom")

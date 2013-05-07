@@ -83,7 +83,7 @@ public:
 
         player->SetNativeDisplayId(morphId);
         player->SetDisplayId(morphId);
-        player->SetIsMorphed(true);
+        player->SetMorphed(true);
 
     }
 
@@ -111,7 +111,7 @@ public:
 
         player->InitDisplayIds();
         player->SetNoggenfoggerMorphed(false);
-        player->SetIsMorphed(false);
+        player->SetMorphed(false);
     }
 
     static bool HandleMorphNoggenfoggerCommand(ChatHandler* handler, const char* /*args*/)

@@ -868,7 +868,10 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_isMorphed = false;
     m_isNoggenfoggerMorphed = false;
 
-    m_selectedTransmogItemSlot = NULL;
+    m_selectedTransmogItemSlot = 0;
+
+    m_wantsPrematureBattleGroundStart = false;
+    m_addedToPrematureBattleGroundStartList = false;
 }
 
 Player::~Player ()

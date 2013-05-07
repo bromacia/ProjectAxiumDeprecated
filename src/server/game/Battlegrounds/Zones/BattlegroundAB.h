@@ -74,7 +74,7 @@ enum BG_AB_NodeObjectId
 
 enum BG_AB_ObjectType
 {
-    // for all 5 node points 8*5=40 objects
+    // For all 5 node points 8 * 5 = 40 objects
     BG_AB_OBJECT_BANNER_NEUTRAL          = 0,
     BG_AB_OBJECT_BANNER_CONT_A           = 1,
     BG_AB_OBJECT_BANNER_CONT_H           = 2,
@@ -83,10 +83,10 @@ enum BG_AB_ObjectType
     BG_AB_OBJECT_AURA_ALLY               = 5,
     BG_AB_OBJECT_AURA_HORDE              = 6,
     BG_AB_OBJECT_AURA_CONTESTED          = 7,
-    //gates
+    // Gates
     BG_AB_OBJECT_GATE_A                  = 40,
     BG_AB_OBJECT_GATE_H                  = 41,
-    //buffs
+    // Buffs
     BG_AB_OBJECT_SPEEDBUFF_STABLES       = 42,
     BG_AB_OBJECT_REGENBUFF_STABLES       = 43,
     BG_AB_OBJECT_BERSERKBUFF_STABLES     = 44,
@@ -102,7 +102,9 @@ enum BG_AB_ObjectType
     BG_AB_OBJECT_SPEEDBUFF_GOLD_MINE     = 54,
     BG_AB_OBJECT_REGENBUFF_GOLD_MINE     = 55,
     BG_AB_OBJECT_BERSERKBUFF_GOLD_MINE   = 56,
-    BG_AB_OBJECT_MAX                     = 57,
+    BG_AB_OBJECT_READY_MARKER_A          = 57,
+    BG_AB_OBJECT_READY_MARKER_B          = 58,
+    BG_AB_OBJECT_MAX                     = 59
 };
 
 /* Object id templates from DB */

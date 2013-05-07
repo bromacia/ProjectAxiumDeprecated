@@ -46,25 +46,6 @@ BattlegroundDS::~BattlegroundDS()
 
 void BattlegroundDS::PostUpdateImpl(uint32 diff)
 {
-    /*if (getWaterFallTimer() < diff)
-    {
-        if (isWaterFallActive())
-        {
-            setWaterFallTimer(urand(BG_DS_WATERFALL_TIMER_MIN, BG_DS_WATERFALL_TIMER_MAX));
-            for (uint8 i = BG_DS_OBJECT_WATER_1; i <= BG_DS_OBJECT_WATER_2; ++i)
-                SpawnBGObject(i, getWaterFallTimer());
-            setWaterFallActive(false);
-        }
-        else
-        {
-            setWaterFallTimer(BG_DS_WATERFALL_DURATION);
-            for (uint8 i = BG_DS_OBJECT_WATER_1; i <= BG_DS_OBJECT_WATER_2; ++i)
-                SpawnBGObject(i, RESPAWN_IMMEDIATELY);
-            setWaterFallActive(true);
-        }
-    }
-    else
-        setWaterFallTimer(getWaterFallTimer() - diff);*/
 }
 
 void BattlegroundDS::StartingEventCloseDoors()
@@ -80,12 +61,6 @@ void BattlegroundDS::StartingEventOpenDoors()
 
     for (uint8 i = BG_DS_OBJECT_BUFF_1; i <= BG_DS_OBJECT_BUFF_2; ++i)
         SpawnBGObject(i, 60);
-
-    /*setWaterFallTimer(urand(BG_DS_WATERFALL_TIMER_MIN, BG_DS_WATERFALL_TIMER_MAX));
-    setWaterFallActive(false);
-
-    for (uint8 i = BG_DS_OBJECT_WATER_1; i <= BG_DS_OBJECT_WATER_2; ++i)
-        SpawnBGObject(i, getWaterFallTimer());*/
 }
 
 void BattlegroundDS::AddPlayer(Player* player)
@@ -162,15 +137,15 @@ void BattlegroundDS::Reset()
 
 bool BattlegroundDS::SetupBattleground()
 {
-    // gates
-    if (!AddObject(BG_DS_OBJECT_DOOR_1, BG_DS_OBJECT_TYPE_DOOR_1, 1350.95f, 817.2f, 20.8096f, 3.15f, 0, 0, 0.99627f, 0.0862864f, RESPAWN_IMMEDIATELY)
-        || !AddObject(BG_DS_OBJECT_DOOR_2, BG_DS_OBJECT_TYPE_DOOR_2, 1232.65f, 764.913f, 20.0729f, 6.3f, 0, 0, 0.0310211f, -0.999519f, RESPAWN_IMMEDIATELY)
-    // water
-        /*|| !AddObject(BG_DS_OBJECT_WATER_1, BG_DS_OBJECT_TYPE_WATER_1, 1291.56f, 790.837f, 7.1f, 3.14238f, 0, 0, 0.694215f, -0.719768f, 120)
-        || !AddObject(BG_DS_OBJECT_WATER_2, BG_DS_OBJECT_TYPE_WATER_2, 1291.56f, 790.837f, 7.1f, 3.14238f, 0, 0, 0.694215f, -0.719768f, 120)*/
-    // buffs
-        || !AddObject(BG_DS_OBJECT_BUFF_1, BG_DS_OBJECT_TYPE_BUFF_1, 1330.056763f, 765.579285f, 3.159700f, 0, 0, 0, 0.730314f, -0.683111f, 120)
-        || !AddObject(BG_DS_OBJECT_BUFF_2, BG_DS_OBJECT_TYPE_BUFF_2, 1254.318237f, 816.529175f, 3.158578f, 0, 0, 0, 0.700409f, 0.713742f, 120))
+    // Gates
+    if (!AddObject(BG_DS_OBJECT_DOOR_1, BG_DS_OBJECT_TYPE_DOOR_1, 1350.95f, 817.2f, 20.8096f, 3.15f, 0, 0, 0.99627f, 0.0862864f, RESPAWN_IMMEDIATELY) ||
+        !AddObject(BG_DS_OBJECT_DOOR_2, BG_DS_OBJECT_TYPE_DOOR_2, 1232.65f, 764.913f, 20.0729f, 6.3f, 0, 0, 0.0310211f, -0.999519f, RESPAWN_IMMEDIATELY) ||
+    // Buffs
+        !AddObject(BG_DS_OBJECT_BUFF_1, BG_DS_OBJECT_TYPE_BUFF_1, 1330.056763f, 765.579285f, 3.159700f, 0, 0, 0, 0.730314f, -0.683111f, 120) ||
+        !AddObject(BG_DS_OBJECT_BUFF_2, BG_DS_OBJECT_TYPE_BUFF_2, 1254.318237f, 816.529175f, 3.158578f, 0, 0, 0, 0.700409f, 0.713742f, 120) ||
+    // Ready Markers
+        !AddObject(BG_DS_OBJECT_READY_MARKER_A, BG_OBJECTID_READY_MARKER, 1230.58f, 760.11f, 17.06f, 3.11f, 0, 0, 0, 0, RESPAWN_IMMEDIATELY) ||
+        !AddObject(BG_DS_OBJECT_READY_MARKER_B, BG_OBJECTID_READY_MARKER, 1352.74f, 822.0f, 17.17f, 6.26f, 0, 0, 0, 0, RESPAWN_IMMEDIATELY))
     {
         sLog->outErrorDb("BatteGroundDS: Failed to spawn some object!");
         return false;

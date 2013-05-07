@@ -21,7 +21,6 @@
 #include "ArenaTeamMgr.h"
 #include "World.h"
 #include "WorldPacket.h"
-
 #include "ArenaTeam.h"
 #include "Battleground.h"
 #include "BattlegroundMgr.h"
@@ -203,6 +202,9 @@ Battleground::Battleground()
     m_StartMessageIds[BG_STARTING_EVENT_SECOND] = LANG_BG_WS_START_ONE_MINUTE;
     m_StartMessageIds[BG_STARTING_EVENT_THIRD]  = LANG_BG_WS_START_HALF_MINUTE;
     m_StartMessageIds[BG_STARTING_EVENT_FOURTH] = LANG_BG_WS_HAS_BEGUN;
+
+    TeamA_PrematureStartPlayers = 0;
+    TeamB_PrematureStartPlayers = 0;
 }
 
 Battleground::~Battleground()
@@ -465,6 +467,8 @@ inline void Battleground::_ProcessJoin(uint32 diff)
     {
         m_Events |= BG_STARTING_EVENT_3;
         SendMessageToAll(m_StartMessageIds[BG_STARTING_EVENT_THIRD], CHAT_MSG_BG_SYSTEM_NEUTRAL);
+
+        CleanupPrematureStart();
     }
     // Delay expired (atfer 2 or 1 minute)
     else if (GetStartDelayTime() <= 0 && !(m_Events & BG_STARTING_EVENT_4))
@@ -1474,34 +1478,17 @@ bool Battleground::AddObject(uint32 type, uint32 entry, float x, float y, float 
         delete go;
         return false;
     }
-/*
-    uint32 guid = go->GetGUIDLow();
 
-    // without this, UseButtonOrDoor caused the crash, since it tried to get go info from godata
-    // iirc that was changed, so adding to go data map is no longer required if that was the only function using godata from GameObject without checking if it existed
-    GameObjectData& data = sObjectMgr->NewGOData(guid);
-
-    data.id             = entry;
-    data.mapid          = GetMapId();
-    data.posX           = x;
-    data.posY           = y;
-    data.posZ           = z;
-    data.orientation    = o;
-    data.rotation0      = rotation0;
-    data.rotation1      = rotation1;
-    data.rotation2      = rotation2;
-    data.rotation3      = rotation3;
-    data.spawntimesecs  = respawnTime;
-    data.spawnMask      = 1;
-    data.animprogress   = 100;
-    data.go_state       = 1;
-*/
     // Add to world, so it can be later looked up from HashMapHolder
     if (!map->AddToMap(go))
     {
         delete go;
         return false;
     }
+
+    if (go->GetEntry() == BG_OBJECTID_READY_MARKER)
+        ReadyMarkers.insert(go);
+
     m_BgObjects[type] = go->GetGUID();
     return true;
 }
@@ -1960,4 +1947,116 @@ void Battleground::RewardXPAtKill(Player* killer, Player* victim)
 {
     if (sWorld->getBoolConfig(CONFIG_BG_XP_FOR_KILL) && killer && victim)
         killer->RewardPlayerAndGroupAtKill(victim, true);
+}
+
+void Battleground::CheckForPrematureStart(Player* player)
+{
+    if (player->WantsPrematureBattleGroundStart())
+        if (uint32 BGTeam = player->GetBGTeam())
+        {
+            switch (BGTeam)
+            {
+                case ALLIANCE:
+                    Add_TeamA_PrematureStartPlayer();
+                    player->SetAddedToPrematureBattleGroundStartList(true);
+                    break;
+                case HORDE:
+                    Add_TeamB_PrematureStartPlayer();
+                    player->SetAddedToPrematureBattleGroundStartList(true);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    uint8 playersNeededPerTeam = 0;
+
+    if (isArena())
+    {
+        if (sBattlegroundMgr->isArenaTesting())
+            playersNeededPerTeam = 1;
+        else
+        {
+            switch (GetArenaType())
+            {
+                case ARENA_TYPE_2v2:
+                    playersNeededPerTeam = 2;
+                    break;
+                case ARENA_TYPE_3v3:
+                    playersNeededPerTeam = 3;
+                    break;
+                case ARENA_TYPE_5v5:
+                    playersNeededPerTeam = 5;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    else
+    {
+        if (sBattlegroundMgr->isTesting())
+            playersNeededPerTeam = 1;
+        else
+        {
+            switch (GetMapId())
+            {
+                case 489: // Warsong Gulch
+                    playersNeededPerTeam = 7;
+                    break;
+                case 529: // Arathi Basin
+                case 566: // Eye of the Storm
+                case 607: // Strand of the Ancients
+                    playersNeededPerTeam = 10;
+                    break;
+                case 30:  // Alterac Valley
+                case 628: // Isle of Conquest
+                    playersNeededPerTeam = 30;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    if (Get_TeamA_PrematureStartPlayers() == playersNeededPerTeam && Get_TeamB_PrematureStartPlayers() == playersNeededPerTeam)
+        HandlePrematureStart();
+}
+
+void Battleground::HandlePrematureStart()
+{
+    m_Events |= BG_STARTING_EVENT_2;
+    if (isArena())
+        SetStartDelayTime(BG_START_DELAY_15S);
+    else
+        SetStartDelayTime(BG_START_DELAY_30S);
+    CleanupPrematureStart();
+}
+
+void Battleground::CleanupPrematureStart()
+{
+    Clear_TeamA_PrematureStartPlayers();
+    Clear_TeamB_PrematureStartPlayers();
+    ClearWantsPrematureStart();
+    RemoveReadyMarkers();
+}
+
+void Battleground::ClearWantsPrematureStart()
+{
+    for (BattlegroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
+        if (Player* player = ObjectAccessor::FindPlayer(itr->first))
+        {
+            player->SetWantsPrematureBattleGroundStart(false);
+            player->SetAddedToPrematureBattleGroundStartList(false);
+        }
+}
+
+void Battleground::RemoveReadyMarkers()
+{
+    for (std::set<GameObject*>::iterator itr = ReadyMarkers.begin(); itr != ReadyMarkers.end(); ++itr)
+        if (GameObject* go = *itr)
+        {
+            go->Delete();
+            ReadyMarkers.erase(itr);
+        }
 }

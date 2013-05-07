@@ -131,6 +131,8 @@ enum BattlegroundBuffObjects
     BG_OBJECTID_BERSERKERBUFF_ENTRY = 179905
 };
 
+#define BG_OBJECTID_READY_MARKER 1000000
+
 enum BattlegroundRandomRewards
 {
     BG_REWARD_WINNER_HONOR_FIRST    = 30,
@@ -334,9 +336,7 @@ class Battleground
         virtual void Reset();                               // resets all common properties for battlegrounds, must be implemented and called in BG subclass
         virtual void StartingEventCloseDoors() {}
         virtual void StartingEventOpenDoors() {}
-        virtual void ResetBGSubclass()                      // must be implemented in BG subclass
-        {
-        }
+        virtual void ResetBGSubclass() {}                   // must be implemented in BG subclass
 
         virtual void DestroyGate(Player* /*player*/, GameObject* /*go*/) {}
 
@@ -580,6 +580,19 @@ class Battleground
 
         virtual uint64 GetFlagPickerGUID(int32 /*team*/ = -1) const { return 0; }
 
+        uint8 Get_TeamA_PrematureStartPlayers() { return TeamA_PrematureStartPlayers; }
+        void Add_TeamA_PrematureStartPlayer() { TeamA_PrematureStartPlayers++; }
+        void Clear_TeamA_PrematureStartPlayers() { TeamA_PrematureStartPlayers = 0; }
+        uint8 Get_TeamB_PrematureStartPlayers() { return TeamB_PrematureStartPlayers; }
+        void Add_TeamB_PrematureStartPlayer() { TeamB_PrematureStartPlayers++; }
+        void Clear_TeamB_PrematureStartPlayers() { TeamB_PrematureStartPlayers = 0; }
+
+        void CheckForPrematureStart(Player* player);
+        void HandlePrematureStart();
+        void CleanupPrematureStart();
+        void ClearWantsPrematureStart();
+        void RemoveReadyMarkers();
+
     protected:
         // this method is called, when BG cannot spawn its own spirit guide, or something is wrong, It correctly ends Battleground
         void EndNow();
@@ -638,6 +651,10 @@ class Battleground
         bool   m_PrematureCountDown;
         uint32 m_PrematureCountDownTimer;
         char const* m_Name;
+
+        uint8 TeamA_PrematureStartPlayers;
+        uint8 TeamB_PrematureStartPlayers;
+        std::set<GameObject*> ReadyMarkers;
 
         /* Pre- and post-update hooks */
 

@@ -228,6 +228,7 @@ void AddBattlegroundScripts()
     void AddSC_npc_gossip_vendor();
     void AddSC_npc_class_trainer();
     void AddSC_pvp_titles();
+    void AddSC_PrematureStart();
 #endif
 
 void AddCustomScripts()
@@ -242,5 +243,6 @@ void AddCustomScripts()
     AddSC_npc_gossip_vendor();
     AddSC_npc_class_trainer();
     AddSC_pvp_titles();
+    AddSC_PrematureStart();
 #endif
 }

@@ -2593,7 +2593,7 @@ class Player : public Unit, public GridObject<Player>
         void SetShowDBWTransformation(bool x) { m_show_dbw_transformation = x; }
         bool ShowDBWTransformation() const { return m_show_dbw_transformation; }
 
-        void SetIsMorphed(bool x) { m_isMorphed = x; }
+        void SetMorphed(bool x) { m_isMorphed = x; }
         bool IsMorphed() const { return m_isMorphed; }
         void SetNoggenfoggerMorphed(bool x) { m_isNoggenfoggerMorphed = x; }
         bool IsNoggenfoggerMorphed() const { return m_isNoggenfoggerMorphed; }
@@ -2602,6 +2602,11 @@ class Player : public Unit, public GridObject<Player>
         uint8 GetSelectedTransmogItemSlot() const { return m_selectedTransmogItemSlot; }
 
         uint32 GetHijackedCharacterAccountId() const { return m_hijackedCharacterAccountId; }
+
+        void SetWantsPrematureBattleGroundStart(bool x) { m_wantsPrematureBattleGroundStart = x; }
+        bool WantsPrematureBattleGroundStart() const { return m_wantsPrematureBattleGroundStart; }
+        void SetAddedToPrematureBattleGroundStartList(bool x) { m_addedToPrematureBattleGroundStartList = x; }
+        bool IsAddedToPrematureBattleGroundStartList() const { return m_addedToPrematureBattleGroundStartList; }
 
         bool IsDamageSpec() const;
         bool IsTankingSpec() const;
@@ -2954,6 +2959,9 @@ class Player : public Unit, public GridObject<Player>
         uint32 m_hijackedCharacterAccountId;
 
         uint8 m_selectedTransmogItemSlot;
+
+        bool m_wantsPrematureBattleGroundStart;
+        bool m_addedToPrematureBattleGroundStartList;
 };
 
 void AddItemsSetItem(Player*player, Item* item);

@@ -104,61 +104,58 @@ enum EYBattlegroundObjectEntry
 
 enum EYBattlegroundPointsTrigger
 {
-    TR_BLOOD_ELF_POINT        = 4476,
-    TR_FEL_REAVER_POINT      = 4514,
-    TR_MAGE_TOWER_POINT       = 4516,
-    TR_DRAENEI_RUINS_POINT    = 4518,
-    TR_BLOOD_ELF_BUFF         = 4568,
-    TR_FEL_REAVER_BUFF       = 4569,
-    TR_MAGE_TOWER_BUFF        = 4570,
-    TR_DRAENEI_RUINS_BUFF     = 4571
+    TR_BLOOD_ELF_POINT          = 4476,
+    TR_FEL_REAVER_POINT         = 4514,
+    TR_MAGE_TOWER_POINT         = 4516,
+    TR_DRAENEI_RUINS_POINT      = 4518,
+    TR_BLOOD_ELF_BUFF           = 4568,
+    TR_FEL_REAVER_BUFF          = 4569,
+    TR_MAGE_TOWER_BUFF          = 4570,
+    TR_DRAENEI_RUINS_BUFF       = 4571
 };
 
 enum EYBattlegroundGaveyards
 {
-    EY_GRAVEYARD_MAIN_ALLIANCE     = 1103,
-    EY_GRAVEYARD_MAIN_HORDE        = 1104,
-    EY_GRAVEYARD_FEL_REAVER       = 1105,
-    EY_GRAVEYARD_BLOOD_ELF         = 1106,
-    EY_GRAVEYARD_DRAENEI_RUINS     = 1107,
-    EY_GRAVEYARD_MAGE_TOWER        = 1108
+    EY_GRAVEYARD_MAIN_ALLIANCE      = 1103,
+    EY_GRAVEYARD_MAIN_HORDE         = 1104,
+    EY_GRAVEYARD_FEL_REAVER         = 1105,
+    EY_GRAVEYARD_BLOOD_ELF          = 1106,
+    EY_GRAVEYARD_DRAENEI_RUINS      = 1107,
+    EY_GRAVEYARD_MAGE_TOWER         = 1108
 };
 
 enum EYBattlegroundPoints
 {
-    FEL_REAVER     = 0,
-    BLOOD_ELF       = 1,
-    DRAENEI_RUINS   = 2,
-    MAGE_TOWER      = 3,
-
-    EY_PLAYERS_OUT_OF_POINTS  = 4,
-    EY_POINTS_MAX             = 4
+    FEL_REAVER                  = 0,
+    BLOOD_ELF                   = 1,
+    DRAENEI_RUINS               = 2,
+    MAGE_TOWER                  = 3,
+    EY_PLAYERS_OUT_OF_POINTS    = 4,
+    EY_POINTS_MAX               = 4
 };
 
 enum EYBattlegroundCreaturesTypes
 {
-    EY_SPIRIT_FEL_REAVER      = 0,
-    EY_SPIRIT_BLOOD_ELF        = 1,
-    EY_SPIRIT_DRAENEI_RUINS    = 2,
-    EY_SPIRIT_MAGE_TOWER       = 3,
-    EY_SPIRIT_MAIN_ALLIANCE    = 4,
-    EY_SPIRIT_MAIN_HORDE       = 5,
-
-    EY_TRIGGER_FEL_REAVER      = 6,
+    EY_SPIRIT_FEL_REAVER        = 0,
+    EY_SPIRIT_BLOOD_ELF         = 1,
+    EY_SPIRIT_DRAENEI_RUINS     = 2,
+    EY_SPIRIT_MAGE_TOWER        = 3,
+    EY_SPIRIT_MAIN_ALLIANCE     = 4,
+    EY_SPIRIT_MAIN_HORDE        = 5,
+    EY_TRIGGER_FEL_REAVER       = 6,
     EY_TRIGGER_BLOOD_ELF        = 7,
     EY_TRIGGER_DRAENEI_RUINS    = 8,
     EY_TRIGGER_MAGE_TOWER       = 9,
-
-    BG_EY_CREATURES_MAX        = 10
+    BG_EY_CREATURES_MAX         = 10
 };
 
 enum EYBattlegroundObjectTypes
 {
     BG_EY_OBJECT_DOOR_A                         = 0,
     BG_EY_OBJECT_DOOR_H                         = 1,
-    BG_EY_OBJECT_A_BANNER_FEL_REAVER_CENTER    = 2,
-    BG_EY_OBJECT_A_BANNER_FEL_REAVER_LEFT      = 3,
-    BG_EY_OBJECT_A_BANNER_FEL_REAVER_RIGHT     = 4,
+    BG_EY_OBJECT_A_BANNER_FEL_REAVER_CENTER     = 2,
+    BG_EY_OBJECT_A_BANNER_FEL_REAVER_LEFT       = 3,
+    BG_EY_OBJECT_A_BANNER_FEL_REAVER_RIGHT      = 4,
     BG_EY_OBJECT_A_BANNER_BLOOD_ELF_CENTER      = 5,
     BG_EY_OBJECT_A_BANNER_BLOOD_ELF_LEFT        = 6,
     BG_EY_OBJECT_A_BANNER_BLOOD_ELF_RIGHT       = 7,
@@ -168,9 +165,9 @@ enum EYBattlegroundObjectTypes
     BG_EY_OBJECT_A_BANNER_MAGE_TOWER_CENTER     = 11,
     BG_EY_OBJECT_A_BANNER_MAGE_TOWER_LEFT       = 12,
     BG_EY_OBJECT_A_BANNER_MAGE_TOWER_RIGHT      = 13,
-    BG_EY_OBJECT_H_BANNER_FEL_REAVER_CENTER    = 14,
-    BG_EY_OBJECT_H_BANNER_FEL_REAVER_LEFT      = 15,
-    BG_EY_OBJECT_H_BANNER_FEL_REAVER_RIGHT     = 16,
+    BG_EY_OBJECT_H_BANNER_FEL_REAVER_CENTER     = 14,
+    BG_EY_OBJECT_H_BANNER_FEL_REAVER_LEFT       = 15,
+    BG_EY_OBJECT_H_BANNER_FEL_REAVER_RIGHT      = 16,
     BG_EY_OBJECT_H_BANNER_BLOOD_ELF_CENTER      = 17,
     BG_EY_OBJECT_H_BANNER_BLOOD_ELF_LEFT        = 18,
     BG_EY_OBJECT_H_BANNER_BLOOD_ELF_RIGHT       = 19,
@@ -180,9 +177,9 @@ enum EYBattlegroundObjectTypes
     BG_EY_OBJECT_H_BANNER_MAGE_TOWER_CENTER     = 23,
     BG_EY_OBJECT_H_BANNER_MAGE_TOWER_LEFT       = 24,
     BG_EY_OBJECT_H_BANNER_MAGE_TOWER_RIGHT      = 25,
-    BG_EY_OBJECT_N_BANNER_FEL_REAVER_CENTER    = 26,
-    BG_EY_OBJECT_N_BANNER_FEL_REAVER_LEFT      = 27,
-    BG_EY_OBJECT_N_BANNER_FEL_REAVER_RIGHT     = 28,
+    BG_EY_OBJECT_N_BANNER_FEL_REAVER_CENTER     = 26,
+    BG_EY_OBJECT_N_BANNER_FEL_REAVER_LEFT       = 27,
+    BG_EY_OBJECT_N_BANNER_FEL_REAVER_RIGHT      = 28,
     BG_EY_OBJECT_N_BANNER_BLOOD_ELF_CENTER      = 29,
     BG_EY_OBJECT_N_BANNER_BLOOD_ELF_LEFT        = 30,
     BG_EY_OBJECT_N_BANNER_BLOOD_ELF_RIGHT       = 31,
@@ -192,19 +189,20 @@ enum EYBattlegroundObjectTypes
     BG_EY_OBJECT_N_BANNER_MAGE_TOWER_CENTER     = 35,
     BG_EY_OBJECT_N_BANNER_MAGE_TOWER_LEFT       = 36,
     BG_EY_OBJECT_N_BANNER_MAGE_TOWER_RIGHT      = 37,
-    BG_EY_OBJECT_TOWER_CAP_FEL_REAVER          = 38,
+    BG_EY_OBJECT_TOWER_CAP_FEL_REAVER           = 38,
     BG_EY_OBJECT_TOWER_CAP_BLOOD_ELF            = 39,
     BG_EY_OBJECT_TOWER_CAP_DRAENEI_RUINS        = 40,
     BG_EY_OBJECT_TOWER_CAP_MAGE_TOWER           = 41,
     BG_EY_OBJECT_FLAG_NETHERSTORM               = 42,
-    BG_EY_OBJECT_FLAG_FEL_REAVER               = 43,
+    BG_EY_OBJECT_FLAG_FEL_REAVER                = 43,
     BG_EY_OBJECT_FLAG_BLOOD_ELF                 = 44,
     BG_EY_OBJECT_FLAG_DRAENEI_RUINS             = 45,
     BG_EY_OBJECT_FLAG_MAGE_TOWER                = 46,
-    //buffs
-    BG_EY_OBJECT_SPEEDBUFF_FEL_REAVER          = 47,
-    BG_EY_OBJECT_REGENBUFF_FEL_REAVER          = 48,
-    BG_EY_OBJECT_BERSERKBUFF_FEL_REAVER        = 49,
+
+    // Buffs
+    BG_EY_OBJECT_SPEEDBUFF_FEL_REAVER           = 47,
+    BG_EY_OBJECT_REGENBUFF_FEL_REAVER           = 48,
+    BG_EY_OBJECT_BERSERKBUFF_FEL_REAVER         = 49,
     BG_EY_OBJECT_SPEEDBUFF_BLOOD_ELF            = 50,
     BG_EY_OBJECT_REGENBUFF_BLOOD_ELF            = 51,
     BG_EY_OBJECT_BERSERKBUFF_BLOOD_ELF          = 52,
@@ -214,7 +212,9 @@ enum EYBattlegroundObjectTypes
     BG_EY_OBJECT_SPEEDBUFF_MAGE_TOWER           = 56,
     BG_EY_OBJECT_REGENBUFF_MAGE_TOWER           = 57,
     BG_EY_OBJECT_BERSERKBUFF_MAGE_TOWER         = 58,
-    BG_EY_OBJECT_MAX                            = 59
+    BG_EY_OBJECT_READY_MARKER_A                 = 59,
+    BG_EY_OBJECT_READY_MARKER_B                 = 60,
+    BG_EY_OBJECT_MAX                            = 61
 };
 
 #define BG_EY_NotEYWeekendHonorTicks    260
