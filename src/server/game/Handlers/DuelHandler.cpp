@@ -84,39 +84,39 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
         plTarget->getHostileRefManager().deleteReferences();
         player->RemoveAllTempSummons();
         plTarget->RemoveAllTempSummons();
-    }
 
-    if (Pet* playerPet = player->GetPet())
-    {
-        playerPet->SetIsDueling(true);
-
-        if (reset)
+        if (Pet* playerPet = player->GetPet())
         {
-            playerPet->RemoveAllNegativeAuras();
-            playerPet->SetHealth(playerPet->GetMaxHealth());
-            playerPet->SetPower(POWER_MANA, playerPet->GetMaxPower(POWER_MANA));
-            playerPet->SetPower(POWER_FOCUS, playerPet->GetMaxPower(POWER_FOCUS));
-            playerPet->RemoveAllPetSpellCooldowns(player);
-            playerPet->ClearDiminishings();
-            playerPet->ClearInCombat();
-            playerPet->getHostileRefManager().deleteReferences();
+            playerPet->SetIsDueling(true);
+
+            if (reset)
+            {
+                playerPet->RemoveAllNegativeAuras();
+                playerPet->SetHealth(playerPet->GetMaxHealth());
+                playerPet->SetPower(POWER_MANA, playerPet->GetMaxPower(POWER_MANA));
+                playerPet->SetPower(POWER_FOCUS, playerPet->GetMaxPower(POWER_FOCUS));
+                playerPet->RemoveAllPetSpellCooldowns(player);
+                playerPet->ClearDiminishings();
+                playerPet->ClearInCombat();
+                playerPet->getHostileRefManager().deleteReferences();
+            }
         }
-    }
 
-    if (Pet* plTargetPet = plTarget->GetPet())
-    {
-        plTargetPet->SetIsDueling(true);
-
-        if (reset)
+        if (Pet* plTargetPet = plTarget->GetPet())
         {
-            plTargetPet->RemoveAllNegativeAuras();
-            plTargetPet->SetHealth(plTargetPet->GetMaxHealth());
-            plTargetPet->SetPower(POWER_MANA, plTargetPet->GetMaxPower(POWER_MANA));
-            plTargetPet->SetPower(POWER_FOCUS, plTargetPet->GetMaxPower(POWER_FOCUS));
-            plTargetPet->RemoveAllPetSpellCooldowns(plTarget);
-            plTargetPet->ClearDiminishings();
-            plTargetPet->ClearInCombat();
-            plTargetPet->getHostileRefManager().deleteReferences();
+            plTargetPet->SetIsDueling(true);
+
+            if (reset)
+            {
+                plTargetPet->RemoveAllNegativeAuras();
+                plTargetPet->SetHealth(plTargetPet->GetMaxHealth());
+                plTargetPet->SetPower(POWER_MANA, plTargetPet->GetMaxPower(POWER_MANA));
+                plTargetPet->SetPower(POWER_FOCUS, plTargetPet->GetMaxPower(POWER_FOCUS));
+                plTargetPet->RemoveAllPetSpellCooldowns(plTarget);
+                plTargetPet->ClearDiminishings();
+                plTargetPet->ClearInCombat();
+                plTargetPet->getHostileRefManager().deleteReferences();
+            }
         }
     }
 }

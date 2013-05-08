@@ -10324,7 +10324,7 @@ void Unit::RemoveAllTempSummons()
         for (ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
         {
             if (TempSummon* tempSummon = (*itr)->ToTempSummon())
-                if (tempSummon && tempSummon->GetTimer())
+                if (tempSummon && tempSummon->GetTimer() && !tempSummon->isTotem())
                 {
                     m_Controlled.erase(tempSummon);
                     if (tempSummon->GetCharmerGUID() == GetGUID())
