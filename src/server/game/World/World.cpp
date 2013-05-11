@@ -1224,6 +1224,8 @@ void World::LoadConfigSettings(bool reload)
     // Limits the use of Bauble of True Blood to healers only
     m_bool_configs[CONFIG_HEALER_ONLY_BAUBLE] = ConfigMgr::GetBoolDefault("HealerOnlyBauble", false);
 
+    m_int_configs[CONFIG_STEALTH_DETECTION_VALUE] = ConfigMgr::GetIntDefault("StealthDetectionValue", 30);
+
     // Class Global Damage/Heal Adjustment
     m_bool_configs[CONFIG_GLOBAL_ADJUSTMENT] = ConfigMgr::GetBoolDefault("GlobalAdjustment.On", false);
 

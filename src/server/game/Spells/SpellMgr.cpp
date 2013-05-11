@@ -3274,8 +3274,29 @@ void SpellMgr::LoadDbcDataCorrections()
             case 71839: // Drain Life (Bryntroll Heroic)
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CANT_CRIT;
                 break;
-            case 605:  // Mind Control
+            case 605:   // Mind Control
                 spellInfo->EffectMechanic[2] = 0;
+                break;
+            case 64058: // Psychic Horror - Disarm
+                spellInfo->DmgClass = SPELL_DAMAGE_CLASS_MAGIC;
+                break;
+            case 11327: // Vanish (Rank 1)
+                spellInfo->EffectApplyAuraName[1] = SPELL_AURA_MOD_STEALTH_LEVEL;
+                spellInfo->EffectBasePoints[1] = 20;
+                spellInfo->EffectRealPointsPerLevel[1] = 0;
+                spellInfo->EffectValueMultiplier[1] = 0;
+                break;
+            case 11329: // Vanish (Rank 2)
+                spellInfo->EffectApplyAuraName[1] = SPELL_AURA_MOD_STEALTH_LEVEL;
+                spellInfo->EffectBasePoints[1] = 30;
+                spellInfo->EffectRealPointsPerLevel[1] = 0;
+                spellInfo->EffectValueMultiplier[1] = 0;
+                break;
+            case 26888: // Vanish (Rank 3)
+                spellInfo->EffectApplyAuraName[1] = SPELL_AURA_MOD_STEALTH_LEVEL;
+                spellInfo->EffectBasePoints[1] = 40;
+                spellInfo->EffectRealPointsPerLevel[1] = 0;
+                spellInfo->EffectValueMultiplier[1] = 0;
                 break;
             default:
                 break;

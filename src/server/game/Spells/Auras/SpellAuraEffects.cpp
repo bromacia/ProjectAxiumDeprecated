@@ -1788,9 +1788,9 @@ void AuraEffect::HandleModStealthLevel(AuraApplication const* aurApp, uint8 mode
     StealthType type = StealthType(GetMiscValue());
 
     if (apply)
-        target->m_stealth.AddValue(type, GetAmount());
+        target->m_stealth.AddValue(type, GetAmount() / 3);
     else
-        target->m_stealth.AddValue(type, -GetAmount());
+        target->m_stealth.AddValue(type, -GetAmount() / 3);
 
     // call functions which may have additional effects after chainging state of unit
     target->UpdateObjectVisibility();
