@@ -989,6 +989,10 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         }
 
         player->RemoveAllNegativeAuras();
+        player->ClearArenaTeamColor();
+
+        if (Pet* playerPet = player->GetPet())
+            playerPet->ClearArenaTeamColor();
     }
 
     RemovePlayer(player, guid, team);                           // BG subclass specific code
@@ -1164,16 +1168,34 @@ void Battleground::AddPlayer(Player* player)
         if (team == ALLIANCE)                                // gold
         {
             if (player->GetTeam() == HORDE)
+            {
                 player->CastSpell(player, SPELL_HORDE_GOLD_FLAG, true);
+                player->SetArenaTeamColor(ARENA_TEAM_COLOR_GOLD);
+            }
             else
+            {
                 player->CastSpell(player, SPELL_ALLIANCE_GOLD_FLAG, true);
+                player->SetArenaTeamColor(ARENA_TEAM_COLOR_GOLD);
+            }
+
+            if (Pet* playerPet = player->GetPet())
+                playerPet->SetArenaTeamColor(ARENA_TEAM_COLOR_GOLD);
         }
         else                                                // green
         {
             if (player->GetTeam() == HORDE)
+            {
                 player->CastSpell(player, SPELL_HORDE_GREEN_FLAG, true);
+                player->SetArenaTeamColor(ARENA_TEAM_COLOR_GREEN);
+            }
             else
+            {
                 player->CastSpell(player, SPELL_ALLIANCE_GREEN_FLAG, true);
+                player->SetArenaTeamColor(ARENA_TEAM_COLOR_GREEN);
+            }
+
+            if (Pet* playerPet = player->GetPet())
+                playerPet->SetArenaTeamColor(ARENA_TEAM_COLOR_GREEN);
         }
 
         player->DestroyConjuredItems(true);
@@ -1246,6 +1268,12 @@ void Battleground::AddOrSetPlayerToCorrectBgGroup(Player* player, uint32 team)
                     group->SendUpdate();
                 }
         }
+    }
+
+    if (isArena() && group->isBGGroup())
+    {
+        group->SetGroupType(GROUPTYPE_RAID);
+        group->SetBattlegroundGroup(NULL);
     }
 }
 

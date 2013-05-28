@@ -38,6 +38,13 @@
 #include "Timer.h"
 #include <list>
 
+enum ArenaTeamColor
+{
+    ARENA_TEAM_COLOR_NONE,
+    ARENA_TEAM_COLOR_GOLD,
+    ARENA_TEAM_COLOR_GREEN
+};
+
 enum DeathbringersWillSpells
 {
     DBW_PROC_STR_NORMAL   = 71484,
@@ -2267,6 +2274,10 @@ class Unit : public WorldObject
         }
         bool IsDueling() const { return m_isDueling; }
 
+        void SetArenaTeamColor(ArenaTeamColor color) { arenaTeam = color; }
+        ArenaTeamColor GetArenaTeamColor() { return arenaTeam; }
+        void ClearArenaTeamColor() { arenaTeam = ARENA_TEAM_COLOR_NONE; }
+
     protected:
         explicit Unit (bool isWorldObject);
 
@@ -2392,6 +2403,8 @@ class Unit : public WorldObject
         bool _targetLocked; // locks the target during spell cast for proper facing
 
         bool m_isDueling;
+
+        ArenaTeamColor arenaTeam;
 };
 
 namespace Trinity

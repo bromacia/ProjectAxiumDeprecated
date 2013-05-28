@@ -299,6 +299,9 @@ class Group
         // FG: evil hacks
         void BroadcastGroupUpdate(void);
 
+        GroupType GetGroupType() { return m_groupType; }
+        void SetGroupType(GroupType type) { m_groupType = type; }
+
     protected:
         bool _setMembersGroup(uint64 guid, uint8 group);
         void _homebindIfInstance(Player* player);
