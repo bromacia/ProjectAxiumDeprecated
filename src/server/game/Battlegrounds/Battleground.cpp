@@ -1271,10 +1271,7 @@ void Battleground::AddOrSetPlayerToCorrectBgGroup(Player* player, uint32 team)
     }
 
     if (isArena() && group->isBGGroup())
-    {
         group->SetGroupType(GROUPTYPE_RAID);
-        group->SetBattlegroundGroup(NULL);
-    }
 }
 
 // This method should be called when player logs into running battleground

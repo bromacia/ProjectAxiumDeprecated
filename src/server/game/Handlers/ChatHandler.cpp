@@ -316,8 +316,12 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             if (!group)
             {
                 group = _player->GetGroup();
-                if (!group || group->isBGGroup())
+                if (!group)
                     return;
+
+                if (_player->GetBattleground())
+                    if (group->isBGGroup() && !_player->GetBattleground()->isArena())
+                        return;
             }
 
             if (type == CHAT_MSG_PARTY_LEADER && !group->IsLeader(_player->GetGUID()))
