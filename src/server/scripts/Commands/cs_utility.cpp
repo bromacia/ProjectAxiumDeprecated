@@ -22,6 +22,7 @@ public:
             { "warp",            SEC_GAMEMASTER,     false, &HandleWarpCommand,                      "", NULL },
             { "hijackcharacter", SEC_ADMINISTRATOR,  false, &HandleHijackCharacterCommand,           "", NULL },
             { "returncharacter", SEC_ADMINISTRATOR,  false, &HandleReturnCharacterCommand,           "", NULL },
+            { "getspeedrate",    SEC_GAMEMASTER,     false, &HandleGetSpeedRateCommand,              "", NULL },
             { NULL,              0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -361,10 +362,10 @@ public:
         char* arg1 = strtok((char*)args, " ");
         char* arg2 = strtok(NULL, " ");
 
-        if (! arg1)
+        if (!arg1)
             return false;
 
-        if (! arg2)
+        if (!arg2)
             return false;
 
         char dir = arg1[0];
@@ -480,6 +481,48 @@ public:
             CharacterDatabase.PExecute("UPDATE characters SET account = %u, hijackedAccountId = 0 WHERE guid = %u", hijackedCharacterAccountId, hijackedCharacterGUID);
             hijackedCharacter->GetSession()->KickPlayer();
 
+        return true;
+    }
+
+    static bool HandleGetSpeedRateCommand(ChatHandler* handler, const char* args)
+    {
+        if (!*args)
+            return false;
+
+        char* typeArg = strtok((char*)args, " ");
+
+        if (!typeArg)
+            return false;
+
+        uint8 moveType = (uint8)atoi(typeArg);
+
+        if (moveType > MAX_MOVE_TYPE)
+            return false;
+
+        Unit* target = handler->getSelectedUnit();
+        if (!target)
+            target = handler->GetSession()->GetPlayer();
+        float speed = 0.0f;
+        float speedRate = 0.0f;
+        std::string moveTypeString = "Unknown";
+
+        switch (moveType)
+        {
+            case MOVE_WALK:        speed = target->GetSpeed(MOVE_WALK);        speedRate = target->GetSpeedRate(MOVE_WALK);        moveTypeString = "MOVE_WALK";        break;
+            case MOVE_RUN:         speed = target->GetSpeed(MOVE_RUN);         speedRate = target->GetSpeedRate(MOVE_RUN);         moveTypeString = "MOVE_RUN";         break;
+            case MOVE_RUN_BACK:    speed = target->GetSpeed(MOVE_RUN_BACK);    speedRate = target->GetSpeedRate(MOVE_RUN_BACK);    moveTypeString = "MOVE_RUN_BACK";    break;
+            case MOVE_SWIM:        speed = target->GetSpeed(MOVE_SWIM);        speedRate = target->GetSpeedRate(MOVE_SWIM);        moveTypeString = "MOVE_SWIM";        break;
+            case MOVE_SWIM_BACK:   speed = target->GetSpeed(MOVE_SWIM_BACK);   speedRate = target->GetSpeedRate(MOVE_SWIM_BACK);   moveTypeString = "MOVE_SWIM_BACK";   break;
+            case MOVE_TURN_RATE:   speed = target->GetSpeed(MOVE_TURN_RATE);   speedRate = target->GetSpeedRate(MOVE_TURN_RATE);   moveTypeString = "MOVE_TURN_RATE";   break;
+            case MOVE_FLIGHT:      speed = target->GetSpeed(MOVE_FLIGHT);      speedRate = target->GetSpeedRate(MOVE_FLIGHT);      moveTypeString = "MOVE_FLIGHT";      break;
+            case MOVE_FLIGHT_BACK: speed = target->GetSpeed(MOVE_FLIGHT_BACK); speedRate = target->GetSpeedRate(MOVE_FLIGHT_BACK); moveTypeString = "MOVE_FLIGHT_BACK"; break;
+            case MOVE_PITCH_RATE:  speed = target->GetSpeed(MOVE_PITCH_RATE);  speedRate = target->GetSpeedRate(MOVE_PITCH_RATE);  moveTypeString = "MOVE_PITCH_RATE";  break;
+            default: break;
+        }
+
+        handler->PSendSysMessage("Target: %s, Move Type: %s", target->GetName(), moveTypeString.c_str());
+        handler->PSendSysMessage("Speed: %f", speed);
+        handler->PSendSysMessage("Speed Rate: %f", speedRate);
         return true;
     }
 };
