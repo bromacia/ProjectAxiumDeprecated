@@ -20,11 +20,8 @@ else()
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
   message(STATUS "MSVC: Enabled large address awareness")
 
-  # Test if we need SSE2-support
-  if(USE_SFMT)
-    add_definitions(/arch:SSE2)
-    message(STATUS "MSVC: Enabled SSE2 support")
-  endif()
+  add_definitions(/arch:SSE2)
+  message(STATUS "MSVC: Enabled SSE2 support")
 endif()
 
 # Set build-directive (used in core to tell which buildtype we used)
@@ -53,3 +50,9 @@ if(NOT WITH_WARNINGS)
     message(STATUS "MSVC: Disabled generic compiletime warnings")
   endif()
 endif()
+
+# Specify the maximum PreCompiled Header memory allocation limit
+# Fixes a compiler-problem when using PCH - the /Ym flag is adjusted by the compiler in MSVC2012, hence we need to set an upper limit with /Zm to avoid discrepancies)
+# (And yes, this is a verified , unresolved bug with MSVC... *sigh*)
+string(REGEX REPLACE "/Zm[0-9]+ *" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm500" CACHE STRING "" FORCE)
