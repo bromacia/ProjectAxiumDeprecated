@@ -54,7 +54,6 @@ bool PathFinderMovementGenerator::Calculate(float destX, float destY, float dest
         !Trinity::IsValidMapCoord(_sourceUnit->GetPositionX(), _sourceUnit->GetPositionY(), _sourceUnit->GetPositionZ()))
         return false;
 
-    Vector3 oldDest = GetEndPosition();
     Vector3 dest(destX, destY, destZ);
     _setEndPosition(dest);
 
@@ -79,25 +78,9 @@ bool PathFinderMovementGenerator::Calculate(float destX, float destY, float dest
 
     _updateFilter();
 
-    // check if destination moved - if not we can optimize something here
-    // we are following old, precalculated path?
-    float dist = _sourceUnit->GetObjectSize();
-    if (_inRange(oldDest, dest, dist, dist) && _pathPoints.size() > 2)
-    {
-        // our target is not moving - we just coming closer
-        // we are moving on precalculated path - enjoy the ride
-        sLog->outDebug(LOG_FILTER_MAPS, "++ PathFinderMovementGenerator::calculate:: precalculated path\n");
+    _buildPolyPath(start, dest);
+    return true;
 
-        _pathPoints.erase(_pathPoints.begin());
-        return false;
-    }
-    else
-    {
-        // target moved, so we need to update the poly path
-        TRINITY_GUARD(ACE_Thread_Mutex, _lock);
-        _buildPolyPath(start, dest);
-        return true;
-    }
 }
 
 dtPolyRef PathFinderMovementGenerator::_getPathPolyByPosition(const dtPolyRef *polyPath, uint32 polyPathSize, const float* point, float *distance) const
@@ -432,12 +415,11 @@ void PathFinderMovementGenerator::_buildPointPath(const float *startPoint, const
         return;
     }
 
-    float ground_z = 0.0f;
     _pathPoints.resize(pointCount);
     for (uint32 i = 0; i < pointCount; ++i)
     {
         _pathPoints[i] = Vector3(pathPoints[i*VERTEX_SIZE+2], pathPoints[i*VERTEX_SIZE], pathPoints[i*VERTEX_SIZE+1]);
-        _pathPoints[i].z = _sourceUnit->GetMap()->GetWaterOrGroundLevel(_pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, &ground_z, true);
+        _sourceUnit->UpdateGroundOrWaterPositionZ(_pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z);
     }
 
     // first point is always our current location - we need the next one
@@ -496,10 +478,10 @@ void PathFinderMovementGenerator::_createFilter()
         if (creature->canSwim())
             includeFlags |= (NAV_WATER | NAV_MAGMA | NAV_SLIME);           // swim
     }
-    else if (_sourceUnit->GetTypeId() == TYPEID_PLAYER)
+    else
     {
         // perfect support not possible, just stay 'safe'
-        includeFlags |= (NAV_GROUND | NAV_WATER);
+        includeFlags |= (NAV_GROUND | NAV_WATER | NAV_MAGMA | NAV_SLIME);
     }
 
     _filter.setIncludeFlags(includeFlags);

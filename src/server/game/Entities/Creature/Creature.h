@@ -470,7 +470,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapCreature
         bool IsVipVendor() const { return GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_VIP_VENDOR; }
         bool IsTransmogrifier() const;
         bool canWalk() const { return GetCreatureInfo()->InhabitType & INHABIT_GROUND; }
-        bool canSwim() const { return GetCreatureInfo()->InhabitType & INHABIT_WATER; }
+        virtual bool canSwim() const { return GetCreatureInfo()->InhabitType & INHABIT_WATER; }
         //bool canFly()  const { return GetCreatureInfo()->InhabitType & INHABIT_AIR; }
 
         void SetReactState(ReactStates st) { m_reactState = st; }

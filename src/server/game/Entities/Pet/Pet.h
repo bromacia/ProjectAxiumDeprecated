@@ -156,6 +156,15 @@ class Pet : public Guardian
                 return m_autospells[pos];
         }
 
+        bool canSwim() const override
+        {
+            Unit* owner = ToUnit()->GetOwner();
+            if (owner)
+                return owner->GetTypeId() == TYPEID_PLAYER ? true : ((Creature const*)owner)->canSwim();
+            else
+                return Creature::canSwim();
+        }
+
         void LoseHappiness();
         HappinessState GetHappinessState();
         void GivePetXP(uint32 xp);
