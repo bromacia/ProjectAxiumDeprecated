@@ -91,7 +91,7 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
         }
     }
 
-    if (owner.GetMap()->IsUnderWater(x, y, z))
+    if (owner.GetMap()->IsInWater(x, y, z))
     {
         Movement::MoveSplineInit init(owner);
         init.MoveTo(x, y, z);
@@ -102,7 +102,6 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
         if (!i_path)
             i_path = new PathFinderMovementGenerator(&owner);
 
-        i_path->SetUseStrightPath(true);
         bool result = i_path->Calculate(x, y, z);
         if (!result || (i_path->GetPathType() & PATHFIND_NOPATH))
         {

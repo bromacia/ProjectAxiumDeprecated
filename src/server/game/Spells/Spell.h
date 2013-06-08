@@ -23,6 +23,7 @@
 #include "SharedDefines.h"
 #include "ObjectMgr.h"
 #include "SpellInfo.h"
+#include "PathFinderMovementGenerator.h"
 
 class Unit;
 class Player;
@@ -652,7 +653,7 @@ class Spell
         // effect helpers
         void GetSummonPosition(uint32 i, Position &pos, float radius = 0.0f, uint32 count = 0);
         void SummonGuardian(uint32 i, uint32 entry, SummonPropertiesEntry const* properties, uint32 numSummons);
-        void CalculateJumpSpeeds(uint8 i, float speedRate, float & speedxy, float & speedz);
+        void CalculateJumpSpeeds(uint8 i, float speedRate, float& speedxy, float& speedz);
 
         SpellCastResult CanOpenLock(uint32 effIndex, uint32 lockid, SkillType& skillid, int32& reqSkillValue, int32& skillValue);
         // -------------------------------------------
@@ -669,6 +670,7 @@ class Spell
 
         bool m_skipCheck;
         uint8 m_auraScaleMask;
+        PathFinderMovementGenerator m_preGeneratedPath;
 
         ByteBuffer * m_effectExecuteData[MAX_SPELL_EFFECTS];
 

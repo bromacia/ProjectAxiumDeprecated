@@ -283,7 +283,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     {
         if (opcode == MSG_MOVE_JUMP)
         {
-            if (!plMover->IsOnGround())
+            if (plMover->IsJumping())
             {
                 ChatHandler(plMover->GetSession()).PSendGlobalGMSysMessage("Player: %s [GUID: %u] attempted to use Air Jump hack, kicking.", plMover->GetName(), plMover->GetGUIDLow());
                 plMover->GetSession()->KickPlayer();
@@ -297,7 +297,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
                 return;
             }
 
-            plMover->SetIsOnGround(false);
+            plMover->SetIsJumping(true);
         }
     }
 	
@@ -356,12 +356,12 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     // fall damage generation (ignore in flight case that can be triggered also at lags in moment teleportation to another map).
     if (opcode == MSG_MOVE_FALL_LAND && plMover && !plMover->isInFlight())
     {
-        plMover->SetIsOnGround(true);
+        plMover->SetIsJumping(false);
         plMover->HandleFall(movementInfo);
     }
 
     if (opcode == MSG_MOVE_START_SWIM && plMover)
-        plMover->SetIsOnGround(true);
+        plMover->SetIsJumping(false);
 
     if (plMover && ((movementInfo.flags & MOVEMENTFLAG_SWIMMING) != 0) != plMover->IsInWater())
     {

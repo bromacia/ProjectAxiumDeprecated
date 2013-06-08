@@ -1668,9 +1668,6 @@ class Unit : public WorldObject
         DeathState getDeathState() { return m_deathState; };
         virtual void setDeathState(DeathState s);           // overwrited in Creature/Player/Pet
 
-        void SetIsOnGround(bool x) { m_isOnGround = x; }
-        bool IsOnGround() const { return m_isOnGround; }
-
         uint64 GetOwnerGUID() const { return  GetUInt64Value(UNIT_FIELD_SUMMONEDBY); }
         uint64 GetCreatorGUID() const { return GetUInt64Value(UNIT_FIELD_CREATEDBY); }
         void SetCreatorGUID(uint64 creator) { SetUInt64Value(UNIT_FIELD_CREATEDBY, creator); }
@@ -2266,6 +2263,9 @@ class Unit : public WorldObject
 
         float m_positiveCastTimePrecent;
 
+        void SetIsJumping(bool x) { m_isJumping = x; }
+        bool IsJumping() const { return m_isJumping; }
+
         void SetIsDueling(bool x)
         {
             m_isDueling = x;
@@ -2298,8 +2298,6 @@ class Unit : public WorldObject
         Unit* m_attacking;
 
         DeathState m_deathState;
-
-        bool m_isOnGround;
 
         int32 m_procDeep;
 
@@ -2401,6 +2399,8 @@ class Unit : public WorldObject
 
         Spell const* _focusSpell;
         bool _targetLocked; // locks the target during spell cast for proper facing
+
+        bool m_isJumping;
 
         bool m_isDueling;
 

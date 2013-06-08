@@ -45,18 +45,19 @@ class Unit;
 
 enum PathType
 {
-    PATHFIND_BLANK          = 0x0000,   // path not built yet
-    PATHFIND_NORMAL         = 0x0001,   // normal path
-    PATHFIND_SHORTCUT       = 0x0002,   // travel through obstacles, terrain, air, etc (old behavior)
-    PATHFIND_INCOMPLETE     = 0x0004,   // we have partial path to follow - getting closer to target
-    PATHFIND_NOPATH         = 0x0008,   // no valid path at all or error in generating one
-    PATHFIND_NOT_USING_PATH = 0x0010    // used when we are either flying/swiming or on map w/o mmaps
+    PATHFIND_BLANK          = 0x00,   // path not built yet
+    PATHFIND_NORMAL         = 0x01,   // normal path
+    PATHFIND_SHORT          = 0x02,   // path is longer or equal to its limited path length
+    PATHFIND_SHORTCUT       = 0x04,   // travel through obstacles, terrain, air, etc (old behavior)
+    PATHFIND_INCOMPLETE     = 0x08,   // we have partial path to follow - getting closer to target
+    PATHFIND_NOPATH         = 0x10,   // no valid path at all or error in generating one
+    PATHFIND_NOT_USING_PATH = 0x20    // used when we are either flying/swiming or on map w/o mmaps
 };
 
 class PathFinderMovementGenerator
 {
     public:
-        PathFinderMovementGenerator(Unit const* owner);
+        explicit PathFinderMovementGenerator(Unit const* owner);
         ~PathFinderMovementGenerator();
 
         // Calculate the path from owner to given destination

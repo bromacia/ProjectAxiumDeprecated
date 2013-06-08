@@ -469,8 +469,8 @@ SpellValue::SpellValue(SpellInfo const* proto)
 
 Spell::Spell(Unit* caster, SpellInfo const* info, TriggerCastFlags triggerFlags, uint64 originalCasterGUID, bool skipCheck) :
 m_spellInfo(sSpellMgr->GetSpellForDifficultyFromSpell(info, caster)),
-m_caster((info->AttributesEx6 & SPELL_ATTR6_CAST_BY_CHARMER && caster->GetCharmerOrOwner()) ? caster->GetCharmerOrOwner() : caster)
-, m_spellValue(new SpellValue(m_spellInfo))
+m_caster((info->AttributesEx6 & SPELL_ATTR6_CAST_BY_CHARMER && caster->GetCharmerOrOwner()) ? caster->GetCharmerOrOwner() : caster),
+m_spellValue(new SpellValue(m_spellInfo)), m_preGeneratedPath(PathFinderMovementGenerator(m_caster))
 {
     m_customError = SPELL_CUSTOM_ERROR_NONE;
     m_skipCheck = skipCheck;
@@ -5259,13 +5259,34 @@ SpellCastResult Spell::CheckCast(bool strict)
             case SPELL_EFFECT_CHARGE:
             {
                 if (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARRIOR)
-                {
                     // Warbringer - can't be handled in proc system - should be done before checkcast root check and charge effect process
                     if (strict && m_caster->IsScriptOverriden(m_spellInfo, 6953))
                         m_caster->RemoveMovementImpairingAuras();
-                }
+
                 if (m_caster->HasUnitState(UNIT_STATE_ROOT))
                     return SPELL_FAILED_ROOTED;
+
+                if (GetSpellInfo()->NeedsExplicitUnitTarget())
+                {
+                    Unit* target = m_targets.GetUnitTarget();
+                    if (!target)
+                        return SPELL_FAILED_DONT_REPORT;
+
+                    Position pos;
+                    target->GetContactPoint(m_caster, pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+                    target->GetFirstCollisionPosition(pos, CONTACT_DISTANCE, target->GetRelativeAngle(m_caster));
+
+                    if (!m_caster->GetMap()->IsInWater(pos.m_positionX, pos.m_positionY, pos.m_positionZ))
+                    {
+                        /*m_preGeneratedPath.SetPathLengthLimit(m_spellInfo->GetMaxRange(true) * 1.5f);
+                        bool result =*/ m_preGeneratedPath.Calculate(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+                        /*if (m_preGeneratedPath.GetPathType() & PATHFIND_SHORT)
+                            return SPELL_FAILED_OUT_OF_RANGE;
+                        else if (!result || m_preGeneratedPath.GetPathType() & PATHFIND_NOPATH)
+                            return SPELL_FAILED_NOPATH;*/
+                    }
+                }
+
                 break;
             }
             case SPELL_EFFECT_SKINNING:
@@ -5794,8 +5815,10 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     // Don't allow Death Grip to be casted while the caster is falling
     if (m_spellInfo->Id == 49576)
-        if (!m_caster->IsOnGround())
-            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+        if (Player* player = m_caster->ToPlayer())
+            if (player->IsFalling() || player->IsJumping() ||
+                player->HasUnitMovementFlag(MOVEMENTFLAG_FALLING) || player->HasUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW))
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
     // Blazing Hippogryph
     if (m_spellInfo->Id == 74856)

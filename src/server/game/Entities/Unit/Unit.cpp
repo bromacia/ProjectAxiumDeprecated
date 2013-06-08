@@ -15440,13 +15440,14 @@ void Unit::StopMoving()
 {
     ClearUnitState(UNIT_STATE_MOVING);
 
-    // not need send any packets if not in world or not moving
-    if (!IsInWorld() || movespline->Finalized())
+    // not need send any packets if not in world
+    if (!IsInWorld())
         return;
 
-    // Update position using old spline
-    UpdateSplinePosition();
-    Movement::MoveSplineInit(*this).Stop();
+    Movement::MoveSplineInit init(*this);
+    init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZMinusOffset(), false);
+    init.SetFacing(GetOrientation());
+    init.Launch();
 }
 
 void Unit::SendMovementFlagUpdate()

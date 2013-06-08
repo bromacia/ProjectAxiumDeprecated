@@ -3298,6 +3298,13 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectRealPointsPerLevel[1] = 0;
                 spellInfo->EffectValueMultiplier[1] = 0;
                 break;
+            case 49376: // Feral Charge - Cat
+                spellInfo->EffectMiscValue[1] = 2;
+                break;
+            case 58867: // Spirit Wolf Leap
+                spellInfo->EffectMiscValue[1] = 300;
+                spellInfo->EffectMiscValueB[1] = 2;
+                break;
             default:
                 break;
         }

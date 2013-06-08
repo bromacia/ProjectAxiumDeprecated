@@ -46,7 +46,7 @@ void FleeingMovementGenerator<T>::_setTargetLocation(T &owner)
 
     owner.AddUnitState(UNIT_STATE_FLEEING_MOVE);
 
-    if (owner.GetMap()->IsUnderWater(x, y, z))
+    if (owner.GetMap()->IsInWater(x, y, z))
     {
         Movement::MoveSplineInit init(owner);
         init.MoveTo(x, y, z);
@@ -55,7 +55,6 @@ void FleeingMovementGenerator<T>::_setTargetLocation(T &owner)
     else
     {
         PathFinderMovementGenerator path(&owner);
-        path.SetUseStrightPath(true);
 
         if (!path.Calculate(x, y, z) || path.GetPathType() & PATHFIND_NOPATH)
         {
@@ -165,22 +164,9 @@ bool FleeingMovementGenerator<T>::_getPoint(T &owner, float &x, float &y, float 
         Trinity::NormalizeMapCoord(temp_y);
         if (owner.IsWithinLOS(temp_x, temp_y, z))
         {
-            bool is_water_now = _map->IsInWater(x,y,z);
-
-            if (is_water_now && _map->IsInWater(temp_x,temp_y,z))
-            {
-                x = temp_x;
-                y = temp_y;
-                return true;
-            }
             float new_z = _map->GetHeight(owner.GetPhaseMask(), temp_x, temp_y, z, true);
 
             if (new_z <= INVALID_HEIGHT)
-                continue;
-
-            bool is_water_next = _map->IsInWater(temp_x, temp_y, new_z);
-
-            if ((is_water_now && !is_water_next && !is_land_ok) || (!is_water_now && is_water_next && !is_water_ok))
                 continue;
 
             if (!(new_z - z) || distance / fabs(new_z - z) > 1.0f)
@@ -221,7 +207,7 @@ bool FleeingMovementGenerator<T>::_setMoveData(T &owner)
         {
             // we are very far or too close, stopping
             i_to_distance_from_caster = 0.0f;
-            i_nextCheckTime.Reset( urand(500,1000) );
+            i_nextCheckTime.Reset(urand(500,1000));
             return false;
         }
         else
@@ -378,7 +364,7 @@ bool FleeingMovementGenerator<T>::Update(T &owner, const uint32 &time_diff)
     if (!&owner || !owner.isAlive())
         return false;
 
-    if (owner.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED))
+    if (owner.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED) || owner.GetMap()->IsInWater(owner.GetPositionX(), owner.GetPositionY(), owner.GetPositionZ()))
     {
         owner.ClearUnitState(UNIT_STATE_FLEEING_MOVE);
         return true;

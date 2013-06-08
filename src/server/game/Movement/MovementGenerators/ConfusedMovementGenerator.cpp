@@ -73,7 +73,7 @@ void ConfusedMovementGenerator<T>::Reset(T &unit)
 template<class T>
 bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 {
-    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED))
+    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED) || unit.GetMap()->IsInWater(unit.GetPositionX(), unit.GetPositionY(), unit.GetPositionZ()))
         return true;
 
     if (i_nextMoveTime.Passed())
@@ -101,7 +101,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
             float y = i_waypoints[i_nextMove][1];
             float z = i_waypoints[i_nextMove][2];
 
-            if (unit.GetMap()->IsUnderWater(x, y, z))
+            if (unit.GetMap()->IsInWater(x, y, z))
             {
                 Movement::MoveSplineInit init(unit);
                 init.MoveTo(x, y, z);
@@ -110,7 +110,6 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
             else
             {
                 PathFinderMovementGenerator path(&unit);
-                path.SetUseStrightPath(true);
 
                 if (!unit.IsWithinLOS(x, y, z) || !path.Calculate(x, y, z) || path.GetPathType() & PATHFIND_NOPATH)
                 {

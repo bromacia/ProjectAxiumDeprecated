@@ -358,7 +358,7 @@ void MotionMaster::MoveKnockbackFrom(float srcX, float srcY, float speedXY, floa
         if (i_owner->IsWithinLOS(x, y, z))
         {
             Movement::MoveSplineInit init(*i_owner);
-            init.MoveTo(x,y,z);
+            init.MoveTo(x, y, z);
             init.SetParabolic(max_height, 0);
             init.SetOrientationFixed(true);
             init.SetVelocity(speedXY);
@@ -413,6 +413,19 @@ void MotionMaster::MoveFall(uint32 id/*=0*/)
     init.SetFall();
     init.Launch();
     Mutate(new EffectMovementGenerator(id), MOTION_SLOT_CONTROLLED);
+}
+
+void MotionMaster::MoveCharge(PathFinderMovementGenerator& path)
+{
+    Vector3 dest = path.GetActualEndPosition();
+
+    MoveCharge(dest.x, dest.y, dest.z, SPEED_CHARGE, EVENT_CHARGE_PREPATH, true);
+
+    // Charge movement is not started when using EVENT_CHARGE_PREPATH
+    Movement::MoveSplineInit init(*i_owner);
+    init.MovebyPath(path.GetPath());
+    init.SetVelocity(SPEED_CHARGE);
+    init.Launch();
 }
 
 void MotionMaster::MoveCharge(float x, float y, float z, float speed, uint32 id, bool generatePath)
@@ -584,11 +597,6 @@ void MotionMaster::MoveRotate(uint32 time, RotateDirection direction)
 
 void MotionMaster::propagateSpeedChange()
 {
-    /*Impl::container_type::iterator it = Impl::c.begin();
-    for (; it != end(); ++it)
-    {
-        (*it)->unitSpeedChanged();
-    }*/
     for (int i = 0; i <= i_top; ++i)
     {
         if (Impl[i])

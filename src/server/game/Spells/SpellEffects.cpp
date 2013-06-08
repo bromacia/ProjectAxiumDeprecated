@@ -1881,26 +1881,25 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
 
 void Spell::CalculateJumpSpeeds(uint8 i, float speedRate, float &speedXY, float &speedZ)
 {
-    if (!m_spellInfo->Effects[i].MiscValue || !m_spellInfo->Effects[i].MiscValueB)
-    {
-        speedXY = 100.0f;
-        speedZ = 2.0f;
-        speedXY /= speedRate;
-        return;
-    }
-    
     if (m_spellInfo->Effects[i].MiscValue >= m_spellInfo->Effects[i].MiscValueB)
     {
         speedXY = float(m_spellInfo->Effects[i].MiscValue);
-        speedZ = float(m_spellInfo->Effects[i].MiscValueB);
+        if (!m_spellInfo->Effects[i].MiscValueB)
+            speedZ = 2.0f;
+        else
+            speedZ = float(m_spellInfo->Effects[i].MiscValueB);
     }
     else
     {
         speedXY = float(m_spellInfo->Effects[i].MiscValueB);
-        speedZ = float(m_spellInfo->Effects[i].MiscValue);
+        if (!m_spellInfo->Effects[i].MiscValue)
+            speedZ = 2.0f;
+        else
+            speedZ = float(m_spellInfo->Effects[i].MiscValue);
     }
 
     speedXY /= speedRate;
+    speedZ  *= speedRate;
 }
 
 void Spell::EffectTeleportUnits(SpellEffIndex /*effIndex*/)
@@ -6345,26 +6344,20 @@ void Spell::EffectCharge(SpellEffIndex /*effIndex*/)
 {
     if (effectHandleMode == SPELL_EFFECT_HANDLE_LAUNCH_TARGET)
     {
-        if (!unitTarget)
-            return;
-
-        float angle = unitTarget->GetRelativeAngle(m_caster);
-        Position pos;
-
-        unitTarget->GetContactPoint(m_caster, pos.m_positionX, pos.m_positionY, pos.m_positionZ);
-        if (unitTarget->GetMap()->IsUnderWater(unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ()))
-            unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), angle);
+        // Spell is not using explicit target - no generated path
+        if (m_preGeneratedPath.GetPathType() == PATHFIND_BLANK)
+        {
+            Position pos;
+            unitTarget->GetContactPoint(m_caster, pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+            unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), unitTarget->GetRelativeAngle(m_caster));
+            m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+        }
         else
-            unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), angle, true);
-
-        m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ + unitTarget->GetObjectSize());
+            m_caster->GetMotionMaster()->MoveCharge(m_preGeneratedPath);
     }
 
     if (effectHandleMode == SPELL_EFFECT_HANDLE_HIT_TARGET)
     {
-        if (!unitTarget)
-            return;
-
         // not all charge effects used in negative spells
         if (m_caster->GetTypeId() == TYPEID_PLAYER)
             if (Unit* playerTarget = m_caster->ToPlayer()->GetSelectedUnit())

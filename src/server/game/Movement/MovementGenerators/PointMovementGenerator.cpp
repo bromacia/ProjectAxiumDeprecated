@@ -32,7 +32,10 @@ void PointMovementGenerator<T>::Initialize(T &unit)
     if (!unit.IsStopped())
         unit.StopMoving();
 
-    if (unit.GetMap()->IsUnderWater(i_x, i_y, i_z))
+    if (id == EVENT_CHARGE_PREPATH)
+        return;
+
+    if (unit.GetMap()->IsInWater(i_x, i_y, i_z))
     {
         Movement::MoveSplineInit init(unit);
         init.MoveTo(i_x, i_y, i_z);
@@ -43,7 +46,6 @@ void PointMovementGenerator<T>::Initialize(T &unit)
     else
     {
         PathFinderMovementGenerator path(&unit);
-        path.SetUseStrightPath(true);
 
         if (!unit.IsWithinLOS(i_x, i_y, i_z) || !path.Calculate(i_x, i_y, i_z) || path.GetPathType() & PATHFIND_NOPATH)
             return;
@@ -70,9 +72,9 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         return true;
     }
 
-    if (!unit.movespline->Finalized())
+    if (id != EVENT_CHARGE_PREPATH && i_recalculateSpeed && !unit.movespline->Finalized())
     {
-        if (unit.GetMap()->IsUnderWater(i_x, i_y, i_z))
+        if (unit.GetMap()->IsInWater(i_x, i_y, i_z))
         {
             Movement::MoveSplineInit init(unit);
             init.MoveTo(i_x, i_y, i_z);
@@ -83,13 +85,12 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         else
         {
             PathFinderMovementGenerator path(&unit);
-            path.SetUseStrightPath(true);
 
             if (!unit.IsWithinLOS(i_x, i_y, i_z) || !path.Calculate(i_x, i_y, i_z) || path.GetPathType() & PATHFIND_NOPATH)
                 return true;
 
             Movement::MoveSplineInit init(unit);
-            init.MovebyPath(path.GetPath());
+            init.MoveTo(i_x, i_y, i_z, m_generatePath);
             if (speed > 0.0f)
                 init.SetVelocity(speed);
             init.Launch();
@@ -101,7 +102,7 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 }
 
 template<class T>
-void PointMovementGenerator<T>:: Finalize(T &unit)
+void PointMovementGenerator<T>::Finalize(T &unit)
 {
     unit.ClearUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
 
