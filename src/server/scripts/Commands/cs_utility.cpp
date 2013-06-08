@@ -23,6 +23,7 @@ public:
             { "hijackcharacter", SEC_ADMINISTRATOR,  false, &HandleHijackCharacterCommand,           "", NULL },
             { "returncharacter", SEC_ADMINISTRATOR,  false, &HandleReturnCharacterCommand,           "", NULL },
             { "getspeedrate",    SEC_GAMEMASTER,     false, &HandleGetSpeedRateCommand,              "", NULL },
+            { "getmoveflags",    SEC_GAMEMASTER,     false, &HandleGetMoveFlagsCommand,              "", NULL },
             { NULL,              0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -523,6 +524,117 @@ public:
         handler->PSendSysMessage("Target: %s, Move Type: %s", target->GetName(), moveTypeString.c_str());
         handler->PSendSysMessage("Speed: %f", speed);
         handler->PSendSysMessage("Speed Rate: %f", speedRate);
+        return true;
+    }
+
+    static bool HandleGetMoveFlagsCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Unit* target = handler->getSelectedUnit();
+        if (!target)
+            target = handler->GetSession()->GetPlayer();
+        uint32 moveFlags = target->m_movementInfo.GetMovementFlags();
+
+        handler->PSendSysMessage("Target: %s has movementflags:", target->GetName());
+
+        if (!moveFlags)
+        {
+            handler->PSendSysMessage("MOVEMENTFLAG_NONE");
+            return true;
+        }
+
+        if (moveFlags & MOVEMENTFLAG_FORWARD)
+            handler->PSendSysMessage("MOVEMENTFLAG_FORWARD");
+
+        if (moveFlags & MOVEMENTFLAG_BACKWARD)
+            handler->PSendSysMessage("MOVEMENTFLAG_BACKWARD");
+
+        if (moveFlags & MOVEMENTFLAG_STRAFE_LEFT)
+            handler->PSendSysMessage("MOVEMENTFLAG_STRAFE_LEFT");
+
+        if (moveFlags & MOVEMENTFLAG_STRAFE_RIGHT)
+            handler->PSendSysMessage("MOVEMENTFLAG_STRAFE_RIGHT");
+
+        if (moveFlags & MOVEMENTFLAG_LEFT)
+            handler->PSendSysMessage("MOVEMENTFLAG_LEFT");
+
+        if (moveFlags & MOVEMENTFLAG_RIGHT)
+            handler->PSendSysMessage("MOVEMENTFLAG_RIGHT");
+
+        if (moveFlags & MOVEMENTFLAG_PITCH_UP)
+            handler->PSendSysMessage("MOVEMENTFLAG_PITCH_UP");
+
+        if (moveFlags & MOVEMENTFLAG_PITCH_DOWN)
+            handler->PSendSysMessage("MOVEMENTFLAG_PITCH_DOWN");
+
+        if (moveFlags & MOVEMENTFLAG_WALKING)
+            handler->PSendSysMessage("MOVEMENTFLAG_WALKING");
+
+        if (moveFlags & MOVEMENTFLAG_ONTRANSPORT)
+            handler->PSendSysMessage("MOVEMENTFLAG_ONTRANSPORT");
+
+        if (moveFlags & MOVEMENTFLAG_LEVITATING)
+            handler->PSendSysMessage("MOVEMENTFLAG_LEVITATING");
+
+        if (moveFlags & MOVEMENTFLAG_ROOT)
+            handler->PSendSysMessage("MOVEMENTFLAG_ROOT");
+
+        if (moveFlags & MOVEMENTFLAG_JUMPING)
+            handler->PSendSysMessage("MOVEMENTFLAG_JUMPING");
+
+        if (moveFlags & MOVEMENTFLAG_FALLING)
+            handler->PSendSysMessage("MOVEMENTFLAG_FALLING");
+
+        if (moveFlags & MOVEMENTFLAG_PENDING_STOP)
+            handler->PSendSysMessage("MOVEMENTFLAG_PENDING_STOP");
+
+        if (moveFlags & MOVEMENTFLAG_PENDING_STRAFE_STOP)
+            handler->PSendSysMessage("MOVEMENTFLAG_PENDING_STRAFE_STOP");
+
+        if (moveFlags & MOVEMENTFLAG_PENDING_FORWARD)
+            handler->PSendSysMessage("MOVEMENTFLAG_PENDING_FORWARD");
+
+        if (moveFlags & MOVEMENTFLAG_PENDING_BACKWARD)
+            handler->PSendSysMessage("MOVEMENTFLAG_PENDING_BACKWARD");
+
+        if (moveFlags & MOVEMENTFLAG_PENDING_STRAFE_LEFT)
+            handler->PSendSysMessage("MOVEMENTFLAG_PENDING_STRAFE_LEFT");
+
+        if (moveFlags & MOVEMENTFLAG_PENDING_STRAFE_RIGHT)
+            handler->PSendSysMessage("MOVEMENTFLAG_PENDING_STRAFE_RIGHT");
+
+        if (moveFlags & MOVEMENTFLAG_PENDING_ROOT)
+            handler->PSendSysMessage("MOVEMENTFLAG_PENDING_ROOT");
+
+        if (moveFlags & MOVEMENTFLAG_SWIMMING)
+            handler->PSendSysMessage("MOVEMENTFLAG_SWIMMING");
+
+        if (moveFlags & MOVEMENTFLAG_ASCENDING)
+            handler->PSendSysMessage("MOVEMENTFLAG_ASCENDING");
+
+        if (moveFlags & MOVEMENTFLAG_DESCENDING)
+            handler->PSendSysMessage("MOVEMENTFLAG_DESCENDING");
+
+        if (moveFlags & MOVEMENTFLAG_CAN_FLY)
+            handler->PSendSysMessage("MOVEMENTFLAG_CAN_FLY");
+
+        if (moveFlags & MOVEMENTFLAG_FLYING)
+            handler->PSendSysMessage("MOVEMENTFLAG_FLYING");
+
+        if (moveFlags & MOVEMENTFLAG_SPLINE_ELEVATION)
+            handler->PSendSysMessage("MOVEMENTFLAG_SPLINE_ELEVATION");
+
+        if (moveFlags & MOVEMENTFLAG_SPLINE_ENABLED)
+            handler->PSendSysMessage("MOVEMENTFLAG_SPLINE_ENABLED");
+
+        if (moveFlags & MOVEMENTFLAG_WATERWALKING)
+            handler->PSendSysMessage("MOVEMENTFLAG_WATERWALKING");
+
+        if (moveFlags & MOVEMENTFLAG_FALLING_SLOW)
+            handler->PSendSysMessage("MOVEMENTFLAG_FALLING_SLOW");
+
+        if (moveFlags & MOVEMENTFLAG_HOVER)
+            handler->PSendSysMessage("MOVEMENTFLAG_HOVER");
+
         return true;
     }
 };
