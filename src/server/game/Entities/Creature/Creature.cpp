@@ -438,15 +438,19 @@ void Creature::Update(uint32 diff)
             m_vehicleKit->Reset();
     }
 
-    if (IsInWater())
+    // The slime in Ruins of Lordaeron shouldnt trigger swimming
+    if (GetMapId() != 572)
     {
-        if (canSwim())
-            AddUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
-    }
-    else
-    {
-        if (canWalk())
-            RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
+        if (IsInWater())
+        {
+            if (canSwim())
+                AddUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
+        }
+        else
+        {
+            if (canWalk())
+                RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
+        }
     }
 
     switch (m_deathState)
