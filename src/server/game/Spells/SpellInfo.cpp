@@ -2746,24 +2746,6 @@ bool SpellInfo::IsCrowdControlSpell() const
             Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN;
 }
 
-bool SpellInfo::IsPeriodicAuraSpell() const
-{
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        return !IsChanneled() && (Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_DUMMY ||
-            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
-            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE ||
-            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE ||
-            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE_PERCENT ||
-            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_LEECH ||
-            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_HEALTH_FUNNEL ||
-            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_HEAL ||
-            Effects[i].ApplyAuraName == SPELL_AURA_OBS_MOD_HEALTH ||
-            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_MANA_LEECH ||
-            Effects[i].ApplyAuraName == SPELL_AURA_OBS_MOD_POWER ||
-            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_ENERGIZE ||
-            Effects[i].ApplyAuraName == SPELL_AURA_POWER_BURN);
-}
-
 bool SpellInfo::IsNegativeAuraSpell() const
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)

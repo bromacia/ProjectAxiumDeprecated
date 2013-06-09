@@ -490,7 +490,6 @@ public:
     bool IsMovementDelaySpell() const;
     bool IsSilenceDelaySpell() const;
     bool IsCrowdControlSpell() const;
-    bool IsPeriodicAuraSpell() const;
     bool IsNegativeAuraSpell() const;
 };
 
