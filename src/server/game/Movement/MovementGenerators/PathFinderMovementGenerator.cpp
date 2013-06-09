@@ -443,7 +443,7 @@ void PathFinderMovementGenerator::_buildPointPath(const float *startPoint, const
     for (uint32 i = 0; i < pointCount; ++i)
     {
         _pathPoints[i] = Vector3(pathPoints[i*VERTEX_SIZE+2], pathPoints[i*VERTEX_SIZE], pathPoints[i*VERTEX_SIZE+1]);
-        _sourceUnit->UpdateGroundOrWaterPositionZ(_pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z);
+        _pathPoints[i].z = _sourceUnit->GetMap()->GetWaterOrGroundLevel(_pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z);
     }
 
     // first point is always our current location - we need the next one
