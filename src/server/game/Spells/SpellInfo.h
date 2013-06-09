@@ -485,6 +485,13 @@ public:
     bool _IsPositiveEffect(uint8 effIndex, bool deep) const;
     bool _IsPositiveSpell() const;
     static bool _IsPositiveTarget(uint32 targetA, uint32 targetB);
+
+    bool IsSpellDelaySpell() const;
+    bool IsMovementDelaySpell() const;
+    bool IsSilenceDelaySpell() const;
+    bool IsCrowdControlSpell() const;
+    bool IsPeriodicAuraSpell() const;
+    bool IsNegativeAuraSpell() const;
 };
 
 #endif // _SPELLINFO_H

@@ -2597,3 +2597,179 @@ bool SpellInfo::_IsPositiveTarget(uint32 targetA, uint32 targetB)
         return _IsPositiveTarget(targetB, 0);
     return true;
 }
+
+bool SpellInfo::IsSpellDelaySpell() const
+{
+//------------Generic--------------
+    // War Stomp
+    return Id == 20549 ||
+//------------Warrior--------------
+    // Charge Stun
+    Id == 7922 ||
+    // Intercept Stun
+    Id == 20253 ||
+    // Intimidating Shout
+    Id == 5246 ||
+    // Shockwave
+    Id == 46968 ||
+    // Concussion Blow
+    Id == 12809 ||
+//------------Paladin--------------
+    // Hammer of Justice
+    (SpellFamilyName == SPELLFAMILY_PALADIN && SpellFamilyFlags[0] == 0x800) ||
+    // Repentance
+    Id == 20066 ||
+//---------Death Knight------------
+    // Gnaw
+    Id == 47481 ||
+    // Hungering Cold
+    Id == 49203 ||
+    // Death Grip
+    Id == 49576 ||
+//------------Shaman---------------
+    // Hex
+    Id == 51514 ||
+    // Spirit Wolf Bash
+    Id == 58861 ||
+    // Totems
+    (SpellFamilyName == SPELLFAMILY_SHAMAN && AttributesEx7 & SPELL_ATTR7_SUMMON_PLAYER_TOTEM) ||
+//------------Rogue----------------
+    // Blind
+    Id == 2094 ||
+    // Cheap Shot
+    Id == 1833 ||
+    // Kidney Shot
+    (SpellFamilyName == SPELLFAMILY_ROGUE && SpellFamilyFlags[0] == 0x200000) ||
+    // Gouge
+    Id == 1776 ||
+    // Sap
+    (SpellFamilyName == SPELLFAMILY_ROGUE && SpellFamilyFlags[0] == 0x80) ||
+//------------Druid----------------
+    // Cyclone
+    Id == 33786 ||
+    // Bash
+    (SpellFamilyName == SPELLFAMILY_DRUID && SpellFamilyFlags[0] == 0x2000) ||
+    // Pounce
+    (SpellFamilyName == SPELLFAMILY_DRUID && SpellFamilyFlags[0] == 0x20000) ||
+    // Maim
+    (SpellFamilyName == SPELLFAMILY_DRUID && SpellFamilyFlags[1] == 0x80) ||
+    // Faerie Fire
+    (SpellFamilyName == SPELLFAMILY_DRUID && SpellIconID == 109) ||
+    // Hibernate
+    (SpellFamilyName == SPELLFAMILY_DRUID && SpellIconID == 44) ||
+//------------Priest---------------
+    // Mind Control
+    Id == 605 ||
+    // Psychic Scream
+    (SpellFamilyName == SPELLFAMILY_PRIEST && SpellFamilyFlags[0] == 0x10000) ||
+    // Psychic Horror - Trigger and Stun
+    Id == 64044 ||
+    // Psychic Horror - Disarm
+    Id == 64058 ||
+    // Shadow Word Death
+    (SpellFamilyName == SPELLFAMILY_PRIEST && SpellFamilyFlags[1] == 0x2) ||
+//------------Mage-----------------
+    // Polymorph
+    (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[0] == 0x1000000) ||
+    // Deep Freeze
+    Id == 44572 ||
+    // Dragon's Breath
+    (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[0] == 0x800000) ||
+    // Fire Blast
+    (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[0] == 0x2) ||
+    // Burning Determination
+    Id == 54748 ||
+//----------Warlock----------------
+    // Fear
+    (SpellFamilyName == SPELLFAMILY_WARLOCK && SpellFamilyFlags[1] == 0x400) ||
+    // Howl of Terror
+    (SpellFamilyName == SPELLFAMILY_WARLOCK && SpellFamilyFlags[1] == 0x8) ||
+    // Shadowfury
+    (SpellFamilyName == SPELLFAMILY_WARLOCK && SpellFamilyFlags[1] == 0x1000);
+}
+
+bool SpellInfo::IsMovementDelaySpell() const
+{
+//------------Rogue----------------
+    // Shadowstep
+    return Id == 36563 ||
+//------------Mage-----------------
+    // Blink
+    Id == 1953 ||
+//------------Druid----------------
+    // Feral Charge - Bear
+    Id == 16979 ||
+    // Feral Charge - Cat
+    Id == 49376 ||
+//----------Warlock----------------
+    // Demonic Circle: Teleport
+    Id == 48020;
+}
+
+bool SpellInfo::IsSilenceDelaySpell() const
+{
+//------------Generic--------------
+    // Arcane Torrent - Mana
+    return Id == 28730 ||
+    // Arcane Torrent - Energy
+    Id == 25046 ||
+    // Arcane Torrent - Runic Power
+    Id == 50613 ||
+//------------Warrior--------------
+    // Silenced - Gag Order
+    Id == 18498 ||
+//---------Death Knight------------
+    // Strangulate
+    (SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && SpellFamilyFlags[0] == 0x200) ||
+//------------Rogue----------------
+    // Silenced - Improved Kick
+    Id == 18425 ||
+//------------Priest---------------
+    // Silence
+    Id == 15487 ||
+//------------Mage-----------------
+    // Silenced - Improved Counterspell
+    (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[1] == 0x40000000) ||
+//----------Warlock----------------
+    // Spell Lock
+    Id == 24259;
+}
+
+bool SpellInfo::IsCrowdControlSpell() const
+{
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+        return Effects[i].ApplyAuraName == SPELL_AURA_MOD_POSSESS ||
+            Effects[i].ApplyAuraName == SPELL_AURA_MOD_CONFUSE ||
+            Effects[i].ApplyAuraName == SPELL_AURA_MOD_CHARM ||
+            Effects[i].ApplyAuraName == SPELL_AURA_AOE_CHARM ||
+            Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR ||
+            Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN;
+}
+
+bool SpellInfo::IsPeriodicAuraSpell() const
+{
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        return !IsChanneled() && (Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_DUMMY ||
+            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
+            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE ||
+            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE ||
+            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE_PERCENT ||
+            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_LEECH ||
+            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_HEALTH_FUNNEL ||
+            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_HEAL ||
+            Effects[i].ApplyAuraName == SPELL_AURA_OBS_MOD_HEALTH ||
+            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_MANA_LEECH ||
+            Effects[i].ApplyAuraName == SPELL_AURA_OBS_MOD_POWER ||
+            Effects[i].ApplyAuraName == SPELL_AURA_PERIODIC_ENERGIZE ||
+            Effects[i].ApplyAuraName == SPELL_AURA_POWER_BURN);
+}
+
+bool SpellInfo::IsNegativeAuraSpell() const
+{
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+        return Effects[i].Effect == SPELL_EFFECT_APPLY_AURA &&
+            !(AttributesEx4 & SPELL_ATTR4_UNK21) && !IsPassive() &&
+            (!IsPositive() || !(AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT)) &&
+            !IsPositive() && Id != 7267 ||
+            (SpellFamilyName == SPELLFAMILY_WARLOCK && (SpellFamilyFlags[0] & 0x2000000));
+}

@@ -380,12 +380,6 @@ class Spell
         SpellCastResult CheckCast(bool strict);
         SpellCastResult CheckPetCast(Unit* target);
 
-        bool IsSpellDelaySpell() const;
-        bool IsMovementDelaySpell() const;
-        bool IsSilenceDelaySpell() const;
-        bool IsCrowdControlSpell() const;
-        bool IsNegativeAuraSpell() const;
-
         // handlers
         void handle_immediate();
         uint64 handle_delayed(uint64 t_offset);

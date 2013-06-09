@@ -1247,7 +1247,7 @@ void AuraEffect::SendTickImmune(Unit* target, Unit* caster) const
         caster->SendSpellDamageImmune(target, m_spellInfo->Id);
 }
 
-void AuraEffect::PeriodicTick(AuraApplication * aurApp, Unit* caster) const
+void AuraEffect::PeriodicTick(AuraApplication* aurApp, Unit* caster) const
 {
     bool prevented = GetBase()->CallScriptEffectPeriodicHandlers(this, aurApp);
     if (prevented)
