@@ -235,7 +235,7 @@ public:
     {
         Player* player = handler->GetSession()->GetPlayer();
 
-        if (player->IsVip())
+        if (player->GetSession()->GetSecurity() > SEC_PLAYER)
         {
             handler->PSendSysMessage("As a VIP you have access to morphs. The naming structure for morphs "
                                      "is based on the first two/three letters of the race and the first letter "

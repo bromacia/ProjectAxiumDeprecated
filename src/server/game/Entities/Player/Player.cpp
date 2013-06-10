@@ -17189,11 +17189,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     m_show_dbw_transformation = fields[67].GetUInt8();
 
-    m_hijackedCharacterAccountId = fields[68].GetUInt32(); 
-
-    QueryResult result2 = LoginDatabase.PQuery("SELECT vip FROM account WHERE id = %u", GetSession()->GetAccountId());
-    Field* fields2 = result2->Fetch();
-    m_vip = fields2[0].GetBool();
+    m_hijackedCharacterAccountId = fields[68].GetUInt32();
 
     m_playerSpec = GetTalentSpec();
 
@@ -20770,7 +20766,7 @@ inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 c
 
     ModifyMoney(-price);
 
-    if (crItem->ExtendedCost && !IsVip() && !pVendor->IsVipVendor())                            // case for new honor system
+    if (crItem->ExtendedCost && !IsVIP() && !pVendor->IsVipVendor())                            // case for new honor system
     {
         ItemExtendedCostEntry const* iece = sItemExtendedCostStore.LookupEntry(crItem->ExtendedCost);
         if (iece->reqhonorpoints)
@@ -20804,7 +20800,7 @@ inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 c
         if (!bStore)
             AutoUnequipOffhandIfNeed();
 
-        if (pProto->Flags & ITEM_PROTO_FLAG_REFUNDABLE && crItem->ExtendedCost && pProto->GetMaxStackSize() == 1 && !IsVip() && !pVendor->IsVipVendor())
+        if (pProto->Flags & ITEM_PROTO_FLAG_REFUNDABLE && crItem->ExtendedCost && pProto->GetMaxStackSize() == 1 && !IsVIP() && !pVendor->IsVipVendor())
         {
             it->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
             it->SetRefundRecipient(GetGUIDLow());
@@ -20889,7 +20885,7 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
         return false;
     }
 
-    if (crItem->ExtendedCost && !IsVip() && !creature->IsVipVendor())
+    if (crItem->ExtendedCost && !IsVIP() && !creature->IsVipVendor())
     {
         ItemExtendedCostEntry const* iece = sItemExtendedCostStore.LookupEntry(crItem->ExtendedCost);
         if (!iece)

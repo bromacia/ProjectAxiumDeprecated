@@ -2195,11 +2195,9 @@ void World::SendGlobalGMMessage(WorldPacket* packet, WorldSession* self, uint32 
             itr->second->GetPlayer() &&
             itr->second->GetPlayer()->IsInWorld() &&
             itr->second != self &&
-            !AccountMgr::IsPlayerAccount(itr->second->GetSecurity()) &&
+            itr->second->GetSecurity() > SEC_VIP &&
             (team == 0 || itr->second->GetPlayer()->GetTeam() == team))
-        {
             itr->second->SendPacket(packet);
-        }
     }
 }
 

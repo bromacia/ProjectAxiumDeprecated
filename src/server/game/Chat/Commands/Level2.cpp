@@ -326,10 +326,10 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
     std::string email = GetTrinityString(LANG_ERROR);
     std::string last_ip = GetTrinityString(LANG_ERROR);
     uint32 security = 0;
-    uint8 vip = 0;
+    std::string securityString = GetTrinityString(LANG_ERROR);
     std::string last_login = GetTrinityString(LANG_ERROR);
 
-    QueryResult result = LoginDatabase.PQuery("SELECT a.username, aa.gmlevel, a.email, a.last_ip, a.last_login, a.mutetime, a.vip "
+    QueryResult result = LoginDatabase.PQuery("SELECT a.username, aa.gmlevel, a.email, a.last_ip, a.last_login, a.mutetime, "
                                                 "FROM account a "
                                                 "LEFT JOIN account_access aa "
                                                 "ON (a.id = aa.id AND (aa.RealmID = -1 OR aa.RealmID = %u)) "
@@ -341,7 +341,6 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         security = fields[1].GetUInt32();
         email = fields[2].GetString();
         muteTime = fields[5].GetUInt64();
-        vip = fields[6].GetUInt8();
 
         if (email.empty())
             email = "Unknown";
@@ -356,12 +355,23 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
             last_ip = "Unknown";
             last_login = "Unknown";
         }
+
+        switch (security)
+        {
+            case 0: securityString  = "PLAYER";          break;
+            case 1: securityString  = "VIP";             break;
+            case 2: securityString  = "GAMEMASTER";      break;
+            case 3: securityString  = "HEAD GAMEMASTER"; break;
+            case 4: securityString  = "ADMINISTRATOR";   break;
+            case 5: securityString  = "CONSOLE";         break;
+            default: securityString = "UNKNOWN";         break;
+        }
     }
 
     std::string nameLink = playerLink(target_name);
 
-    PSendSysMessage("Player%s %s (guid: %u), Account(id: %u): %s, Email: %s, GMLevel: %u, VIP: %u, Last IP: %s, Last login: %s, Latency: %ums",
-    (target ? "" : "(Offline)"), nameLink.c_str(), GUID_LOPART(target_guid), accId, username.c_str(), email.c_str(), security, vip, last_ip.c_str(), last_login.c_str(), latency);
+    PSendSysMessage("Player%s %s (guid: %u), Account(id: %u): %s, Email: %s, Security: %s, Last IP: %s, Last login: %s, Latency: %ums",
+    (target ? "" : "(Offline)"), nameLink.c_str(), GUID_LOPART(target_guid), accId, username.c_str(), email.c_str(), securityString.c_str(), last_ip.c_str(), last_login.c_str(), latency);
 
     std::string bannedby = "Unknown";
     std::string banreason = "";
