@@ -329,7 +329,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
     std::string securityString = GetTrinityString(LANG_ERROR);
     std::string last_login = GetTrinityString(LANG_ERROR);
 
-    QueryResult result = LoginDatabase.PQuery("SELECT a.username, aa.gmlevel, a.email, a.last_ip, a.last_login, a.mutetime, "
+    QueryResult result = LoginDatabase.PQuery("SELECT a.username, aa.gmlevel, a.email, a.last_ip, a.last_login, a.mutetime "
                                                 "FROM account a "
                                                 "LEFT JOIN account_access aa "
                                                 "ON (a.id = aa.id AND (aa.RealmID = -1 OR aa.RealmID = %u)) "
