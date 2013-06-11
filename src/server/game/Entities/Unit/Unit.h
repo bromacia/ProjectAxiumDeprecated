@@ -2263,6 +2263,9 @@ class Unit : public WorldObject
 
         float m_positiveCastTimePrecent;
 
+        bool IsInZangarmarsh() { return GetZoneId() == 3521; }
+        bool IsInDuelingZone() { return GetZoneId() == 85; }
+
         void SetIsJumping(bool x) { m_isJumping = x; }
         bool IsJumping() const { return m_isJumping; }
 

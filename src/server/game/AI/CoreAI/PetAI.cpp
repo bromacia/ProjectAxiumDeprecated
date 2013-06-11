@@ -66,7 +66,6 @@ void PetAI::_stopAttack()
         me->GetMotionMaster()->MoveIdle();
         me->CombatStop();
         me->getHostileRefManager().deleteReferences();
-
         return;
     }
 

@@ -3134,7 +3134,8 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
         m_caster->ToPlayer()->SetSpellModTakingSpell(this, false);
 
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++) // Instant cast spells
+    // Custom Cast Times
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
     {
         if ((m_spellInfo->Effects[i].Effect == SPELL_EFFECT_ENCHANT_ITEM || // Enchants
             m_spellInfo->Effects[i].Effect == SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC || // Enhancements
@@ -5671,7 +5672,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (m_originalCaster && m_originalCaster->GetTypeId() == TYPEID_PLAYER && m_originalCaster->isAlive())
                 {
                     if (AreaTableEntry const* pArea = GetAreaEntryByAreaID(m_originalCaster->GetAreaId()))
-                        if (pArea->flags & AREA_FLAG_NO_FLY_ZONE)
+                        if (pArea->flags & AREA_FLAG_NO_FLY_ZONE || m_originalCaster->IsInZangarmarsh())
                             return (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_NOT_HERE;
                 }
                 break;

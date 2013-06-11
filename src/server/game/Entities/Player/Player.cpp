@@ -9456,7 +9456,7 @@ void Player::SendInitWorldStates(uint32 zoneid, uint32 areaid)
                 data << uint32(0xacf) << uint32(0x1);           // 36 // 2767 ally locked time show
             }
             break;
-        case 3521:                                          // Zangarmarsh
+        case 3521:
             if (pvp && pvp->GetTypeId() == OUTDOOR_PVP_ZM)
                 pvp->FillInitialWorldStates(data);
             else
