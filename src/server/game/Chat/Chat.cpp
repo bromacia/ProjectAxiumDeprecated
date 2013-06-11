@@ -397,8 +397,6 @@ ChatCommand* ChatHandler::getCommandTable()
         { "listfreeze",       SEC_GAMEMASTER,           false, OldHandler<&ChatHandler::HandleListFreezeCommand>,          "", NULL },
         { "possess",          SEC_HEAD_GAMEMASTER,      false, OldHandler<&ChatHandler::HandlePossessCommand>,             "", NULL },
         { "unpossess",        SEC_HEAD_GAMEMASTER,      false, OldHandler<&ChatHandler::HandleUnPossessCommand>,           "", NULL },
-        { "bindsight",        SEC_HEAD_GAMEMASTER,      false, OldHandler<&ChatHandler::HandleBindSightCommand>,           "", NULL },
-        { "unbindsight",      SEC_HEAD_GAMEMASTER,      false, OldHandler<&ChatHandler::HandleUnbindSightCommand>,         "", NULL },
         { "playall",          SEC_GAMEMASTER,           false, OldHandler<&ChatHandler::HandlePlayAllCommand>,             "", NULL },
         { NULL,               0,                        false, NULL,                                                        "", NULL }
     };

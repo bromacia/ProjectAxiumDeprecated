@@ -4660,22 +4660,3 @@ bool ChatHandler::HandleUnPossessCommand(const char* /*args*/)
 
     return true;
 }
-
-bool ChatHandler::HandleBindSightCommand(const char* /*args*/)
-{
-    Unit* unit = getSelectedUnit();
-    if (!unit)
-        return false;
-
-    m_session->GetPlayer()->CastSpell(unit, 6277, true);
-    return true;
-}
-
-bool ChatHandler::HandleUnbindSightCommand(const char* /*args*/)
-{
-    if (m_session->GetPlayer()->isPossessing())
-        return false;
-
-    m_session->GetPlayer()->InterruptSpell(CURRENT_CHANNELED_SPELL);
-    return true;
-}

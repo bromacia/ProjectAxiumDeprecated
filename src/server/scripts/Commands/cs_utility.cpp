@@ -10,21 +10,23 @@ public:
     {
         static ChatCommand utilityCommandTable[] =
         {
-            { "customize",       SEC_PLAYER,         false, &HandleCustomizeCommand,                 "", NULL },
-            { "race",            SEC_PLAYER,         false, &HandleRaceCommand,                      "", NULL },
-            { "faction",         SEC_PLAYER,         false, &HandleFactionCommand,                   "", NULL },
-            { "prepare",         SEC_GAMEMASTER,     false, &HandlePrepareCommand,                   "", NULL },
-            { "barbershop",      SEC_PLAYER,         false, &HandleBarbershopCommand,                "", NULL },
-            { "mmr",             SEC_PLAYER,         false, &HandleMMRCommand,                       "", NULL },
-            { "sendcooldown",    SEC_GAMEMASTER,     false, &HandleSendCooldownCommand,              "", NULL },
-            { "transmogcopy",    SEC_GAMEMASTER,     false, &HandleTransmogCopyCommand,              "", NULL },
-            { "transmogsend",    SEC_GAMEMASTER,     false, &HandleTransmogSendCommand,              "", NULL },
-            { "warp",            SEC_GAMEMASTER,     false, &HandleWarpCommand,                      "", NULL },
-            { "hijackcharacter", SEC_ADMINISTRATOR,  false, &HandleHijackCharacterCommand,           "", NULL },
-            { "returncharacter", SEC_ADMINISTRATOR,  false, &HandleReturnCharacterCommand,           "", NULL },
-            { "getspeedrate",    SEC_GAMEMASTER,     false, &HandleGetSpeedRateCommand,              "", NULL },
-            { "getmoveflags",    SEC_GAMEMASTER,     false, &HandleGetMoveFlagsCommand,              "", NULL },
-            { NULL,              0,                  false, NULL,                                    "", NULL }
+            { "customize",        SEC_PLAYER,         false, &HandleCustomizeCommand,                 "", NULL },
+            { "race",             SEC_PLAYER,         false, &HandleRaceCommand,                      "", NULL },
+            { "faction",          SEC_PLAYER,         false, &HandleFactionCommand,                   "", NULL },
+            { "prepare",          SEC_GAMEMASTER,     false, &HandlePrepareCommand,                   "", NULL },
+            { "barbershop",       SEC_PLAYER,         false, &HandleBarbershopCommand,                "", NULL },
+            { "mmr",              SEC_PLAYER,         false, &HandleMMRCommand,                       "", NULL },
+            { "sendcooldown",     SEC_GAMEMASTER,     false, &HandleSendCooldownCommand,              "", NULL },
+            { "transmogcopy",     SEC_GAMEMASTER,     false, &HandleTransmogCopyCommand,              "", NULL },
+            { "transmogsend",     SEC_GAMEMASTER,     false, &HandleTransmogSendCommand,              "", NULL },
+            { "warp",             SEC_GAMEMASTER,     false, &HandleWarpCommand,                      "", NULL },
+            { "hijackcharacter",  SEC_ADMINISTRATOR,  false, &HandleHijackCharacterCommand,           "", NULL },
+            { "returncharacter",  SEC_ADMINISTRATOR,  false, &HandleReturnCharacterCommand,           "", NULL },
+            { "setviewpoint",     SEC_GAMEMASTER,     false, &HandleSetViewpointCommand,              "", NULL },
+            { "restoreviewpoint", SEC_GAMEMASTER,     false, &HandleRestoreViewpointCommand,          "", NULL },
+            { "getspeedrate",     SEC_GAMEMASTER,     false, &HandleGetSpeedRateCommand,              "", NULL },
+            { "getmoveflags",     SEC_GAMEMASTER,     false, &HandleGetMoveFlagsCommand,              "", NULL },
+            { NULL,               0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
         {
@@ -635,6 +637,23 @@ public:
         if (moveFlags & MOVEMENTFLAG_HOVER)
             handler->PSendSysMessage("MOVEMENTFLAG_HOVER");
 
+        return true;
+    }
+
+    static bool HandleSetViewpointCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Unit* target = handler->getSelectedUnit();
+        if (!target)
+            target = handler->GetSession()->GetPlayer();
+
+        handler->GetSession()->GetPlayer()->SetViewpoint(target, true);
+        return true;
+    }
+
+    static bool HandleRestoreViewpointCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Player* player = handler->GetSession()->GetPlayer();
+        player->SetViewpoint(player->GetViewpoint(), false);
         return true;
     }
 };

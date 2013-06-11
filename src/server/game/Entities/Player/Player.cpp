@@ -23179,8 +23179,14 @@ void Player::StopCastingBindSight()
 
 void Player::SetViewpoint(WorldObject* target, bool apply)
 {
+    if (!target)
+        return;
+
     if (apply)
     {
+        if (target == this)
+            return;
+
         sLog->outDebug(LOG_FILTER_MAPS, "Player::CreateViewpoint: Player %s create seer %u (TypeId: %u).", GetName(), target->GetEntry(), target->GetTypeId());
 
         if (!AddUInt64Value(PLAYER_FARSIGHT, target->GetGUID()))
