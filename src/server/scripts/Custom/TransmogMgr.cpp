@@ -215,8 +215,6 @@ bool Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
     uint8 itemSlot = GetItemSlotByAction(action);
     player->SetSelectedTransmogItemSlot(itemSlot);
     ItemTemplate const* pItemTemplate = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot)->GetTemplate();
-    WorldSession* m_session = player->GetSession();
-    uint64 creatureGUID = creature->GetGUID();
     VendorItemData const* items = creature->GetVendorItems();
     if (!items)
     {
@@ -233,7 +231,7 @@ bool Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
     uint8 slot = 0;
 
     WorldPacket data(SMSG_LIST_INVENTORY, 8 + 1 + itemCount * 8 * 4);
-    data << uint64(creatureGUID);
+    data << uint64(creature->GetGUID());
     size_t countPos = data.wpos();
     data << uint8(count);
 
@@ -268,7 +266,7 @@ bool Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
     }
 
     data.put<uint8>(countPos, count);
-    m_session->SendPacket(&data);
+    player->GetSession()->SendPacket(&data);
     return true;
 }
 

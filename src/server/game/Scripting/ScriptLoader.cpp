@@ -223,7 +223,6 @@ void AddBattlegroundScripts()
     void AddSC_npc_teleport();
     void AddSC_npc_prof();
     void AddSC_npc_beastmaster();
-    void AddSC_npc_arena_ranks();
     void AddSC_Transmogrification();
     void AddSC_npc_gossip_vendor();
     void AddSC_npc_class_trainer();
@@ -238,7 +237,6 @@ void AddCustomScripts()
     AddSC_npc_teleport();
     AddSC_npc_prof();
     AddSC_npc_beastmaster();
-    AddSC_npc_arena_ranks();
     AddSC_Transmogrification();
     AddSC_npc_gossip_vendor();
     AddSC_npc_class_trainer();
