@@ -653,7 +653,9 @@ public:
     static bool HandleRestoreViewpointCommand(ChatHandler* handler, const char* /*args*/)
     {
         Player* player = handler->GetSession()->GetPlayer();
-        player->SetViewpoint(player->GetViewpoint(), false);
+        if (WorldObject* viewpoint = player->GetCurrentViewpoint())
+            if (viewpoint != player)
+                player->SetViewpoint(viewpoint, false);
         return true;
     }
 };

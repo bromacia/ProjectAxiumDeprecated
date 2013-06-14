@@ -374,7 +374,7 @@ typedef std::list<VendorItemCount> VendorItemCounts;
 
 struct TrainerSpell
 {
-    TrainerSpell() : spell(0), spellCost(0), reqSkill(0), reqSkillValue(0), reqLevel(0)
+    TrainerSpell() : spell(0), spellCost(0), reqSkill(0), reqSkillValue(0), reqLevel(0), reqClass(0)
     {
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS ; ++i)
             learnedSpell[i] = 0;
@@ -382,9 +382,10 @@ struct TrainerSpell
 
     uint32 spell;
     uint32 spellCost;
-    uint32 reqSkill;
-    uint32 reqSkillValue;
-    uint32 reqLevel;
+    uint16 reqSkill;
+    uint16 reqSkillValue;
+    uint8 reqLevel;
+    uint8 reqClass;
     uint32 learnedSpell[3];
 
     // helpers
@@ -469,6 +470,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapCreature
         bool isGuard() const { return GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_GUARD; }
         bool IsVipVendor() const { return GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_VIP_VENDOR; }
         bool IsTransmogrifier() const;
+        bool IsClassTrainer() const;
         bool canWalk() const { return GetCreatureInfo()->InhabitType & INHABIT_GROUND; }
         virtual bool canSwim() const { return GetCreatureInfo()->InhabitType & INHABIT_WATER; }
         //bool canFly()  const { return GetCreatureInfo()->InhabitType & INHABIT_AIR; }

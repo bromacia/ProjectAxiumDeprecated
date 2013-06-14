@@ -971,7 +971,7 @@ class ObjectMgr
 
         void LoadVendors();
         void LoadTrainerSpell();
-        void AddSpellToTrainer(uint32 entry, uint32 spell, uint32 spellCost, uint32 reqSkill, uint32 reqSkillValue, uint32 reqLevel);
+        void AddSpellToTrainer(uint32 entry, uint32 spell, uint32 spellCost, uint16 reqSkill, uint16 reqSkillValue, uint8 reqLevel, uint8 reqClass);
 
         std::string GeneratePetName(uint32 entry);
         uint32 GetBaseXP(uint8 level);

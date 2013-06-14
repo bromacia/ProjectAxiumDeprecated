@@ -3305,6 +3305,9 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectMiscValue[1] = 300;
                 spellInfo->EffectMiscValueB[1] = 2;
                 break;
+            case 51713: // Shadow Dance
+                spellInfo->Attributes |= SPELL_ATTR0_CANT_CANCEL;
+                break;
             default:
                 break;
         }

@@ -2615,6 +2615,9 @@ class Player : public Unit, public GridObject<Player>
         bool IsTankingSpec() const;
         bool IsHealingSpec() const;
 
+        WorldObject* GetCurrentViewpoint() { return currentViewpoint; }
+        void SetCurrentViewpoint(WorldObject* viewpoint) { currentViewpoint = viewpoint; }
+
     protected:
         // Gamemaster whisper whitelist
         WhisperListContainer WhisperList;
@@ -2963,6 +2966,8 @@ class Player : public Unit, public GridObject<Player>
 
         bool m_wantsPrematureBattleGroundStart;
         bool m_addedToPrematureBattleGroundStartList;
+
+        WorldObject* currentViewpoint;
 };
 
 void AddItemsSetItem(Player*player, Item* item);

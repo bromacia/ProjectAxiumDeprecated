@@ -74,6 +74,7 @@
 #include <cmath>
 #include "AccountMgr.h"
 #include "../../../scripts/Custom/TransmogMgr.h"
+#include "../../../scripts/Custom/npc_class_trainer.cpp"
 
 #define ZONE_UPDATE_INTERVAL (1*IN_MILLISECONDS)
 
@@ -2194,9 +2195,6 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     }
     else
     {
-        if (getClass() == CLASS_DEATH_KNIGHT && GetMapId() == 609 && !isGameMaster() && !HasSpell(50977))
-            return false;
-
         // far teleport to another map
         Map* oldmap = IsInWorld() ? GetMap() : NULL;
         // check if we can enter before stopping combat / removing pet / totems / interrupting spells
@@ -20847,6 +20845,12 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
         return false;
     }
 
+    if (creature->IsClassTrainer())
+    {
+        npc_class_trainer::BuyGlyph(this, creature, item);
+        return false;
+    }
+
     VendorItemData const* vItems = creature->GetVendorItems();
     if (!vItems || vItems->Empty())
     {
@@ -23200,6 +23204,8 @@ void Player::SetViewpoint(WorldObject* target, bool apply)
 
         if (target->isType(TYPEMASK_UNIT) && !GetVehicle())
             ((Unit*)target)->AddPlayerToVision(this);
+
+        SetCurrentViewpoint(target);
     }
     else
     {
@@ -23216,6 +23222,8 @@ void Player::SetViewpoint(WorldObject* target, bool apply)
 
         //must immediately set seer back otherwise may crash
         m_seer = this;
+
+        SetCurrentViewpoint(this);
 
         //WorldPacket data(SMSG_CLEAR_FAR_SIGHT_IMMEDIATE, 0);
         //GetSession()->SendPacket(&data);
