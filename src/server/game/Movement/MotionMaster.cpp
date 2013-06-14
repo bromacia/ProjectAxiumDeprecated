@@ -44,7 +44,8 @@ void MotionMaster::Initialize()
     {
         MovementGenerator *curr = top();
         pop();
-        if (curr) DirectDelete(curr);
+        if (curr)
+            DirectDelete(curr);
     }
 
     InitDefault();
@@ -79,7 +80,7 @@ void MotionMaster::UpdateMotion(uint32 diff)
     if (!i_owner)
         return;
 
-    if (i_owner->HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED)) // what about UNIT_STATE_DISTRACTED? Why is this not included?
+    if (i_owner->HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED))
         return;
 
     ASSERT(!empty());

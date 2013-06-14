@@ -25,13 +25,14 @@ template<class T>
 class FleeingMovementGenerator : public MovementGeneratorMedium<T, FleeingMovementGenerator<T>>
 {
     public:
-        FleeingMovementGenerator(uint64 fright) : i_frightGUID(fright), i_nextCheckTime(0) { }
+        FleeingMovementGenerator(uint64 fright) : init(false), i_frightGUID(fright), i_nextCheckTime(0) { }
         void Initialize(T &);
         void Finalize(T &);
         void Reset(T &);
         bool Update(T &, const uint32 &);
         MovementGeneratorType GetMovementGeneratorType() { return FLEEING_MOTION_TYPE; }
     private:
+        bool init;
         void _setTargetLocation(T &owner);
         bool _getPoint(T &owner, float &x, float &y, float &z);
         bool _setMoveData(T &owner);

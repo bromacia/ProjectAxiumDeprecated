@@ -10323,8 +10323,8 @@ void Unit::RemoveAllTempSummons()
     {
         for (ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
         {
-            if (TempSummon* tempSummon = (*itr)->ToTempSummon())
-                if (tempSummon && tempSummon->GetTimer() && !tempSummon->isTotem())
+            if (TempSummon* tempSummon = (*itr)->ToCreature()->ToTempSummon())
+                if (tempSummon->GetTimer() && !tempSummon->isTotem())
                 {
                     m_Controlled.erase(tempSummon);
                     if (tempSummon->GetCharmerGUID() == GetGUID())
@@ -15445,9 +15445,7 @@ void Unit::StopMoving()
         return;
 
     Movement::MoveSplineInit init(*this);
-    init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZMinusOffset(), false);
-    init.SetFacing(GetOrientation());
-    init.Launch();
+    init.Stop();
 }
 
 void Unit::SendMovementFlagUpdate()
@@ -16498,15 +16496,32 @@ void Unit::SetControlled(bool apply, UnitState state)
     {
         switch (state)
         {
-            case UNIT_STATE_STUNNED: if (HasAuraType(SPELL_AURA_MOD_STUN))    return;
-                                    else    SetStunned(false);    break;
-            case UNIT_STATE_ROOT:    if (HasAuraType(SPELL_AURA_MOD_ROOT) || GetVehicle())    return;
-                                    else    SetRooted(false);     break;
-            case UNIT_STATE_CONFUSED:if (HasAuraType(SPELL_AURA_MOD_CONFUSE)) return;
-                                    else    SetConfused(false);   break;
-            case UNIT_STATE_FLEEING: if (HasAuraType(SPELL_AURA_MOD_FEAR))    return;
-                                    else    SetFeared(false);     break;
-            default: return;
+            case UNIT_STATE_STUNNED:
+                if (HasAuraType(SPELL_AURA_MOD_STUN))
+                    return;
+                else
+                    SetStunned(false);
+                break;
+            case UNIT_STATE_ROOT:
+                if (HasAuraType(SPELL_AURA_MOD_ROOT) || GetVehicle())
+                    return;
+                else
+                    SetRooted(false);
+                break;
+            case UNIT_STATE_CONFUSED:
+                if (HasAuraType(SPELL_AURA_MOD_CONFUSE))
+                    return;
+                else
+                    SetConfused(false);
+                break;
+            case UNIT_STATE_FLEEING:
+                if (HasAuraType(SPELL_AURA_MOD_FEAR))
+                    return;
+                else
+                    SetFeared(false);
+                    break;
+            default:
+                return;
         }
 
         ClearUnitState(state);
@@ -16629,8 +16644,6 @@ void Unit::SetFeared(bool apply)
 {
     if (apply)
     {
-        SetTarget(0);
-
         Unit* caster = NULL;
         Unit::AuraEffectList const& fearAuras = GetAuraEffectsByType(SPELL_AURA_MOD_FEAR);
         if (!fearAuras.empty())
@@ -16645,8 +16658,6 @@ void Unit::SetFeared(bool apply)
         {
             if (GetMotionMaster()->GetCurrentMovementGeneratorType() == FLEEING_MOTION_TYPE)
                 GetMotionMaster()->MovementExpired();
-            if (getVictim())
-                SetTarget(getVictim()->GetGUID());
         }
     }
 
@@ -16658,7 +16669,6 @@ void Unit::SetConfused(bool apply)
 {
     if (apply)
     {
-        SetTarget(0);
         GetMotionMaster()->MoveConfused();
     }
     else
@@ -16667,8 +16677,6 @@ void Unit::SetConfused(bool apply)
         {
             if (GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE)
                 GetMotionMaster()->MovementExpired();
-            if (getVictim())
-                SetTarget(getVictim()->GetGUID());
         }
     }
 

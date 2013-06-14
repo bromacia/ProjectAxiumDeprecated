@@ -28,13 +28,14 @@ template<class T>
 class ConfusedMovementGenerator : public MovementGeneratorMedium<T, ConfusedMovementGenerator<T>>
 {
     public:
-        explicit ConfusedMovementGenerator() : i_nextMoveTime(0) { }
+        explicit ConfusedMovementGenerator() : init(false), i_nextMoveTime(0) { }
         void Initialize(T &);
         void Finalize(T &);
         void Reset(T &);
         bool Update(T &, const uint32 &);
         MovementGeneratorType GetMovementGeneratorType() { return CONFUSED_MOTION_TYPE; }
     private:
+        bool init;
         float i_waypoints[MAX_CONF_WAYPOINTS+1][3];
         uint32 i_nextMove;
         TimeTracker i_nextMoveTime;

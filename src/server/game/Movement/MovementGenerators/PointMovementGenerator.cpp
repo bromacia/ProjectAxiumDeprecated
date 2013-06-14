@@ -29,46 +29,53 @@
 template<class T>
 void PointMovementGenerator<T>::Initialize(T &unit)
 {
-    if (!unit.IsStopped())
-        unit.StopMoving();
-
-    if (id == EVENT_CHARGE_PREPATH)
-        return;
-
-    if (unit.GetMap()->IsInWater(i_x, i_y, i_z))
-    {
-        Movement::MoveSplineInit init(unit);
-        init.MoveTo(i_x, i_y, i_z);
-        if (speed > 0.0f)
-            init.SetVelocity(speed);
-        init.Launch();
-    }
-    else
-    {
-        PathFinderMovementGenerator path(&unit);
-
-        if (!unit.IsWithinLOS(i_x, i_y, i_z) || !path.Calculate(i_x, i_y, i_z) || path.GetPathType() & PATHFIND_NOPATH)
-            return;
-
-        Movement::MoveSplineInit init(unit);
-        init.MovebyPath(path.GetPath());
-        if (speed > 0.0f)
-            init.SetVelocity(speed);
-        init.Launch();
-    }
-
-    unit.AddUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
+    init = true;
 }
 
 template<class T>
 bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 {
-    if (!&unit)
+    if (!&unit || !unit.isAlive())
         return false;
 
-    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED))
+    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_CONFUSED | UNIT_STATE_FLEEING))
     {
         unit.ClearUnitState(UNIT_STATE_ROAMING_MOVE);
+        return true;
+    }
+
+    if (init)
+    {
+        if (!unit.IsStopped())
+            unit.StopMoving();
+
+        if (id == EVENT_CHARGE_PREPATH)
+            return true;
+
+        if (unit.GetMap()->IsInWater(i_x, i_y, i_z))
+        {
+            Movement::MoveSplineInit init(unit);
+            init.MoveTo(i_x, i_y, i_z);
+            if (speed > 0.0f)
+                init.SetVelocity(speed);
+            init.Launch();
+        }
+        else
+        {
+            PathFinderMovementGenerator path(&unit);
+
+            if (!unit.IsWithinLOS(i_x, i_y, i_z) || !path.Calculate(i_x, i_y, i_z) || path.GetPathType() & PATHFIND_NOPATH)
+                return true;
+
+            Movement::MoveSplineInit init(unit);
+            init.MovebyPath(path.GetPath());
+            if (speed > 0.0f)
+                init.SetVelocity(speed);
+            init.Launch();
+        }
+
+        unit.AddUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
+        init = false;
         return true;
     }
 

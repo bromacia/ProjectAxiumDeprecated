@@ -31,9 +31,6 @@
 template<class T>
 void FleeingMovementGenerator<T>::_setTargetLocation(T &owner)
 {
-    if (!&owner)
-        return;
-
     if (owner.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED))
         return;
 
@@ -283,33 +280,7 @@ bool FleeingMovementGenerator<T>::_setMoveData(T &owner)
 template<class T>
 void FleeingMovementGenerator<T>::Initialize(T &owner)
 {
-    if (!&owner)
-        return;
-
-    owner.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
-    owner.AddUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
-
-    _Init(owner);
-
-    if (Unit* fright = ObjectAccessor::GetUnit(owner, i_frightGUID))
-    {
-        i_caster_x = fright->GetPositionX();
-        i_caster_y = fright->GetPositionY();
-        i_caster_z = fright->GetPositionZ();
-    }
-    else
-    {
-        i_caster_x = owner.GetPositionX();
-        i_caster_y = owner.GetPositionY();
-        i_caster_z = owner.GetPositionZ();
-    }
-
-    i_only_forward = true;
-    i_cur_angle = 0.0f;
-    i_last_distance_from_caster = 0.0f;
-    i_to_distance_from_caster = 0.0f;
-
-    _setTargetLocation(owner);
+    init = true;
 }
 
 template<>
@@ -364,9 +335,40 @@ bool FleeingMovementGenerator<T>::Update(T &owner, const uint32 &time_diff)
     if (!&owner || !owner.isAlive())
         return false;
 
-    if (owner.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED) || owner.GetMap()->IsInWater(owner.GetPositionX(), owner.GetPositionY(), owner.GetPositionZ()))
+    if (owner.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_CONFUSED | UNIT_STATE_ROAMING) ||
+        owner.GetMap()->IsInWater(owner.GetPositionX(), owner.GetPositionY(), owner.GetPositionZ()))
     {
         owner.ClearUnitState(UNIT_STATE_FLEEING_MOVE);
+        return true;
+    }
+
+    if (init)
+    {
+        owner.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
+        owner.AddUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
+
+        _Init(owner);
+
+        if (Unit* fright = ObjectAccessor::GetUnit(owner, i_frightGUID))
+        {
+            i_caster_x = fright->GetPositionX();
+            i_caster_y = fright->GetPositionY();
+            i_caster_z = fright->GetPositionZ();
+        }
+        else
+        {
+            i_caster_x = owner.GetPositionX();
+            i_caster_y = owner.GetPositionY();
+            i_caster_z = owner.GetPositionZ();
+        }
+
+        i_only_forward = true;
+        i_cur_angle = 0.0f;
+        i_last_distance_from_caster = 0.0f;
+        i_to_distance_from_caster = 0.0f;
+
+        _setTargetLocation(owner);
+        init = false;
         return true;
     }
 

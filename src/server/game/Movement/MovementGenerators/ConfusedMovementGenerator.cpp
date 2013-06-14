@@ -33,32 +33,7 @@
 template<class T>
 void ConfusedMovementGenerator<T>::Initialize(T &unit)
 {
-    float const wanderDistance = 3;
-    float x, y, z;
-    x = unit.GetPositionX();
-    y = unit.GetPositionY();
-    z = unit.GetPositionZ();
-
-    Map const* map = unit.GetBaseMap();
-
-    i_nextMove = urand(1, MAX_CONF_WAYPOINTS);
-
-    for (uint8 idx = 0; idx < MAX_CONF_WAYPOINTS + 1; ++idx)
-    {
-        const float wanderX = wanderDistance * (float)rand_norm() - wanderDistance / 2;
-        const float wanderY = wanderDistance * (float)rand_norm() - wanderDistance / 2;
-
-        i_waypoints[idx][0] = x + wanderX;
-        i_waypoints[idx][1] = y + wanderY;
-
-        // prevent invalid coordinates generation
-        Trinity::NormalizeMapCoord(i_waypoints[idx][0]);
-        Trinity::NormalizeMapCoord(i_waypoints[idx][1]);
-        i_waypoints[idx][2] =  z;
-    }
-
-    unit.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
-    unit.AddUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
+    init = true;
 }
 
 template<class T>
@@ -73,8 +48,69 @@ void ConfusedMovementGenerator<T>::Reset(T &unit)
 template<class T>
 bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 {
-    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED) || unit.GetMap()->IsInWater(unit.GetPositionX(), unit.GetPositionY(), unit.GetPositionZ()))
+    if (!&unit || !unit.isAlive())
+        return false;
+
+    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_FLEEING | UNIT_STATE_ROAMING) ||
+        unit.GetMap()->IsInWater(unit.GetPositionX(), unit.GetPositionY(), unit.GetPositionZ()))
+    {
+        unit.ClearUnitState(UNIT_STATE_CONFUSED_MOVE);
         return true;
+    }
+
+    if (init)
+    {
+        float const wanderDistance = 3;
+        float x, y, z;
+        x = unit.GetPositionX();
+        y = unit.GetPositionY();
+        z = unit.GetPositionZ();
+
+        Map const* map = unit.GetBaseMap();
+
+        i_nextMove = urand(1, MAX_CONF_WAYPOINTS);
+
+        for (uint8 idx = 0; idx < MAX_CONF_WAYPOINTS + 1; ++idx)
+        {
+            const float wanderX = wanderDistance * (float)rand_norm() - wanderDistance / 2;
+            const float wanderY = wanderDistance * (float)rand_norm() - wanderDistance / 2;
+
+            i_waypoints[idx][0] = x + wanderX;
+            i_waypoints[idx][1] = y + wanderY;
+
+            // prevent invalid coordinates generation
+            Trinity::NormalizeMapCoord(i_waypoints[idx][0]);
+            Trinity::NormalizeMapCoord(i_waypoints[idx][1]);
+            i_waypoints[idx][2] =  z;
+        }
+
+        unit.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
+        unit.AddUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
+
+        if (unit.GetMap()->IsInWater(x, y, z))
+        {
+            Movement::MoveSplineInit init(unit);
+            init.MoveTo(x, y, z);
+            init.Launch();
+        }
+        else
+        {
+            PathFinderMovementGenerator path(&unit);
+
+            if (!unit.IsWithinLOS(x, y, z) || !path.Calculate(x, y, z) || path.GetPathType() & PATHFIND_NOPATH)
+            {
+                i_nextMoveTime.Reset(50);
+                return true;
+            }
+
+            Movement::MoveSplineInit init(unit);
+            init.MovebyPath(path.GetPath());
+            init.Launch();
+        }
+
+        init = false;
+        return true;
+    }
 
     if (i_nextMoveTime.Passed())
     {
