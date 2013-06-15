@@ -16450,7 +16450,7 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
         victim->ExitVehicle();
 }
 
-void Unit::SetControlled(bool apply, UnitState state)
+void Unit::SetControlled(bool apply, UnitState state, uint32 duration)
 {
     if (apply)
     {
@@ -16474,7 +16474,7 @@ void Unit::SetControlled(bool apply, UnitState state)
                     ClearUnitState(UNIT_STATE_MELEE_ATTACKING);
                     SendMeleeAttackStop();
                     // SendAutoRepeatCancel ?
-                    SetConfused(true);
+                    SetConfused(true, duration);
                     CastStop();
                 }
                 break;
@@ -16484,7 +16484,7 @@ void Unit::SetControlled(bool apply, UnitState state)
                     ClearUnitState(UNIT_STATE_MELEE_ATTACKING);
                     SendMeleeAttackStop();
                     // SendAutoRepeatCancel ?
-                    SetFeared(true);
+                    SetFeared(true, duration);
                     CastStop();
                 }
                 break;
@@ -16534,9 +16534,9 @@ void Unit::SetControlled(bool apply, UnitState state)
                 SetRooted(true);
 
             if (HasUnitState(UNIT_STATE_CONFUSED))
-                SetConfused(true);
+                SetConfused(true, duration);
             else if (HasUnitState(UNIT_STATE_FLEEING))
-                SetFeared(true);
+                SetFeared(true, duration);
         }
     }
 }
@@ -16640,7 +16640,7 @@ void Unit::SetRooted(bool apply)
     }
 }
 
-void Unit::SetFeared(bool apply)
+void Unit::SetFeared(bool apply, uint32 duration)
 {
     if (apply)
     {
@@ -16650,7 +16650,7 @@ void Unit::SetFeared(bool apply)
             caster = ObjectAccessor::GetUnit(*this, fearAuras.front()->GetCasterGUID());
         if (!caster)
             caster = getAttackerForHelper();
-        GetMotionMaster()->MoveFleeing(caster, fearAuras.empty() ? sWorld->getIntConfig(CONFIG_CREATURE_FAMILY_FLEE_DELAY) : 0);             // caster == NULL processed in MoveFleeing
+        GetMotionMaster()->MoveFleeing(caster, fearAuras.empty() ? sWorld->getIntConfig(CONFIG_CREATURE_FAMILY_FLEE_DELAY) : 0, duration);             // caster == NULL processed in MoveFleeing
     }
     else
     {
@@ -16665,12 +16665,10 @@ void Unit::SetFeared(bool apply)
         ToPlayer()->SetClientControl(this, !apply);
 }
 
-void Unit::SetConfused(bool apply)
+void Unit::SetConfused(bool apply, uint32 duration)
 {
     if (apply)
-    {
-        GetMotionMaster()->MoveConfused();
-    }
+        GetMotionMaster()->MoveConfused(duration);
     else
     {
         if (isAlive())

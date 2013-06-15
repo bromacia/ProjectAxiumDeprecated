@@ -280,6 +280,8 @@ bool FleeingMovementGenerator<T>::_setMoveData(T &owner)
 template<class T>
 void FleeingMovementGenerator<T>::Initialize(T &owner)
 {
+    if (!duration.Passed())
+        HasDuration = true;
     init = true;
 }
 
@@ -332,6 +334,13 @@ void FleeingMovementGenerator<T>::Reset(T &owner)
 template<class T>
 bool FleeingMovementGenerator<T>::Update(T &owner, const uint32 &time_diff)
 {
+    if (HasDuration)
+    {
+        duration.Update(time_diff);
+        if (duration.Passed())
+            return false;
+    }
+
     if (!&owner || !owner.isAlive())
         return false;
 
@@ -341,6 +350,10 @@ bool FleeingMovementGenerator<T>::Update(T &owner, const uint32 &time_diff)
         owner.ClearUnitState(UNIT_STATE_FLEEING_MOVE);
         return true;
     }
+
+    /*if (owner.ToPlayer()->IsFalling() || owner.IsJumping() ||
+        owner.HasUnitMovementFlag(MOVEMENTFLAG_FALLING) || owner.HasUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW) || owner.HasUnitMovementFlag(MOVEMENTFLAG_FLYING))
+        return true;*/
 
     if (init)
     {

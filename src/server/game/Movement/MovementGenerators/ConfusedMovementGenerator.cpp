@@ -33,6 +33,8 @@
 template<class T>
 void ConfusedMovementGenerator<T>::Initialize(T &unit)
 {
+    if (!duration.Passed())
+        HasDuration = true;
     init = true;
 }
 
@@ -48,6 +50,13 @@ void ConfusedMovementGenerator<T>::Reset(T &unit)
 template<class T>
 bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 {
+    if (HasDuration)
+    {
+        duration.Update(diff);
+        if (duration.Passed())
+            return false;
+    }
+
     if (!&unit || !unit.isAlive())
         return false;
 
@@ -57,6 +66,10 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         unit.ClearUnitState(UNIT_STATE_CONFUSED_MOVE);
         return true;
     }
+
+    /*if (unit.ToPlayer()->IsFalling() || unit.IsJumping() ||
+        unit.HasUnitMovementFlag(MOVEMENTFLAG_FALLING) || unit.HasUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW) || unit.HasUnitMovementFlag(MOVEMENTFLAG_FLYING))
+        return true;*/
 
     if (init)
     {

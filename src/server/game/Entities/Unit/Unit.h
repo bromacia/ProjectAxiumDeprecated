@@ -2126,7 +2126,7 @@ class Unit : public WorldObject
             return GetPositionZ() - offset;
         }
 
-        void SetControlled(bool apply, UnitState state);
+        void SetControlled(bool apply, UnitState state, uint32 duration = 0);
 
         void AddComboPointHolder(uint32 lowguid) { m_ComboPointHolders.insert(lowguid); }
         void RemoveComboPointHolder(uint32 lowguid) { m_ComboPointHolders.erase(lowguid); }
@@ -2374,8 +2374,8 @@ class Unit : public WorldObject
         float GetCombatRatingReduction(CombatRating cr) const;
         uint32 GetCombatRatingDamageReduction(CombatRating cr, float rate, float cap, uint32 damage) const;
 
-        void SetFeared(bool apply);
-        void SetConfused(bool apply);
+        void SetFeared(bool apply, uint32 duration = 0);
+        void SetConfused(bool apply, uint32 duration = 0);
         void SetStunned(bool apply);
         void SetRooted(bool apply);
 

@@ -80,9 +80,6 @@ void MotionMaster::UpdateMotion(uint32 diff)
     if (!i_owner)
         return;
 
-    if (i_owner->HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED))
-        return;
-
     ASSERT(!empty());
 
     m_cleanFlag |= MMCF_UPDATE;
@@ -218,18 +215,17 @@ void MotionMaster::MoveTargetedHome()
         sLog->outError("Player (GUID: %u) attempt targeted home", i_owner->GetGUIDLow());
 }
 
-void MotionMaster::MoveConfused()
+void MotionMaster::MoveConfused(uint32 duration)
 {
     if (i_owner->GetTypeId() == TYPEID_PLAYER)
     {
         sLog->outStaticDebug("Player (GUID: %u) move confused", i_owner->GetGUIDLow());
-        Mutate(new ConfusedMovementGenerator<Player>(), MOTION_SLOT_CONTROLLED);
+        Mutate(new ConfusedMovementGenerator<Player>(duration), MOTION_SLOT_CONFUSED);
     }
     else
     {
-        sLog->outStaticDebug("Creature (Entry: %u GUID: %u) move confused",
-            i_owner->GetEntry(), i_owner->GetGUIDLow());
-        Mutate(new ConfusedMovementGenerator<Creature>(), MOTION_SLOT_CONTROLLED);
+        sLog->outStaticDebug("Creature (Entry: %u GUID: %u) move confused", i_owner->GetEntry(), i_owner->GetGUIDLow());
+        Mutate(new ConfusedMovementGenerator<Creature>(duration), MOTION_SLOT_CONFUSED);
     }
 }
 
@@ -473,7 +469,7 @@ void MotionMaster::MoveSeekAssistanceDistract(uint32 time)
     }
 }
 
-void MotionMaster::MoveFleeing(Unit* enemy, uint32 time)
+void MotionMaster::MoveFleeing(Unit* enemy, uint32 time, uint32 duration)
 {
     if (!enemy)
         return;
@@ -486,7 +482,7 @@ void MotionMaster::MoveFleeing(Unit* enemy, uint32 time)
         sLog->outStaticDebug("Player (GUID: %u) flee from %s (GUID: %u)", i_owner->GetGUIDLow(),
             enemy->GetTypeId() == TYPEID_PLAYER ? "player" : "creature",
             enemy->GetTypeId() == TYPEID_PLAYER ? enemy->GetGUIDLow() : enemy->ToCreature()->GetDBTableGUIDLow());
-        Mutate(new FleeingMovementGenerator<Player>(enemy->GetGUID()), MOTION_SLOT_CONTROLLED);
+        Mutate(new FleeingMovementGenerator<Player>(enemy->GetGUID(), duration), MOTION_SLOT_FLEEING);
     }
     else
     {
@@ -496,9 +492,9 @@ void MotionMaster::MoveFleeing(Unit* enemy, uint32 time)
             enemy->GetTypeId() == TYPEID_PLAYER ? enemy->GetGUIDLow() : enemy->ToCreature()->GetDBTableGUIDLow(),
             time ? " for a limited time" : "");
         if (time)
-            Mutate(new TimedFleeingMovementGenerator(enemy->GetGUID(), time), MOTION_SLOT_CONTROLLED);
+            Mutate(new TimedFleeingMovementGenerator(enemy->GetGUID(), time), MOTION_SLOT_FLEEING);
         else
-            Mutate(new FleeingMovementGenerator<Creature>(enemy->GetGUID()), MOTION_SLOT_CONTROLLED);
+            Mutate(new FleeingMovementGenerator<Creature>(enemy->GetGUID(), duration), MOTION_SLOT_FLEEING);
     }
 }
 
@@ -543,6 +539,12 @@ void MotionMaster::MoveDistract(uint32 timer)
 
 void MotionMaster::Mutate(MovementGenerator *m, MovementSlot slot)
 {
+    if ((i_top == MOTION_SLOT_CONFUSED || i_top == MOTION_SLOT_FLEEING) && (m->GetMovementGeneratorType() == CONFUSED_MOTION_TYPE || m->GetMovementGeneratorType() == FLEEING_MOTION_TYPE))
+    {
+        m->Initialize(*i_owner);
+        return;
+    }
+
     if (MovementGenerator *curr = Impl[slot])
     {
         Impl[slot] = NULL; // in case a new one is generated in this slot during directdelete

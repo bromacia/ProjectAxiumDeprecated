@@ -133,7 +133,7 @@ bool WaypointMovementGenerator<Creature>::Update(Creature &creature, const uint3
 {
     // Waypoint movement can be switched on/off
     // This is quite handy for escort quests and other stuff
-    if (creature.HasUnitState(UNIT_STATE_NOT_MOVE))
+    if (creature.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_CONFUSED | UNIT_STATE_FLEEING | UNIT_STATE_NOT_MOVE))
     {
         creature.ClearUnitState(UNIT_STATE_ROAMING_MOVE);
         return true;

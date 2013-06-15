@@ -3105,7 +3105,10 @@ void AuraEffect::HandleModConfuse(AuraApplication const* aurApp, uint8 mode, boo
 
     Unit* target = aurApp->GetTarget();
 
-    target->SetControlled(apply, UNIT_STATE_CONFUSED);
+    if (uint32 duration = m_spellInfo->GetDuration())
+        target->SetControlled(apply, UNIT_STATE_CONFUSED, duration);
+    else
+        target->SetControlled(apply, UNIT_STATE_CONFUSED);
 }
 
 void AuraEffect::HandleModFear(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -3115,7 +3118,10 @@ void AuraEffect::HandleModFear(AuraApplication const* aurApp, uint8 mode, bool a
 
     Unit* target = aurApp->GetTarget();
 
-    target->SetControlled(apply, UNIT_STATE_FLEEING);
+    if (uint32 duration = m_spellInfo->GetDuration())
+        target->SetControlled(apply, UNIT_STATE_FLEEING, duration);
+    else
+        target->SetControlled(apply, UNIT_STATE_FLEEING);
 }
 
 void AuraEffect::HandleAuraModStun(AuraApplication const* aurApp, uint8 mode, bool apply) const
