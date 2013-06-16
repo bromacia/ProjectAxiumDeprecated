@@ -31,9 +31,6 @@
 template<class T>
 void FleeingMovementGenerator<T>::_setTargetLocation(T &owner)
 {
-    if (owner.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED))
-        return;
-
     if (!_setMoveData(owner))
         return;
 
@@ -161,7 +158,7 @@ bool FleeingMovementGenerator<T>::_getPoint(T &owner, float &x, float &y, float 
         Trinity::NormalizeMapCoord(temp_y);
         if (owner.IsWithinLOS(temp_x, temp_y, z))
         {
-            float new_z = _map->GetHeight(owner.GetPhaseMask(), temp_x, temp_y, z, true);
+            float new_z = _map->GetWaterOrGroundLevel(temp_x, temp_y, z);
 
             if (new_z <= INVALID_HEIGHT)
                 continue;
@@ -283,6 +280,10 @@ void FleeingMovementGenerator<T>::Initialize(T &owner)
     if (!duration.Passed())
         HasDuration = true;
     init = true;
+    owner.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
+    owner.AddUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
+    if (Player* player = owner.ToPlayer())
+        player->SetClientControl(player, false);
 }
 
 template<>
@@ -311,6 +312,7 @@ void FleeingMovementGenerator<Player>::Finalize(Player &owner)
     owner.ClearUnitState(UNIT_STATE_FLEEING|UNIT_STATE_FLEEING_MOVE);
     owner.StopMoving();
     path.Clear();
+    owner.SetClientControl(&owner, true);
 }
 
 template<>
@@ -344,22 +346,16 @@ bool FleeingMovementGenerator<T>::Update(T &owner, const uint32 &time_diff)
     if (!&owner || !owner.isAlive())
         return false;
 
-    if (owner.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_CONFUSED | UNIT_STATE_ROAMING) ||
-        owner.GetMap()->IsInWater(owner.GetPositionX(), owner.GetPositionY(), owner.GetPositionZ()))
+    if (owner.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_FLEEING | UNIT_STATE_ROAMING) || owner.IsFlying() ||
+        owner.GetMap()->IsInWater(owner.GetPositionX(), owner.GetPositionY(), owner.GetPositionZ()) ||
+        fabs(owner.GetPositionZ() - owner.GetMap()->GetWaterOrGroundLevel(owner.GetPositionZ(), owner.GetPositionZ(), owner.GetPositionZ())) > 14.7f)
     {
-        owner.ClearUnitState(UNIT_STATE_FLEEING_MOVE);
+        owner.ClearUnitState(UNIT_STATE_CONFUSED_MOVE);
         return true;
     }
 
-    /*if (owner.ToPlayer()->IsFalling() || owner.IsJumping() ||
-        owner.HasUnitMovementFlag(MOVEMENTFLAG_FALLING) || owner.HasUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW) || owner.HasUnitMovementFlag(MOVEMENTFLAG_FLYING))
-        return true;*/
-
     if (init)
     {
-        owner.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
-        owner.AddUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
-
         _Init(owner);
 
         if (Unit* fright = ObjectAccessor::GetUnit(owner, i_frightGUID))

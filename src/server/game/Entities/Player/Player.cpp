@@ -873,6 +873,8 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
 
     m_wantsPrematureBattleGroundStart = false;
     m_addedToPrematureBattleGroundStartList = false;
+
+    currentViewpoint = NULL;
 }
 
 Player::~Player ()
@@ -2123,7 +2125,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     SetUnitMovementFlags(0);
     DisableSpline();
 
-    if (HasUnitState(UNIT_STATE_LOST_CONTROL)) 
+    if (HasUnitState(UNIT_STATE_LOST_CONTROL))
     {
         StopMoving(); 
         GetMotionMaster()->Clear();

@@ -36,6 +36,10 @@ void ConfusedMovementGenerator<T>::Initialize(T &unit)
     if (!duration.Passed())
         HasDuration = true;
     init = true;
+    unit.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
+    unit.AddUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
+    if (Player* player = unit.ToPlayer())
+        player->SetClientControl(player, false);
 }
 
 template<class T>
@@ -60,16 +64,13 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
     if (!&unit || !unit.isAlive())
         return false;
 
-    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_FLEEING | UNIT_STATE_ROAMING) ||
-        unit.GetMap()->IsInWater(unit.GetPositionX(), unit.GetPositionY(), unit.GetPositionZ()))
+    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_FLEEING | UNIT_STATE_ROAMING) || unit.IsFlying() ||
+        unit.GetMap()->IsInWater(unit.GetPositionX(), unit.GetPositionY(), unit.GetPositionZ()) ||
+        fabs(unit.GetPositionZ() - unit.GetMap()->GetWaterOrGroundLevel(unit.GetPositionZ(), unit.GetPositionZ(), unit.GetPositionZ())) > 14.7f)
     {
         unit.ClearUnitState(UNIT_STATE_CONFUSED_MOVE);
         return true;
     }
-
-    /*if (unit.ToPlayer()->IsFalling() || unit.IsJumping() ||
-        unit.HasUnitMovementFlag(MOVEMENTFLAG_FALLING) || unit.HasUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW) || unit.HasUnitMovementFlag(MOVEMENTFLAG_FLYING))
-        return true;*/
 
     if (init)
     {
@@ -80,6 +81,8 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         z = unit.GetPositionZ();
 
         Map const* map = unit.GetBaseMap();
+
+        z = map->GetWaterOrGroundLevel(x, y, z);
 
         i_nextMove = urand(1, MAX_CONF_WAYPOINTS);
 
@@ -96,9 +99,6 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
             Trinity::NormalizeMapCoord(i_waypoints[idx][1]);
             i_waypoints[idx][2] =  z;
         }
-
-        unit.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
-        unit.AddUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
 
         if (unit.GetMap()->IsInWater(x, y, z))
         {
@@ -184,6 +184,7 @@ void ConfusedMovementGenerator<Player>::Finalize(Player &unit)
     unit.ClearUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
     unit.StopMoving();
     path.Clear();
+    unit.SetClientControl(&unit, true);
 }
 
 template<>
