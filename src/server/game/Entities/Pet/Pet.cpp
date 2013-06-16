@@ -312,6 +312,11 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber, bool c
     if (owner->GetTypeId() == TYPEID_PLAYER && isControlled() && !isTemporarySummoned() && (getPetType() == SUMMON_PET || getPetType() == HUNTER_PET))
         owner->ToPlayer()->SetLastPetNumber(pet_number);
 
+    SetHealth(GetMaxHealth());
+    SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
+    SetPower(POWER_FOCUS, GetMaxPower(POWER_FOCUS));
+    RemoveAllPetSpellCooldowns(owner);
+
     m_loading = false;
 
     return true;

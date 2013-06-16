@@ -1965,14 +1965,12 @@ void Spell::EffectTeleportUnits(SpellEffIndex /*effIndex*/)
     if (!orientation && m_targets.GetUnitTarget())
         orientation = m_targets.GetUnitTarget()->GetOrientation();
     sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "Spell::EffectTeleportUnits - teleport unit to %u %f %f %f %f\n", mapid, x, y, z, orientation);
+    unitTarget->UpdateGroundOrWaterPositionZ(x, y, z);
 
     if (mapid == unitTarget->GetMapId())
         unitTarget->NearTeleportTo(x, y, z, orientation, unitTarget == m_caster);
     else if (unitTarget->GetTypeId() == TYPEID_PLAYER)
-    {
-        unitTarget->UpdateGroundOrWaterPositionZ(x, y, z);
         unitTarget->ToPlayer()->TeleportTo(mapid, x, y, z, orientation, unitTarget == m_caster ? TELE_TO_SPELL : 0);
-    }
 
     // post effects for TARGET_DEST_DB
     switch (m_spellInfo->Id)
@@ -3947,12 +3945,8 @@ void Spell::EffectSummonPet(SpellEffIndex effIndex)
 
             owner->UnsummonPetTemporaryIfAny();
             owner->ResummonPetTemporaryUnSummonedIfAny();
-            OldSummon->SetHealth(OldSummon->GetMaxHealth());
-            OldSummon->SetPower(POWER_MANA, OldSummon->GetMaxPower(POWER_MANA));
-            OldSummon->SetPower(POWER_FOCUS, OldSummon->GetMaxPower(POWER_FOCUS));
             OldSummon->RemoveAllPositiveAuras();
             OldSummon->RemoveAllNegativeAuras();
-            OldSummon->RemoveAllPetSpellCooldowns(owner);
             return;
         }
 
@@ -3982,6 +3976,9 @@ void Spell::EffectSummonPet(SpellEffIndex effIndex)
     std::string new_name=sObjectMgr->GeneratePetName(petentry);
     if (!new_name.empty())
         pet->SetName(new_name);
+
+    pet->RemoveAllPositiveAuras();
+    pet->RemoveAllNegativeAuras();
 
     ExecuteLogEffectSummonObject(effIndex, pet);
 }
