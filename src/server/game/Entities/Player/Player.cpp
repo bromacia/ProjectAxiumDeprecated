@@ -2125,12 +2125,6 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     SetUnitMovementFlags(0);
     DisableSpline();
 
-    if (HasUnitState(UNIT_STATE_LOST_CONTROL))
-    {
-        StopMoving(); 
-        GetMotionMaster()->Clear();
-    }
-
     if (m_transport)
     {
         if (options & TELE_TO_NOT_LEAVE_TRANSPORT)
@@ -2325,6 +2319,9 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         //else
         //    return false;
     }
+
+    if (GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE || GetMotionMaster()->GetCurrentMovementGeneratorType() == FLEEING_MOTION_TYPE)
+        SetClientControl(this, false);
     return true;
 }
 

@@ -353,6 +353,10 @@ bool FleeingMovementGenerator<T>::Update(T &owner, const uint32 &time_diff)
         return true;
     }
 
+    if (Player* player = owner.ToPlayer())
+        if (player->IsBeingTeleported())
+            return true;
+
     if (init)
     {
         _Init(owner);

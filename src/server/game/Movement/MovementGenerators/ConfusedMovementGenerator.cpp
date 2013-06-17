@@ -71,18 +71,19 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         return true;
     }
 
+    if (Player* player = unit.ToPlayer())
+        if (player->IsBeingTeleported())
+            return true;
+
     if (init)
     {
-        float const wanderDistance = 3;
+        float const wanderDistance = 3.0f;
         float x, y, z;
         x = unit.GetPositionX();
         y = unit.GetPositionY();
         z = unit.GetPositionZ();
-
         Map const* map = unit.GetBaseMap();
-
         z = map->GetWaterOrGroundLevel(x, y, z);
-
         i_nextMove = urand(1, MAX_CONF_WAYPOINTS);
 
         for (uint8 idx = 0; idx < MAX_CONF_WAYPOINTS + 1; ++idx)
