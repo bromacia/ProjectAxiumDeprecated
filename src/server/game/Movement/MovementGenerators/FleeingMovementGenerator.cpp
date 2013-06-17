@@ -346,9 +346,8 @@ bool FleeingMovementGenerator<T>::Update(T &owner, const uint32 &time_diff)
     if (!&owner || !owner.isAlive())
         return false;
 
-    if (owner.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_FLEEING | UNIT_STATE_ROAMING) || owner.IsFlying() ||
-        owner.GetMap()->IsInWater(owner.GetPositionX(), owner.GetPositionY(), owner.GetPositionZ()) ||
-        fabs(owner.GetPositionZ() - owner.GetMap()->GetWaterOrGroundLevel(owner.GetPositionZ(), owner.GetPositionZ(), owner.GetPositionZ())) > 14.7f)
+    if (owner.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_CONFUSED | UNIT_STATE_ROAMING) || owner.IsFlying() ||
+        owner.GetMap()->IsInWater(owner.GetPositionX(), owner.GetPositionY(), owner.GetPositionZ()))
     {
         owner.ClearUnitState(UNIT_STATE_CONFUSED_MOVE);
         return true;
