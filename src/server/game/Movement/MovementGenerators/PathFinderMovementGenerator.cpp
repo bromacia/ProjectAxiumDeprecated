@@ -182,7 +182,30 @@ void PathFinderMovementGenerator::_buildPolyPath(const Vector3 &startPos, const 
     // make shortcut path and mark it as NOPATH ( with flying exception )
     // its up to caller how he will use this info
     if (startPoly == INVALID_POLYREF || endPoly == INVALID_POLYREF)
-        _type = PathType(PATHFIND_NORMAL | PATHFIND_NOT_USING_PATH);
+    {
+        sLog->outDebug(LOG_FILTER_MAPS, "++ BuildPolyPath :: (startPoly == 0 || endPoly == 0)\n");
+        _buildShortcut();
+        bool path = _sourceUnit->GetTypeId() == TYPEID_UNIT && _sourceUnit->ToCreature()->canFly();
+
+        bool waterPath = _sourceUnit->GetTypeId() == TYPEID_UNIT && _sourceUnit->ToCreature()->canSwim();
+        if (waterPath)
+        {
+            // Check both start and end points, if they're both in water, then we can *safely* let the creature move
+            for (uint32 i = 0; i < _pathPoints.size(); ++i)
+            {
+                ZLiquidStatus status = _sourceUnit->GetBaseMap()->getLiquidStatus(_pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, MAP_ALL_LIQUIDS, NULL);
+                // One of the points is not in the water, cancel movement.
+                if (status == LIQUID_MAP_NO_WATER)
+                {
+                    waterPath = false;
+                    break;
+                }
+            }
+        }
+
+        _type = (path || waterPath) ? PathType(PATHFIND_NORMAL | PATHFIND_NOT_USING_PATH) : PATHFIND_NOPATH;
+        return;
+    }
 
     // we may need a better number here
     bool farFromPoly = (distToStartPoly > 7.0f || distToEndPoly > 7.0f);
@@ -252,11 +275,12 @@ void PathFinderMovementGenerator::_buildPolyPath(const Vector3 &startPos, const 
     // TODO: we can merge it with getPathPolyByPosition() loop
     bool startPolyFound = false;
     bool endPolyFound = false;
-    uint32 pathStartIndex, pathEndIndex;
+    uint32 pathStartIndex = 0;
+    uint32 pathEndIndex = 0;
 
     if (_polyLength)
     {
-        for (pathStartIndex = 0; pathStartIndex < _polyLength; ++pathStartIndex)
+        for (; pathStartIndex < _polyLength; ++pathStartIndex)
         {
             // here to carch few bugs
             ASSERT(_pathPolyRefs[pathStartIndex] != INVALID_POLYREF);
