@@ -51,12 +51,13 @@ public:
         Player* player = handler->GetSession()->GetPlayer();
 
         handler->PSendSysMessage("You can enable/disable Deathbringer's Will transformations via the `.dbw showtransformation on/off` command.");
-        handler->PSendSysMessage("What the command will do is make it so that when Deathbringer's Will gives you one of its procs that you dont "
-                                 "get transformed into a Vrykul/Taunka/Iron Dwarf and instead get purple visual aura.");
-        handler->PSendSysMessage("You still get the stat bonuses from the proc just not the transformation.");
-        handler->PSendSysMessage("Keep in mind that enabling/disabling the transformation will presist even when you log out and will "
-                                 "stay that way only for you and not other players. If you have any additional questions feel free to "
-                                 "create a ticket and a staff member will assist you when he/she is available.");
+        handler->PSendSysMessage("Disabling Deathbringer's Will's transformation visual will cause the proc aura to not transform you into a "
+                                 "Vrykul/Taunka/Iron Dwarf and instead replace the visual with a purple glow.");
+        handler->PSendSysMessage("You still get all the stat bonuses from the proc just not the visual transformation and any changes you make to "
+                                 "the visual will only apply to you and not other players.");
+        handler->PSendSysMessage("Keep in mind that enabling/disabling the transformation will persist even when you log out and will "
+                                 "stay that way until you re enable/disable it. If you have any additional questions feel free to "
+                                 "create a ticket and a staff member will assist you.");
 
         return true;
     }
