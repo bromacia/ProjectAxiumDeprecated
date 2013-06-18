@@ -25,7 +25,7 @@ template<class T>
 class FleeingMovementGenerator : public MovementGeneratorMedium<T, FleeingMovementGenerator<T>>
 {
     public:
-        FleeingMovementGenerator(uint64 fright, TimeTracker duration) : i_frightGUID(fright), duration(duration), HasDuration(false), init(false), i_nextCheckTime(0) { }
+        FleeingMovementGenerator(uint64 fright, uint32 duration) : i_frightGUID(fright), Duration(duration), TotalDuration(0), HasDuration(false), init(false), i_nextCheckTime(0) { }
         void Initialize(T &);
         void Finalize(T &);
         void Reset(T &);
@@ -50,7 +50,8 @@ class FleeingMovementGenerator : public MovementGeneratorMedium<T, FleeingMoveme
         float i_cur_angle;
         uint64 i_frightGUID;
         TimeTracker i_nextCheckTime;
-        TimeTracker duration;
+        uint32 Duration;
+        TimeTracker TotalDuration;
         bool HasDuration;
 };
 

@@ -28,7 +28,7 @@ template<class T>
 class ConfusedMovementGenerator : public MovementGeneratorMedium<T, ConfusedMovementGenerator<T>>
 {
     public:
-        explicit ConfusedMovementGenerator(TimeTracker duration) : duration(duration), HasDuration(false), init(false), i_nextMoveTime(0) { }
+        explicit ConfusedMovementGenerator(uint32 duration) : Duration(duration), TotalDuration(0), HasDuration(false), init(false), i_nextMoveTime(0) { }
         void Initialize(T &);
         void Finalize(T &);
         void Reset(T &);
@@ -40,7 +40,8 @@ class ConfusedMovementGenerator : public MovementGeneratorMedium<T, ConfusedMove
         uint32 i_nextMove;
         TimeTracker i_nextMoveTime;
         float x, y, z;
-        TimeTracker duration;
+        uint32 Duration;
+        TimeTracker TotalDuration;
         bool HasDuration;
 };
 #endif

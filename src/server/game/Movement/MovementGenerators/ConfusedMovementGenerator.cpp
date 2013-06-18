@@ -33,8 +33,9 @@
 template<class T>
 void ConfusedMovementGenerator<T>::Initialize(T &unit)
 {
-    if (!duration.Passed())
+    if (Duration)
         HasDuration = true;
+
     init = true;
     unit.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
     unit.AddUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
@@ -48,7 +49,7 @@ void ConfusedMovementGenerator<T>::Reset(T &unit)
     i_nextMove = 1;
     i_nextMoveTime.Reset(0);
     unit.StopMoving();
-    unit.AddUnitState(UNIT_STATE_CONFUSED|UNIT_STATE_CONFUSED_MOVE);
+    unit.AddUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
 }
 
 template<class T>
@@ -56,8 +57,18 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 {
     if (HasDuration)
     {
-        duration.Update(diff);
-        if (duration.Passed())
+        if (!Duration)
+        {
+            HasDuration = false;
+            return true;
+        }
+        else if (TotalDuration.GetExpiry() < Duration)
+        {
+            TotalDuration = Duration;
+            return true;
+        }
+        TotalDuration.Update(diff);
+        if (TotalDuration.Passed())
             return false;
     }
 

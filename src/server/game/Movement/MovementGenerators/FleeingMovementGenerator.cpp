@@ -277,8 +277,9 @@ bool FleeingMovementGenerator<T>::_setMoveData(T &owner)
 template<class T>
 void FleeingMovementGenerator<T>::Initialize(T &owner)
 {
-    if (!duration.Passed())
+    if (Duration)
         HasDuration = true;
+
     init = true;
     owner.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
     owner.AddUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
@@ -309,7 +310,7 @@ void FleeingMovementGenerator<Player>::Finalize(Player &owner)
 {
     PathFinderMovementGenerator path(&owner);
     owner.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
-    owner.ClearUnitState(UNIT_STATE_FLEEING|UNIT_STATE_FLEEING_MOVE);
+    owner.ClearUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
     owner.StopMoving();
     path.Clear();
     owner.SetClientControl(&owner, true);
@@ -338,8 +339,18 @@ bool FleeingMovementGenerator<T>::Update(T &owner, const uint32 &time_diff)
 {
     if (HasDuration)
     {
-        duration.Update(time_diff);
-        if (duration.Passed())
+        if (!Duration)
+        {
+            HasDuration = false;
+            return true;
+        }
+        else if (TotalDuration.GetExpiry() < Duration)
+        {
+            TotalDuration = Duration;
+            return true;
+        }
+        TotalDuration.Update(time_diff);
+        if (TotalDuration.Passed())
             return false;
     }
 
