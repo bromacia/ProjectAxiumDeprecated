@@ -3433,8 +3433,21 @@ void Spell::cast(bool skipCheck)
                 m_caster->CastSpell(m_targets.GetUnitTarget() ? m_targets.GetUnitTarget() : m_caster, *i, true);
     }
 
+    // potions disabled by client, send event "not in combat" if need
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
+    {
+        if (!m_triggeredByAuraSpell)
+            m_caster->ToPlayer()->UpdatePotionCooldown(this);
+
+        // triggered spell pointer can be not set in some cases
+        // this is needed for proper apply of triggered spell mods
+        m_caster->ToPlayer()->SetSpellModTakingSpell(this, true);
+
+        // Take mods after trigger spell (needed for 14177 to affect 48664)
+        // mods are taken only on succesfull cast and independantly from targets of the spell
+        m_caster->ToPlayer()->RemoveSpellMods(this);
         m_caster->ToPlayer()->SetSpellModTakingSpell(this, false);
+    }
 
     SetExecutedCurrently(false);
 }
@@ -3841,22 +3854,6 @@ void Spell::finish(bool ok)
                 m_caster->resetAttackTimer(OFF_ATTACK);
             m_caster->resetAttackTimer(RANGED_ATTACK);
         }
-    }
-
-    // potions disabled by client, send event "not in combat" if need
-    if (m_caster->GetTypeId() == TYPEID_PLAYER)
-    {
-        if (!m_triggeredByAuraSpell)
-            m_caster->ToPlayer()->UpdatePotionCooldown(this);
-
-        // triggered spell pointer can be not set in some cases
-        // this is needed for proper apply of triggered spell mods
-        m_caster->ToPlayer()->SetSpellModTakingSpell(this, true);
-
-        // Take mods after trigger spell (needed for 14177 to affect 48664)
-        // mods are taken only on succesfull cast and independantly from targets of the spell
-        m_caster->ToPlayer()->RemoveSpellMods(this);
-        m_caster->ToPlayer()->SetSpellModTakingSpell(this, false);
     }
 
     // Stop Attack for some spells
