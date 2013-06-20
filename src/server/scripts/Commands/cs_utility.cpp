@@ -26,6 +26,8 @@ public:
             { "restoreviewpoint", SEC_GAMEMASTER,     false, &HandleRestoreViewpointCommand,          "", NULL },
             { "getspeedrate",     SEC_GAMEMASTER,     false, &HandleGetSpeedRateCommand,              "", NULL },
             { "getmoveflags",     SEC_GAMEMASTER,     false, &HandleGetMoveFlagsCommand,              "", NULL },
+            { "itemid",           SEC_GAMEMASTER,     false, &HandleItemIdCommand,                    "", NULL },
+            { "spellid",          SEC_GAMEMASTER,     false, &HandleSpellIdCommand,                   "", NULL },
             { NULL,               0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -656,6 +658,56 @@ public:
         if (WorldObject* viewpoint = player->GetCurrentViewpoint())
             if (viewpoint != player)
                 player->SetViewpoint(viewpoint, false);
+        return true;
+    }
+
+    static bool HandleItemIdCommand(ChatHandler* handler, const char* args)
+    {
+        if (!*args)
+            return false;
+
+        uint32 itemId = 0;
+
+        if (args[0] == '[')
+        {
+            char* citemName = strtok((char*)args, "]");
+
+            if (citemName && citemName[0])
+            {
+                std::string itemName = citemName+1;
+                WorldDatabase.EscapeString(itemName);
+                QueryResult result = WorldDatabase.PQuery("SELECT entry FROM item_template WHERE name = '%s'", itemName.c_str());
+                if (!result)
+                    return false;
+
+                itemId = result->Fetch()->GetUInt16();
+            }
+            else
+                return false;
+        }
+        else
+        {
+            char* cId = handler->extractKeyFromLink((char*)args, "Hitem");
+            if (!cId)
+                return false;
+            itemId = atol(cId);
+        }
+
+        handler->PSendSysMessage("Item Id: %u", itemId);
+        return true;
+    }
+
+    static bool HandleSpellIdCommand(ChatHandler* handler, const char* args)
+    {
+        if (!*args)
+            return false;
+
+        uint32 spellId = handler->extractSpellIdFromLink((char*)args);
+
+        if (!spellId)
+            return false;
+
+        handler->PSendSysMessage("Spell Id: %u", spellId);
         return true;
     }
 };
