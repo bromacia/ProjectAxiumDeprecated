@@ -383,6 +383,11 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     /*----------------------*/
 
     /* process position-change */
+    WorldPacket data(opcode, recv_data.size());
+    movementInfo.time = getMSTime();
+    movementInfo.guid = mover->GetGUID();
+    WriteMovementInfo(&data, &movementInfo);
+    mover->SendMessageToSet(&data, _player);
 
     mover->m_movementInfo = movementInfo;
 
@@ -394,12 +399,6 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     }
 
     mover->UpdatePosition(movementInfo.pos);
-
-    WorldPacket data(opcode, recv_data.size());
-    movementInfo.time = getMSTime();
-    movementInfo.guid = mover->GetGUID();
-    WriteMovementInfo(&data, &movementInfo);
-    mover->SendMessageToSet(&data, _player);
 
     if (plMover) // nothing is charmed, or player charmed
     {

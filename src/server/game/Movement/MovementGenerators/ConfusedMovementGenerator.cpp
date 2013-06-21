@@ -40,7 +40,12 @@ void ConfusedMovementGenerator<T>::Initialize(T &unit)
     unit.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
     unit.AddUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
     if (Player* player = unit.ToPlayer())
+    {
         player->SetClientControl(player, false);
+        if (Unit* charmer = player->GetCharmer())
+            if (charmer->GetTypeId() == TYPEID_PLAYER)
+                charmer->ToPlayer()->SetClientControl(charmer, false);
+    }
 }
 
 template<class T>
@@ -195,7 +200,14 @@ void ConfusedMovementGenerator<Player>::Finalize(Player &unit)
     unit.ClearUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
     unit.StopMoving();
     path.Clear();
-    unit.SetClientControl(&unit, true);
+    if (unit.isPossessed())
+    {
+        if (Unit* charmer = unit.GetCharmer())
+            if (charmer->GetTypeId() == TYPEID_PLAYER)
+                charmer->ToPlayer()->SetClientControl(&unit, true);
+    }
+    else
+        unit.SetClientControl(&unit, true);
 }
 
 template<>

@@ -284,7 +284,12 @@ void FleeingMovementGenerator<T>::Initialize(T &owner)
     owner.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
     owner.AddUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
     if (Player* player = owner.ToPlayer())
+    {
         player->SetClientControl(player, false);
+        if (Unit* charmer = player->GetCharmer())
+            if (charmer->GetTypeId() == TYPEID_PLAYER)
+                charmer->ToPlayer()->SetClientControl(charmer, false);
+    }
 }
 
 template<>
@@ -313,7 +318,14 @@ void FleeingMovementGenerator<Player>::Finalize(Player &owner)
     owner.ClearUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
     owner.StopMoving();
     path.Clear();
-    owner.SetClientControl(&owner, true);
+    if (owner.isPossessed())
+    {
+        if (Unit* charmer = owner.GetCharmer())
+            if (charmer->GetTypeId() == TYPEID_PLAYER)
+                charmer->ToPlayer()->SetClientControl(&owner, true);
+    }
+    else
+        owner.SetClientControl(&owner, true);
 }
 
 template<>

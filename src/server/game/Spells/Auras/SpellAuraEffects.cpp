@@ -3104,11 +3104,20 @@ void AuraEffect::HandleModConfuse(AuraApplication const* aurApp, uint8 mode, boo
         return;
 
     Unit* target = aurApp->GetTarget();
+    if (DiminishingGroup m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, false))
+    {
+        if (DiminishingLevels m_diminishLevel = target->GetDiminishing(m_diminishGroup))
+        {
+            int32 duration = m_spellInfo->GetDuration();
+            int32 limitduration = GetDiminishingReturnsLimitDuration(m_diminishGroup, m_spellInfo);
+            target->ApplyDiminishingToDuration(m_diminishGroup, duration, GetCaster(), m_diminishLevel, limitduration);
 
-    if (uint32 duration = m_spellInfo->GetDuration())
-        target->SetControlled(apply, UNIT_STATE_CONFUSED, duration);
-    else
-        target->SetControlled(apply, UNIT_STATE_CONFUSED);
+            if (duration > 0)
+                target->SetControlled(apply, UNIT_STATE_CONFUSED, duration);
+            else
+                target->SetControlled(apply, UNIT_STATE_CONFUSED);
+        }
+    }
 }
 
 void AuraEffect::HandleModFear(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -3117,11 +3126,20 @@ void AuraEffect::HandleModFear(AuraApplication const* aurApp, uint8 mode, bool a
         return;
 
     Unit* target = aurApp->GetTarget();
+    if (DiminishingGroup m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, false))
+    {
+        if (DiminishingLevels m_diminishLevel = target->GetDiminishing(m_diminishGroup))
+        {
+            int32 duration = m_spellInfo->GetDuration();
+            int32 limitduration = GetDiminishingReturnsLimitDuration(m_diminishGroup, m_spellInfo);
+            target->ApplyDiminishingToDuration(m_diminishGroup, duration, GetCaster(), m_diminishLevel, limitduration);
 
-    if (uint32 duration = m_spellInfo->GetDuration())
-        target->SetControlled(apply, UNIT_STATE_FLEEING, duration);
-    else
-        target->SetControlled(apply, UNIT_STATE_FLEEING);
+            if (duration > 0)
+                target->SetControlled(apply, UNIT_STATE_FLEEING, duration);
+            else
+                target->SetControlled(apply, UNIT_STATE_FLEEING);
+        }
+    }
 }
 
 void AuraEffect::HandleAuraModStun(AuraApplication const* aurApp, uint8 mode, bool apply) const

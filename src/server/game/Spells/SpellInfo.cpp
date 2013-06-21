@@ -2631,8 +2631,6 @@ bool SpellInfo::IsSpellDelaySpell() const
     Id == 51514 ||
     // Spirit Wolf Bash
     Id == 58861 ||
-    // Totems
-    (SpellFamilyName == SPELLFAMILY_SHAMAN && AttributesEx7 & SPELL_ATTR7_SUMMON_PLAYER_TOTEM) ||
 //------------Rogue----------------
     // Blind
     Id == 2094 ||
@@ -2658,8 +2656,6 @@ bool SpellInfo::IsSpellDelaySpell() const
     // Hibernate
     (SpellFamilyName == SPELLFAMILY_DRUID && SpellIconID == 44) ||
 //------------Priest---------------
-    // Mind Control
-    Id == 605 ||
     // Psychic Scream
     (SpellFamilyName == SPELLFAMILY_PRIEST && SpellFamilyFlags[0] == 0x10000) ||
     // Psychic Horror - Trigger and Stun
