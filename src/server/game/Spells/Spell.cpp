@@ -564,6 +564,8 @@ m_spellValue(new SpellValue(m_spellInfo)), m_preGeneratedPath(PathFinderMovement
 
     CleanupTargetList();
     CleanupEffectExecuteData();
+
+    DuelSpell = false;
 }
 
 Spell::~Spell()
@@ -1242,6 +1244,13 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= unit->m_lastBlinkTime)
         {
             m_caster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_IMMUNE);
+            return;
+        }
+
+    if (m_caster->GetTypeId() == TYPEID_PLAYER && unit->GetTypeId() == TYPEID_PLAYER)
+        if (!m_caster->ToPlayer()->duel && !unit->ToPlayer()->duel && DuelSpell && ((getMSTime() >= unit->m_lastDuelSpellTime) || unit->HasAura(7267))) // Duel Grovel
+        {
+            m_caster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_EVADE);
             return;
         }
 
@@ -3361,6 +3370,13 @@ void Spell::cast(bool skipCheck)
     PrepareTriggersExecutedOnHit();
 
     CallScriptOnCastHandlers();
+
+    if (Player* player = m_caster->ToPlayer())
+        if (player->duel)
+        {
+            DuelSpell = true;
+            m_caster->m_lastDuelSpellTime = getMSTime();
+        }
 
     // traded items have trade slot instead of guid in m_itemTargetGUID
     // set to real guid to be sent later to the client

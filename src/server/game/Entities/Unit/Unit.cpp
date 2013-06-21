@@ -259,6 +259,7 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
 
     m_lastSanctuaryTime = 0;
     m_lastBlinkTime = 0;
+    m_lastDuelSpellTime = 0;
 
     m_isDueling = false;
 }

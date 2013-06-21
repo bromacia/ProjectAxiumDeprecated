@@ -486,6 +486,8 @@ class Spell
 
         void SetSpellValue(SpellValueMod mod, int32 value);
 
+        bool DuelSpell;
+
     protected:
         bool HasGlobalCooldown() const;
         void TriggerGlobalCooldown();
