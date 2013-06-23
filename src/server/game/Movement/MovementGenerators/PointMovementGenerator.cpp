@@ -44,13 +44,21 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         return true;
     }
 
+    if (Player* player = unit.ToPlayer())
+        if (player->IsBeingTeleported())
+            return true;
+
     if (init)
     {
-        if (!unit.IsStopped())
-            unit.StopMoving();
-
         if (id == EVENT_CHARGE_PREPATH)
             return true;
+
+        float x = unit.GetPositionX();
+        float y = unit.GetPositionY();
+        float z = unit.GetPositionZ();
+        float groundOrWaterLevel = unit.GetMap()->GetWaterOrGroundLevel(x, y, z);
+        if (groundOrWaterLevel != z && fabs(groundOrWaterLevel - z) < 20.0f)
+            unit.NearTeleportTo(x, y, groundOrWaterLevel, unit.GetOrientation());
 
         if (unit.GetMap()->IsInWater(i_x, i_y, i_z))
         {

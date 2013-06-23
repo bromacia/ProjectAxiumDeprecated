@@ -286,9 +286,10 @@ void FleeingMovementGenerator<T>::Initialize(T &owner)
     if (Player* player = owner.ToPlayer())
     {
         player->SetClientControl(player, false);
-        if (Unit* charmer = player->GetCharmer())
-            if (charmer->GetTypeId() == TYPEID_PLAYER)
-                charmer->ToPlayer()->SetClientControl(charmer, false);
+        if (owner.isPossessed())
+            if (Unit* charmer = owner.GetCharmer())
+                if (charmer->GetTypeId() == TYPEID_PLAYER)
+                    charmer->ToPlayer()->SetClientControl(charmer, false);
     }
 }
 
@@ -383,6 +384,13 @@ bool FleeingMovementGenerator<T>::Update(T &owner, const uint32 &time_diff)
     if (init)
     {
         _Init(owner);
+
+        float x = owner.GetPositionX();
+        float y = owner.GetPositionY();
+        float z = owner.GetPositionZ();
+        float groundOrWaterLevel = owner.GetMap()->GetWaterOrGroundLevel(x, y, z);
+        if (groundOrWaterLevel != z && fabs(groundOrWaterLevel - z) < 20.0f)
+            owner.NearTeleportTo(x, y, groundOrWaterLevel, owner.GetOrientation());
 
         if (Unit* fright = ObjectAccessor::GetUnit(owner, i_frightGUID))
         {

@@ -42,9 +42,10 @@ void ConfusedMovementGenerator<T>::Initialize(T &unit)
     if (Player* player = unit.ToPlayer())
     {
         player->SetClientControl(player, false);
-        if (Unit* charmer = player->GetCharmer())
-            if (charmer->GetTypeId() == TYPEID_PLAYER)
-                charmer->ToPlayer()->SetClientControl(charmer, false);
+        if (unit.isPossessed())
+            if (Unit* charmer = unit.GetCharmer())
+                if (charmer->GetTypeId() == TYPEID_PLAYER)
+                    charmer->ToPlayer()->SetClientControl(charmer, false);
     }
 }
 
@@ -93,13 +94,17 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 
     if (init)
     {
+        float x = unit.GetPositionX();
+        float y = unit.GetPositionY();
+        float z = unit.GetPositionZ();
+        float groundOrWaterLevel = unit.GetMap()->GetWaterOrGroundLevel(x, y, z);
+        if (groundOrWaterLevel != z && fabs(groundOrWaterLevel - z) < 20.0f)
+        {
+            unit.NearTeleportTo(x, y, groundOrWaterLevel, unit.GetOrientation());
+            z = groundOrWaterLevel;
+        }
+
         float const wanderDistance = 3.0f;
-        float x, y, z;
-        x = unit.GetPositionX();
-        y = unit.GetPositionY();
-        z = unit.GetPositionZ();
-        Map const* map = unit.GetBaseMap();
-        z = map->GetWaterOrGroundLevel(x, y, z);
         i_nextMove = urand(1, MAX_CONF_WAYPOINTS);
 
         for (uint8 idx = 0; idx < MAX_CONF_WAYPOINTS + 1; ++idx)
