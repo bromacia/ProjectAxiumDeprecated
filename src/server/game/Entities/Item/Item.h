@@ -356,12 +356,13 @@ class Item : public Object
         void ClearSoulboundTradeable(Player* currentOwner);
         bool CheckSoulboundTradeExpire();
 
-        uint32 TransmogEntry;
-        uint32 TransmogEnchant;
-
         void BuildUpdate(UpdateDataMapType&);
 
         uint32 GetScriptId() const { return GetTemplate()->ScriptId; }
+
+        uint32 TransmogEntry;
+        uint32 TransmogEnchant;
+
     private:
         std::string m_text;
         uint8 m_slot;

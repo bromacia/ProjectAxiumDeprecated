@@ -11398,6 +11398,8 @@ InventoryResult Player::CanEquipItem(uint8 slot, uint16 &dest, Item* pItem, bool
         ItemTemplate const* pProto = pItem->GetTemplate();
         if (pProto)
         {
+            if (pProto->Is284Weapon())
+                return EQUIP_ERR_YOU_CAN_NEVER_USE_THAT_ITEM;
             // item used
             if (pItem->m_lootGenerated)
                 return EQUIP_ERR_ALREADY_LOOTED;

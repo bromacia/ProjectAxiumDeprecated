@@ -729,6 +729,19 @@ struct ItemTemplate
     bool IsWeaponVellum() const { return Class == ITEM_CLASS_TRADE_GOODS && SubClass == ITEM_SUBCLASS_WEAPON_ENCHANTMENT; }
     bool IsArmorVellum() const { return Class == ITEM_CLASS_TRADE_GOODS && SubClass == ITEM_SUBCLASS_ARMOR_ENCHANTMENT; }
     bool IsConjuredConsumable() const { return Class == ITEM_CLASS_CONSUMABLE && (Flags & ITEM_PROTO_FLAG_CONJURED); }
+    bool Is284Weapon() const
+    {
+        return ItemId == 49623 ||    // Shadowmourne
+            ItemId == 50730 ||       // Glorenzelg, High-Blade of the Silver Hand
+            ItemId == 50731 ||       // Archus, Greatstaff of Antonidas
+            ItemId == 50732 ||       // Bloodsurge, Kel'Thuzad's Blade of Agony
+            ItemId == 50733 ||       // Fal'inrush, Defender of Quel'thalas
+            ItemId == 50734 ||       // Royal Scepter of Terenas II
+            ItemId == 50735 ||       // Oathbinder, Charge of the Ranger-General
+            ItemId == 50736 ||       // Heaven's Fall, Kryss of a Thousand Lies
+            ItemId == 50737 ||       // Havoc's Call, Blade of Lordaeron Kings
+            ItemId == 50738;         // Mithrios, Bronzebeard's Legacy
+    }
 };
 
 // Benchmarked: Faster than std::map (insert/find)
