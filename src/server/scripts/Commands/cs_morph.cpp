@@ -10,15 +10,15 @@ enum MorphIds
     GNM      = 20580,
     GNF      = 20581,
     DRF      = 20323,
-    ORCM     = 21267,
-    ORCF     = 20316,
+    ORM      = 21267,
+    ORF      = 20316,
     TAM      = 20585,
     TAF      = 20584,
     TRM      = 20321,
     BEM      = 20578,
     BEF      = 20579,
-    GOBM     = 20582,
-    GOBF     = 20583
+    GOM      = 20582,
+    GOF      = 20583
 };
 
 class morph_commandscript : public CommandScript
@@ -38,15 +38,15 @@ public:
             { "gnm",        SEC_VIP,            false, &HandleMorphGnomeMaleCommand,        "", NULL },
             { "gnf",        SEC_VIP,            false, &HandleMorphGnomeFemaleCommand,      "", NULL },
             { "drf",        SEC_VIP,            false, &HandleMorphDraeneiFemaleCommand,    "", NULL },
-            { "orcm",       SEC_VIP,            false, &HandleMorphFelOrcMaleCommand,       "", NULL },
-            { "orcf",       SEC_VIP,            false, &HandleMorphOrcFemaleCommand,        "", NULL },
+            { "orm",        SEC_VIP,            false, &HandleMorphFelOrcMaleCommand,       "", NULL },
+            { "orf",        SEC_VIP,            false, &HandleMorphOrcFemaleCommand,        "", NULL },
             { "tam",        SEC_VIP,            false, &HandleMorphTaurenMaleCommand,       "", NULL },
             { "taf",        SEC_VIP,            false, &HandleMorphTaurenFemaleCommand,     "", NULL },
             { "trm",        SEC_VIP,            false, &HandleMorphTrollMaleCommand,        "", NULL },
             { "bem",        SEC_VIP,            false, &HandleMorphBloodElfMaleCommand,     "", NULL },
             { "bef",        SEC_VIP,            false, &HandleMorphBloodElfFemaleCommand,   "", NULL },
-            { "gobm",       SEC_VIP,            false, &HandleMorphGoblinMaleCommand,       "", NULL },
-            { "gobf",       SEC_VIP,            false, &HandleMorphGoblinFemaleCommand,     "", NULL },
+            { "gom",        SEC_VIP,            false, &HandleMorphGoblinMaleCommand,       "", NULL },
+            { "gof",        SEC_VIP,            false, &HandleMorphGoblinFemaleCommand,     "", NULL },
             { "none",       SEC_VIP,            false, &HandleMorphNoneCommand,             "", NULL },
             { "help",       SEC_PLAYER,         false, &HandleMorphHelpCommand,             "", NULL },
             { NULL,         0,                  false, NULL,                                "", NULL }
@@ -173,13 +173,13 @@ public:
 
     static bool HandleMorphFelOrcMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
-        Morph(handler, ORCM);
+        Morph(handler, ORM);
         return true;
     }
 
     static bool HandleMorphOrcFemaleCommand(ChatHandler* handler, const char* /*args*/)
     {
-        Morph(handler, ORCF);
+        Morph(handler, ORF);
         return true;
     }
 
@@ -215,13 +215,13 @@ public:
 
     static bool HandleMorphGoblinMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
-        Morph(handler, GOBM);
+        Morph(handler, GOM);
         return true;
     }
 
     static bool HandleMorphGoblinFemaleCommand(ChatHandler* handler, const char* /*args*/)
     {
-        Morph(handler, GOBF);
+        Morph(handler, GOF);
         return true;
     }
 

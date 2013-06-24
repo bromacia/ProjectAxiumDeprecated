@@ -20,7 +20,7 @@ class npc_beastmaster : public CreatureScript
             if (!pet)
                 return;
 
-            if (Pet* playerPet = player->ToPet())
+            if (Pet* playerPet = player->GetPet())
             {
                 player->StopCastingCharm();
                 player->RemovePet(playerPet, PET_SAVE_AS_DELETED, false);
