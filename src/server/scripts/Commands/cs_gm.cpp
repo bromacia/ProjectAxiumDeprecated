@@ -41,7 +41,7 @@ public:
             { "fly",            SEC_ADMINISTRATOR,  false, &HandleGMFlyCommand,               "", NULL },
             { "ingame",         SEC_PLAYER,         true,  &HandleGMListIngameCommand,        "", NULL },
             { "list",           SEC_ADMINISTRATOR,  true,  &HandleGMListFullCommand,          "", NULL },
-            { "visible",        SEC_GAMEMASTER,     false, &HandleGMVisibleCommand,           "", NULL },
+            { "invisible",      SEC_GAMEMASTER,     false, &HandleGMInvisibleCommand,         "", NULL },
             { "",               SEC_GAMEMASTER,     false, &HandleGMCommand,                  "", NULL },
             { NULL,             0,                  false, NULL,                              "", NULL }
         };
@@ -184,27 +184,24 @@ public:
     }
 
     //Enable\Disable Invisible mode
-    static bool HandleGMVisibleCommand(ChatHandler* handler, char const* args)
+    static bool HandleGMInvisibleCommand(ChatHandler* handler, char const* args)
     {
         if (!*args)
-        {
-            handler->PSendSysMessage(LANG_YOU_ARE, handler->GetSession()->GetPlayer()->isGMVisible() ? handler->GetTrinityString(LANG_VISIBLE) : handler->GetTrinityString(LANG_INVISIBLE));
             return true;
-        }
 
         std::string param = (char*)args;
 
         if (param == "on")
         {
-            handler->GetSession()->GetPlayer()->SetGMVisible(true);
-            handler->GetSession()->SendNotification(LANG_INVISIBLE_VISIBLE);
+            handler->GetSession()->GetPlayer()->SetGMInvisible(true);
+            handler->PSendSysMessage("You are now invisible");
             return true;
         }
 
         if (param == "off")
         {
-            handler->GetSession()->SendNotification(LANG_INVISIBLE_INVISIBLE);
-            handler->GetSession()->GetPlayer()->SetGMVisible(false);
+            handler->PSendSysMessage("You are now visible");
+            handler->GetSession()->GetPlayer()->SetGMInvisible(false);
             return true;
         }
 

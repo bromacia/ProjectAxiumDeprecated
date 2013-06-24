@@ -2869,21 +2869,24 @@ void Player::SetGameMaster(bool on)
     UpdateObjectVisibility();
 }
 
-void Player::SetGMVisible(bool on)
+void Player::SetGMInvisible(bool on)
 {
+    uint8 security = GetSession()->GetSecurity();
     if (on)
     {
-        m_ExtraFlags &= ~PLAYER_EXTRA_GM_INVISIBLE;         //remove flag
-        m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GM, SEC_PLAYER);
+        RemoveAllControlled();
+        m_ExtraFlags |= PLAYER_EXTRA_GM_INVISIBLE;
+        m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GM, security);
+        if (!HasAura(44816))
+            AddAura(44816, this);
     }
     else
     {
-        m_ExtraFlags |= PLAYER_EXTRA_GM_INVISIBLE;          //add flag
-
-        SetAcceptWhispers(false);
-        SetGameMaster(true);
-
-        m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GM, GetSession()->GetSecurity());
+        m_ExtraFlags &= ~PLAYER_EXTRA_GM_INVISIBLE;
+        m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GM, SEC_PLAYER);
+        RemoveByteFlag(PLAYER_FIELD_BYTES2, 3, PLAYER_FIELD_BYTE2_STEALTH);
+        if (HasAura(44816))
+            RemoveAura(44816);
     }
 }
 
@@ -17145,11 +17148,11 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         switch (sWorld->getIntConfig(CONFIG_GM_VISIBLE_STATE))
         {
             default:
-            case 0: SetGMVisible(false); break;             // invisible
-            case 1:                      break;             // visible
+            case 0: SetGMInvisible(true); break;            // invisible
+            case 1:                       break;             // visible
             case 2:                                         // save state
                 if (extraflags & PLAYER_EXTRA_GM_INVISIBLE)
-                    SetGMVisible(false);
+                    SetGMInvisible(true);
                 break;
         }
 
