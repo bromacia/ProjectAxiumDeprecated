@@ -11102,8 +11102,8 @@ uint32 Unit::SpellDamageBonusTaken(Unit* caster, SpellInfo const* spellProto, ui
                 {
                     if (GetTypeId() != TYPEID_PLAYER)
                         continue;
-                    float mod = ToPlayer()->GetRatingBonusValue(CR_CRIT_TAKEN_MELEE) * (-8.0f);
-                    AddPctF(TakenTotalMod, std::max(mod, float((*i)->GetAmount())));
+                    float mod = std::min(ToPlayer()->GetCombatRatingReduction(CR_CRIT_TAKEN_SPELL) * 2.2f, 22.5f) * (-4.0f);
+                    AddPctF(TakenTotalMod, mod);
                 }
                 break;
         }
@@ -12490,8 +12490,8 @@ uint32 Unit::MeleeDamageBonusTaken(Unit* attacker, uint32 pdamage, WeaponAttackT
                 {
                     if (GetTypeId() != TYPEID_PLAYER)
                         continue;
-                    float mod = ToPlayer()->GetRatingBonusValue(CR_CRIT_TAKEN_MELEE) * (-8.0f);
-                    AddPctF(TakenTotalMod, std::max(mod, float((*i)->GetAmount())));
+                    float mod = std::min(ToPlayer()->GetCombatRatingReduction(CR_CRIT_TAKEN_MELEE) * 2.2f, 22.5f) * (-4.0f);
+                    AddPctF(TakenTotalMod, mod);
                 }
                 break;
         }
