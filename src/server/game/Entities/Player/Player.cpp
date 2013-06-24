@@ -875,6 +875,8 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_addedToPrematureBattleGroundStartList = false;
 
     currentViewpoint = NULL;
+
+    lastEmoteTime = 0;
 }
 
 Player::~Player ()

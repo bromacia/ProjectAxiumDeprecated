@@ -2968,6 +2968,8 @@ class Player : public Unit, public GridObject<Player>
         bool m_addedToPrematureBattleGroundStartList;
 
         WorldObject* currentViewpoint;
+
+        uint32 lastEmoteTime;
 };
 
 void AddItemsSetItem(Player*player, Item* item);
