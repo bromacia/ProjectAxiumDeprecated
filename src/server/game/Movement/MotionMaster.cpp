@@ -215,12 +215,12 @@ void MotionMaster::MoveTargetedHome()
         sLog->outError("Player (GUID: %u) attempt targeted home", i_owner->GetGUIDLow());
 }
 
-void MotionMaster::MoveConfused(uint32 duration)
+void MotionMaster::MoveConfused(uint32 duration, uint16 msWaitTime)
 {
     if (i_owner->GetTypeId() == TYPEID_PLAYER)
     {
         sLog->outStaticDebug("Player (GUID: %u) move confused", i_owner->GetGUIDLow());
-        Mutate(new ConfusedMovementGenerator<Player>(duration), MOTION_SLOT_CONFUSED);
+        Mutate(new ConfusedMovementGenerator<Player>(duration, msWaitTime), MOTION_SLOT_CONFUSED);
     }
     else
     {
@@ -412,20 +412,7 @@ void MotionMaster::MoveFall(uint32 id/*=0*/)
     Mutate(new EffectMovementGenerator(id), MOTION_SLOT_CONTROLLED);
 }
 
-void MotionMaster::MoveCharge(PathFinderMovementGenerator& path)
-{
-    Vector3 dest = path.GetActualEndPosition();
-
-    MoveCharge(dest.x, dest.y, dest.z, SPEED_CHARGE, EVENT_CHARGE_PREPATH, true);
-
-    // Charge movement is not started when using EVENT_CHARGE_PREPATH
-    Movement::MoveSplineInit init(*i_owner);
-    init.MovebyPath(path.GetPath());
-    init.SetVelocity(SPEED_CHARGE);
-    init.Launch();
-}
-
-void MotionMaster::MoveCharge(float x, float y, float z, float speed, uint32 id, bool generatePath)
+void MotionMaster::MoveCharge(float x, float y, float z, float speed, uint32 id, bool generatePath, PathFinderMovementGenerator* path, uint16 msWaitTime)
 {
     if (Impl[MOTION_SLOT_CONTROLLED] && Impl[MOTION_SLOT_CONTROLLED]->GetMovementGeneratorType() != DISTRACT_MOTION_TYPE)
         return;
@@ -433,13 +420,13 @@ void MotionMaster::MoveCharge(float x, float y, float z, float speed, uint32 id,
     if (i_owner->GetTypeId() == TYPEID_PLAYER)
     {
         sLog->outStaticDebug("Player (GUID: %u) charge point (X: %f Y: %f Z: %f)", i_owner->GetGUIDLow(), x, y, z);
-        Mutate(new PointMovementGenerator<Player>(id, x, y, z, generatePath, speed), MOTION_SLOT_CONTROLLED);
+        Mutate(new PointMovementGenerator<Player>(id, x, y, z, generatePath, speed, path, msWaitTime), MOTION_SLOT_CONTROLLED);
     }
     else
     {
         sLog->outStaticDebug("Creature (Entry: %u GUID: %u) charge point (X: %f Y: %f Z: %f)",
             i_owner->GetEntry(), i_owner->GetGUIDLow(), x, y, z);
-        Mutate(new PointMovementGenerator<Creature>(id, x, y, z, generatePath, speed), MOTION_SLOT_CONTROLLED);
+        Mutate(new PointMovementGenerator<Creature>(id, x, y, z, generatePath, speed, path), MOTION_SLOT_CONTROLLED);
     }
 }
 
@@ -469,7 +456,7 @@ void MotionMaster::MoveSeekAssistanceDistract(uint32 time)
     }
 }
 
-void MotionMaster::MoveFleeing(Unit* enemy, uint32 time, uint32 duration)
+void MotionMaster::MoveFleeing(Unit* enemy, uint32 time, uint32 duration, uint16 msWaitTime)
 {
     if (!enemy)
         return;
@@ -482,7 +469,7 @@ void MotionMaster::MoveFleeing(Unit* enemy, uint32 time, uint32 duration)
         sLog->outStaticDebug("Player (GUID: %u) flee from %s (GUID: %u)", i_owner->GetGUIDLow(),
             enemy->GetTypeId() == TYPEID_PLAYER ? "player" : "creature",
             enemy->GetTypeId() == TYPEID_PLAYER ? enemy->GetGUIDLow() : enemy->ToCreature()->GetDBTableGUIDLow());
-        Mutate(new FleeingMovementGenerator<Player>(enemy->GetGUID(), duration), MOTION_SLOT_FLEEING);
+        Mutate(new FleeingMovementGenerator<Player>(enemy->GetGUID(), duration, msWaitTime), MOTION_SLOT_FLEEING);
     }
     else
     {

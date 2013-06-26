@@ -864,6 +864,8 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
 
     SetPendingBind(0, 0);
 
+    blockedMovement = false;
+
     m_playerSpec = 0;
 
     m_isMorphed = false;
@@ -25292,6 +25294,16 @@ bool Player::IsInWhisperWhiteList(uint64 guid)
             return true;
     }
     return false;
+}
+
+void Player::InterruptMovement()
+{
+    WorldPacket data(MSG_MOVE_STOP, 8 + 4 + 4);
+    m_movementInfo.guid = GetGUID();
+    m_movementInfo.flags &= ~uint32(MOVEMENTFLAG_MASK_MOVING);
+    m_movementInfo.time = getMSTime();
+    GetSession()->WriteMovementInfo(&data, &m_movementInfo);
+    SendMessageToSet(&data, true);
 }
 
 void Player::InitWowarmoryFeeds() {

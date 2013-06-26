@@ -3105,11 +3105,16 @@ void AuraEffect::HandleModConfuse(AuraApplication const* aurApp, uint8 mode, boo
 
     Unit* target = aurApp->GetTarget();
     uint32 duration = aurApp->GetBase()->GetDuration();
+    uint16 msWaitTime = 0;
 
-    if (duration)
-        target->SetControlled(apply, UNIT_STATE_CONFUSED, duration);
-    else
-        target->SetControlled(apply, UNIT_STATE_CONFUSED);
+    if (target->GetTypeId() == TYPEID_PLAYER)
+    {
+        msWaitTime = target->ToPlayer()->GetSession()->GetLatency() + target->GetSpeed(MOVE_RUN);
+        if (msWaitTime < 50)
+            msWaitTime = 50;
+    }
+
+    target->SetControlled(apply, UNIT_STATE_CONFUSED, duration, msWaitTime);
 }
 
 void AuraEffect::HandleModFear(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -3119,11 +3124,16 @@ void AuraEffect::HandleModFear(AuraApplication const* aurApp, uint8 mode, bool a
 
     Unit* target = aurApp->GetTarget();
     uint32 duration = aurApp->GetBase()->GetDuration();
+    uint16 msWaitTime = 0;
 
-    if (duration)
-        target->SetControlled(apply, UNIT_STATE_FLEEING, duration);
-    else
-        target->SetControlled(apply, UNIT_STATE_FLEEING);
+    if (target->GetTypeId() == TYPEID_PLAYER)
+    {
+        msWaitTime = target->ToPlayer()->GetSession()->GetLatency() + target->GetSpeed(MOVE_RUN);
+        if (msWaitTime < 50)
+            msWaitTime = 50;
+    }
+
+    target->SetControlled(apply, UNIT_STATE_FLEEING, duration, msWaitTime);
 }
 
 void AuraEffect::HandleAuraModStun(AuraApplication const* aurApp, uint8 mode, bool apply) const

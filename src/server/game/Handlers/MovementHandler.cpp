@@ -281,6 +281,13 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
     if (plMover)
     {
+        if (plMover->IsMovementBlocked())
+        {
+            plMover->InterruptMovement();
+            recv_data.rfinish(); // prevent warnings spam
+            return;
+        }
+
         if (opcode == MSG_MOVE_JUMP)
         {
             if (plMover->IsJumping())

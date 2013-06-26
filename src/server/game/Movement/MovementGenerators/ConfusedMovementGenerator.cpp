@@ -33,6 +33,9 @@
 template<class T>
 void ConfusedMovementGenerator<T>::Initialize(T &unit)
 {
+    if (MSWaitTime)
+        HasWaitTime = true;
+
     if (Duration)
         HasDuration = true;
 
@@ -41,12 +44,25 @@ void ConfusedMovementGenerator<T>::Initialize(T &unit)
     unit.AddUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
     if (Player* player = unit.ToPlayer())
     {
+        if (HasWaitTime)
+        {
+            player->SetMovementBlocked(true);
+            player->InterruptMovement();
+        }
+
         player->SetClientControl(player, false);
         if (unit.isPossessed())
             if (Unit* charmer = unit.GetCharmer())
                 if (charmer->GetTypeId() == TYPEID_PLAYER)
                     charmer->ToPlayer()->SetClientControl(charmer, false);
     }
+
+    float x = unit.GetPositionX();
+    float y = unit.GetPositionY();
+    float z = unit.GetPositionZ();
+    float groundOrWaterLevel = unit.GetMap()->GetWaterOrGroundLevel(x, y, z);
+    if (groundOrWaterLevel != z && fabs(groundOrWaterLevel - z) < 20.0f)
+        unit.NearTeleportTo(x, y, groundOrWaterLevel, unit.GetOrientation());
 }
 
 template<class T>
@@ -61,18 +77,26 @@ void ConfusedMovementGenerator<T>::Reset(T &unit)
 template<class T>
 bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 {
+    if (HasWaitTime)
+    {
+        if (!TotalWaitTime.GetExpiry())
+            TotalWaitTime = MSWaitTime;
+
+        TotalWaitTime.Update(diff);
+        if (!TotalWaitTime.Passed())
+            return true;
+        else
+        {
+            HasWaitTime = false;
+            unit.ToPlayer()->SetMovementBlocked(false);
+        }
+    }
+
     if (HasDuration)
     {
-        if (!Duration)
-        {
-            HasDuration = false;
-            return true;
-        }
-        else if (TotalDuration.GetExpiry() < Duration)
-        {
+        if (!TotalDuration.GetExpiry() || TotalDuration.GetExpiry() != Duration)
             TotalDuration = Duration;
-            return true;
-        }
+
         TotalDuration.Update(diff);
         if (TotalDuration.Passed())
             return false;
@@ -97,13 +121,6 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         float x = unit.GetPositionX();
         float y = unit.GetPositionY();
         float z = unit.GetPositionZ();
-        float groundOrWaterLevel = unit.GetMap()->GetWaterOrGroundLevel(x, y, z);
-        if (groundOrWaterLevel != z && fabs(groundOrWaterLevel - z) < 20.0f)
-        {
-            unit.NearTeleportTo(x, y, groundOrWaterLevel, unit.GetOrientation());
-            z = groundOrWaterLevel;
-        }
-
         float const wanderDistance = 3.0f;
         i_nextMove = urand(1, MAX_CONF_WAYPOINTS);
 
@@ -134,6 +151,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
             if (!unit.IsWithinLOS(x, y, z) || !path.Calculate(x, y, z) || path.GetPathType() & PATHFIND_NOPATH)
             {
                 i_nextMoveTime.Reset(50);
+                init = false;
                 return true;
             }
 
@@ -205,6 +223,7 @@ void ConfusedMovementGenerator<Player>::Finalize(Player &unit)
     unit.ClearUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
     unit.StopMoving();
     path.Clear();
+    unit.SetMovementBlocked(false);
     if (unit.isPossessed())
     {
         if (Unit* charmer = unit.GetCharmer())

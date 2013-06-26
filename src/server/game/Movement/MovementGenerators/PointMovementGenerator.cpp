@@ -29,12 +29,42 @@
 template<class T>
 void PointMovementGenerator<T>::Initialize(T &unit)
 {
+    if (MSWaitTime)
+        HasWaitTime = true;
+
     init = true;
+    if (HasWaitTime)
+    {
+        unit.ToPlayer()->SetMovementBlocked(true);
+        unit.ToPlayer()->InterruptMovement();
+    }
+
+    float x = unit.GetPositionX();
+    float y = unit.GetPositionY();
+    float z = unit.GetPositionZ();
+    float groundOrWaterLevel = unit.GetMap()->GetWaterOrGroundLevel(x, y, z);
+    if (groundOrWaterLevel != z && fabs(groundOrWaterLevel - z) < 20.0f)
+        unit.NearTeleportTo(x, y, groundOrWaterLevel, unit.GetOrientation());
 }
 
 template<class T>
 bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 {
+    if (HasWaitTime)
+    {
+        if (!TotalWaitTime.GetExpiry())
+            TotalWaitTime = MSWaitTime;
+
+        TotalWaitTime.Update(diff);
+        if (!TotalWaitTime.Passed())
+            return true;
+        else
+        {
+            HasWaitTime = false;
+            unit.ToPlayer()->SetMovementBlocked(false);
+        }
+    }
+
     if (!&unit || !unit.isAlive())
         return false;
 
@@ -50,15 +80,17 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 
     if (init)
     {
-        if (id == EVENT_CHARGE_PREPATH)
+        if (path)
+        {
+            Movement::MoveSplineInit pInit(unit);
+            pInit.MovebyPath(path->GetPath());
+            if (speed > 0.0f)
+                pInit.SetVelocity(speed);
+            pInit.Launch();
+            unit.AddUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
+            init = false;
             return true;
-
-        float x = unit.GetPositionX();
-        float y = unit.GetPositionY();
-        float z = unit.GetPositionZ();
-        float groundOrWaterLevel = unit.GetMap()->GetWaterOrGroundLevel(x, y, z);
-        if (groundOrWaterLevel != z && fabs(groundOrWaterLevel - z) < 20.0f)
-            unit.NearTeleportTo(x, y, groundOrWaterLevel, unit.GetOrientation());
+        }
 
         if (unit.GetMap()->IsInWater(i_x, i_y, i_z))
         {
@@ -70,13 +102,16 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         }
         else
         {
-            PathFinderMovementGenerator path(&unit);
+            PathFinderMovementGenerator i_path(&unit);
 
-            if (!unit.IsWithinLOS(i_x, i_y, i_z) || !path.Calculate(i_x, i_y, i_z) || path.GetPathType() & PATHFIND_NOPATH)
+            if (!unit.IsWithinLOS(i_x, i_y, i_z) || !i_path.Calculate(i_x, i_y, i_z) || i_path.GetPathType() & PATHFIND_NOPATH)
+            {
+                init = false;
                 return true;
+            }
 
             Movement::MoveSplineInit init(unit);
-            init.MovebyPath(path.GetPath());
+            init.MovebyPath(i_path.GetPath());
             if (speed > 0.0f)
                 init.SetVelocity(speed);
             init.Launch();
@@ -87,7 +122,7 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         return true;
     }
 
-    if (id != EVENT_CHARGE_PREPATH && i_recalculateSpeed && !unit.movespline->Finalized())
+    if (!path && i_recalculateSpeed && !unit.movespline->Finalized())
     {
         if (unit.GetMap()->IsInWater(i_x, i_y, i_z))
         {
@@ -99,13 +134,13 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         }
         else
         {
-            PathFinderMovementGenerator path(&unit);
+            PathFinderMovementGenerator i_path(&unit);
 
-            if (!unit.IsWithinLOS(i_x, i_y, i_z) || !path.Calculate(i_x, i_y, i_z) || path.GetPathType() & PATHFIND_NOPATH)
+            if (!unit.IsWithinLOS(i_x, i_y, i_z) || !i_path.Calculate(i_x, i_y, i_z) || i_path.GetPathType() & PATHFIND_NOPATH)
                 return true;
 
             Movement::MoveSplineInit init(unit);
-            init.MoveTo(i_x, i_y, i_z, m_generatePath);
+            init.MovebyPath(i_path.GetPath());
             if (speed > 0.0f)
                 init.SetVelocity(speed);
             init.Launch();

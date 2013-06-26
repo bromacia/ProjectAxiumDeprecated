@@ -2587,11 +2587,16 @@ class Player : public Unit, public GridObject<Player>
             //! TODO: Need a proper calculation for collision height when mounted
         }
 
+        void InterruptMovement();
+
         bool IsVIP() { if (GetSession()->GetSecurity() == SEC_VIP) return true; return false; }
         bool IsGameMaster() { if (GetSession()->GetSecurity() == SEC_GAMEMASTER) return true; return false; }
         bool IsHeadGameMaster() { if (GetSession()->GetSecurity() == SEC_HEAD_GAMEMASTER) return true; return false; }
         bool IsAdministrator() { if (GetSession()->GetSecurity() == SEC_ADMINISTRATOR) return true; return false; }
         bool IsConsole() { if (GetSession()->GetSecurity() == SEC_CONSOLE) return true; return false; }
+
+        void SetMovementBlocked(bool x) { blockedMovement = x; }
+        bool IsMovementBlocked() { return blockedMovement; }
 
         void SetShowDBWTransformation(bool x) { m_show_dbw_transformation = x; }
         bool ShowDBWTransformation() const { return m_show_dbw_transformation; }
@@ -2954,6 +2959,8 @@ class Player : public Unit, public GridObject<Player>
         InstanceTimeMap _instanceResetTimes;
         uint32 _pendingBindId;
         uint32 _pendingBindTimer;
+
+        bool blockedMovement;
 
         bool m_show_dbw_transformation;
 

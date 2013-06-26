@@ -16451,7 +16451,7 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
         victim->ExitVehicle();
 }
 
-void Unit::SetControlled(bool apply, UnitState state, uint32 duration)
+void Unit::SetControlled(bool apply, UnitState state, uint32 duration, uint16 msWaitTime)
 {
     if (apply)
     {
@@ -16472,13 +16472,13 @@ void Unit::SetControlled(bool apply, UnitState state, uint32 duration)
             case UNIT_STATE_CONFUSED:
                 ClearUnitState(UNIT_STATE_MELEE_ATTACKING);
                 SendMeleeAttackStop();
-                SetConfused(true, duration);
+                SetConfused(true, duration, msWaitTime);
                 CastStop();
                 break;
             case UNIT_STATE_FLEEING:
                 ClearUnitState(UNIT_STATE_MELEE_ATTACKING);
                 SendMeleeAttackStop();
-                SetFeared(true, duration);
+                SetFeared(true, duration, msWaitTime);
                 CastStop();
                 break;
             default:
@@ -16629,7 +16629,7 @@ void Unit::SetRooted(bool apply)
     }
 }
 
-void Unit::SetFeared(bool apply, uint32 duration)
+void Unit::SetFeared(bool apply, uint32 duration, uint16 msWaitTime)
 {
     if (apply)
     {
@@ -16639,7 +16639,7 @@ void Unit::SetFeared(bool apply, uint32 duration)
             caster = ObjectAccessor::GetUnit(*this, fearAuras.front()->GetCasterGUID());
         if (!caster)
             caster = getAttackerForHelper();
-        GetMotionMaster()->MoveFleeing(caster, fearAuras.empty() ? sWorld->getIntConfig(CONFIG_CREATURE_FAMILY_FLEE_DELAY) : 0, duration);             // caster == NULL processed in MoveFleeing
+        GetMotionMaster()->MoveFleeing(caster, fearAuras.empty() ? sWorld->getIntConfig(CONFIG_CREATURE_FAMILY_FLEE_DELAY) : 0, duration, msWaitTime);             // caster == NULL processed in MoveFleeing
     }
     else
     {
@@ -16651,10 +16651,10 @@ void Unit::SetFeared(bool apply, uint32 duration)
     }
 }
 
-void Unit::SetConfused(bool apply, uint32 duration)
+void Unit::SetConfused(bool apply, uint32 duration, uint16 msWaitTime)
 {
     if (apply)
-        GetMotionMaster()->MoveConfused(duration);
+        GetMotionMaster()->MoveConfused(duration, msWaitTime);
     else
     {
         if (isAlive())
