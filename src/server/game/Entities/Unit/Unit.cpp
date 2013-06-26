@@ -10257,10 +10257,7 @@ Unit* Unit::SelectMagnetTarget(Unit* victim, SpellInfo const* spellInfo)
         for (Unit::AuraEffectList::const_iterator itr = magnetAuras.begin(); itr != magnetAuras.end(); ++itr)
             if (Unit* magnet = (*itr)->GetBase()->GetUnitOwner())
                 if (magnet->isAlive())
-                {
-                    (*itr)->GetBase()->DropCharge(AURA_REMOVE_BY_EXPIRE);
                     return magnet;
-                }
     }
     // Melee && ranged case
     else
@@ -10270,10 +10267,7 @@ Unit* Unit::SelectMagnetTarget(Unit* victim, SpellInfo const* spellInfo)
             if (Unit* magnet = (*i)->GetBase()->GetUnitOwner())
                 if (magnet->isAlive() && magnet->IsWithinLOSInMap(this))
                     if (roll_chance_i((*i)->GetAmount()))
-                    {
-                        (*i)->GetBase()->DropCharge(AURA_REMOVE_BY_EXPIRE);
                         return magnet;
-                    }
     }
 
     return victim;
