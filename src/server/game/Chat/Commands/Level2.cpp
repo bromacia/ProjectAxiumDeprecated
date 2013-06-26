@@ -268,7 +268,6 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
 
     uint32 accId = 0;
     uint32 total_player_time = 0;
-    uint8 level = 0;
     uint32 latency = 0;
     uint8 race;
     uint8 Class;
@@ -289,7 +288,6 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
 
         accId = target->GetSession()->GetAccountId();
         total_player_time = target->GetTotalPlayedTime();
-        level = target->getLevel();
         latency = target->GetSession()->GetLatency();
         race = target->getRace();
         Class = target->getClass();
@@ -306,20 +304,19 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         if (HasLowerSecurity(NULL, target_guid))
             return false;
 
-        //                                                    0          1      2        3     4      5    6
-        QueryResult result = CharacterDatabase.PQuery("SELECT totaltime, level, account, race, class, map, zone FROM characters "
+        //                                                    0          1        2     3      4    5
+        QueryResult result = CharacterDatabase.PQuery("SELECT totaltime, account, race, class, map, zone FROM characters "
                                                       "WHERE guid = '%u'", GUID_LOPART(target_guid));
         if (!result)
             return false;
 
         Field* fields = result->Fetch();
         total_player_time = fields[0].GetUInt32();
-        level = fields[1].GetUInt32();
-        accId = fields[2].GetUInt32();
-        race = fields[3].GetUInt8();
-        Class = fields[4].GetUInt8();
-        mapId = fields[5].GetUInt16();
-        areaId = fields[6].GetUInt16();
+        accId = fields[1].GetUInt32();
+        race = fields[2].GetUInt8();
+        Class = fields[3].GetUInt8();
+        mapId = fields[4].GetUInt16();
+        areaId = fields[5].GetUInt16();
     }
 
     std::string username = GetTrinityString(LANG_ERROR);
@@ -461,7 +458,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
     }
 
     std::string timeStr = secsToTimeString(total_player_time, true, true);
-    PSendSysMessage("Race: %s, Class: %s, Spec: %s, Played Time: %s, Level: %u", race_s.c_str(), Class_s.c_str(), spec_s.c_str(), timeStr.c_str(), level);
+    PSendSysMessage("Race: %s, Class: %s, Spec: %s, Played Time: %s", race_s.c_str(), Class_s.c_str(), spec_s.c_str(), timeStr.c_str());
 
     // Add map, zone, subzone and phase to output
     int locale = GetSessionDbcLocale();
