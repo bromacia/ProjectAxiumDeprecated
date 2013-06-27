@@ -488,6 +488,8 @@ class Spell
 
         bool DuelSpell;
 
+        bool RedirectedSpell;
+
     protected:
         bool HasGlobalCooldown() const;
         void TriggerGlobalCooldown();

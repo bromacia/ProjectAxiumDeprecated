@@ -2745,9 +2745,9 @@ bool SpellInfo::IsCrowdControlSpell() const
 bool SpellInfo::IsNegativeAuraSpell() const
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
-        return Effects[i].Effect == SPELL_EFFECT_APPLY_AURA &&
-            !(AttributesEx4 & SPELL_ATTR4_UNK21) && !IsPassive() &&
-            (!IsPositive() || !(AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT)) &&
-            !IsPositive() && Id != 7267 ||
-            (SpellFamilyName == SPELLFAMILY_WARLOCK && (SpellFamilyFlags[0] & 0x2000000));
+        return Effects[i].Effect == SPELL_EFFECT_APPLY_AURA && !IsPassive() && !IsPositive() &&
+            !(AttributesEx4 & SPELL_ATTR4_UNK21) &&
+            !(AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT) &&
+            Id != 7267 || // Grovel (Duel)
+            (SpellFamilyName == SPELLFAMILY_WARLOCK && (SpellFamilyFlags[0] & 0x2000000)); // Suffering (Voidwalker)
 }

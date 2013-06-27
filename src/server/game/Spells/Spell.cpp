@@ -566,6 +566,8 @@ m_spellValue(new SpellValue(m_spellInfo)), m_preGeneratedPath(new PathFinderMove
     CleanupEffectExecuteData();
 
     DuelSpell = false;
+
+    RedirectedSpell = false;
 }
 
 Spell::~Spell()
@@ -1253,6 +1255,12 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             m_caster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_EVADE);
             return;
         }
+
+    if (RedirectedSpell && unit->GetEntry() == 5925)
+    {
+        unit->setDeathState(JUST_DIED);
+        return;
+    }
 
     // Get original caster (if exist) and calculate damage/healing from him data
     Unit* caster = m_originalCaster ? m_originalCaster : m_caster;
@@ -2285,14 +2293,20 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
                 case TARGET_UNIT_TARGET_ENEMY:
                     if (Unit* magnet = m_caster->SelectMagnetTarget(target, m_spellInfo))
                         if (magnet != target)
+                        {
                             m_targets.SetUnitTarget(magnet);
+                            RedirectedSpell = true;
+                        }
                     pushType = PUSH_CHAIN;
                     break;
                 case TARGET_UNIT_TARGET_ANY:
                     if (!m_spellInfo->IsPositive())
                         if (Unit* magnet = m_caster->SelectMagnetTarget(target, m_spellInfo))
                             if (magnet != target)
+                            {
                                 m_targets.SetUnitTarget(magnet);
+                                RedirectedSpell = true;
+                            }
                     pushType = PUSH_CHAIN;
                     break;
                 case TARGET_UNIT_TARGET_CHAINHEAL_ALLY:
