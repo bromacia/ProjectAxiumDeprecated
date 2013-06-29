@@ -16902,6 +16902,7 @@ void Unit::RemoveCharmedBy(Unit* charmer)
                 charmer->ToPlayer()->SetClientControl(this, false);
                 if (GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE || GetMotionMaster()->GetCurrentMovementGeneratorType() == FLEEING_MOTION_TYPE)
                     ToPlayer()->SetClientControl(this, false);
+                ToPlayer()->SetMover(this);
                 charmer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
                 break;
             case CHARM_TYPE_CHARM:
