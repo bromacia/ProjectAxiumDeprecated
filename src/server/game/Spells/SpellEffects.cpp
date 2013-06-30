@@ -6339,14 +6339,6 @@ void Spell::EffectSkinning(SpellEffIndex /*effIndex*/)
 
 void Spell::EffectCharge(SpellEffIndex /*effIndex*/)
 {
-    uint16 msWaitTime = 0;
-    if (m_caster->GetTypeId() == TYPEID_PLAYER)
-    {
-        msWaitTime = m_caster->ToPlayer()->GetSession()->GetLatency() + m_caster->GetSpeed(MOVE_RUN);
-        if (msWaitTime < 50)
-            msWaitTime = 50;
-    }
-
     if (effectHandleMode == SPELL_EFFECT_HANDLE_LAUNCH_TARGET)
     {
         // Spell is not using explicit target - no generated path
@@ -6355,10 +6347,10 @@ void Spell::EffectCharge(SpellEffIndex /*effIndex*/)
             Position pos;
             unitTarget->GetContactPoint(m_caster, pos.m_positionX, pos.m_positionY, pos.m_positionZ);
             unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), unitTarget->GetRelativeAngle(m_caster));
-            m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ, false, msWaitTime);
+            m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ, false);
         }
         else
-            m_caster->GetMotionMaster()->MoveCharge(0, 0, 0, SPEED_CHARGE, EVENT_CHARGE, false, m_preGeneratedPath, msWaitTime);
+            m_caster->GetMotionMaster()->MoveCharge(0, 0, 0, SPEED_CHARGE, EVENT_CHARGE, false, m_preGeneratedPath);
     }
 
     if (effectHandleMode == SPELL_EFFECT_HANDLE_HIT_TARGET)

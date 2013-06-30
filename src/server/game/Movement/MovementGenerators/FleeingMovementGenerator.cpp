@@ -277,9 +277,6 @@ bool FleeingMovementGenerator<T>::_setMoveData(T &owner)
 template<class T>
 void FleeingMovementGenerator<T>::Initialize(T &owner)
 {
-    if (MSWaitTime)
-        HasWaitTime = true;
-
     if (Duration)
         HasDuration = true;
 
@@ -288,24 +285,12 @@ void FleeingMovementGenerator<T>::Initialize(T &owner)
     owner.AddUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
     if (Player* player = owner.ToPlayer())
     {
-        if (HasWaitTime)
-        {
-            player->SetMovementBlocked(true);
-            player->InterruptMovement();
-        }
         player->SetClientControl(player, false);
         if (owner.isPossessed())
             if (Unit* charmer = owner.GetCharmer())
                 if (charmer->GetTypeId() == TYPEID_PLAYER)
                     charmer->ToPlayer()->SetClientControl(charmer, false);
     }
-
-    float x = owner.GetPositionX();
-    float y = owner.GetPositionY();
-    float z = owner.GetPositionZ();
-    float groundOrWaterLevel = owner.GetMap()->GetWaterOrGroundLevel(x, y, z);
-    if (groundOrWaterLevel != z && fabs(groundOrWaterLevel - z) < 20.0f)
-        owner.NearTeleportTo(x, y, groundOrWaterLevel, owner.GetOrientation());
 }
 
 template<>
@@ -334,7 +319,6 @@ void FleeingMovementGenerator<Player>::Finalize(Player &owner)
     owner.ClearUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
     owner.StopMoving();
     path.Clear();
-    owner.SetMovementBlocked(false);
     if (owner.isPossessed())
     {
         if (Unit* charmer = owner.GetCharmer())
@@ -366,21 +350,6 @@ void FleeingMovementGenerator<T>::Reset(T &owner)
 template<class T>
 bool FleeingMovementGenerator<T>::Update(T &owner, const uint32 &time_diff)
 {
-    if (HasWaitTime)
-    {
-        if (!TotalWaitTime.GetExpiry())
-            TotalWaitTime = MSWaitTime;
-
-        TotalWaitTime.Update(time_diff);
-        if (!TotalWaitTime.Passed())
-            return true;
-        else
-        {
-            HasWaitTime = false;
-            owner.ToPlayer()->SetMovementBlocked(false);
-        }
-    }
-
     if (HasDuration)
     {
         if (!TotalDuration.GetExpiry() || TotalDuration.GetExpiry() != Duration)

@@ -27,8 +27,8 @@ template<class T>
 class PointMovementGenerator : public MovementGeneratorMedium<T, PointMovementGenerator<T>>
 {
     public:
-        PointMovementGenerator(uint32 _id, float _x, float _y, float _z, bool _generatePath, float _speed = 0.0f, PathFinderMovementGenerator* _path = NULL, uint16 msWaitTime = 0) :
-        init(false), id(_id), i_x(_x), i_y(_y), i_z(_z), speed(_speed), m_generatePath(_generatePath), i_recalculateSpeed(false), path(_path), MSWaitTime(msWaitTime), TotalWaitTime(0), HasWaitTime(false) { }
+        PointMovementGenerator(uint32 _id, float _x, float _y, float _z, bool _generatePath, float _speed = 0.0f, PathFinderMovementGenerator* _path = NULL) :
+        init(false), id(_id), i_x(_x), i_y(_y), i_z(_z), speed(_speed), m_generatePath(_generatePath), i_recalculateSpeed(false), path(_path) { }
         void Initialize(T &);
         void Finalize(T &);
         void Reset(T &);
@@ -45,9 +45,6 @@ class PointMovementGenerator : public MovementGeneratorMedium<T, PointMovementGe
         bool m_generatePath;
         bool i_recalculateSpeed;
         PathFinderMovementGenerator* path;
-        uint16 MSWaitTime;
-        TimeTracker TotalWaitTime;
-        bool HasWaitTime;
 };
 
 class AssistanceMovementGenerator : public PointMovementGenerator<Creature>

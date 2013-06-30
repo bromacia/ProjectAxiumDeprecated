@@ -29,42 +29,12 @@
 template<class T>
 void PointMovementGenerator<T>::Initialize(T &unit)
 {
-    if (MSWaitTime)
-        HasWaitTime = true;
-
     init = true;
-    if (HasWaitTime)
-    {
-        unit.ToPlayer()->SetMovementBlocked(true);
-        unit.ToPlayer()->InterruptMovement();
-    }
-
-    float x = unit.GetPositionX();
-    float y = unit.GetPositionY();
-    float z = unit.GetPositionZ();
-    float groundOrWaterLevel = unit.GetMap()->GetWaterOrGroundLevel(x, y, z);
-    if (groundOrWaterLevel != z && fabs(groundOrWaterLevel - z) < 20.0f)
-        unit.NearTeleportTo(x, y, groundOrWaterLevel, unit.GetOrientation());
 }
 
 template<class T>
 bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 {
-    if (HasWaitTime)
-    {
-        if (!TotalWaitTime.GetExpiry())
-            TotalWaitTime = MSWaitTime;
-
-        TotalWaitTime.Update(diff);
-        if (!TotalWaitTime.Passed())
-            return true;
-        else
-        {
-            HasWaitTime = false;
-            unit.ToPlayer()->SetMovementBlocked(false);
-        }
-    }
-
     if (!&unit || !unit.isAlive())
         return false;
 
