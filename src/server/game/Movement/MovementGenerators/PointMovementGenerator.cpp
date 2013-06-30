@@ -68,10 +68,13 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
     if (!&unit || !unit.isAlive())
         return false;
 
-    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_CONFUSED | UNIT_STATE_FLEEING))
+    if (!init)
     {
-        unit.ClearUnitState(UNIT_STATE_ROAMING_MOVE);
-        return true;
+        if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_CONFUSED | UNIT_STATE_FLEEING))
+        {
+            unit.ClearUnitState(UNIT_STATE_ROAMING_MOVE);
+            return true;
+        }
     }
 
     if (Player* player = unit.ToPlayer())
