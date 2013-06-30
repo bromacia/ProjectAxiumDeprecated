@@ -292,8 +292,6 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         {
             if (plMover->IsJumping())
             {
-                ChatHandler(plMover->GetSession()).PSendGlobalGMSysMessage("Player: %s [GUID: %u] attempted to use Air Jump hack, kicking.", plMover->GetName(), plMover->GetGUIDLow());
-                plMover->GetSession()->KickPlayer();
                 recv_data.rfinish(); // prevent warnings spam
                 return;
             }
