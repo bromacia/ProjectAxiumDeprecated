@@ -266,6 +266,8 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
             switch (spellid)
             {
                 case REACT_PASSIVE:                         //passive
+                    pet->setRunningToTarget(NULL);
+                    pet->setQueuedSpell(NULL);
                     pet->AttackStop();
                     pet->InterruptNonMeleeSpells(false);
                 case REACT_DEFENSIVE:                       //recovery
@@ -339,6 +341,17 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                     if (powner->GetTypeId() == TYPEID_PLAYER)
                         pet->SendUpdateToPlayer(powner->ToPlayer());
                 result = SPELL_CAST_OK;
+            }
+            if (result == SPELL_FAILED_OUT_OF_RANGE || result == SPELL_FAILED_LINE_OF_SIGHT)
+            {
+                if (unit_target)
+                {
+                    pet->setRunningToTarget(unit_target);
+                    pet->setQueuedSpell(spell);  
+                    if (pet->ToCreature()->IsAIEnabled)
+                        pet->ToCreature()->AI()->AttackStart(unit_target);
+                    return;
+                }
             }
 
             if (result == SPELL_CAST_OK)

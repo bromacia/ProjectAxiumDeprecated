@@ -262,6 +262,9 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
     m_lastDuelSpellTime = 0;
 
     m_isDueling = false;
+
+    m_runningToTarget = NULL;
+    m_queuedSpell = NULL;
 }
 
 ////////////////////////////////////////////////////////////

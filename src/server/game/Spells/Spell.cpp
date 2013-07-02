@@ -5002,8 +5002,9 @@ SpellCastResult Spell::CheckCast(bool strict)
                     return SPELL_FAILED_NOT_BEHIND;
             }
 
-            if (!(m_spellInfo->AttributesEx2 & SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS) && VMAP::VMapFactory::checkSpellForLoS(m_spellInfo->Id) && !m_caster->IsWithinLOSInMap(target))
-                return SPELL_FAILED_LINE_OF_SIGHT;
+            if (!m_caster->isPet())
+                if (!(m_spellInfo->AttributesEx2 & SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS) && VMAP::VMapFactory::checkSpellForLoS(m_spellInfo->Id) && !m_caster->IsWithinLOSInMap(target))
+                    return SPELL_FAILED_LINE_OF_SIGHT;
 
             if (!(m_spellInfo->AttributesEx6 & SPELL_ATTR6_CAN_TARGET_INVISIBLE) && !m_caster->canSeeOrDetect(target) && m_casttime != 0 && !target->HasAura(200008))
                 return SPELL_FAILED_BAD_TARGETS;
@@ -5018,16 +5019,6 @@ SpellCastResult Spell::CheckCast(bool strict)
                         return SPELL_FAILED_TARGET_AURASTATE;
             }
         }
-    }
-
-    // Check for line of sight for spells with dest
-    if (m_targets.HasDst())
-    {
-        float x, y, z;
-        m_targets.GetDst()->GetPosition(x, y, z);
-
-        if (!(m_spellInfo->AttributesEx2 & SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS) && VMAP::VMapFactory::checkSpellForLoS(m_spellInfo->Id) && !m_caster->IsWithinLOS(x, y, z))
-            return SPELL_FAILED_LINE_OF_SIGHT;
     }
 
     // check pet presence
@@ -5091,12 +5082,6 @@ SpellCastResult Spell::CheckCast(bool strict)
         if (castResult != SPELL_CAST_OK)
             return castResult;
     }
-
-    // Triggered spells also have range check
-    // TODO: determine if there is some flag to enable/disable the check
-    castResult = CheckRange(strict);
-    if (castResult != SPELL_CAST_OK)
-        return castResult;
 
     if (!(_triggeredCastFlags & TRIGGERED_IGNORE_POWER_AND_REAGENT_COST))
     {
@@ -5542,6 +5527,22 @@ SpellCastResult Spell::CheckCast(bool strict)
             default:
                 break;
         }
+    }
+
+    // Triggered spells also have range check
+    // TODO: determine if there is some flag to enable/disable the check
+    castResult = CheckRange(strict);
+    if (castResult != SPELL_CAST_OK)
+        return castResult;
+
+    // Check for line of sight for spells with dest
+    if (m_targets.HasDst())
+    {
+        float x, y, z;
+        m_targets.GetDst()->GetPosition(x, y, z);
+
+        if (!(m_spellInfo->AttributesEx2 & SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS) && VMAP::VMapFactory::checkSpellForLoS(m_spellInfo->Id) && !m_caster->IsWithinLOS(x, y, z))
+            return SPELL_FAILED_LINE_OF_SIGHT;
     }
 
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)

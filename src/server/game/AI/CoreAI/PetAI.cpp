@@ -89,6 +89,35 @@ void PetAI::UpdateAI(const uint32 diff)
     else
         m_updateAlliesTimer -= diff;
 
+    if (owner)
+    {
+        if (Unit* target = me->getRunningToTarget())
+        {
+            if (Spell* spell = me->getQueuedSpell())
+            {
+                SpellCastResult result = spell->CheckPetCast(target);
+
+                if (result == SPELL_CAST_OK)
+                {
+                    me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
+                    spell->prepare(&(spell->m_targets));
+                    if (spell->GetSpellInfo()->IsPositive())
+                        me->AttackStop();
+                    me->setRunningToTarget(NULL);
+                    me->setQueuedSpell(NULL);
+                }
+                else if (result != SPELL_FAILED_OUT_OF_RANGE)
+                {
+                    me->setRunningToTarget(NULL);
+                    me->setQueuedSpell(NULL);
+                    me->AttackStop();
+                }
+            
+                return;
+            }
+        }
+    }
+
     // me->getVictim() can't be used for check in case stop fighting, me->getVictim() clear at Unit death etc.
     // Must also check if victim is alive
     if (me->getVictim() && me->getVictim()->isAlive())

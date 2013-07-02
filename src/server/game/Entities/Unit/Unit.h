@@ -1438,6 +1438,11 @@ class Unit : public WorldObject
         bool IsStandState() const;
         void SetStandState(uint8 state);
 
+        Unit* getRunningToTarget() { return m_runningToTarget; }
+        void setRunningToTarget(Unit* target) { m_runningToTarget = target; }
+        void setQueuedSpell(Spell* spell) { m_queuedSpell = spell; }
+        Spell* getQueuedSpell() { return m_queuedSpell; }
+
         void  SetStandFlags(uint8 flags) { SetByteFlag(UNIT_FIELD_BYTES_1, 2, flags); }
         void  RemoveStandFlags(uint8 flags) { RemoveByteFlag(UNIT_FIELD_BYTES_1, 2, flags); }
 
@@ -2405,6 +2410,9 @@ class Unit : public WorldObject
         bool _targetLocked; // locks the target during spell cast for proper facing
 
         bool m_isJumping;
+
+        Unit* m_runningToTarget;
+        Spell* m_queuedSpell;
 
         bool m_isDueling;
 
