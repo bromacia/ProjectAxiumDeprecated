@@ -112,8 +112,6 @@ void PetAI::UpdateAI(const uint32 diff)
                     me->setQueuedSpell(NULL);
                     me->AttackStop();
                 }
-            
-                return;
             }
         }
     }
