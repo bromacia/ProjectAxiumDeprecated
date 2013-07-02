@@ -168,8 +168,9 @@ Player* ObjectAccessor::FindPlayerByName(const char* name)
     TRINITY_READ_GUARD(HashMapHolder<Player>::LockType, *HashMapHolder<Player>::GetLock());
     HashMapHolder<Player>::MapType const& m = GetPlayers();
     for (HashMapHolder<Player>::MapType::const_iterator iter = m.begin(); iter != m.end(); ++iter)
-        if (iter->second->IsInWorld() && strcmp(name, iter->second->GetName()) == 0)
-            return iter->second;
+        if (iter->second->GetSession())
+            if (strcmp(name, iter->second->GetName()) == 0)
+                return iter->second;
 
     return NULL;
 }

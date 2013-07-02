@@ -120,7 +120,7 @@ class ObjectAccessor
         static Player* GetObjectInWorld(uint64 guid, Player* /*typeSpecifier*/)
         {
             Player* player = HashMapHolder<Player>::Find(guid);
-            if (player && player->IsInWorld())
+            if (player && player->GetSession())
                 return player;
             return NULL;
         }
