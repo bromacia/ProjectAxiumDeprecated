@@ -3460,7 +3460,6 @@ bool Player::AddTalent(uint32 spellId, uint8 spec, bool learning)
         return true;
     }
 
-    m_playerSpec = GetTalentSpec();
     return false;
 }
 
@@ -3971,7 +3970,6 @@ void Player::removeSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
             m_usedTalentCount -= talentCosts;
         else
             m_usedTalentCount = 0;
-        m_playerSpec = GetTalentSpec();
     }
 
     // update free primary prof.points (if not overflow setting, can be in case GM use before .learn prof. learning)
