@@ -18,38 +18,38 @@ bool Transmogrification::OnGossipSelect(Player* player, Creature* creature, uint
 {
     player->PlayerTalkClass->ClearMenus();
 
-        if (action == TRANSMOG_ACTION_SHOW_ARMOR)
-            ShowTransmogArmorSets(player, creature);
-        else if (action == TRANSMOG_ACTION_SHOW_INDIVIDUAL)
-            ShowIndividualTransmogOptions(player, creature);
-        else if (action == TRANSMOG_ACTION_SHOW_ENCHANTS)
-            ShowTransmogEnchants(player, creature);
-        else if (action == TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS)
-            ShowRemoveTransmogItemOptions(player, creature);
-        else if (action == TRANSMOG_ACTION_SHOW_REMOVE_ENCHANT_TRANSMOG_OPTIONS)
-            ShowRemoveTransmogEnchantOptions(player, creature);
-        else if (action == TRANSMOG_ACTION_SELECT_REMOVE_EVERYTHING)
-            RemoveAllTransmog(player);
-        else if (action == TRANSMOG_ACTION_MAIN_MENU)
-            OnGossipHello(player, creature);
-        else if (sender == TRANSMOG_ACTION_SHOW_ARMOR)
-            TransmogrifyArmor(player, action);
-        else if (sender == TRANSMOG_ACTION_SHOW_INDIVIDUAL)
-            SelectIndividualTransmog(player, creature, action);
-        else if (sender == TRANSMOG_ACTION_SHOW_ENCHANTS)
-            TransmogrifyEnchant(player, action);
-        else if (sender == TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS)
-            if (action == TRANSMOG_ACTION_SELECT_REMOVE_ALL_ARMOR)
-                RemoveAllArmorTransmog(player);
-            else if (action == TRANSMOG_ACTION_SELECT_REMOVE_ALL_WEAPON)
-                RemoveAllWeaponTransmog(player);
-            else
-                RemoveItemTransmog(player, action);
-        else if (sender == TRANSMOG_ACTION_SHOW_REMOVE_ENCHANT_TRANSMOG_OPTIONS)
-            if (action == TRANSMOG_ACTION_SELECT_REMOVE_ALL_ENCHANT)
-                RemoveAllEnchantTransmog(player);
-            else
-                RemoveEnchantTransmog(player, action);
+    if (action == TRANSMOG_ACTION_SHOW_ARMOR)
+        ShowTransmogArmorSets(player, creature);
+    else if (action == TRANSMOG_ACTION_SHOW_INDIVIDUAL)
+        ShowIndividualTransmogOptions(player, creature);
+    else if (action == TRANSMOG_ACTION_SHOW_ENCHANTS)
+        ShowTransmogEnchants(player, creature);
+    else if (action == TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS)
+        ShowRemoveTransmogItemOptions(player, creature);
+    else if (action == TRANSMOG_ACTION_SHOW_REMOVE_ENCHANT_TRANSMOG_OPTIONS)
+        ShowRemoveTransmogEnchantOptions(player, creature);
+    else if (action == TRANSMOG_ACTION_SELECT_REMOVE_EVERYTHING)
+        RemoveAllTransmog(player);
+    else if (action == TRANSMOG_ACTION_MAIN_MENU)
+        OnGossipHello(player, creature);
+    else if (sender == TRANSMOG_ACTION_SHOW_ARMOR)
+        TransmogrifyArmor(player, action);
+    else if (sender == TRANSMOG_ACTION_SHOW_INDIVIDUAL)
+        SelectIndividualTransmog(player, creature, action);
+    else if (sender == TRANSMOG_ACTION_SHOW_ENCHANTS)
+        TransmogrifyEnchant(player, action);
+    else if (sender == TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS)
+        if (action == TRANSMOG_ACTION_SELECT_REMOVE_ALL_ARMOR)
+            RemoveAllArmorTransmog(player);
+        else if (action == TRANSMOG_ACTION_SELECT_REMOVE_ALL_WEAPON)
+            RemoveAllWeaponTransmog(player);
+        else
+            RemoveItemTransmog(player, action);
+    else if (sender == TRANSMOG_ACTION_SHOW_REMOVE_ENCHANT_TRANSMOG_OPTIONS)
+        if (action == TRANSMOG_ACTION_SELECT_REMOVE_ALL_ENCHANT)
+            RemoveAllEnchantTransmog(player);
+        else
+            RemoveEnchantTransmog(player, action);
     return false;
 }
 

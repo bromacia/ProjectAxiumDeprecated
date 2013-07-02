@@ -568,6 +568,14 @@ uint32 SpellMgr::GetSpellWithRank(uint32 spell_id, uint32 rank, bool strict) con
     return spell_id;
 }
 
+bool SpellMgr::IsTalentSpell(uint32 spellId) const
+{
+    if (TalentSpellPos const* talentPos = GetTalentSpellPos(spellId))
+        if (TalentEntry const* talentInfo = sTalentStore.LookupEntry(talentPos->talent_id))
+            return true;
+    return false;
+}
+
 SpellRequiredMapBounds SpellMgr::GetSpellsRequiredForSpellBounds(uint32 spell_id) const
 {
     return SpellRequiredMapBounds(mSpellReq.lower_bound(spell_id), mSpellReq.upper_bound(spell_id));

@@ -100,21 +100,65 @@ class npc_class_trainer : public CreatureScript
             for (TrainerSpellMap::const_iterator itr = TrainerSpells->spellList.begin(); itr != TrainerSpells->spellList.end(); ++itr)
             {
                 TrainerSpell const* tSpell = &itr->second;
+                uint32 spellId = tSpell->spell;
 
-                if (player->getClass() != tSpell->reqClass)
+                if (!(tSpell->reqClass & player->getClassMask()))
                     continue;
 
-                if (player->HasSpell(tSpell->spell))
+                if (player->HasSpell(spellId))
                     continue;
 
-                SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(tSpell->spell);
-                if (!spellInfo || !SpellMgr::IsSpellValid(spellInfo, player))
-                    continue;
-
-                if (tSpell->IsCastable())
-                    player->CastSpell(player, tSpell->spell, true);
+                if (player->GetTeam() == ALLIANCE)
+                {
+                    // Seal of Corruption, Thalassian Warhorse, Thalassian Charger & Bloodlust
+                    if (spellId == 53736 || spellId == 34769 ||
+                        spellId == 34767 || spellId == 2825)
+                            continue;
+                }
                 else
-                    player->learnSpell(tSpell->spell, false);
+                {
+                    // Seal of Vengeance, Warhorse, Charger & Heroism
+                    if (spellId == 31801 || spellId == 13819 ||
+                        spellId == 23214 || spellId == 32182)
+                            continue;
+                }
+
+                bool disabled = false;
+
+                if (uint32 firstSpell = sSpellMgr->GetFirstSpellInChain(spellId))
+                    if (sSpellMgr->IsTalentSpell(firstSpell))
+                        if (!player->HasSpell(firstSpell))
+                            disabled = true;
+
+                if (!disabled)
+                {
+                    // Greater Blessing of Sanctuary
+                    if (!player->HasSpell(20911))
+                        if (spellId == 25899)
+                            disabled = true;
+
+                    // Mangle (Bear)
+                    if (!player->HasSpell(33878))
+                        if (spellId == 33986 || spellId == 33987 ||
+                            spellId == 48563 || spellId == 48564)
+                                disabled = true;
+
+                    // Mangle (Cat)
+                    if (!player->HasSpell(33876))
+                        if (spellId == 33982 || spellId == 33983 ||
+                            spellId == 48565 || spellId == 48566)
+                                disabled = true;
+                }
+
+                player->addSpell(spellId, true, true, false, disabled, false, true);
+
+                if (!disabled && player->IsInWorld())
+                {
+                    WorldPacket data(SMSG_LEARNED_SPELL, 6);
+                    data << uint32(spellId);
+                    data << uint16(0);
+                    player->GetSession()->SendPacket(&data);
+                }
             }
 
             player->CLOSE_GOSSIP_MENU();

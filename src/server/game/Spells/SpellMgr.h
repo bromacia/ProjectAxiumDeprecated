@@ -635,6 +635,8 @@ class SpellMgr
         // not strict check returns provided spell if rank not avalible
         uint32 GetSpellWithRank(uint32 spell_id, uint32 rank, bool strict = false) const;
 
+        bool IsTalentSpell(uint32 spellId) const;
+
         // Spell Required table
         SpellRequiredMapBounds GetSpellsRequiredForSpellBounds(uint32 spell_id) const;
         SpellsRequiringSpellMapBounds GetSpellsRequiringSpellBounds(uint32 spell_id) const;

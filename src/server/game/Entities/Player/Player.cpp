@@ -1117,62 +1117,10 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
     // original spells
     learnDefaultSpells();
 
-    // original action bar
-    for (PlayerCreateInfoActions::const_iterator action_itr = info->action.begin(); action_itr != info->action.end(); ++action_itr)
-        addActionButton(action_itr->button, action_itr->action, action_itr->type);
-
-    // original items
-    CharStartOutfitEntry const* oEntry = NULL;
-    for (uint32 i = 1; i < sCharStartOutfitStore.GetNumRows(); ++i)
-    {
-        if (CharStartOutfitEntry const* entry = sCharStartOutfitStore.LookupEntry(i))
-        {
-            if (entry->RaceClassGender == RaceClassGender)
-            {
-                oEntry = entry;
-                break;
-            }
-        }
-    }
-
-    if (oEntry)
-    {
-        for (int j = 0; j < MAX_OUTFIT_ITEMS; ++j)
-        {
-            if (oEntry->ItemId[j] <= 0)
-                continue;
-
-            uint32 item_id = oEntry->ItemId[j];
-
-            // just skip, reported in ObjectMgr::LoadItemTemplates
-            ItemTemplate const* iProto = sObjectMgr->GetItemTemplate(item_id);
-            if (!iProto)
-                continue;
-
-            // BuyCount by default
-            uint32 count = iProto->BuyCount;
-
-            // special amount for food/drink
-            if (iProto->Class == ITEM_CLASS_CONSUMABLE && iProto->SubClass == ITEM_SUBCLASS_FOOD)
-            {
-                switch (iProto->Spells[0].SpellCategory)
-                {
-                    case SPELL_CATEGORY_FOOD:                                // food
-                        count = getClass() == CLASS_DEATH_KNIGHT ? 10 : 4;
-                        break;
-                    case SPELL_CATEGORY_DRINK:                                // drink
-                        count = 2;
-                        break;
-                }
-                if (iProto->GetMaxStackSize() < count)
-                    count = iProto->GetMaxStackSize();
-            }
-            StoreNewItemInBestSlots(item_id, count);
-        }
-    }
-
-    for (PlayerCreateInfoItems::const_iterator item_id_itr = info->item.begin(); item_id_itr != info->item.end(); ++item_id_itr)
-        StoreNewItemInBestSlots(item_id_itr->item_id, item_id_itr->item_amount);
+    StoreNewItemInBestSlots(23162, 4); // Foror's Crate of Endless Resist Gear Storage
+    StoreNewItemInBestSlots(6948, 1);  // Hearthstone
+    if (getClass() == CLASS_SHAMAN)
+        StoreNewItemInBestSlots(5175, 1); // Master Totem
 
     // bags and main-hand weapon must equipped at this moment
     // now second pass for not equipped (offhand weapon/shield if it attempt equipped before main-hand weapon)
@@ -3516,7 +3464,7 @@ bool Player::AddTalent(uint32 spellId, uint8 spec, bool learning)
     return false;
 }
 
-bool Player::addSpell(uint32 spellId, bool active, bool learning, bool dependent, bool disabled, bool loading /*= false*/)
+bool Player::addSpell(uint32 spellId, bool active, bool learning, bool dependent, bool disabled, bool loading, bool singleSpell)
 {
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
     if (!spellInfo)
@@ -3692,13 +3640,12 @@ bool Player::addSpell(uint32 spellId, bool active, bool learning, bool dependent
             }
         }
         // non talent spell: learn low ranks (recursive call)
-        else if (uint32 prev_spell = sSpellMgr->GetPrevSpellInChain(spellId))
-        {
-            if (!IsInWorld() || disabled)                    // at spells loading, no output, but allow save
-                addSpell(prev_spell, active, true, true, disabled);
-            else                                            // at normal learning
-                learnSpell(prev_spell, true);
-        }
+        else if (!singleSpell)
+            if (uint32 prev_spell = sSpellMgr->GetPrevSpellInChain(spellId))
+                if (!IsInWorld() || disabled)                    // at spells loading, no output, but allow save
+                    addSpell(prev_spell, active, true, true, disabled);
+                else                                            // at normal learning
+                    learnSpell(prev_spell, true);
 
         PlayerSpell* newspell = new PlayerSpell;
         newspell->state     = state;

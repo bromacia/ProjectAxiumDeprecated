@@ -7947,7 +7947,7 @@ void ObjectMgr::LoadMailLevelRewards()
     sLog->outString();
 }
 
-void ObjectMgr::AddSpellToTrainer(uint32 entry, uint32 spell, uint32 spellCost, uint16 reqSkill, uint16 reqSkillValue, uint8 reqLevel, uint8 reqClass)
+void ObjectMgr::AddSpellToTrainer(uint32 entry, uint32 spell, uint32 spellCost, uint16 reqSkill, uint16 reqSkillValue, uint8 reqLevel, uint16 reqClass)
 {
     if (entry >= TRINITY_TRAINER_START_REF)
         return;
@@ -8056,7 +8056,7 @@ void ObjectMgr::LoadTrainerSpell()
         uint16 reqSkill      = fields[3].GetUInt16();
         uint16 reqSkillValue = fields[4].GetUInt16();
         uint32 reqLevel      = fields[5].GetUInt8();
-        uint32 reqClass      = fields[6].GetUInt8();
+        uint16 reqClass      = fields[6].GetUInt16();
 
         AddSpellToTrainer(entry, spell, spellCost, reqSkill, reqSkillValue, reqLevel, reqClass);
 
