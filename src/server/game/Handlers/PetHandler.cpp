@@ -255,9 +255,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                                 pet->setDeathState(CORPSE);
                         }
                         else if (pet->HasUnitTypeMask(UNIT_MASK_MINION))
-                        {
                             ((Minion*)pet)->UnSummon();
-                        }
                     }
                     break;
                 default:
@@ -269,7 +267,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
             {
                 case REACT_PASSIVE:                         //passive
                     pet->AttackStop();
-
+                    pet->InterruptNonMeleeSpells(false);
                 case REACT_DEFENSIVE:                       //recovery
                 case REACT_AGGRESSIVE:                      //activete
                     if (pet->GetTypeId() == TYPEID_UNIT)
