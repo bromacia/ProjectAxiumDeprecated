@@ -3463,14 +3463,18 @@ void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveMode removeMo
     // Remove all pointers from lists here to prevent possible pointer invalidation on spellcast/auraapply/auraremove
     m_appliedAuras.erase(i);
 
-    if (aura->GetSpellInfo()->AuraInterruptFlags)
+    SpellInfo const* spellInfo = aura->GetSpellInfo();
+    if (!spellInfo)
+        return;
+
+    if (spellInfo->AuraInterruptFlags)
     {
         m_interruptableAuras.remove(aurApp);
         UpdateInterruptMask();
     }
 
     bool auraStateFound = false;
-    AuraStateType auraState = aura->GetSpellInfo()->GetAuraState();
+    AuraStateType auraState = spellInfo->GetAuraState();
     if (auraState)
     {
         bool canBreak = false;
@@ -3493,10 +3497,22 @@ void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveMode removeMo
     aura->_UnapplyForTarget(this, caster, aurApp);
 
     // remove effects of the spell - needs to be done after removing aura from lists
-    for (uint8 itr = 0 ; itr < MAX_SPELL_EFFECTS; ++itr)
+    for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
     {
-        if (aurApp->HasEffect(itr))
-            aurApp->_HandleEffect(itr, false);
+        if (aurApp->HasEffect(j))
+            aurApp->_HandleEffect(j, false);
+
+        if (spellInfo->Effects[j].ApplyAuraName == SPELL_AURA_MOD_CONFUSE)
+        {
+            RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
+            ClearUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
+        }
+
+        if (spellInfo->Effects[j].ApplyAuraName == SPELL_AURA_MOD_FEAR)
+        {
+            RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
+            ClearUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
+        }
     }
 
     // all effect mustn't be applied
@@ -3515,9 +3531,7 @@ void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveMode removeMo
 
     aura->HandleAuraSpecificMods(aurApp, caster, false, false);
 
-    // only way correctly remove all auras from list
-    //if (removedAuras != m_removedAurasCount) new aura may be added
-        i = m_appliedAuras.begin();
+    i = m_appliedAuras.begin();
 }
 
 void Unit::_UnapplyAura(AuraApplication * aurApp, AuraRemoveMode removeMode)
