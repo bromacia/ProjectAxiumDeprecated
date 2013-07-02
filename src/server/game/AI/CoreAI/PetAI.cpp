@@ -168,8 +168,10 @@ void PetAI::UpdateAI(const uint32 diff)
             {
                 if (spellInfo->CanBeUsedInCombat())
                 {
-                    if (!me->GetCharmInfo()->IsCommandAttack())
-                        continue;
+				    if (!me->GetCharmInfo()->IsCommandAttack())
+                        if (!(spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && spellInfo->SpellFamilyFlags[1] & 0x2000000) // Fel Intelligence
+                            && !(spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && spellInfo->SpellFamilyFlags[0] & 0x800000)) // Blood Pact
+                            continue;
                 }
 
                 Spell* spell = new Spell(me, spellInfo, TRIGGERED_NONE, 0);
