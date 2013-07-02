@@ -3505,13 +3505,13 @@ void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveMode removeMo
         if (aurApp->HasEffect(j))
             aurApp->_HandleEffect(j, false);
 
-        if (spellInfo->Effects[j].ApplyAuraName == SPELL_AURA_MOD_CONFUSE)
+        if (spellInfo->Effects[j].ApplyAuraName == SPELL_AURA_MOD_CONFUSE && !GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE)
         {
             RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
             ClearUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
         }
 
-        if (spellInfo->Effects[j].ApplyAuraName == SPELL_AURA_MOD_FEAR)
+        if (spellInfo->Effects[j].ApplyAuraName == SPELL_AURA_MOD_FEAR && !GetMotionMaster()->GetCurrentMovementGeneratorType() == FLEEING_MOTION_TYPE)
         {
             RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
             ClearUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
