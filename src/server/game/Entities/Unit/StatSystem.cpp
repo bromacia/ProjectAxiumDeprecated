@@ -1285,7 +1285,7 @@ void Guardian::UpdateMaxPower(Powers power)
         default:                multiplicator = 15.0f;  break;
     }
 
-    float value  = GetModifierValue(unitMod, BASE_VALUE) + GetCreatePowers(power);
+    float value = GetModifierValue(unitMod, BASE_VALUE) + GetCreatePowers(power);
     value *= GetModifierValue(unitMod, BASE_PCT);
     value += GetModifierValue(unitMod, TOTAL_VALUE) + addValue * multiplicator;
     value *= GetModifierValue(unitMod, TOTAL_PCT);
@@ -1363,11 +1363,11 @@ void Guardian::UpdateAttackPowerAndDamage(bool ranged)
     float attPowerMultiplier = GetModifierValue(unitMod, TOTAL_PCT) - 1.0f;
 
     // Animal Handler rank 1
-   if (owner->HasAura(34453))
-       base_attPower *= 1.05f;
-   // Animal Handler rank 2
-   else if (owner->HasAura(34454))
-       base_attPower *= 1.1f;
+    if (owner->HasAura(34453))
+        base_attPower *= 1.05f;
+    // Animal Handler rank 2
+    else if (owner->HasAura(34454))
+        base_attPower *= 1.1f;
         
     //UNIT_FIELD_(RANGED)_ATTACK_POWER field
     SetInt32Value(UNIT_FIELD_ATTACK_POWER, (int32)base_attPower);
