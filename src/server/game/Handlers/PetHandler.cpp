@@ -728,13 +728,18 @@ void WorldSession::HandlePetSpellAutocastOpcode(WorldPacket& recvPacket)
         sLog->outError("WorldSession::HandlePetSpellAutocastOpcode: object (GUID: %u TypeId: %u) is considered pet-like but doesn't have a charminfo!", pet->GetGUIDLow(), pet->GetTypeId());
         return;
     }
+    
+    for (Unit::ControlList::iterator itr = GetPlayer()->m_Controlled.begin(); itr != GetPlayer()->m_Controlled.end(); ++itr)
+        if ((*itr)->GetEntry() == pet->GetEntry())
+        {
+            if ((*itr)->isPet())
+                ((Pet*)(*itr))->ToggleAutocast(spellInfo, state);
+            else
+                (*itr)->GetCharmInfo()->ToggleCreatureAutocast(spellInfo, state);
 
-    if (pet->isPet())
-        ((Pet*)pet)->ToggleAutocast(spellInfo, state);
-    else
-        pet->GetCharmInfo()->ToggleCreatureAutocast(spellInfo, state);
-
-    charmInfo->SetSpellAutocast(spellInfo, state);
+            if ((*itr)->GetCharmInfo())
+                (*itr)->GetCharmInfo()->SetSpellAutocast(spellInfo, state);
+        }
 }
 
 void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
