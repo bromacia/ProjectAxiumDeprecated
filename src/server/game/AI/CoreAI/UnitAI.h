@@ -255,6 +255,8 @@ class UnitAI
         void DoCastVictim(uint32 spellId, bool triggered = false);
         void DoCastAOE(uint32 spellId, bool triggered = false);
 
+        void HandleReturnMovement();
+
         float DoGetSpellMaxRange(uint32 spellId, bool positive = false);
 
         void DoMeleeAttackIfReady();

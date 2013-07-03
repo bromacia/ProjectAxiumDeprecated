@@ -55,7 +55,6 @@ class PetAI : public CreatureAI
         uint32 m_updateAlliesTimer;
 
         Unit* SelectNextTarget();
-        void HandleReturnMovement();
         void DoAttack(Unit* target, bool chase);
         bool CanAttack(Unit* target);
 };

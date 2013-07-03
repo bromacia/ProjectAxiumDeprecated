@@ -89,6 +89,7 @@ public:
             { "itemexpire",     SEC_ADMINISTRATOR,  false, &HandleDebugItemExpireCommand,       "", NULL },
             { "areatriggers",   SEC_ADMINISTRATOR,  false, &HandleDebugAreaTriggersCommand,     "", NULL },
             { "los",            SEC_GAMEMASTER,     false, &HandleDebugLoSCommand,              "", NULL },
+            { "petinfo",        SEC_GAMEMASTER,     false, &HandleDebugPetInfoCommand,          "", NULL },
             { NULL,             0,                  false, NULL,                                "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -1046,6 +1047,25 @@ public:
     {
         if (Unit* unit = handler->getSelectedUnit())
             handler->PSendSysMessage("Unit %s (GuidLow: %u) is %sin LoS", unit->GetName(), unit->GetGUIDLow(), handler->GetSession()->GetPlayer()->IsWithinLOSInMap(unit) ? "" : "not ");
+        return true;
+    }
+
+    static bool HandleDebugPetInfoCommand(ChatHandler* handler, char const* args)
+    {
+        if (Unit* unit = handler->getSelectedUnit())
+        {
+            if (Guardian* pet = unit->GetGuardianPet())
+            {
+                if (Unit* target = pet->getRunningToTarget())
+                    handler->PSendSysMessage("Running to target: %s", target->GetName());
+                else
+                    handler->PSendSysMessage("Running to target: NULL");
+
+                handler->PSendSysMessage("MOVE_RUN: %f, MOVE_WALK: %f", pet->GetSpeed(UnitMoveType::MOVE_RUN), pet->GetSpeed(UnitMoveType::MOVE_WALK));
+            }
+            else
+                handler->PSendSysMessage("No pet found");
+        }
         return true;
     }
 

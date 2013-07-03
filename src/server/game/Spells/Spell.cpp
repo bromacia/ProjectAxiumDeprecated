@@ -4983,44 +4983,6 @@ SpellCastResult Spell::CheckCast(bool strict)
             return castResult;
     }
 
-    if (Unit* target = m_targets.GetUnitTarget())
-    {
-        SpellCastResult castResult = m_spellInfo->CheckTarget(m_caster, target, false);
-        if (castResult != SPELL_CAST_OK)
-            return castResult;
-
-        if (target != m_caster)
-        {
-            if (target->GetEntry() != 31144)
-            {
-                // Target must be facing you
-                if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_REQ_TARGET_FACING_CASTER) && !target->HasInArc(static_cast<float>(M_PI), m_caster))
-                    return SPELL_FAILED_NOT_INFRONT;
-
-                // Must be behind the target
-                if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_REQ_CASTER_BEHIND_TARGET) && target->HasInArc(static_cast<float>(M_PI), m_caster))
-                    return SPELL_FAILED_NOT_BEHIND;
-            }
-
-            if (!m_caster->isPet())
-                if (!(m_spellInfo->AttributesEx2 & SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS) && VMAP::VMapFactory::checkSpellForLoS(m_spellInfo->Id) && !m_caster->IsWithinLOSInMap(target))
-                    return SPELL_FAILED_LINE_OF_SIGHT;
-
-            if (!(m_spellInfo->AttributesEx6 & SPELL_ATTR6_CAN_TARGET_INVISIBLE) && !m_caster->canSeeOrDetect(target) && m_casttime != 0 && !target->HasAura(200008))
-                return SPELL_FAILED_BAD_TARGETS;
-        }
-        else
-        {
-            if (m_caster->GetTypeId() == TYPEID_PLAYER) // Target - is player caster
-            {
-                // Lay on Hands - cannot be self-cast on paladin with Forbearance or after using Avenging Wrath
-                if (m_spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN && m_spellInfo->SpellFamilyFlags[0] & 0x0008000)
-                    if (target->HasAura(61988)) // Immunity shield marker
-                        return SPELL_FAILED_TARGET_AURASTATE;
-            }
-        }
-    }
-
     // check pet presence
     for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
     {
@@ -5534,6 +5496,43 @@ SpellCastResult Spell::CheckCast(bool strict)
     castResult = CheckRange(strict);
     if (castResult != SPELL_CAST_OK)
         return castResult;
+
+    if (Unit* target = m_targets.GetUnitTarget())
+    {
+        SpellCastResult castResult = m_spellInfo->CheckTarget(m_caster, target, false);
+        if (castResult != SPELL_CAST_OK)
+            return castResult;
+
+        if (target != m_caster)
+        {
+            if (target->GetEntry() != 31144)
+            {
+                // Target must be facing you
+                if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_REQ_TARGET_FACING_CASTER) && !target->HasInArc(static_cast<float>(M_PI), m_caster))
+                    return SPELL_FAILED_NOT_INFRONT;
+
+                // Must be behind the target
+                if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_REQ_CASTER_BEHIND_TARGET) && target->HasInArc(static_cast<float>(M_PI), m_caster))
+                    return SPELL_FAILED_NOT_BEHIND;
+            }
+
+            if (!(m_spellInfo->AttributesEx2 & SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS) && VMAP::VMapFactory::checkSpellForLoS(m_spellInfo->Id) && !m_caster->IsWithinLOSInMap(target))
+                return SPELL_FAILED_LINE_OF_SIGHT;
+
+            if (!(m_spellInfo->AttributesEx6 & SPELL_ATTR6_CAN_TARGET_INVISIBLE) && !m_caster->canSeeOrDetect(target) && m_casttime != 0 && !target->HasAura(200008))
+                return SPELL_FAILED_BAD_TARGETS;
+        }
+        else
+        {
+            if (m_caster->GetTypeId() == TYPEID_PLAYER) // Target - is player caster
+            {
+                // Lay on Hands - cannot be self-cast on paladin with Forbearance or after using Avenging Wrath
+                if (m_spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN && m_spellInfo->SpellFamilyFlags[0] & 0x0008000)
+                    if (target->HasAura(61988)) // Immunity shield marker
+                        return SPELL_FAILED_TARGET_AURASTATE;
+            }
+        }
+    }
 
     // Check for line of sight for spells with dest
     if (m_targets.HasDst())
