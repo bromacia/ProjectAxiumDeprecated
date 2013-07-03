@@ -270,6 +270,8 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                     pet->setQueuedSpell(NULL);
                     pet->AttackStop();
                     pet->InterruptNonMeleeSpells(false);
+                    if (pet->ToCreature()->IsAIEnabled)
+                        pet->ToCreature()->AI()->HandleReturnMovement();
                 case REACT_DEFENSIVE:                       //recovery
                 case REACT_AGGRESSIVE:                      //activete
                     if (pet->GetTypeId() == TYPEID_UNIT)
@@ -340,16 +342,16 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                 if (Unit* powner = pet->GetCharmerOrOwner())
                     if (powner->GetTypeId() == TYPEID_PLAYER)
                         pet->SendUpdateToPlayer(powner->ToPlayer());
-                result = SPELL_CAST_OK;
+
+                result = spell->CheckPetCast(unit_target);
             }
             if (result == SPELL_FAILED_OUT_OF_RANGE || result == SPELL_FAILED_LINE_OF_SIGHT)
             {
                 if (unit_target)
                 {
                     pet->setRunningToTarget(unit_target);
-                    pet->setQueuedSpell(spell);  
-                    if (pet->ToCreature()->IsAIEnabled)
-                        pet->ToCreature()->AI()->AttackStart(unit_target);
+                    pet->setQueuedSpell(spell);
+                    pet->GetMotionMaster()->MoveChase(unit_target);
                     return;
                 }
             }

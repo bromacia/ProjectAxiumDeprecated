@@ -101,12 +101,17 @@ void PetAI::UpdateAI(const uint32 diff)
                 {
                     me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
                     spell->prepare(&(spell->m_targets));
-                    if (spell->GetSpellInfo()->IsPositive())
-                        me->AttackStop();
+                    if (me->GetReactState() == REACT_PASSIVE && spell->getState() != SPELL_STATE_CASTING)
+                        HandleReturnMovement();
+                    else
+                    {
+                        if (me->ToCreature()->IsAIEnabled)
+                            me->ToCreature()->AI()->AttackStart(target);
+                    }
                     me->setRunningToTarget(NULL);
                     me->setQueuedSpell(NULL);
                 }
-                else if (result != SPELL_FAILED_OUT_OF_RANGE)
+                else if (result != SPELL_FAILED_OUT_OF_RANGE && result != SPELL_FAILED_LINE_OF_SIGHT)
                 {
                     me->setRunningToTarget(NULL);
                     me->setQueuedSpell(NULL);
@@ -157,7 +162,7 @@ void PetAI::UpdateAI(const uint32 diff)
                 HandleReturnMovement();
             }
         }
-        else
+        else if (me->getRunningToTarget() == NULL)
         {
             me->GetCharmInfo()->SetIsCommandAttack(false);
             HandleReturnMovement();
@@ -442,41 +447,6 @@ Unit* PetAI::SelectNextTarget()
 
     // Default
     return NULL;
-}
-
-void PetAI::HandleReturnMovement()
-{
-    // Handles moving the pet back to stay or owner
-
-    if (me->GetCharmInfo()->HasCommandState(COMMAND_STAY))
-    {
-        if (!me->GetCharmInfo()->IsAtStay() && !me->GetCharmInfo()->IsReturning())
-        {
-            // Return to previous position where stay was clicked
-            if (!me->GetCharmInfo()->IsCommandAttack())
-            {
-                float x, y, z;
-
-                me->GetCharmInfo()->GetStayPosition(x, y, z);
-                me->GetCharmInfo()->SetIsReturning(true);
-                me->GetMotionMaster()->Clear();
-                me->GetMotionMaster()->MovePoint(me->GetGUIDLow(), x, y, z);
-            }
-        }
-    }
-    else // COMMAND_FOLLOW
-    {
-        if (!me->GetCharmInfo()->IsFollowing() && !me->GetCharmInfo()->IsReturning())
-        {
-            if (!me->GetCharmInfo()->IsCommandAttack())
-            {
-                me->GetCharmInfo()->SetIsReturning(true);
-                me->GetMotionMaster()->Clear();
-                me->GetMotionMaster()->MoveFollow(me->GetCharmerOrOwner(), PET_FOLLOW_DIST, me->GetFollowAngle());
-            }
-        }
-    }
-
 }
 
 void PetAI::DoAttack(Unit* target, bool chase)

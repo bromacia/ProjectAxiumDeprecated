@@ -38,6 +38,39 @@ void UnitAI::AttackStartCaster(Unit* victim, float dist)
         me->GetMotionMaster()->MoveChase(victim, dist);
 }
 
+void UnitAI::HandleReturnMovement()
+{
+    if (me->GetCharmInfo()->HasCommandState(COMMAND_STAY))
+    {
+        if (!me->GetCharmInfo()->IsAtStay() && !me->GetCharmInfo()->IsReturning())
+        {
+            // Return to previous position where stay was clicked
+            if (!me->GetCharmInfo()->IsCommandAttack())
+            {
+                float x, y, z;
+
+                me->GetCharmInfo()->GetStayPosition(x, y, z);
+                me->GetCharmInfo()->SetIsReturning(true);
+                me->GetMotionMaster()->Clear();
+                me->GetMotionMaster()->MovePoint(me->GetGUIDLow(), x, y, z);
+            }
+        }
+    }
+    else // COMMAND_FOLLOW
+    {
+        if (!me->GetCharmInfo()->IsFollowing() && !me->GetCharmInfo()->IsReturning())
+        {
+            if (!me->GetCharmInfo()->IsCommandAttack())
+            {
+                me->GetCharmInfo()->SetIsReturning(true);
+                me->GetMotionMaster()->Clear();
+                me->GetMotionMaster()->MoveFollow(me->GetCharmerOrOwner(), PET_FOLLOW_DIST, me->GetFollowAngle());
+            }
+        }
+    }
+
+}
+
 void UnitAI::DoMeleeAttackIfReady()
 {
     if (me->HasUnitState(UNIT_STATE_CASTING))
