@@ -7333,27 +7333,28 @@ void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 coun
 
     if (m_targets.HasDst())
     {
-        // Summon 1 unit in dest location
-        if (count == 0)
-            pos.Relocate(*m_targets.GetDst());
-        // Summon in random point all other units if location present
-        else
+        //This is a workaround. Do not have time to write much about it
+        switch (m_spellInfo->Effects[i].TargetA.GetTarget()) 
         {
-            //This is a workaround. Do not have time to write much about it
-            switch (m_spellInfo->Effects[i].TargetA.GetTarget())
-            {
-                case TARGET_DEST_CASTER_SUMMON:
-                case TARGET_DEST_CASTER_RANDOM:
-                    m_caster->GetNearPosition(pos, radius * (float)rand_norm(), (float)rand_norm()*static_cast<float>(2*M_PI));
-                    break;
-                case TARGET_DEST_DEST_RANDOM:
-                case TARGET_DEST_TARGET_RANDOM:
-                    m_caster->GetRandomPoint(*m_targets.GetDst(), radius, pos);
-                    break;
-                default:
-                    pos.Relocate(*m_targets.GetDst());
-                    break;
-            }
+            case TARGET_DEST_CASTER_FRONT: // Feral spirit
+                {
+                    if (count == 0) // First wolf
+                        m_caster->GetNearPosition(pos, (float)3, (float)0.66 * static_cast<float>(2*M_PI));
+                    else            // Second wolf
+                        m_caster->GetNearPosition(pos, (float)3, (float)0.33 * static_cast<float>(2*M_PI));
+                }
+                break;
+            case TARGET_DEST_CASTER_SUMMON:
+            case TARGET_DEST_CASTER_RANDOM:
+                m_caster->GetNearPosition(pos, radius * (float)rand_norm(), (float)rand_norm()*static_cast<float>(2*M_PI));
+                break;
+            case TARGET_DEST_DEST_RANDOM:
+            case TARGET_DEST_TARGET_RANDOM:
+                m_caster->GetRandomPoint(*m_targets.GetDst(), radius, pos);
+                break;
+            default:
+                pos.Relocate(*m_targets.GetDst());
+                break;
         }
     }
     // Summon if dest location not present near caster
