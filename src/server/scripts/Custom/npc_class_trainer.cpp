@@ -3,6 +3,7 @@
 enum TrainerOptions
 {
     TRAINER_LEARN_ALL_SPELLS = 1,
+    TRAINER_LEARN_DUAL_SPEC,
     TRAINER_RESET_TALENTS,
     TRAINER_RESET_HUNTER_PET_TALENTS,
     TRAINER_SHOW_GLYPHS,
@@ -31,6 +32,8 @@ class npc_class_trainer : public CreatureScript
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_rogue_shadowdance:30|t Setup Shadow Dance Bar", GOSSIP_SENDER_MAIN, TRAINER_SETUP_SHADOW_DANCE);
             }
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\spell_arcane_mindmastery:30|t Learn All Spells", GOSSIP_SENDER_MAIN, TRAINER_LEARN_ALL_SPELLS);
+            if (player->GetSpecsCount() < 2)
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\achievement_general:30|t Learn Dual Specialization", GOSSIP_SENDER_MAIN, TRAINER_LEARN_DUAL_SPEC);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\spell_arcane_focusedpower:30|t Reset Talents", GOSSIP_SENDER_MAIN, TRAINER_RESET_TALENTS);
             if (player->getClass() == CLASS_HUNTER)
                 if (Pet* pet = player->GetPet())
@@ -49,6 +52,13 @@ class npc_class_trainer : public CreatureScript
             {
                 case TRAINER_LEARN_ALL_SPELLS:
                     LearnAllSpells(player, creature);
+                    break;
+                case TRAINER_LEARN_DUAL_SPEC:
+                    player->SetSaveTimer(sWorld->getIntConfig(CONFIG_INTERVAL_SAVE));
+                    player->CastSpell(player, 63680, true, NULL, NULL, player->GetGUID());
+                    player->CastSpell(player, 63624, true, NULL, NULL, player->GetGUID());
+                    player->SaveToDB();
+                    player->CLOSE_GOSSIP_MENU();
                     break;
                 case TRAINER_RESET_TALENTS:
                     player->SendTalentWipeConfirm(creature->GetGUID());
@@ -96,6 +106,11 @@ class npc_class_trainer : public CreatureScript
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
+
+            // Prevent double save or save during learning spells
+            player->SetSaveTimer(sWorld->getIntConfig(CONFIG_INTERVAL_SAVE));
+
+            bool learnedSpells = false;
 
             for (TrainerSpellMap::const_iterator itr = TrainerSpells->spellList.begin(); itr != TrainerSpells->spellList.end(); ++itr)
             {
@@ -150,6 +165,9 @@ class npc_class_trainer : public CreatureScript
                                 disabled = true;
                 }
 
+                if (!learnedSpells)
+                    learnedSpells = true;
+
                 player->addSpell(spellId, true, true, false, disabled, false, true);
 
                 if (!disabled && player->IsInWorld())
@@ -160,6 +178,9 @@ class npc_class_trainer : public CreatureScript
                     player->GetSession()->SendPacket(&data);
                 }
             }
+
+            if (learnedSpells)
+                player->SaveToDB();
 
             player->CLOSE_GOSSIP_MENU();
             return true;
