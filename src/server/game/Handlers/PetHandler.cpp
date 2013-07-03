@@ -378,7 +378,8 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                             pet->AttackStop();
                         pet->GetMotionMaster()->Clear();
                         if (pet->ToCreature()->IsAIEnabled)
-                            pet->ToCreature()->AI()->AttackStart(unit_target);
+                            if (!pet->ToCreature()->GetReactState() == REACT_PASSIVE)
+                                pet->ToCreature()->AI()->AttackStart(unit_target);
                     }
                 }
 
