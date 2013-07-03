@@ -1251,10 +1251,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
 
     if (m_caster->GetTypeId() == TYPEID_PLAYER && unit->GetTypeId() == TYPEID_PLAYER)
         if (!m_caster->ToPlayer()->duel && !unit->ToPlayer()->duel && DuelSpell && ((getMSTime() >= unit->m_lastDuelSpellTime) || unit->HasAura(7267))) // Duel Grovel
-        {
-            m_caster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_EVADE);
             return;
-        }
 
     if (RedirectedSpell && unit->GetEntry() == 5925)
     {
