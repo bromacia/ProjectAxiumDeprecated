@@ -2192,7 +2192,8 @@ public:
             if (!UpdateVictim())
                 return;
 
-            DoMeleeAttackIfReady();
+            if (!me->ToCreature()->IsCrowdControlled())
+                DoMeleeAttackIfReady();
         }
     };
 
