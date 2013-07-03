@@ -1119,8 +1119,15 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
 
     StoreNewItemInBestSlots(23162, 4); // Foror's Crate of Endless Resist Gear Storage
     StoreNewItemInBestSlots(6948, 1);  // Hearthstone
+
     if (getClass() == CLASS_SHAMAN)
         StoreNewItemInBestSlots(5175, 1); // Master Totem
+
+    if (getClass() == CLASS_WARRIOR)
+        CastSpell(this, 2457, true); // Battle Stance
+
+    if (getClass() == CLASS_DEATH_KNIGHT)
+        CastSpell(this, 48266, true); // Blood Presence
 
     // bags and main-hand weapon must equipped at this moment
     // now second pass for not equipped (offhand weapon/shield if it attempt equipped before main-hand weapon)
