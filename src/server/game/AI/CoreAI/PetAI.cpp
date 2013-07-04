@@ -523,6 +523,12 @@ bool PetAI::CanAttack(Unit* target)
     // Evaluates wether a pet can attack a specific
     // target based on CommandState, ReactState and other flags
 
+    if (!target)
+        return false;
+
+    if (!me->GetCharmInfo())
+        return false;
+
     // Returning - check first since pets returning ignore attacks
     if (me->GetCharmInfo()->IsReturning())
         return false;
