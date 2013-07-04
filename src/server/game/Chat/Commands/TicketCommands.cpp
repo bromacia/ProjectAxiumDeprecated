@@ -140,7 +140,7 @@ bool ChatHandler::HandleGMTicketCloseByIdCommand(const char* args)
     // Inform player, who submitted this ticket, that it is closed
     if (Player* submitter = ticket->GetPlayer())
     {
-        if (submitter->IsInWorld())
+        if (submitter->GetSession())
         {
             WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);
             data << uint32(GMTICKET_RESPONSE_TICKET_DELETED);
@@ -234,7 +234,7 @@ bool ChatHandler::HandleGMTicketUnAssignCommand(const char* args)
     // Get security level of player, whom this ticket is assigned to
     uint32 security = SEC_PLAYER;
     Player* assignedPlayer = ticket->GetAssignedPlayer();
-    if (assignedPlayer && assignedPlayer->IsInWorld())
+    if (assignedPlayer && assignedPlayer->GetSession())
         security = assignedPlayer->GetSession()->GetSecurity();
     else
     {
@@ -330,7 +330,7 @@ bool ChatHandler::HandleGMTicketDeleteByIdCommand(const char* args)
 
     if (Player* player = ticket->GetPlayer())
     {
-        if (player->IsInWorld())
+        if (player->GetSession())
         {
             // Force abandon ticket
             WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);
@@ -381,7 +381,7 @@ bool ChatHandler::HandleGMTicketEscalateCommand(const char *args)
     ticket->SetEscalatedStatus(TICKET_IN_ESCALATION_QUEUE);
 
     if (Player* player = ticket->GetPlayer())
-        if (player->IsInWorld())
+        if (player->GetSession())
             sTicketMgr->SendTicket(player->GetSession(), ticket);
 
     sTicketMgr->UpdateLastChange();
@@ -402,7 +402,7 @@ bool ChatHandler::HandleGMTicketCompleteCommand(const char* args)
     }
 
     if (Player* player = ticket->GetPlayer())
-        if (player->IsInWorld())
+        if (player->GetSession())
             ticket->SendResponse(player->GetSession());
 
     sTicketMgr->UpdateLastChange();

@@ -310,7 +310,7 @@ void SocialMgr::BroadcastToFriendListers(Player* player, WorldPacket* packet)
 
             // PLAYER see his team only and PLAYER can't see MODERATOR, GAME MASTER, ADMINISTRATOR characters
             // MODERATOR, GAME MASTER, ADMINISTRATOR can see all
-            if (pFriend && pFriend->IsInWorld() &&
+            if (pFriend && pFriend->GetSession() &&
                 (!AccountMgr::IsPlayerAccount(pFriend->GetSession()->GetSecurity()) ||
                 ((pFriend->GetTeam() == team || allowTwoSideWhoList) && security <= gmLevelInWhoList)) &&
                 player->IsVisibleGloballyFor(pFriend))
