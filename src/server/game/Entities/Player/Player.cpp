@@ -879,6 +879,8 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     currentViewpoint = NULL;
 
     lastEmoteTime = 0;
+
+    m_glyphsChanged = false;
 }
 
 Player::~Player ()
@@ -24652,12 +24654,17 @@ void Player::_LoadGlyphs(PreparedQueryResult result)
 
 void Player::_SaveGlyphs(SQLTransaction& trans)
 {
+    if (!m_glyphsChanged) // Dont save glyphs if nothing has changed
+        return;
+
     trans->PAppend("DELETE FROM character_glyphs WHERE guid='%u'", GetGUIDLow());
     for (uint8 spec = 0; spec < m_specsCount; ++spec)
     {
         trans->PAppend("INSERT INTO character_glyphs VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u')",
             GetGUIDLow(), spec, m_Glyphs[spec][0], m_Glyphs[spec][1], m_Glyphs[spec][2], m_Glyphs[spec][3], m_Glyphs[spec][4], m_Glyphs[spec][5]);
     }
+
+    m_glyphsChanged = false;
 }
 
 void Player::_LoadTalents(PreparedQueryResult result)
