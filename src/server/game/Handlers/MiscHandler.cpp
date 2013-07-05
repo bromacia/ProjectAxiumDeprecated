@@ -1299,7 +1299,7 @@ void WorldSession::HandleWorldTeleportOpcode(WorldPacket& recv_data)
 
     sLog->outStaticDebug("Time %u sec, map=%u, x=%f, y=%f, z=%f, orient=%f", time/1000, mapid, PositionX, PositionY, PositionZ, Orientation);
 
-    if (AccountMgr::IsAdminAccount(GetSecurity()))
+    if (GetSecurity() == SEC_ADMINISTRATOR)
         _player->TeleportTo(mapid, PositionX, PositionY, PositionZ, Orientation);
     else
         SendNotification(LANG_YOU_NOT_HAVE_PERMISSION);
@@ -1312,7 +1312,7 @@ void WorldSession::HandleWhoisOpcode(WorldPacket& recv_data)
     std::string charname;
     recv_data >> charname;
 
-    if (!AccountMgr::IsAdminAccount(GetSecurity()))
+    if (GetSecurity() != SEC_ADMINISTRATOR)
     {
         SendNotification(LANG_YOU_NOT_HAVE_PERMISSION);
         return;

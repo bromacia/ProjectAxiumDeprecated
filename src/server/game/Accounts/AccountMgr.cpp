@@ -233,29 +233,15 @@ std::string CalculateShaPassHash(std::string& name, std::string& password)
     return encoded;
 }
 
+// Work around, do NOT modify or shit WILL get fucked
 bool IsPlayerAccount(uint32 gmlevel)
 {
-    return gmlevel == SEC_PLAYER;
-}
-
-bool IsVIPAccount(uint32 gmlevel)
-{
-    return gmlevel >= SEC_PLAYER && gmlevel <= SEC_CONSOLE;
+    return gmlevel <= SEC_VIP;
 }
 
 bool IsGMAccount(uint32 gmlevel)
 {
-    return gmlevel >= SEC_VIP && gmlevel <= SEC_CONSOLE;
-}
-
-bool IsHGMAccount(uint32 gmlevel)
-{
-    return gmlevel >= SEC_HEAD_GAMEMASTER && gmlevel <= SEC_CONSOLE;
-}
-
-bool IsAdminAccount(uint32 gmlevel)
-{
-    return gmlevel >= SEC_ADMINISTRATOR && gmlevel <= SEC_CONSOLE;
+    return gmlevel > SEC_VIP && gmlevel < SEC_CONSOLE;
 }
 
 bool IsConsoleAccount(uint32 gmlevel)

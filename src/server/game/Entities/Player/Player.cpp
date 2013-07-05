@@ -3083,7 +3083,7 @@ void Player::InitTalentForLevel()
         // if used more that have then reset
         if (m_usedTalentCount > talentPointsForLevel)
         {
-            if (!AccountMgr::IsAdminAccount(GetSession()->GetSecurity()))
+            if (GetSession()->GetSecurity() != SEC_ADMINISTRATOR)
                 resetTalents(true);
             else
                 SetFreeTalentPoints(0);
