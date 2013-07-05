@@ -1602,6 +1602,8 @@ class Player : public Unit, public GridObject<Player>
         bool m_mailsLoaded;
         bool m_mailsUpdated;
 
+        bool m_glyphsChanged;
+
         void SetBindPoint(uint64 guid);
         void SendTalentWipeConfirm(uint64 guid);
         void ResetPetTalents();
@@ -1754,6 +1756,7 @@ class Player : public Unit, public GridObject<Player>
         void SetGlyph(uint8 slot, uint32 glyph)
         {
             m_Glyphs[m_activeSpec][slot] = glyph;
+            m_glyphsChanged = true;
             SetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot, glyph);
         }
         uint32 GetGlyph(uint8 slot) { return m_Glyphs[m_activeSpec][slot]; }

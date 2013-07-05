@@ -292,7 +292,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket & recv_data)
         }
 
         //do not process players which are not in world
-        if (!(itr->second->IsInWorld()))
+        if (!(itr->second->GetSession()))
             continue;
 
         // check if target is globally visible for player
@@ -616,7 +616,7 @@ void WorldSession::HandleAddFriendOpcodeCallBack(PreparedQueryResult result, std
                 else
                 {
                     Player* pFriend = ObjectAccessor::FindPlayer(friendGuid);
-                    if (pFriend && pFriend->IsInWorld() && pFriend->IsVisibleGloballyFor(_player))
+                    if (pFriend && pFriend->GetSession() && pFriend->IsVisibleGloballyFor(_player))
                         friendResult = FRIEND_ADDED_ONLINE;
                     else
                         friendResult = FRIEND_ADDED_OFFLINE;

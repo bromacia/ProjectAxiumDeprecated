@@ -152,7 +152,7 @@ Player* World::FindPlayerInZone(uint32 zone)
         if (!player)
             continue;
 
-        if (player->IsInWorld() && player->GetZoneId() == zone)
+        if (player->GetSession() && player->GetZoneId() == zone)
         {
             // Used by the weather system. We return the player to broadcast the change weather message to him and all players in the zone.
             return player;
@@ -2174,7 +2174,7 @@ void World::SendGlobalMessage(WorldPacket* packet, WorldSession* self, uint32 te
     {
         if (itr->second &&
             itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld() &&
+            itr->second->GetPlayer()->GetSession() &&
             itr->second != self &&
             (team == 0 || itr->second->GetPlayer()->GetTeam() == team))
         {
@@ -2191,7 +2191,7 @@ void World::SendGlobalGMMessage(WorldPacket* packet, WorldSession* self, uint32 
     {
         if (itr->second &&
             itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld() &&
+            itr->second->GetPlayer()->GetSession() &&
             itr->second != self &&
             itr->second->GetSecurity() > SEC_VIP &&
             (team == 0 || itr->second->GetPlayer()->GetTeam() == team))
@@ -2266,7 +2266,7 @@ void World::SendWorldText(int32 string_id, ...)
     Trinity::LocalizedPacketListDo<Trinity::WorldWorldTextBuilder> wt_do(wt_builder);
     for (SessionMap::const_iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
-        if (!itr->second || !itr->second->GetPlayer() || !itr->second->GetPlayer()->IsInWorld())
+        if (!itr->second || !itr->second->GetPlayer() || !itr->second->GetPlayer()->GetSession())
             continue;
 
         wt_do(itr->second->GetPlayer());
@@ -2285,7 +2285,7 @@ void World::SendGMText(int32 string_id, ...)
     Trinity::LocalizedPacketListDo<Trinity::WorldWorldTextBuilder> wt_do(wt_builder);
     for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
-        if (!itr->second || !itr->second->GetPlayer() || !itr->second->GetPlayer()->IsInWorld())
+        if (!itr->second || !itr->second->GetPlayer() || !itr->second->GetPlayer()->GetSession())
             continue;
 
         if (AccountMgr::IsPlayerAccount(itr->second->GetSecurity()))
@@ -2323,7 +2323,7 @@ void World::SendZoneMessage(uint32 zone, WorldPacket* packet, WorldSession* self
     {
         if (itr->second &&
             itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld() &&
+            itr->second->GetPlayer()->GetSession() &&
             itr->second->GetPlayer()->GetZoneId() == zone &&
             itr->second != self &&
             (team == 0 || itr->second->GetPlayer()->GetTeam() == team))

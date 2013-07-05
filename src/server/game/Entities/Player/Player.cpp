@@ -879,6 +879,8 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     currentViewpoint = NULL;
 
     lastEmoteTime = 0;
+
+    m_glyphsChanged = false;
 }
 
 Player::~Player ()
@@ -18752,7 +18754,7 @@ void Player::SaveToDB(bool create /*=false*/)
     /* World of Warcraft Armory */
     // Place this code AFTER CharacterDatabase.CommitTransaction(); to avoid some character saving errors.
     // Wowarmory feeds
-    std::ostringstream sWowarmory;
+    /*std::ostringstream sWowarmory;
     for (WowarmoryFeeds::iterator iter = m_wowarmory_feeds.begin(); iter < m_wowarmory_feeds.end(); ++iter) {
         sWowarmory << "INSERT IGNORE INTO character_feed_log (guid,type,data,date,counter,difficulty,item_guid,item_quality) VALUES ";
         //                      guid                    type                        data                    date                            counter                   difficulty                        item_guid                      item_quality
@@ -18770,7 +18772,7 @@ void Player::SaveToDB(bool create /*=false*/)
     for (uint16 i = 0; i < m_valuesCount; ++i)
         ps << GetUInt32Value(i) << " ";
     ps << "', " << uint64(t) << ");";
-    CharacterDatabase.PExecute(ps.str().c_str());
+    CharacterDatabase.PExecute(ps.str().c_str());*/
     /* World of Warcraft Armory */
 
     // save pet (hunter pet level and experience and all type pets health/mana).
@@ -24659,12 +24661,17 @@ void Player::_LoadGlyphs(PreparedQueryResult result)
 
 void Player::_SaveGlyphs(SQLTransaction& trans)
 {
+    if (!m_glyphsChanged) // Dont save glyphs if nothing has changed
+        return;
+
     trans->PAppend("DELETE FROM character_glyphs WHERE guid='%u'", GetGUIDLow());
     for (uint8 spec = 0; spec < m_specsCount; ++spec)
     {
         trans->PAppend("INSERT INTO character_glyphs VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u')",
             GetGUIDLow(), spec, m_Glyphs[spec][0], m_Glyphs[spec][1], m_Glyphs[spec][2], m_Glyphs[spec][3], m_Glyphs[spec][4], m_Glyphs[spec][5]);
     }
+
+    m_glyphsChanged = false;
 }
 
 void Player::_LoadTalents(PreparedQueryResult result)

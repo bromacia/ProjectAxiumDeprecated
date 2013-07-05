@@ -17102,9 +17102,11 @@ void Unit::GetRaidMember(std::list<Unit*> &nearMembers, float radius)
                 if (Target->isAlive() && IsWithinDistInMap(Target, radius))
                     nearMembers.push_back(Target);
 
-                if (Guardian* pet = Target->GetGuardianPet())
-                    if (pet->isAlive() &&  IsWithinDistInMap(pet, radius))
-                        nearMembers.push_back(pet);
+                for (Unit::ControlList::iterator itr = Target->m_Controlled.begin(); itr != Target->m_Controlled.end(); ++itr)
+                {
+                    if ((*itr)->isAlive() && IsWithinDistInMap((*itr), radius))
+                        nearMembers.push_back((*itr));
+                }
             }
         }
     }
@@ -17112,9 +17114,12 @@ void Unit::GetRaidMember(std::list<Unit*> &nearMembers, float radius)
     {
         if (owner->isAlive() && (owner == this || IsWithinDistInMap(owner, radius)))
             nearMembers.push_back(owner);
-        if (Guardian* pet = owner->GetGuardianPet())
-            if (pet->isAlive() && (pet == this || IsWithinDistInMap(pet, radius)))
-                nearMembers.push_back(pet);
+
+        for (Unit::ControlList::iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
+        {
+            if ((*itr)->isAlive() && ((*itr) == this || IsWithinDistInMap((*itr), radius)))
+                nearMembers.push_back((*itr));
+        }
     }
 }
 
@@ -17139,9 +17144,11 @@ void Unit::GetPartyMemberInDist(std::list<Unit*> &TagUnitMap, float radius)
                 if (Target->isAlive() && IsWithinDistInMap(Target, radius))
                     TagUnitMap.push_back(Target);
 
-                if (Guardian* pet = Target->GetGuardianPet())
-                    if (pet->isAlive() &&  IsWithinDistInMap(pet, radius))
-                        TagUnitMap.push_back(pet);
+                for (Unit::ControlList::iterator itr = Target->m_Controlled.begin(); itr != Target->m_Controlled.end(); ++itr)
+                {
+                    if ((*itr)->isAlive() && IsWithinDistInMap((*itr), radius))
+                        TagUnitMap.push_back((*itr));
+                }
             }
         }
     }
@@ -17149,9 +17156,11 @@ void Unit::GetPartyMemberInDist(std::list<Unit*> &TagUnitMap, float radius)
     {
         if (owner->isAlive() && (owner == this || IsWithinDistInMap(owner, radius)))
             TagUnitMap.push_back(owner);
-        if (Guardian* pet = owner->GetGuardianPet())
-            if (pet->isAlive() && (pet == this || IsWithinDistInMap(pet, radius)))
-                TagUnitMap.push_back(pet);
+        for (Unit::ControlList::iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
+        {
+            if ((*itr)->isAlive() && ((*itr) == this || IsWithinDistInMap((*itr), radius)))
+                TagUnitMap.push_back((*itr));
+        }
     }
 }
 
@@ -17176,9 +17185,11 @@ void Unit::GetPartyMembers(std::list<Unit*> &TagUnitMap)
                 if (Target->isAlive() && IsInMap(Target))
                     TagUnitMap.push_back(Target);
 
-                if (Guardian* pet = Target->GetGuardianPet())
-                    if (pet->isAlive() && IsInMap(Target))
-                        TagUnitMap.push_back(pet);
+                for (Unit::ControlList::iterator itr = Target->m_Controlled.begin(); itr != Target->m_Controlled.end(); ++itr)
+                {
+                    if ((*itr)->isAlive() && IsInMap((*itr)))
+                        TagUnitMap.push_back((*itr));
+                }
             }
         }
     }
@@ -17186,9 +17197,11 @@ void Unit::GetPartyMembers(std::list<Unit*> &TagUnitMap)
     {
         if (owner->isAlive() && (owner == this || IsInMap(owner)))
             TagUnitMap.push_back(owner);
-        if (Guardian* pet = owner->GetGuardianPet())
-            if (pet->isAlive() && (pet == this || IsInMap(pet)))
-                TagUnitMap.push_back(pet);
+        for (Unit::ControlList::iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
+        {
+            if ((*itr)->isAlive() && ((*itr) == this || IsInMap((*itr))))
+                TagUnitMap.push_back((*itr));
+        }
     }
 }
 
