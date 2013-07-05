@@ -182,7 +182,7 @@ void BattlegroundMgr::BuildBattlegroundStatusPacket(WorldPacket* data, Battlegro
 {
     // we can be in 2 queues in same time...
 
-    if (StatusID == 0 || !bg)
+    if (StatusID == STATUS_NONE || !bg)
     {
         data->Initialize(SMSG_BATTLEFIELD_STATUS, 4+8);
         *data << uint32(QueueSlot);                         // queue id (0...1)
