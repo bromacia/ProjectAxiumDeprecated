@@ -201,9 +201,15 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args)
         return true;
     }
 
+    bool isAdmin;
+    if (targetGmLevel == SEC_ADMINISTRATOR)
+        isAdmin = true;
+    else
+        isAdmin = false;
+
     // Assign ticket
     SQLTransaction trans = SQLTransaction(NULL);
-    ticket->SetAssignedTo(targetGuid, AccountMgr::IsAdminAccount(targetGmLevel));
+    ticket->SetAssignedTo(targetGuid, isAdmin);
     ticket->SaveToDB(trans);
     sTicketMgr->UpdateLastChange();
 
