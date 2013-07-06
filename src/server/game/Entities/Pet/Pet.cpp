@@ -1177,9 +1177,6 @@ void Pet::_SaveSpells(SQLTransaction& trans)
                 m_spells.erase(itr);
                 continue;
             case PETSPELL_CHANGED:
-                trans->PAppend("DELETE FROM pet_spell WHERE guid = '%u' and spell = '%u'", m_charmInfo->GetPetNumber(), itr->first);
-                trans->PAppend("REPLACE INTO pet_spell (guid, spell, active) VALUES ('%u', '%u', '%u')", m_charmInfo->GetPetNumber(), itr->first, itr->second.active);
-                break;
             case PETSPELL_NEW:
                 trans->PAppend("REPLACE INTO pet_spell (guid, spell, active) VALUES ('%u', '%u', '%u')", m_charmInfo->GetPetNumber(), itr->first, itr->second.active);
                 break;
