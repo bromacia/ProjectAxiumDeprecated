@@ -193,9 +193,6 @@ void PetAI::UpdateAI(const uint32 diff)
             if (me->GetCharmInfo()->GetGlobalCooldownMgr().HasGlobalCooldown(spellInfo))
                 continue;
 
-            if (me->GetCharmInfo()->GetActionBarEntry(i)->GetType() == ACT_DISABLED)
-                continue;
-
             if (me->HasSpellCooldown(spellInfo->Id))
                 continue;
 
