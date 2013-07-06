@@ -17104,6 +17104,9 @@ void Unit::GetRaidMember(std::list<Unit*> &nearMembers, float radius)
 
                 for (Unit::ControlList::iterator itr = Target->m_Controlled.begin(); itr != Target->m_Controlled.end(); ++itr)
                 {
+                    if ((*itr)->isTotem())
+                        continue;
+
                     if ((*itr)->isAlive() && IsWithinDistInMap((*itr), radius))
                         nearMembers.push_back((*itr));
                 }
@@ -17117,6 +17120,9 @@ void Unit::GetRaidMember(std::list<Unit*> &nearMembers, float radius)
 
         for (Unit::ControlList::iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
         {
+            if ((*itr)->isTotem())
+                continue;
+
             if ((*itr)->isAlive() && ((*itr) == this || IsWithinDistInMap((*itr), radius)))
                 nearMembers.push_back((*itr));
         }
@@ -17146,6 +17152,9 @@ void Unit::GetPartyMemberInDist(std::list<Unit*> &TagUnitMap, float radius)
 
                 for (Unit::ControlList::iterator itr = Target->m_Controlled.begin(); itr != Target->m_Controlled.end(); ++itr)
                 {
+                    if ((*itr)->isTotem())
+                        continue;
+
                     if ((*itr)->isAlive() && IsWithinDistInMap((*itr), radius))
                         TagUnitMap.push_back((*itr));
                 }
@@ -17158,6 +17167,9 @@ void Unit::GetPartyMemberInDist(std::list<Unit*> &TagUnitMap, float radius)
             TagUnitMap.push_back(owner);
         for (Unit::ControlList::iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
         {
+            if ((*itr)->isTotem())
+                continue;
+
             if ((*itr)->isAlive() && ((*itr) == this || IsWithinDistInMap((*itr), radius)))
                 TagUnitMap.push_back((*itr));
         }
@@ -17187,6 +17199,9 @@ void Unit::GetPartyMembers(std::list<Unit*> &TagUnitMap)
 
                 for (Unit::ControlList::iterator itr = Target->m_Controlled.begin(); itr != Target->m_Controlled.end(); ++itr)
                 {
+                    if ((*itr)->isTotem())
+                        continue;
+
                     if ((*itr)->isAlive() && IsInMap((*itr)))
                         TagUnitMap.push_back((*itr));
                 }
@@ -17199,6 +17214,9 @@ void Unit::GetPartyMembers(std::list<Unit*> &TagUnitMap)
             TagUnitMap.push_back(owner);
         for (Unit::ControlList::iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
         {
+            if ((*itr)->isTotem())
+                continue;
+
             if ((*itr)->isAlive() && ((*itr) == this || IsInMap((*itr))))
                 TagUnitMap.push_back((*itr));
         }
