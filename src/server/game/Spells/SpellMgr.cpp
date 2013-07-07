@@ -3310,6 +3310,7 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectMiscValue[1] = 2;
                 break;
             case 58867: // Spirit Wolf Leap
+            case 47482: // Ghoul Leap
                 spellInfo->EffectMiscValue[1] = 300;
                 spellInfo->EffectMiscValueB[1] = 2;
                 break;

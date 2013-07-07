@@ -155,6 +155,9 @@ void CasterAI::EnterCombat(Unit* who)
                 if (Unit* ownerTarget = me->GetCharmerOrOwner()->ToPlayer()->GetSelectedUnit())
                     target = ownerTarget;
 
+                if (target->HasBreakableByDamageCrowdControlAura(me))
+                    continue;
+
                 me->CastSpell(target, *itr, false);
             }
             else

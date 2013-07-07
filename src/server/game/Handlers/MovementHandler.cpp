@@ -308,6 +308,25 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
             plMover->SetIsJumping(true);
         }
     }
+
+    if (plMover && plMover->GetSession()->GetSecurity() < SEC_GAMEMASTER)
+    {
+        if (opcode == CMSG_MOVE_SET_FLY || opcode == MSG_MOVE_START_ASCEND && !plMover->IsInWater())
+        {
+            if (!plMover->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED))
+            {
+                plMover->InterruptMovement();
+                plMover->GetMotionMaster()->MoveFall();
+                WorldPacket data;
+                data.Initialize(SMSG_MOVE_UNSET_CAN_FLY, 12);
+                data.append(plMover->GetPackGUID());
+                data << uint32(0);                                      // unk
+                plMover->SendDirectMessage(&data);
+                recv_data.rfinish(); // prevent warnings spam
+                return;
+            }
+        }
+    }
 	
     if (mover->IsSitState() && movementInfo.GetMovementFlags() & (MOVEMENTFLAG_MASK_MOVING | MOVEMENTFLAG_MASK_TURNING))
 	    mover->SetStandState(UNIT_STAND_STATE_STAND);

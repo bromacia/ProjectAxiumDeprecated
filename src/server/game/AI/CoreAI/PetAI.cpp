@@ -101,8 +101,11 @@ void PetAI::UpdateAI(const uint32 diff)
                 {
                     me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
                     spell->prepare(&(spell->m_targets));
-                    if (me->GetReactState() == REACT_PASSIVE && spell->getState() != SPELL_STATE_CASTING)
-                        HandleReturnMovement();
+                    if (me->GetReactState() == REACT_PASSIVE)
+                    {
+                        if (spell->getState() != SPELL_STATE_CASTING)
+                            HandleReturnMovement();
+                    }
                     else
                     {
                         if (me->ToCreature()->IsAIEnabled)
@@ -191,9 +194,6 @@ void PetAI::UpdateAI(const uint32 diff)
                 continue;
 
             if (me->GetCharmInfo()->GetGlobalCooldownMgr().HasGlobalCooldown(spellInfo))
-                continue;
-
-            if (me->GetCharmInfo()->GetActionBarEntry(i)->GetType() == ACT_DISABLED)
                 continue;
 
             if (me->HasSpellCooldown(spellInfo->Id))
