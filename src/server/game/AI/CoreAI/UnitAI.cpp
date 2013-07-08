@@ -40,17 +40,21 @@ void UnitAI::AttackStartCaster(Unit* victim, float dist)
 
 void UnitAI::HandleReturnMovement()
 {
-    if (me->GetCharmInfo()->HasCommandState(COMMAND_STAY))
+    CharmInfo* ci = me->GetCharmInfo();
+    if (!ci)
+        return;
+
+    if (ci->HasCommandState(COMMAND_STAY))
     {
-        if (!me->GetCharmInfo()->IsAtStay() && !me->GetCharmInfo()->IsReturning())
+        if (!ci->IsAtStay() && !ci->IsReturning())
         {
             // Return to previous position where stay was clicked
-            if (!me->GetCharmInfo()->IsCommandAttack())
+            if (!ci->IsCommandAttack())
             {
                 float x, y, z;
 
-                me->GetCharmInfo()->GetStayPosition(x, y, z);
-                me->GetCharmInfo()->SetIsReturning(true);
+                ci->GetStayPosition(x, y, z);
+                ci->SetIsReturning(true);
                 me->GetMotionMaster()->Clear();
                 me->GetMotionMaster()->MovePoint(me->GetGUIDLow(), x, y, z);
             }
@@ -58,17 +62,16 @@ void UnitAI::HandleReturnMovement()
     }
     else // COMMAND_FOLLOW
     {
-        if (!me->GetCharmInfo()->IsFollowing() && !me->GetCharmInfo()->IsReturning())
+        if (!ci->IsFollowing() && !ci->IsReturning())
         {
-            if (!me->GetCharmInfo()->IsCommandAttack())
+            if (!ci->IsCommandAttack())
             {
-                me->GetCharmInfo()->SetIsReturning(true);
+                ci->SetIsReturning(true);
                 me->GetMotionMaster()->Clear();
                 me->GetMotionMaster()->MoveFollow(me->GetCharmerOrOwner(), PET_FOLLOW_DIST, me->GetFollowAngle());
             }
         }
     }
-
 }
 
 void UnitAI::DoMeleeAttackIfReady()
@@ -258,7 +261,7 @@ void PlayerAI::OnCharmed(bool apply) { me->IsAIEnabled = apply; }
 
 void SimpleCharmedAI::UpdateAI(const uint32 /*diff*/)
 {
-  Creature* charmer = me->GetCharmer()->ToCreature();
+    Creature* charmer = me->GetCharmer()->ToCreature();
 
     //kill self if charm aura has infinite duration
     if (charmer->IsInEvadeMode())
