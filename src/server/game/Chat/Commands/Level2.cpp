@@ -367,7 +367,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
 
     std::string nameLink = playerLink(target_name);
 
-    PSendSysMessage("Player%s %s (guid: %u), Account(id: %u): %s, Email: %s, Security: %s, Last IP: %s, Last login: %s, Latency: %ums",
+    PSendSysMessage("Player%s %s (guid: %u, account: %u): %s, Email: %s, Security: %s, Last IP: %s, Last login: %s, Latency: %ums",
     (target ? "" : "(Offline)"), nameLink.c_str(), GUID_LOPART(target_guid), accId, username.c_str(), email.c_str(), securityString.c_str(), last_ip.c_str(), last_login.c_str(), latency);
 
     std::string bannedby = "Unknown";
