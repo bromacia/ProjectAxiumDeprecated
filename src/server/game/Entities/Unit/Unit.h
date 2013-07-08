@@ -1438,10 +1438,12 @@ class Unit : public WorldObject
         bool IsStandState() const;
         void SetStandState(uint8 state);
 
-        Unit* getRunningToTarget() { return m_runningToTarget; }
-        void setRunningToTarget(Unit* target) { m_runningToTarget = target; }
-        void setQueuedSpell(Spell* spell) { m_queuedSpell = spell; }
+        void setIsRunningToTarget(bool x) { m_runningToTarget = x; }
+        bool isRunningToTarget() { return m_runningToTarget; }
         Spell* getQueuedSpell() { return m_queuedSpell; }
+        void setQueuedSpell(Spell* spell) { m_queuedSpell = spell; }
+        Unit* getQueuedSpellTarget() { return m_queuedSpellTarget; }
+        void setQueuedSpellTarget(Unit* target) { m_queuedSpellTarget = target; }
 
         void  SetStandFlags(uint8 flags) { SetByteFlag(UNIT_FIELD_BYTES_1, 2, flags); }
         void  RemoveStandFlags(uint8 flags) { RemoveByteFlag(UNIT_FIELD_BYTES_1, 2, flags); }
@@ -2411,8 +2413,9 @@ class Unit : public WorldObject
 
         bool m_isJumping;
 
-        Unit* m_runningToTarget;
+        bool m_runningToTarget;
         Spell* m_queuedSpell;
+        Unit* m_queuedSpellTarget;
 
         bool m_isDueling;
 

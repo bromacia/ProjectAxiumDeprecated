@@ -91,34 +91,51 @@ void PetAI::UpdateAI(const uint32 diff)
 
     if (owner)
     {
-        if (Unit* target = me->getRunningToTarget())
+        if (Spell* spell = me->getQueuedSpell())
         {
-            if (Spell* spell = me->getQueuedSpell())
+            if (Unit* queuedTarget = me->getQueuedSpellTarget())
             {
-                SpellCastResult result = spell->CheckPetCast(target);
+                if (me->isRunningToTarget()) // Is running to a target to cast a spell
+                {
+                    SpellCastResult result = spell->CheckPetCast(queuedTarget);
 
-                if (result == SPELL_CAST_OK)
-                {
-                    me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
-                    spell->prepare(&(spell->m_targets));
-                    if (me->GetReactState() == REACT_PASSIVE)
+                    if (result == SPELL_CAST_OK)
                     {
-                        if (spell->getState() != SPELL_STATE_CASTING)
-                            HandleReturnMovement();
+                        me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
+                        spell->prepare(&(spell->m_targets));
+                        if (me->GetReactState() == REACT_PASSIVE)
+                        {
+                            if (spell->getState() != SPELL_STATE_CASTING)
+                                HandleReturnMovement();
+                        }
+                        else
+                        {
+                            if (me->ToCreature()->IsAIEnabled)
+                                me->ToCreature()->AI()->AttackStart(queuedTarget);
+                        }
+                        me->setIsRunningToTarget(false);
+                        me->setQueuedSpell(NULL);
+                        me->setQueuedSpellTarget(NULL);
                     }
-                    else
+                    else if (result != SPELL_FAILED_OUT_OF_RANGE && result != SPELL_FAILED_LINE_OF_SIGHT)
                     {
-                        if (me->ToCreature()->IsAIEnabled)
-                            me->ToCreature()->AI()->AttackStart(target);
+                        me->setIsRunningToTarget(false);
+                        me->setQueuedSpell(NULL);
+                        me->setQueuedSpellTarget(NULL);
+                        me->AttackStop();
                     }
-                    me->setRunningToTarget(NULL);
-                    me->setQueuedSpell(NULL);
                 }
-                else if (result != SPELL_FAILED_OUT_OF_RANGE && result != SPELL_FAILED_LINE_OF_SIGHT)
+                else // Has a spell in queue, but not running to target
                 {
-                    me->setRunningToTarget(NULL);
-                    me->setQueuedSpell(NULL);
-                    me->AttackStop();
+                    SpellCastResult result = spell->CheckPetCast(queuedTarget);
+
+                    if (result == SPELL_CAST_OK)
+                    {
+                        me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
+                        spell->prepare(&(spell->m_targets));
+                        me->setQueuedSpell(NULL);
+                        me->setQueuedSpellTarget(NULL);
+                    }
                 }
             }
         }
@@ -165,7 +182,7 @@ void PetAI::UpdateAI(const uint32 diff)
                 HandleReturnMovement();
             }
         }
-        else if (me->getRunningToTarget() == NULL)
+        else if (!me->isRunningToTarget())
         {
             me->GetCharmInfo()->SetIsCommandAttack(false);
             HandleReturnMovement();
@@ -180,6 +197,10 @@ void PetAI::UpdateAI(const uint32 diff)
     // Autocast (casted only in combat or persistent spells in any state)
     if (!me->HasUnitState(UNIT_STATE_CASTING))
     {
+        if (me->getQueuedSpell() != NULL)
+            if (!me->isRunningToTarget())
+                return;
+
         typedef std::vector<std::pair<Unit*, Spell*> > TargetSpellList;
         TargetSpellList targetSpellStore;
 

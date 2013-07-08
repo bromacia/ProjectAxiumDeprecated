@@ -164,6 +164,9 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                     charmInfo->SetIsFollowing(false);
                     charmInfo->SetIsReturning(false);
                     charmInfo->SaveStayPosition();
+                    pet->setIsRunningToTarget(false);
+                    pet->setQueuedSpell(NULL);
+                    pet->setQueuedSpellTarget(NULL);
                     break;
                 case COMMAND_FOLLOW:                        //spellid=1792  //FOLLOW
                     pet->AttackStop();
@@ -175,6 +178,9 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                     charmInfo->SetIsAtStay(false);
                     charmInfo->SetIsReturning(true);
                     charmInfo->SetIsFollowing(false);
+                    pet->setIsRunningToTarget(false);
+                    pet->setQueuedSpell(NULL);
+                    pet->setQueuedSpellTarget(NULL);
                     break;
                 case COMMAND_ATTACK:                        //spellid=1792  //ATTACK
                 {
@@ -201,6 +207,19 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                         if (!pet->IsWithinLOSInMap(TargetUnit))
                             return;
                     }*/
+
+                    if (pet->isRunningToTarget())
+                    {
+                        if (Unit* queuedTarget = pet->getQueuedSpellTarget())
+                        {
+                            if (queuedTarget != TargetUnit)
+                            {
+                                pet->setIsRunningToTarget(false);
+                                pet->setQueuedSpell(NULL);
+                                pet->setQueuedSpellTarget(NULL);
+                            }
+                        }
+                    }
 
                     pet->ClearUnitState(UNIT_STATE_FOLLOW);
                     // This is true if pet has no target or has target but targets differs.
@@ -266,8 +285,9 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
             switch (spellid)
             {
                 case REACT_PASSIVE:                         //passive
-                    pet->setRunningToTarget(NULL);
+                    pet->setIsRunningToTarget(false);
                     pet->setQueuedSpell(NULL);
+                    pet->setQueuedSpellTarget(NULL);
                     pet->AttackStop();
                     pet->InterruptNonMeleeSpells(false);
                     if (pet->ToCreature()->IsAIEnabled)
@@ -349,8 +369,9 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
             {
                 if (unit_target)
                 {
-                    pet->setRunningToTarget(unit_target);
+                    pet->setIsRunningToTarget(true);
                     pet->setQueuedSpell(spell);
+                    pet->setQueuedSpellTarget(unit_target);
                     pet->GetMotionMaster()->MoveChase(unit_target);
                     return;
                 }
@@ -387,6 +408,13 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
             }
             else
             {
+                if (result == SPELL_FAILED_NO_POWER)
+                {
+                    pet->setQueuedSpell(spell);
+                    pet->setQueuedSpellTarget(unit_target);
+                    return;
+                }
+
                 if (pet->isPossessed() || pet->IsVehicle())
                     Spell::SendCastResult(GetPlayer(), spellInfo, 0, result);
                 else

@@ -1056,10 +1056,10 @@ public:
         {
             if (Guardian* pet = unit->GetGuardianPet())
             {
-                if (Unit* target = pet->getRunningToTarget())
-                    handler->PSendSysMessage("Running to target: %s", target->GetName());
+                if (Unit* target = pet->getQueuedSpellTarget())
+                    handler->PSendSysMessage("Queued spell target: %s", target->GetName());
                 else
-                    handler->PSendSysMessage("Running to target: NULL");
+                    handler->PSendSysMessage("Queued spell target: NULL");
 
                 handler->PSendSysMessage("MOVE_RUN: %f, MOVE_WALK: %f", pet->GetSpeed(UnitMoveType::MOVE_RUN), pet->GetSpeed(UnitMoveType::MOVE_WALK));
             }
