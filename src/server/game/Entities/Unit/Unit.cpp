@@ -16805,17 +16805,20 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
                 AddUnitState(UNIT_STATE_POSSESSED);
                 SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
                 charmer->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
-                if (GetMotionMaster()->GetCurrentMovementGeneratorType() != CONFUSED_MOTION_TYPE && GetMotionMaster()->GetCurrentMovementGeneratorType() != FLEEING_MOTION_TYPE)
+                if (Player* pCharmer = charmer->ToPlayer())
                 {
-                    if (Player* player = ToPlayer())
-                        player->SetClientControl(player, false);
-                    charmer->ToPlayer()->SetClientControl(this, true);
+                    if (GetMotionMaster()->GetCurrentMovementGeneratorType() != CONFUSED_MOTION_TYPE && GetMotionMaster()->GetCurrentMovementGeneratorType() != FLEEING_MOTION_TYPE)
+                    {
+                        if (Player* player = ToPlayer())
+                            player->SetClientControl(player, false);
+                        pCharmer->SetClientControl(this, true);
+                    }
+                    else
+                        pCharmer->SetClientControl(pCharmer, false);
+                    pCharmer->SetMover(this);
+                    pCharmer->SetViewpoint(this, true);
+                    pCharmer->PossessSpellInitialize();
                 }
-                else
-                    charmer->ToPlayer()->SetClientControl(charmer, false);
-                charmer->ToPlayer()->SetMover(this);
-                charmer->ToPlayer()->SetViewpoint(this, true);
-                charmer->ToPlayer()->PossessSpellInitialize();
                 break;
             case CHARM_TYPE_CHARM:
                 if (GetTypeId() == TYPEID_UNIT && charmer->getClass() == CLASS_WARLOCK)
@@ -16916,12 +16919,18 @@ void Unit::RemoveCharmedBy(Unit* charmer)
                 charmer->ToPlayer()->SetClientControl(this, false);
                 break;
             case CHARM_TYPE_POSSESS:
-                charmer->ToPlayer()->SetClientControl(charmer, true);
-                charmer->ToPlayer()->SetViewpoint(this, false);
-                charmer->ToPlayer()->SetClientControl(this, false);
-                if (GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE || GetMotionMaster()->GetCurrentMovementGeneratorType() == FLEEING_MOTION_TYPE)
-                    ToPlayer()->SetClientControl(this, false);
-                ToPlayer()->SetMover(this);
+                if (Player* pCharmer = charmer->ToPlayer())
+                {
+                    pCharmer->SetClientControl(pCharmer, true);
+                    pCharmer->SetViewpoint(this, false);
+                    pCharmer->SetClientControl(this, false);
+                }
+                if (Player* player = ToPlayer())
+                {
+                    if (GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE || GetMotionMaster()->GetCurrentMovementGeneratorType() == FLEEING_MOTION_TYPE)
+                        player->SetClientControl(this, false);
+                    player->SetMover(this);
+                }
                 charmer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
                 break;
             case CHARM_TYPE_CHARM:
