@@ -263,8 +263,9 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
 
     m_isDueling = false;
 
-    m_runningToTarget = NULL;
+    m_runningToTarget = false;
     m_queuedSpell = NULL;
+    m_queuedSpellTarget = NULL;
 }
 
 ////////////////////////////////////////////////////////////
