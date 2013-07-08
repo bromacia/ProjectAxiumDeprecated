@@ -7363,6 +7363,9 @@ void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 coun
         m_caster->GetClosePoint(x, y, z, 3.0f);
         pos.Relocate(x, y, z);
     }
+
+    if (!m_caster->IsWithinLOS(pos.m_positionX, pos.m_positionY, pos.m_positionZ))
+        m_caster->GetPosition(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
 }
 
 void Spell::EffectRenamePet(SpellEffIndex /*effIndex*/)
