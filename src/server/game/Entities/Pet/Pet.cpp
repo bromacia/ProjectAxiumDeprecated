@@ -166,6 +166,9 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber, bool c
 
     float px, py, pz;
     owner->GetClosePoint(px, py, pz, GetObjectSize(), PET_FOLLOW_DIST, GetFollowAngle());
+    if (!owner->IsWithinLOS(px, py, pz))
+        owner->GetPosition(px, py, pz);
+
     Relocate(px, py, pz, owner->GetOrientation());
 
     if (!IsPositionValid())

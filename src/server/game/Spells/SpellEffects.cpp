@@ -960,12 +960,7 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     {
                         m_caster->ToPlayer()->SendAttackSwingCancelAttack();
                         if (Pet* pet = m_caster->ToPlayer()->GetPet())
-                        {
-                            pet->InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
-                            pet->InterruptSpell(CURRENT_CHANNELED_SPELL);
-                            pet->AttackStop();
                             pet->CombatStop();
-                        }
                     }
                     return;
                 }
@@ -1529,7 +1524,8 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
 
         targets.SetUnitTarget(unitTarget);
         Spell* spell = new Spell(m_caster, spellInfo, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE, m_originalCasterGUID, true);
-        if (bp) spell->SetSpellValue(SPELLVALUE_BASE_POINT0, bp);
+        if (bp)
+            spell->SetSpellValue(SPELLVALUE_BASE_POINT0, bp);
         spell->prepare(&targets);
     }
 
@@ -3958,6 +3954,9 @@ void Spell::EffectSummonPet(SpellEffIndex effIndex)
 
     float x, y, z;
     owner->GetClosePoint(x, y, z, owner->GetObjectSize());
+    if (!owner->IsWithinLOS(x, y, z))
+        owner->GetPosition(x, y, z);
+
     Pet* pet = owner->SummonPet(petentry, x, y, z, owner->GetOrientation(), SUMMON_PET, 0);
     if (!pet)
         return;
