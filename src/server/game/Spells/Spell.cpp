@@ -6186,6 +6186,9 @@ SpellCastResult Spell::CheckPower()
 
     // Check power amount
     Powers powerType = Powers(m_spellInfo->PowerType);
+    if (m_caster->isPet())
+        m_powerCost = m_CastItem ? 0 : m_spellInfo->CalcPowerCost(m_caster, m_spellSchoolMask);
+
     if (int32(m_caster->GetPower(powerType)) < m_powerCost)
         return SPELL_FAILED_NO_POWER;
     else
