@@ -534,7 +534,7 @@ struct AreaTableEntry
     {
         if (mapid == 609)
             return true;
-        if (ID == 85)
+        if (ID == 85 || ID == 3565 || ID == 3766)
             return true;
         return (flags & AREA_FLAG_SANCTUARY);
     }
