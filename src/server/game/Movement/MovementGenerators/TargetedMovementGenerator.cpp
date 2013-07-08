@@ -41,11 +41,7 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
     float x, y, z;
 
     if (preciseLocation)
-    {
-        x = i_target->GetPositionX();
-        y = i_target->GetPositionY();
-        z = i_target->GetPositionZ();
-    }
+        i_target->GetPosition(x, y, z);
     else
     {
         if (updateDestination || !i_path)
@@ -89,6 +85,9 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
             y = end.y;
             z = end.z;
         }
+
+        if (!owner.IsWithinLOS(x, y, z))
+            i_target->GetPosition(x, y, z);
     }
 
     owner.UpdateAllowedPositionZ(x, y, z);
