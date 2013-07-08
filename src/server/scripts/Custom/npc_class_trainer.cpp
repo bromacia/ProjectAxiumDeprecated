@@ -55,8 +55,9 @@ class npc_class_trainer : public CreatureScript
                     break;
                 case TRAINER_LEARN_DUAL_SPEC:
                     player->SetSaveTimer(sWorld->getIntConfig(CONFIG_INTERVAL_SAVE));
-                    player->CastSpell(player, 63680, true, NULL, NULL, player->GetGUID());
-                    player->CastSpell(player, 63624, true, NULL, NULL, player->GetGUID());
+                    player->learnSpell(63644, false);
+                    player->learnSpell(63645, false);
+                    player->UpdateSpecCount(2);
                     player->SaveToDB();
                     player->CLOSE_GOSSIP_MENU();
                     break;
@@ -77,6 +78,8 @@ class npc_class_trainer : public CreatureScript
                 case TRAINER_SETUP_SHADOW_DANCE:
                     if (player->HasSpell(51713))
                     {
+                        player->InterruptMovement();
+                        player->GetMotionMaster()->MoveFall();
                         player->SetControlled(true, UNIT_STATE_ROOT);
                         player->AddAura(2, player);
                         if (!player->HasAura(51713))
@@ -138,39 +141,34 @@ class npc_class_trainer : public CreatureScript
                             continue;
                 }
 
-                bool disabled = false;
-
                 if (uint32 firstSpell = sSpellMgr->GetFirstSpellInChain(spellId))
                     if (sSpellMgr->IsTalentSpell(firstSpell))
                         if (!player->HasSpell(firstSpell))
-                            disabled = true;
+                            continue;
 
-                if (!disabled)
-                {
-                    // Greater Blessing of Sanctuary
-                    if (!player->HasSpell(20911))
-                        if (spellId == 25899)
-                            disabled = true;
+                // Greater Blessing of Sanctuary
+                if (!player->HasSpell(20911))
+                    if (spellId == 25899)
+                        continue;
 
-                    // Mangle (Bear)
-                    if (!player->HasSpell(33878))
-                        if (spellId == 33986 || spellId == 33987 ||
-                            spellId == 48563 || spellId == 48564)
-                                disabled = true;
+                // Mangle (Bear)
+                if (!player->HasSpell(33878))
+                    if (spellId == 33986 || spellId == 33987 ||
+                        spellId == 48563 || spellId == 48564)
+                            continue;
 
-                    // Mangle (Cat)
-                    if (!player->HasSpell(33876))
-                        if (spellId == 33982 || spellId == 33983 ||
-                            spellId == 48565 || spellId == 48566)
-                                disabled = true;
-                }
+                // Mangle (Cat)
+                if (!player->HasSpell(33876))
+                    if (spellId == 33982 || spellId == 33983 ||
+                        spellId == 48565 || spellId == 48566)
+                            continue;
+
+                player->addSpell(spellId, true, true, false, false, false, true);
 
                 if (!learnedSpells)
                     learnedSpells = true;
 
-                player->addSpell(spellId, true, true, false, disabled, false, true);
-
-                if (!disabled && player->IsInWorld())
+                if (player->IsInWorld())
                 {
                     WorldPacket data(SMSG_LEARNED_SPELL, 6);
                     data << uint32(spellId);

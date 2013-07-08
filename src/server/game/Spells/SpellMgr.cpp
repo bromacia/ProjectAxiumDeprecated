@@ -3314,9 +3314,6 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectMiscValue[1] = 300;
                 spellInfo->EffectMiscValueB[1] = 2;
                 break;
-            case 51713: // Shadow Dance
-                spellInfo->Attributes |= SPELL_ATTR0_CANT_CANCEL;
-                break;
             case 7870:  // Lesser Invisibility
                 spellInfo->AuraInterruptFlags = (AURA_INTERRUPT_FLAG_TAKE_DAMAGE | AURA_INTERRUPT_FLAG_CAST | AURA_INTERRUPT_FLAG_ENTER_COMBAT | AURA_INTERRUPT_FLAG_MELEE_ATTACK);
                 break;
