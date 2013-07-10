@@ -5254,7 +5254,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                         bool result = m_preGeneratedPath->Calculate(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
                         if (m_preGeneratedPath->GetPathType() & PATHFIND_SHORT)
                             return SPELL_FAILED_OUT_OF_RANGE;
-                        else if (!result || m_preGeneratedPath->GetPathType() & PATHFIND_NOPATH)
+                        else if (!result && !m_caster->isPet() || m_preGeneratedPath->GetPathType() & PATHFIND_NOPATH)
                             return SPELL_FAILED_NOPATH;
                     }
                 }
