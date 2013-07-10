@@ -266,9 +266,6 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
     m_runningToTarget = false;
     m_queuedSpell = NULL;
     m_queuedSpellTarget = NULL;
-
-    m_isCharging = false;
-    m_isLeaping = false;
 }
 
 ////////////////////////////////////////////////////////////

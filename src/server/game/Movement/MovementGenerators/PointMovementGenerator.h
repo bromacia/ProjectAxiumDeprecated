@@ -60,7 +60,7 @@ class EffectMovementGenerator : public MovementGenerator
 {
     public:
         explicit EffectMovementGenerator(uint32 Id) : m_Id(Id) { }
-        void Initialize(Unit &);
+        void Initialize(Unit &) { }
         void Finalize(Unit &unit);
         void Reset(Unit &) { }
         bool Update(Unit &u, const uint32);

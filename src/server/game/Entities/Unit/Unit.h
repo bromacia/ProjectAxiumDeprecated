@@ -2289,11 +2289,6 @@ class Unit : public WorldObject
         ArenaTeamColor GetArenaTeamColor() { return arenaTeam; }
         void ClearArenaTeamColor() { arenaTeam = ARENA_TEAM_COLOR_NONE; }
 
-        void SetIsCharging(bool x) { m_isCharging = x; }
-        bool IsCharging() { return m_isCharging; }
-        void SetIsLeaping(bool x) { m_isLeaping = x; }
-        bool IsLeaping() { return m_isLeaping; }
-
     protected:
         explicit Unit (bool isWorldObject);
 
@@ -2425,9 +2420,6 @@ class Unit : public WorldObject
         bool m_isDueling;
 
         ArenaTeamColor arenaTeam;
-
-        bool m_isCharging;
-        bool m_isLeaping;
 };
 
 namespace Trinity

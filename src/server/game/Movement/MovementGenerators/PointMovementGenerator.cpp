@@ -53,9 +53,6 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 
     if (init)
     {
-        if (id == EVENT_CHARGE)
-            unit.SetIsCharging(true);
-
         if (path)
         {
             Movement::MoveSplineInit pInit(unit);
@@ -130,9 +127,6 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 template<class T>
 void PointMovementGenerator<T>::Finalize(T &unit)
 {
-    if (id == EVENT_CHARGE)
-        unit.SetIsCharging(false);
-
     unit.ClearUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
 
     if (unit.movespline->Finalized())
@@ -176,12 +170,6 @@ void AssistanceMovementGenerator::Finalize(Unit &unit)
         unit.GetMotionMaster()->MoveSeekAssistanceDistract(sWorld->getIntConfig(CONFIG_CREATURE_FAMILY_ASSISTANCE_DELAY));
 }
 
-void EffectMovementGenerator::Initialize(Unit &unit)
-{
-    if (m_Id == EVENT_JUMP)
-        unit.SetIsLeaping(true);
-}
-
 bool EffectMovementGenerator::Update(Unit &unit, const uint32)
 {
     return !unit.movespline->Finalized();
@@ -189,9 +177,6 @@ bool EffectMovementGenerator::Update(Unit &unit, const uint32)
 
 void EffectMovementGenerator::Finalize(Unit &unit)
 {
-    if (m_Id == EVENT_JUMP)
-        unit.SetIsLeaping(false);
-
     if (unit.GetTypeId() != TYPEID_UNIT)
         return;
 
