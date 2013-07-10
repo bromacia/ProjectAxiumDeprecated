@@ -57,7 +57,7 @@ enum PathType
 class PathFinderMovementGenerator
 {
     public:
-        explicit PathFinderMovementGenerator(Unit const* owner);
+        explicit PathFinderMovementGenerator(Unit* const owner);
         ~PathFinderMovementGenerator();
 
         // Calculate the path from owner to given destination
@@ -94,7 +94,7 @@ class PathFinderMovementGenerator
         Vector3        _endPosition;      // {x, y, z} of the destination
         Vector3        _actualEndPosition;// {x, y, z} of the closest possible point to given destination
 
-        const Unit* const       _sourceUnit;       // the unit that is moving
+        Unit* const             _sourceUnit;       // the unit that is moving
         const dtNavMesh*        _navMesh;          // the nav mesh
         const dtNavMeshQuery*   _navMeshQuery;     // the nav mesh query used to find the path
 

@@ -26,7 +26,7 @@
 #include "DetourNavMeshQuery.h"
 
 ////////////////// PathFinderMovementGenerator //////////////////
-PathFinderMovementGenerator::PathFinderMovementGenerator(const Unit* owner) : _polyLength(0), _type(PATHFIND_BLANK),
+PathFinderMovementGenerator::PathFinderMovementGenerator(Unit* const owner) : _polyLength(0), _type(PATHFIND_BLANK),
 _useStraightPath(false), _forceDestination(false), _pointPathLimit(MAX_POINT_PATH_LENGTH),
 _sourceUnit(owner), _navMesh(NULL), _navMeshQuery(NULL)
 {
