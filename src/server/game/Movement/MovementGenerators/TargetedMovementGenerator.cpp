@@ -90,8 +90,6 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
             i_target->GetPosition(x, y, z);
     }
 
-    owner.UpdateAllowedPositionZ(x, y, z);
-
     if (owner.GetMap()->IsInWater(x, y, z))
     {
         Movement::MoveSplineInit init(owner);
@@ -170,7 +168,7 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
         {
             i_recheckDistance.Reset(100);
             //More distance let have better performance, less distance let have more sensitive reaction at target move.
-            float allowed_dist = owner.GetCombatReach() + sWorld->getRate(RATE_TARGET_POS_RECALCULATION_RANGE);
+            float allowed_dist = sWorld->getRate(RATE_TARGET_POS_RECALCULATION_RANGE);
             G3D::Vector3 dest = owner.movespline->FinalDestination();
 
             if (owner.GetTypeId() == TYPEID_UNIT && owner.ToCreature()->canFly())
@@ -180,7 +178,7 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
         }
 
         if (i_recalculateTravel || targetMoved)
-            _setTargetLocation(owner, targetMoved);
+            _setTargetLocation(owner, true);
     }
 
     if (owner.movespline->Finalized())
@@ -272,7 +270,6 @@ void FollowMovementGenerator<Player>::_updateSpeed(Player &/*owner*/)
 template<>
 void FollowMovementGenerator<Creature>::_updateSpeed(Creature &owner)
 {
-    // pet only sync speed with owner
     /// Make sure we are not in the process of a map change (IsInWorld)
     if (!owner.isPet() || !owner.IsInWorld() || !i_target.isValid() || i_target->GetGUID() != owner.GetOwnerGUID())
         return;

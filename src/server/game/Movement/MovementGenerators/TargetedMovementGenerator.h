@@ -38,7 +38,9 @@ template<class T, typename D>
 class TargetedMovementGeneratorMedium : public MovementGeneratorMedium<T, D>, public TargetedMovementGeneratorBase
 {
     protected:
-        TargetedMovementGeneratorMedium(Unit &target, float offset, float angle) : TargetedMovementGeneratorBase(target), i_path(NULL), i_recheckDistance(0), i_offset(offset), i_angle(angle), i_recalculateTravel(false), i_targetReached(false), preciseLocation(false) { }
+        TargetedMovementGeneratorMedium(Unit &target, float offset, float angle) :
+        TargetedMovementGeneratorBase(target), i_path(NULL), i_recheckDistance(0), i_offset(offset),
+        i_angle(angle), i_recalculateTravel(false), i_targetReached(false), preciseLocation(false) { }
         ~TargetedMovementGeneratorMedium() { delete i_path; }
 
     public:
