@@ -13271,21 +13271,11 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
         default:
             sLog->outError("Unit::UpdateSpeed: Unsupported move type (%d)", mtype);
             return;
-
-        if (isPet())
-        {
-            switch (mtype)
-            {
-                case MOVE_WALK:
-                case MOVE_RUN:
-                    if (HasAura(19596)) // Boar's Speed
-                        main_speed_mod = 30;
-                    break;
-                default:
-                    break;
-            }
-        }
     }
+
+    if (isPet() && mtype == MOVE_RUN)
+        if (HasAura(19596)) // Boar's Speed
+            main_speed_mod = 30;
 
     // now we ready for speed calculation
     float speed = std::max(non_stack_bonus, stack_bonus);
