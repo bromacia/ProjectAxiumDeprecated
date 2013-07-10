@@ -1264,8 +1264,8 @@ public:
         if (!*args)
             return false;
 
-        uint32 anim_id = atoi((char*)args);
-        handler->GetSession()->GetPlayer()->SetUInt32Value(UNIT_NPC_EMOTESTATE, anim_id);
+        uint8 anim_id = (uint8)atoi((char*)args);
+        handler->GetSession()->GetPlayer()->SetStandState(anim_id);
 
         return true;
     }

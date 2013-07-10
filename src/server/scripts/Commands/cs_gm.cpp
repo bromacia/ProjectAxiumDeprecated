@@ -127,7 +127,7 @@ public:
             if (!handler->GetSession())
                 continue;
 
-            if (itrSec < AccountTypes(sWorld->getIntConfig(CONFIG_GM_LEVEL_IN_GM_LIST)))
+            if (itrSec <= SEC_VIP)
                 continue;
 
             if (first)
