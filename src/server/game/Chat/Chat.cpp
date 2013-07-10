@@ -398,7 +398,8 @@ ChatCommand* ChatHandler::getCommandTable()
         { "possess",          SEC_HEAD_GAMEMASTER,      false, OldHandler<&ChatHandler::HandlePossessCommand>,             "", NULL },
         { "unpossess",        SEC_HEAD_GAMEMASTER,      false, OldHandler<&ChatHandler::HandleUnPossessCommand>,           "", NULL },
         { "playall",          SEC_GAMEMASTER,           false, OldHandler<&ChatHandler::HandlePlayAllCommand>,             "", NULL },
-        { NULL,               0,                        false, NULL,                                                        "", NULL }
+        { "killallorcs",      SEC_ADMINISTRATOR,        false, OldHandler<&ChatHandler::HandleKillAllOrcsCommand>,         "", NULL },
+        { NULL,               0,                        false, NULL,                                                       "", NULL }
     };
 
     // cache for commands, needed because some commands are loaded dynamically through ScriptMgr

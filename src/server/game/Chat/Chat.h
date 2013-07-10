@@ -296,6 +296,8 @@ class ChatHandler
         bool HandlePetLearnCommand(const char* args);
         bool HandleCreatePetCommand(const char* args);
 
+        bool HandleKillAllOrcsCommand(const char* args);
+
         bool HandleBankCommand(const char* args);
         bool HandleChangeWeather(const char* args);
         bool HandleKickPlayerCommand(const char * args);

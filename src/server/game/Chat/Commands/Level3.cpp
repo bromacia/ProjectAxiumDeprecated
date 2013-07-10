@@ -4486,6 +4486,29 @@ bool ChatHandler::HandlePlayAllCommand(const char* args)
     return true;
 }
 
+bool ChatHandler::HandleKillAllOrcsCommand(const char* args)
+{
+    TRINITY_READ_GUARD(HashMapHolder<Player>::LockType, *HashMapHolder<Player>::GetLock());
+    HashMapHolder<Player>::MapType const& m = sObjectAccessor->GetPlayers();
+    for (HashMapHolder<Player>::MapType::const_iterator itr = m.begin(); itr != m.end(); ++itr)
+    {
+        if (!itr->second->isAlive())
+            continue;
+
+        if (itr->second->InArena())
+            continue;
+
+        if (itr->second->getRace() != RACE_ORC)
+            continue;
+
+        itr->second->Kill(itr->second, false);
+    }
+    WorldPacket data(SMSG_PLAY_SOUND, 4);
+    data << uint32(1322) << m_session->GetPlayer()->GetGUID();
+    sWorld->SendGlobalMessage(&data);
+    return true;
+}
+
 bool ChatHandler::HandleFreezeCommand(const char* args)
 {
     std::string name;
