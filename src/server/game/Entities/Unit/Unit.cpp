@@ -12750,8 +12750,6 @@ void Unit::CombatStart(Unit* target, bool initialAggro)
 {
     if (initialAggro)
     {
-        target->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_ENTER_COMBAT);
-
         if (!target->IsStandState())
             target->SetStandState(UNIT_STAND_STATE_STAND);
 

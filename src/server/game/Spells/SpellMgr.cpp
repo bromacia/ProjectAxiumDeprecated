@@ -3315,7 +3315,7 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectMiscValueB[1] = 2;
                 break;
             case 7870:  // Lesser Invisibility
-                spellInfo->AuraInterruptFlags = (AURA_INTERRUPT_FLAG_TAKE_DAMAGE | AURA_INTERRUPT_FLAG_CAST | AURA_INTERRUPT_FLAG_ENTER_COMBAT | AURA_INTERRUPT_FLAG_MELEE_ATTACK);
+                spellInfo->AuraInterruptFlags = (AURA_INTERRUPT_FLAG_TAKE_DAMAGE | AURA_INTERRUPT_FLAG_CAST | AURA_INTERRUPT_FLAG_MELEE_ATTACK);
                 break;
             default:
                 break;
