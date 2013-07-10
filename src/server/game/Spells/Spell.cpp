@@ -5250,12 +5250,12 @@ SpellCastResult Spell::CheckCast(bool strict)
 
                     if (!m_caster->GetMap()->IsInWater(pos.m_positionX, pos.m_positionY, pos.m_positionZ))
                     {
-                        /*m_preGeneratedPath->SetPathLengthLimit(m_spellInfo->GetMaxRange(true) * 1.5f);
-                        bool result =*/ m_preGeneratedPath->Calculate(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
-                        /*if (m_preGeneratedPath->GetPathType() & PATHFIND_SHORT)
+                        m_preGeneratedPath->SetPathLengthLimit(m_spellInfo->GetMaxRange(true) * 1.5f);
+                        bool result = m_preGeneratedPath->Calculate(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+                        if (m_preGeneratedPath->GetPathType() & PATHFIND_SHORT)
                             return SPELL_FAILED_OUT_OF_RANGE;
                         else if (!result || m_preGeneratedPath->GetPathType() & PATHFIND_NOPATH)
-                            return SPELL_FAILED_NOPATH;*/
+                            return SPELL_FAILED_NOPATH;
                     }
                 }
 
