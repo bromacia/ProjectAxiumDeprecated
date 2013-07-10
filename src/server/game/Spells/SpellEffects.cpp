@@ -3952,12 +3952,10 @@ void Spell::EffectSummonPet(SpellEffIndex effIndex)
             return;
     }
 
-    float x, y, z;
-    owner->GetClosePoint(x, y, z, owner->GetObjectSize());
-    if (!owner->IsWithinLOS(x, y, z))
-        owner->GetPosition(x, y, z);
+    Position pos;
+    owner->GetFirstCollisionPosition(pos, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE, true);
 
-    Pet* pet = owner->SummonPet(petentry, x, y, z, owner->GetOrientation(), SUMMON_PET, 0);
+    Pet* pet = owner->SummonPet(petentry, pos.m_positionX, pos.m_positionY, pos.m_positionZ, owner->GetOrientation(), SUMMON_PET, 0);
     if (!pet)
         return;
 
@@ -7338,14 +7336,14 @@ void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 coun
             case TARGET_DEST_CASTER_FRONT: // Feral spirit
                 {
                     if (count == 0) // First wolf
-                        m_caster->GetNearPosition(pos, (float)3, (float)0.66 * static_cast<float>(2*M_PI));
+                        m_caster->GetFirstCollisionPosition(pos, (float)3, (float)0.66 * static_cast<float>(2*M_PI), true);
                     else            // Second wolf
-                        m_caster->GetNearPosition(pos, (float)3, (float)0.33 * static_cast<float>(2*M_PI));
+                        m_caster->GetFirstCollisionPosition(pos, (float)3, (float)0.33 * static_cast<float>(2*M_PI), true);
                 }
                 break;
             case TARGET_DEST_CASTER_SUMMON:
             case TARGET_DEST_CASTER_RANDOM:
-                m_caster->GetNearPosition(pos, radius * (float)rand_norm(), (float)rand_norm()*static_cast<float>(2*M_PI));
+                m_caster->GetFirstCollisionPosition(pos, radius * (float)rand_norm(), (float)rand_norm()*static_cast<float>(2*M_PI), true);
                 break;
             case TARGET_DEST_DEST_RANDOM:
             case TARGET_DEST_TARGET_RANDOM:
@@ -7358,14 +7356,7 @@ void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 coun
     }
     // Summon if dest location not present near caster
     else
-    {
-        float x, y, z;
-        m_caster->GetClosePoint(x, y, z, 3.0f);
-        pos.Relocate(x, y, z);
-    }
-
-    if (!m_caster->IsWithinLOS(pos.m_positionX, pos.m_positionY, pos.m_positionZ))
-        m_caster->GetPosition(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+        m_caster->GetFirstCollisionPosition(pos, 0, 0, true);
 }
 
 void Spell::EffectRenamePet(SpellEffIndex /*effIndex*/)

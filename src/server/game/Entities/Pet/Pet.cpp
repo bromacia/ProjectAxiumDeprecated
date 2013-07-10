@@ -164,12 +164,10 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber, bool c
     if (!Create(guid, map, owner->GetPhaseMask(), petentry, pet_number))
         return false;
 
-    float px, py, pz;
-    owner->GetClosePoint(px, py, pz, GetObjectSize(), PET_FOLLOW_DIST, GetFollowAngle());
-    if (!owner->IsWithinLOS(px, py, pz))
-        owner->GetPosition(px, py, pz);
+    Position pos;
+    owner->GetFirstCollisionPosition(pos, PET_FOLLOW_DIST, GetFollowAngle(), true);
 
-    Relocate(px, py, pz, owner->GetOrientation());
+    Relocate(pos.m_positionX, pos.m_positionY, pos.m_positionZ, owner->GetOrientation());
 
     if (!IsPositionValid())
     {
