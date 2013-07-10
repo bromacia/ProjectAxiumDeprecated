@@ -7,6 +7,8 @@
 #include "Map.h"
 #include "TargetedMovementGenerator.h"
 #include "PathFinderMovementGenerator.h"
+#include "MoveSplineInit.h"
+#include "MoveSpline.h"
 
 class mmaps_commandscript : public CommandScript
 {
@@ -22,6 +24,7 @@ class mmaps_commandscript : public CommandScript
                 { "loadedtiles",    SEC_ADMINISTRATOR,      false, &HandleMmapsLoadedTilesCommand,      "", NULL },
                 { "stats",          SEC_ADMINISTRATOR,      false, &HandleMmapsStatsCommand,            "", NULL },
                 { "testarea",       SEC_ADMINISTRATOR,      false, &HandleMmapsTestArea,                "", NULL },
+                { "movebypath",     SEC_ADMINISTRATOR,      false, &HandleMmapsMoveByPath,              "", NULL },
                 { NULL,             0,                      false, NULL,                                "", NULL }
             };
 
@@ -58,14 +61,14 @@ class mmaps_commandscript : public CommandScript
                 useStraightPath = true;
 
             float x, y, z;
-            player->GetPosition(x, y, z);
+            target->GetPosition(x, y, z);
 
-            PathFinderMovementGenerator path(target);
+            PathFinderMovementGenerator path(player);
             path.SetUseStrightPath(useStraightPath);
             bool result = path.Calculate(x, y, z);
 
             Movement::PointsArray const& pointPath = path.GetPath();
-            handler->PSendSysMessage("%s's path to %s:", target->GetName(), player->GetName());
+            handler->PSendSysMessage("%s's path to %s:", player->GetName(), target->GetName());
             handler->PSendSysMessage("Building: %s", useStraightPath ? "StraightPath" : "SmoothPath");
             handler->PSendSysMessage("Result: %s - Length: " SIZEFMTD " - Type: %u", (result ? "true" : "false"), pointPath.size(), path.GetPathType());
 
@@ -253,6 +256,55 @@ class mmaps_commandscript : public CommandScript
             else
                 handler->PSendSysMessage("No creatures in %f yard range.", radius);
 
+            return true;
+        }
+
+        static bool HandleMmapsMoveByPath(ChatHandler* handler, char const* args)
+        {
+            Player* player = handler->GetSession()->GetPlayer();
+            Unit* target = handler->getSelectedUnit();
+            if (!target)
+            {
+                handler->PSendSysMessage("No target selected");
+                return true;
+            }
+
+            char* speedArg = strtok((char*)args, " ");
+            float speed = 0.0f;
+            if (speedArg)
+                speed = atof(speedArg);
+
+            char* reverseArg = strtok(NULL, " ");
+            bool reverse = false;
+            if (reverseArg && strcmp(reverseArg, "true") == 0)
+                reverse = true;
+
+            if (reverse)
+            {
+                float x, y, z;
+                player->GetPosition(x, y, z);
+
+                PathFinderMovementGenerator path(target);
+                path.Calculate(x, y, z);
+                Movement::MoveSplineInit init(*target);
+                init.MovebyPath(path.GetPath());
+                if (speed > 0.0f)
+                    init.SetVelocity(speed);
+                init.Launch();
+            }
+            else
+            {
+                float x, y, z;
+                target->GetPosition(x, y, z);
+
+                PathFinderMovementGenerator path(player);
+                path.Calculate(x, y, z);
+                Movement::MoveSplineInit init(*player);
+                init.MovebyPath(path.GetPath());
+                if (speed > 0.0f)
+                    init.SetVelocity(speed);
+                init.Launch();
+            }
             return true;
         }
 };
