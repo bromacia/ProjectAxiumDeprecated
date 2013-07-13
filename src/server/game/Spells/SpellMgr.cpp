@@ -3142,7 +3142,6 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->procFlags = 0;
                 break;
             case 30231: // Zangarmarsh Banish
-                spellInfo->AttributesEx |= SPELL_ATTR0_CANT_CANCEL;
                 spellInfo->Mechanic = 0;
                 spellInfo->DurationIndex = 9;
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
