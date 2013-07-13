@@ -73,7 +73,19 @@ namespace Movement
             real_position = move_spline.ComputePosition();
 
         if (args.path.empty())
-            return 0;
+        {
+            // form final position only for rotate
+            if (!args.flags.isFacing())
+                return 0;
+
+            MoveTo(real_position);
+        }
+        else
+        {
+            // check path equivalence
+            if (!args.flags.isFacing() && args.path[0] == args.path[args.path.size() - 1])
+                return 0;
+        }
 
         // corrent first vertex
         args.path[0] = real_position;
