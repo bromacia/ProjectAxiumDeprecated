@@ -17094,7 +17094,7 @@ void Unit::GetRaidMember(std::list<Unit*> &nearMembers, float radius)
         {
             Player* Target = itr->getSource();
 
-            if (Target && !IsHostileTo(Target))
+            if (Target && !IsHostileTo(Target) && !Target->IsDueling())
             {
                 if (Target->isAlive() && IsWithinDistInMap(Target, radius))
                     nearMembers.push_back(Target);
@@ -17142,7 +17142,7 @@ void Unit::GetPartyMemberInDist(std::list<Unit*> &TagUnitMap, float radius)
             Player* Target = itr->getSource();
 
             // IsHostileTo check duel and controlled by enemy
-            if (Target && Target->GetSubGroup() == subgroup && !IsHostileTo(Target))
+            if (Target && Target->GetSubGroup() == subgroup && !IsHostileTo(Target) && !Target->IsDueling())
             {
                 if (Target->isAlive() && IsWithinDistInMap(Target, radius))
                     TagUnitMap.push_back(Target);
@@ -17189,7 +17189,7 @@ void Unit::GetPartyMembers(std::list<Unit*> &TagUnitMap)
             Player* Target = itr->getSource();
 
             // IsHostileTo check duel and controlled by enemy
-            if (Target && Target->GetSubGroup() == subgroup && !IsHostileTo(Target))
+            if (Target && Target->GetSubGroup() == subgroup && !IsHostileTo(Target) && !Target->IsDueling())
             {
                 if (Target->isAlive() && IsInMap(Target))
                     TagUnitMap.push_back(Target);
