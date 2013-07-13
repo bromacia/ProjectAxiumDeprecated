@@ -419,7 +419,7 @@ void Unit::MonsterMoveWithSpeed(float x, float y, float z, float speed, bool gen
 
 enum MovementIntervals
 {
-    POSITION_UPDATE_DELAY = 400,
+    POSITION_UPDATE_DELAY = 10,
 };
 
 void Unit::UpdateSplineMovement(uint32 t_diff)
