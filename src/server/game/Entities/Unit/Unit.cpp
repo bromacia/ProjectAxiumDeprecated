@@ -3144,24 +3144,31 @@ void Unit::InterruptSpell(CurrentSpellTypes spellType, bool withDelayed, bool wi
 
     //sLog->outDebug(LOG_FILTER_UNITS, "Interrupt spell for unit %u.", GetEntry());
     Spell* spell = m_currentSpells[spellType];
-    if (spell
-        && (withDelayed || spell->getState() != SPELL_STATE_DELAYED)
-        && (withInstant || spell->GetCastTime() > 0))
+    if (!spell)
+        return;
+
+    if (!withDelayed && spell->getState() != SPELL_STATE_DELAYED)
     {
-        // for example, do not let self-stun aura interrupt itself
-        if (!spell->IsInterruptable())
-            return;
+        if (!withInstant && spell->GetCastTime() > 0 || spell->IsChannelActive())
+        {
+            //if (spell->getState() == SPELL_STATE_PREPARING)
+                //return;
 
-        // send autorepeat cancel message for autorepeat spells
-        if (spellType == CURRENT_AUTOREPEAT_SPELL)
-            if (GetTypeId() == TYPEID_PLAYER)
-                ToPlayer()->SendAutoRepeatCancel(this);
+            // for example, do not let self-stun aura interrupt itself
+            if (!spell->IsInterruptable())
+                return;
 
-        if (spell->getState() != SPELL_STATE_FINISHED)
-            spell->cancel();
+            // send autorepeat cancel message for autorepeat spells
+            if (spellType == CURRENT_AUTOREPEAT_SPELL)
+                if (GetTypeId() == TYPEID_PLAYER)
+                    ToPlayer()->SendAutoRepeatCancel(this);
 
-        m_currentSpells[spellType] = NULL;
-        spell->SetReferencedFromCurrent(false);
+            if (spell->getState() != SPELL_STATE_FINISHED)
+                spell->cancel();
+
+            m_currentSpells[spellType] = NULL;
+            spell->SetReferencedFromCurrent(false);
+        }
     }
 }
 
