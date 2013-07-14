@@ -3316,6 +3316,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 7870:  // Lesser Invisibility
                 spellInfo->AuraInterruptFlags = (AURA_INTERRUPT_FLAG_TAKE_DAMAGE | AURA_INTERRUPT_FLAG_CAST | AURA_INTERRUPT_FLAG_MELEE_ATTACK);
                 break;
+            case 62196: // Shadowmeld
+                spellInfo->Effect[0] = 0;
+                break;
             default:
                 break;
         }
