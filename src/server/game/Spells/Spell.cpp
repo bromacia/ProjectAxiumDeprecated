@@ -1210,6 +1210,22 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         case 51690: // Killing Spree (Ability)
             m_caster->CastSpell(m_caster, 61851, true); // Killing Spree (Immunity)
             break;
+        case 55342: // Mirror Image
+            {
+                m_caster->SendClearTarget();
+                UnitList targets;
+                Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(unit, unit, unit->GetMap()->GetVisibilityRange());
+                Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(unit, targets, u_check);
+                unit->VisitNearbyObject(unit->GetMap()->GetVisibilityRange(), searcher);
+                for (UnitList::iterator iter = targets.begin(); iter != targets.end(); ++iter)
+                {
+                    if ((*iter)->HasUnitState(UNIT_STATE_CASTING))
+                        for (uint8 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_MAX_SPELL; i++)
+                            if ((*iter)->GetCurrentSpell(i) && (*iter)->GetCurrentSpell(i)->m_targets.GetUnitTargetGUID() == unit->GetGUID())
+                                (*iter)->InterruptSpell(CurrentSpellTypes(i), false);
+                }
+            }
+            break;
         case 57841: // Killing Spree (Attack)
             m_caster->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
             break;
