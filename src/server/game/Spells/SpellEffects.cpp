@@ -3324,8 +3324,8 @@ void Spell::EffectDispel(SpellEffIndex effIndex)
             if (aura->GetSpellInfo()->Dispel == DISPEL_MAGIC)
             {
                 // do not remove positive auras if friendly target
-                //               negative auras if non-friendly target
-                if (aurApp->IsPositive() && unitTarget->IsFriendlyTo(m_caster))
+                // negative auras if non-friendly target
+                if (aurApp->IsPositive() == unitTarget->IsFriendlyTo(m_caster))
                     continue;
             }
 
