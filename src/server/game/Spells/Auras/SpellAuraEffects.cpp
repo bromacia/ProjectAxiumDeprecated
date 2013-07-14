@@ -1638,17 +1638,10 @@ void AuraEffect::HandleModInvisibility(AuraApplication const* aurApp, uint8 mode
         target->VisitNearbyObject(target->GetMap()->GetVisibilityRange(), searcher);
         for (UnitList::iterator iter = targets.begin(); iter != targets.end(); ++iter)
         {
-            if (!(*iter)->HasUnitState(UNIT_STATE_CASTING))
-                continue;
-
-            for (uint8 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_MAX_SPELL; i++)
-            {
-                if ((*iter)->GetCurrentSpell(i)
-                && (*iter)->GetCurrentSpell(i)->m_targets.GetUnitTargetGUID() == target->GetGUID())
-                {
-                    (*iter)->InterruptSpell(CurrentSpellTypes(i), false);
-                }
-            }
+            if ((*iter)->HasUnitState(UNIT_STATE_CASTING))
+                for (uint8 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_MAX_SPELL; i++)
+                    if ((*iter)->GetCurrentSpell(i) && (*iter)->GetCurrentSpell(i)->m_targets.GetUnitTargetGUID() == target->GetGUID())
+                        (*iter)->InterruptSpell(CurrentSpellTypes(i), false);
         }
     }
     else
@@ -1743,17 +1736,10 @@ void AuraEffect::HandleModStealth(AuraApplication const* aurApp, uint8 mode, boo
         target->VisitNearbyObject(target->GetMap()->GetVisibilityRange(), searcher);
         for (UnitList::iterator iter = targets.begin(); iter != targets.end(); ++iter)
         {
-            if (!(*iter)->HasUnitState(UNIT_STATE_CASTING))
-                continue;
-
-            for (uint8 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_MAX_SPELL; i++)
-            {
-                if ((*iter)->GetCurrentSpell(i)
-                && (*iter)->GetCurrentSpell(i)->m_targets.GetUnitTargetGUID() == target->GetGUID())
-                {
-                    (*iter)->InterruptSpell(CurrentSpellTypes(i), false);
-                }
-            }
+            if ((*iter)->HasUnitState(UNIT_STATE_CASTING))
+                for (uint8 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_MAX_SPELL; i++)
+                    if ((*iter)->GetCurrentSpell(i) && (*iter)->GetCurrentSpell(i)->m_targets.GetUnitTargetGUID() == target->GetGUID())
+                        (*iter)->InterruptSpell(CurrentSpellTypes(i), false);
         }
     }
     else
@@ -5103,8 +5089,14 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                                     caster->ToPlayer()->CastSpell(caster->ToPlayer(), 58601, true, NULL, this);
                             break;
                         case 200000: // Object Visibility Update Timer (Stealth, At Apply)
-                        case 200001: // Object Visibility Update Timer (Stealth, At Remove)
                         case 200002: // Object Visibility Update Timer (Invisibility, At Apply)
+                            if (aurApp->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
+                            {
+                                target->UpdateObjectVisibility();
+                                target->SendClearTarget();
+                            }
+                            break;
+                        case 200001: // Object Visibility Update Timer (Stealth, At Remove)
                         case 200003: // Object Visibility Update Timer (Invisibility, At Remove)
                         case 200004: // Object Visibility Update Timer (Stealth Detection, At Apply)
                         case 200005: // Object Visibility Update Timer (Stealth Detection, At Remove)
