@@ -3144,14 +3144,20 @@ void Unit::InterruptSpell(CurrentSpellTypes spellType, bool withDelayed, bool wi
 
     //sLog->outDebug(LOG_FILTER_UNITS, "Interrupt spell for unit %u.", GetEntry());
     Spell* spell = m_currentSpells[spellType];
-    if (spell
-        && (withDelayed || spell->getState() != SPELL_STATE_DELAYED)
-        && (withInstant || spell->GetCastTime() > 0))
-    {
-        // for example, do not let self-stun aura interrupt itself
-        if (!spell->IsInterruptable())
-            return;
+    if (!spell)
+        return;
 
+    if (!spell->IsInterruptable()) // for example, do not let self-stun aura interrupt itself
+        return;
+
+    if (spell->GetCastTime() == 0 && !spell->m_CastItem && !spell->GetSpellInfo()->IsChanneled()) // Instant cast spells may NEVER interrupt
+        return;
+
+    if (!withInstant)
+        return;
+
+    if ((withDelayed || spell->getState() != SPELL_STATE_DELAYED))
+    {
         // send autorepeat cancel message for autorepeat spells
         if (spellType == CURRENT_AUTOREPEAT_SPELL)
             if (GetTypeId() == TYPEID_PLAYER)
