@@ -1269,11 +1269,13 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         if (!m_caster->ToPlayer()->duel && !unit->ToPlayer()->duel && DuelSpell && ((getMSTime() >= unit->m_lastDuelSpellTime) || unit->HasAura(7267))) // Duel Grovel
             return;
 
-    if (RedirectedSpell && unit->GetEntry() == 5925)
-    {
-        unit->setDeathState(JUST_DIED);
-        return;
-    }
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        if (unit->GetEntry() == 5925 && ((RedirectedSpell || m_spellInfo->IsNegativeAuraSpell() || m_spellInfo->Effects[i].Effect == SPELL_EFFECT_DISPEL) &&
+        m_spellInfo->Effects[i].TargetA.GetTarget() == TARGET_UNIT_TARGET_ENEMY))
+        {
+            unit->setDeathState(JUST_DIED);
+            return;
+        }
 
     // Get original caster (if exist) and calculate damage/healing from him data
     Unit* caster = m_originalCaster ? m_originalCaster : m_caster;
@@ -6886,7 +6888,7 @@ bool Spell::CheckEffectTarget(Unit const* target, uint32 eff) const
                 caster = m_caster->GetMap()->GetGameObject(m_originalCasterGUID);
             if (!caster)
                 caster = m_caster;
-            if (target != m_caster && !target->IsWithinLOSInMap(caster))
+            if (target != m_caster && !target->IsWithinLOSInMap(caster) && !RedirectedSpell)
                 return false;
             break;
     }
