@@ -1270,8 +1270,8 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             return;
 
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        if (unit->GetEntry() == 5925 && ((RedirectedSpell || m_spellInfo->IsNegativeAuraSpell() || m_spellInfo->Effects[i].Effect == SPELL_EFFECT_DISPEL) &&
-        m_spellInfo->Effects[i].TargetA.GetTarget() == TARGET_UNIT_TARGET_ENEMY))
+        if (unit->GetEntry() == 5925 && ((RedirectedSpell || m_spellInfo->IsNegativeAuraSpell() ||
+            m_spellInfo->Effects[i].Effect == SPELL_EFFECT_DISPEL) && m_spellInfo->Effects[i].TargetA.GetTarget() == TARGET_UNIT_TARGET_ENEMY))
         {
             unit->setDeathState(JUST_DIED);
             return;
@@ -3080,7 +3080,14 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
 void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggeredByAura)
 {
     if (m_CastItem)
+    {
+        if (CurrentSpellTypes CSpellType = GetCurrentContainer())
+            if (Spell* cSpell = m_caster->GetCurrentSpell(CSpellType))
+                if (cSpell->m_CastItem == m_CastItem)
+                    return;
+
         m_castItemGUID = m_CastItem->GetGUID();
+    }
     else
         m_castItemGUID = 0;
 

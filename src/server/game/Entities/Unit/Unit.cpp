@@ -3071,7 +3071,8 @@ void Unit::SetCurrentCastedSpell(Spell* pSpell)
 
     CurrentSpellTypes CSpellType = pSpell->GetCurrentContainer();
 
-    if (pSpell == m_currentSpells[CSpellType]) return;      // avoid breaking self
+    if (pSpell == m_currentSpells[CSpellType])
+        return;
 
     // break same type spell if it is not delayed
     InterruptSpell(CSpellType, false);
@@ -3142,33 +3143,31 @@ void Unit::InterruptSpell(CurrentSpellTypes spellType, bool withDelayed, bool wi
 {
     ASSERT(spellType < CURRENT_MAX_SPELL);
 
-    //sLog->outDebug(LOG_FILTER_UNITS, "Interrupt spell for unit %u.", GetEntry());
     Spell* spell = m_currentSpells[spellType];
     if (!spell)
         return;
 
-    if (!spell->IsInterruptable()) // for example, do not let self-stun aura interrupt itself
+    if (!withDelayed && spell->getState() == SPELL_STATE_DELAYED)
         return;
 
-    if (spell->GetCastTime() == 0 && !spell->m_CastItem && !spell->GetSpellInfo()->IsChanneled()) // Instant cast spells may NEVER interrupt
+    if (!withInstant && !spell->GetCastTime())
         return;
 
-    if (!withInstant)
+    if ((spellType == CURRENT_MELEE_SPELL || spellType == CURRENT_GENERIC_SPELL) && spell->GetCastTime() == 0)
         return;
 
-    if ((withDelayed || spell->getState() != SPELL_STATE_DELAYED))
-    {
-        // send autorepeat cancel message for autorepeat spells
-        if (spellType == CURRENT_AUTOREPEAT_SPELL)
-            if (GetTypeId() == TYPEID_PLAYER)
-                ToPlayer()->SendAutoRepeatCancel(this);
+    if (!spell->IsInterruptable())
+        return;
 
-        if (spell->getState() != SPELL_STATE_FINISHED)
-            spell->cancel();
+    if (spellType == CURRENT_AUTOREPEAT_SPELL)
+        if (GetTypeId() == TYPEID_PLAYER)
+            ToPlayer()->SendAutoRepeatCancel(this);
 
-        m_currentSpells[spellType] = NULL;
-        spell->SetReferencedFromCurrent(false);
-    }
+    if (spell->getState() != SPELL_STATE_FINISHED)
+        spell->cancel();
+
+    m_currentSpells[spellType] = NULL;
+    spell->SetReferencedFromCurrent(false);
 }
 
 void Unit::FinishSpell(CurrentSpellTypes spellType, bool ok /*= true*/)
