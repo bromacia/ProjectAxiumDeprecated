@@ -3471,7 +3471,6 @@ void Spell::EffectDistract(SpellEffIndex /*effIndex*/)
     {
         unitTarget->ToPlayer()->UpdatePosition(unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ(), angle, false);
         unitTarget->ToPlayer()->SendTeleportAckPacket();
-        unitTarget->InterruptNonMeleeSpells(false);
         if (unitTarget->ToPlayer()->IsSitState())
             unitTarget->ToPlayer()->SetStandState(UNIT_STAND_STATE_STAND);
     }

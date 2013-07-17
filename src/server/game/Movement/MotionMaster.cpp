@@ -510,7 +510,7 @@ void MotionMaster::MoveTaxiFlight(uint32 path, uint32 pathnode)
 
 void MotionMaster::MoveDistract(uint32 timer)
 {
-    if (Impl[MOTION_SLOT_CONTROLLED])
+    if (Impl[MOTION_SLOT_ACTIVE])
         return;
 
     if (i_owner->GetTypeId() == TYPEID_PLAYER)
@@ -521,7 +521,7 @@ void MotionMaster::MoveDistract(uint32 timer)
             i_owner->GetEntry(), i_owner->GetGUIDLow(), timer);
     }
 
-    Mutate(new DistractMovementGenerator(timer), MOTION_SLOT_CONTROLLED);
+    Mutate(new DistractMovementGenerator(timer), MOTION_SLOT_ACTIVE);
 }
 
 void MotionMaster::Mutate(MovementGenerator *m, MovementSlot slot)
