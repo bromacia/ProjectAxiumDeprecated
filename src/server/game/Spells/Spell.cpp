@@ -3083,7 +3083,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
     {
         if (CurrentSpellTypes CSpellType = GetCurrentContainer())
             if (Spell* cSpell = m_caster->GetCurrentSpell(CSpellType))
-                if (cSpell->m_CastItem == m_CastItem)
+                if (cSpell->m_CastItem == m_CastItem && cSpell->GetSpellInfo()->Id == m_spellInfo->Id)
                     return;
 
         m_castItemGUID = m_CastItem->GetGUID();
