@@ -15,7 +15,6 @@ public:
             { "faction",          SEC_PLAYER,         false, &HandleFactionCommand,                   "", NULL },
             { "prepare",          SEC_GAMEMASTER,     false, &HandlePrepareCommand,                   "", NULL },
             { "barbershop",       SEC_PLAYER,         false, &HandleBarbershopCommand,                "", NULL },
-            { "mmr",              SEC_PLAYER,         false, &HandleMMRCommand,                       "", NULL },
             { "sendcooldown",     SEC_GAMEMASTER,     false, &HandleSendCooldownCommand,              "", NULL },
             { "transmogcopy",     SEC_GAMEMASTER,     false, &HandleTransmogCopyCommand,              "", NULL },
             { "transmogsend",     SEC_GAMEMASTER,     false, &HandleTransmogSendCommand,              "", NULL },
@@ -28,6 +27,7 @@ public:
             { "getmoveflags",     SEC_GAMEMASTER,     false, &HandleGetMoveFlagsCommand,              "", NULL },
             { "itemid",           SEC_GAMEMASTER,     false, &HandleItemIdCommand,                    "", NULL },
             { "spellid",          SEC_GAMEMASTER,     false, &HandleSpellIdCommand,                   "", NULL },
+            { "mmr",              SEC_PLAYER,         false, &HandleMMRCommand,                       "", NULL },
             { NULL,               0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -110,7 +110,6 @@ public:
                     player->AddAura(44816, player);
         }
         else
-            // will resurrected at login without corpse
             sObjectAccessor->ConvertCorpseForPlayer(target_guid);
 
         if (Pet* pet = player->GetPet())
@@ -155,67 +154,6 @@ public:
         return true;
     }
 
-    static bool HandleMMRCommand(ChatHandler* handler, const char* args)
-    {
-        uint32 player_guid = handler->GetSession()->GetPlayer()->GetGUIDLow();
-        uint16 mmr = 1500;
-
-        if (!*args)
-            return false;
-
-        char* bracket = strtok((char*)args, " ");
-
-        if (!bracket)
-            return false;
-
-        if (!stricmp(bracket, "2v2"))
-        {
-            QueryResult result = CharacterDatabase.PQuery("SELECT matchMakerRating FROM character_arena_stats WHERE guid = %u AND slot = %u", player_guid, 0);
-
-            if (!result)
-                handler->PSendSysMessage("2v2 MMR: %u", mmr);
-            else
-            {
-                Field* fields = result->Fetch();
-                mmr = fields[0].GetInt16();
-                handler->PSendSysMessage("2v2 MMR: %u", mmr);
-            }
-        }
-        else if (!stricmp(bracket, "3v3"))
-        {
-            QueryResult result = CharacterDatabase.PQuery("SELECT matchMakerRating FROM character_arena_stats WHERE guid = %u AND slot = %u", player_guid, 1);
-
-            if (!result)
-                handler->PSendSysMessage("3v3 MMR: %u", mmr);
-            else
-            {
-                Field* fields = result->Fetch();
-                mmr = fields[0].GetInt16();
-                handler->PSendSysMessage("3v3 MMR: %u", mmr);
-            }
-        }
-        else if (!stricmp(bracket, "5v5"))
-        {
-            QueryResult result = CharacterDatabase.PQuery("SELECT matchMakerRating FROM character_arena_stats WHERE guid = %u AND slot = %u", player_guid, 2);
-
-            if (!result)
-                handler->PSendSysMessage("5v5 MMR: %u", mmr);
-            else
-            {
-                Field* fields = result->Fetch();
-                mmr = fields[0].GetInt16();
-                handler->PSendSysMessage("5v5 MMR: %u", mmr);
-            }
-        }
-        else
-        {
-            handler->PSendSysMessage("Invalid bracket.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-        return true;
-    }
-
     static bool HandleSendCooldownCommand(ChatHandler* handler, const char* args)
     {
         Player* target = handler->getSelectedPlayer();
@@ -250,16 +188,16 @@ public:
 
     static bool HandleTransmogCopyCommand(ChatHandler* handler, const char* /*args*/)
     {
-        Player* player = handler->GetSession()->GetPlayer();
         Unit* unitTarget = handler->getSelectedUnit();
 
-        if (handler->getSelectedUnit()->GetTypeId() != TYPEID_PLAYER)
+        if (unitTarget->GetTypeId() != TYPEID_PLAYER)
         {
             handler->PSendSysMessage("Target is not a player.");
             handler->SetSentErrorMessage(true);
             return false;
         }
 
+        Player* player = handler->GetSession()->GetPlayer();
         Player* target = unitTarget->ToPlayer();
 
         for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
@@ -306,16 +244,16 @@ public:
 
     static bool HandleTransmogSendCommand(ChatHandler* handler, const char* /*args*/)
     {
-        Player* player = handler->GetSession()->GetPlayer();
         Unit* unitTarget = handler->getSelectedUnit();
 
-        if (handler->getSelectedUnit()->GetTypeId() != TYPEID_PLAYER)
+        if (unitTarget->GetTypeId() != TYPEID_PLAYER)
         {
             handler->PSendSysMessage("Target is not a player.");
             handler->SetSentErrorMessage(true);
             return false;
         }
 
+        Player* player = handler->GetSession()->GetPlayer();
         Player* target = unitTarget->ToPlayer();
 
         for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
@@ -430,19 +368,20 @@ public:
 
     static bool HandleHijackCharacterCommand(ChatHandler* handler, const char* /*args*/)
     {
-        Player* player = handler->GetSession()->GetPlayer();
         Unit* unitTarget = handler->getSelectedUnit();
-        uint32 playerAccountId = player->GetSession()->GetAccountId();
-        Player* target = unitTarget->ToPlayer();
-        uint32 targetAccountId = target->GetSession()->GetAccountId();
-        uint32 targetGUID = target->GetGUIDLow();
 
-        if (handler->getSelectedUnit()->GetTypeId() != TYPEID_PLAYER)
+        if (unitTarget->GetTypeId() != TYPEID_PLAYER)
         {
             handler->PSendSysMessage("Target is not a player.");
             handler->SetSentErrorMessage(true);
             return false;
         }
+
+        Player* player = handler->GetSession()->GetPlayer();
+        uint32 playerAccountId = player->GetSession()->GetAccountId();
+        Player* target = unitTarget->ToPlayer();
+        uint32 targetAccountId = target->GetSession()->GetAccountId();
+        uint32 targetGUID = target->GetGUIDLow();
 
         if (target->GetHijackedCharacterAccountId())
         {
@@ -711,6 +650,27 @@ public:
             return false;
 
         handler->PSendSysMessage("Spell Id: %u", spellId);
+        return true;
+    }
+
+    static bool HandleMMRCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Player* player = handler->GetSession()->GetPlayer();
+        Unit* unitTarget = handler->getSelectedUnit();
+
+        if (unitTarget->GetTypeId() != TYPEID_PLAYER)
+        {
+            handler->PSendSysMessage("Target is not a player.");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        Player* target = unitTarget->ToPlayer();
+
+        handler->PSendSysMessage("Player: %s", target->GetName());
+        handler->PSendSysMessage("2v2 MMR: %u", target->Get2v2MMR());
+        handler->PSendSysMessage("3v3 MMR: %u", target->Get3v3MMR());
+        handler->PSendSysMessage("5v5 MMR: %u", target->Get5v5MMR());
         return true;
     }
 };

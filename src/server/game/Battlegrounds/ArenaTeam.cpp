@@ -130,17 +130,14 @@ bool ArenaTeam::AddMember(uint64 playerGuid)
     else if (GetRating() >= 1000)
         personalRating = 1000;
 
-    // Try to get player's match maker rating from db and fall back to config setting if not found
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_MATCH_MAKER_RATING);
-    stmt->setUInt32(0, GUID_LOPART(playerGuid));
-    stmt->setUInt8(1, GetSlot());
-    PreparedQueryResult result = CharacterDatabase.Query(stmt);
+    uint32 matchMakerRating = 0;
 
-    uint32 matchMakerRating;
-    if (result)
-        matchMakerRating = (*result)[0].GetUInt32();
-    else
-        matchMakerRating = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
+    switch (GetSlot())
+    {
+        case 0: matchMakerRating = player->Get2v2MMR(); break;
+        case 1: matchMakerRating = player->Get3v3MMR(); break;
+        case 2: matchMakerRating = player->Get5v5MMR(); break;
+    }
 
     // Remove all player signatures from other petitions
     // This will prevent player from joining too many arena teams and corrupt arena team data integrity
@@ -161,7 +158,7 @@ bool ArenaTeam::AddMember(uint64 playerGuid)
     Members.push_back(newmember);
 
     // Save player's arena team membership to db
-    stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_ARENA_TEAM_MEMBER);
+    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_ARENA_TEAM_MEMBER);
     stmt->setUInt32(0, TeamId);
     stmt->setUInt32(1, GUID_LOPART(playerGuid));
     CharacterDatabase.Execute(stmt);
@@ -709,6 +706,33 @@ int32 ArenaTeam::LostAgainst(uint32 Own_MMRating, uint32 Opponent_MMRating, int3
     return mod;
 }
 
+void ArenaTeam::MemberWon(Player* player, uint32 againstMatchmakerRating, int32 MatchmakerRatingChange)
+{
+    // called for each participant after winning a match
+    for (MemberList::iterator itr = Members.begin(); itr !=  Members.end(); ++itr)
+    {
+        if (itr->Guid == player->GetGUID())
+        {
+            // Update personal rating
+            int32 mod = GetRatingMod(itr->PersonalRating, againstMatchmakerRating, true);
+            itr->ModifyPersonalRating(player, mod, GetType());
+
+            // Update matchmaker rating
+            itr->ModifyMatchmakerRating(MatchmakerRatingChange, GetSlot());
+
+            // Update personal stats
+            itr->WeekGames += 1;
+            itr->SeasonGames += 1;
+            itr->SeasonWins += 1;
+            itr->WeekWins += 1;
+            // Update unit fields
+            player->SetArenaTeamInfoField(GetSlot(), ARENA_TEAM_GAMES_WEEK, itr->WeekGames);
+            player->SetArenaTeamInfoField(GetSlot(), ARENA_TEAM_GAMES_SEASON, itr->SeasonGames);
+            return;
+        }
+    }
+}
+
 void ArenaTeam::MemberLost(Player* player, uint32 againstMatchmakerRating, int32 MatchmakerRatingChange)
 {
     // Called for each participant of a match after losing
@@ -724,12 +748,36 @@ void ArenaTeam::MemberLost(Player* player, uint32 againstMatchmakerRating, int32
             itr->ModifyMatchmakerRating(MatchmakerRatingChange, GetSlot());
 
             // Update personal played stats
-            itr->WeekGames +=1;
-            itr->SeasonGames +=1;
+            itr->WeekGames += 1;
+            itr->SeasonGames += 1;
 
-            // update the unit fields
+            // Update the unit fields
             player->SetArenaTeamInfoField(GetSlot(), ARENA_TEAM_GAMES_WEEK,  itr->WeekGames);
             player->SetArenaTeamInfoField(GetSlot(), ARENA_TEAM_GAMES_SEASON,  itr->SeasonGames);
+            return;
+        }
+    }
+}
+
+void ArenaTeam::OfflineMemberWon(uint64 guid, uint32 againstMatchmakerRating, int32 MatchmakerRatingChange)
+{
+    // Called for offline player after ending rated arena match!
+    for (MemberList::iterator itr = Members.begin(); itr !=  Members.end(); ++itr)
+    {
+        if (itr->Guid == guid)
+        {
+            // Update personal rating
+            int32 mod = GetRatingMod(itr->PersonalRating, againstMatchmakerRating, true);
+            itr->ModifyPersonalRating(NULL, mod, GetType());
+
+            // Update matchmaker rating
+            itr->ModifyMatchmakerRating(MatchmakerRatingChange, GetSlot());
+
+            // Update personal stats
+            itr->WeekGames += 1;
+            itr->SeasonGames += 1;
+            itr->SeasonWins += 1;
+            itr->WeekWins += 1;
             return;
         }
     }
@@ -742,43 +790,16 @@ void ArenaTeam::OfflineMemberLost(uint64 guid, uint32 againstMatchmakerRating, i
     {
         if (itr->Guid == guid)
         {
-            // update personal rating
+            // Update personal rating
             int32 mod = GetRatingMod(itr->PersonalRating, againstMatchmakerRating, false);
             itr->ModifyPersonalRating(NULL, mod, GetType());
 
-            // update matchmaker rating
+            // Update matchmaker rating
             itr->ModifyMatchmakerRating(MatchmakerRatingChange, GetSlot());
 
-            // update personal played stats
+            // Update personal played stats
             itr->WeekGames += 1;
             itr->SeasonGames += 1;
-            return;
-        }
-    }
-}
-
-void ArenaTeam::MemberWon(Player* player, uint32 againstMatchmakerRating, int32 MatchmakerRatingChange)
-{
-    // called for each participant after winning a match
-    for (MemberList::iterator itr = Members.begin(); itr !=  Members.end(); ++itr)
-    {
-        if (itr->Guid == player->GetGUID())
-        {
-            // update personal rating
-            int32 mod = GetRatingMod(itr->PersonalRating, againstMatchmakerRating, true);
-            itr->ModifyPersonalRating(player, mod, GetType());
-
-            // update matchmaker rating
-            itr->ModifyMatchmakerRating(MatchmakerRatingChange, GetSlot());
-
-            // update personal stats
-            itr->WeekGames +=1;
-            itr->SeasonGames +=1;
-            itr->SeasonWins += 1;
-            itr->WeekWins += 1;
-            // update unit fields
-            player->SetArenaTeamInfoField(GetSlot(), ARENA_TEAM_GAMES_WEEK, itr->WeekGames);
-            player->SetArenaTeamInfoField(GetSlot(), ARENA_TEAM_GAMES_SEASON, itr->SeasonGames);
             return;
         }
     }
@@ -848,6 +869,17 @@ void ArenaTeam::SaveToDB()
         stmt->setUInt8(1, GetSlot());
         stmt->setUInt16(2, itr->MatchMakerRating);
         trans->Append(stmt);
+
+
+        if (Player* player = ObjectAccessor::FindPlayer(itr->Guid))
+        {
+            switch (GetId())
+            {
+                case 0: player->Set2v2MMR(itr->MatchMakerRating); break;
+                case 1: player->Set3v3MMR(itr->MatchMakerRating); break;
+                case 2: player->Set5v5MMR(itr->MatchMakerRating); break;
+            }
+        }
     }
 
     CharacterDatabase.CommitTransaction(trans);

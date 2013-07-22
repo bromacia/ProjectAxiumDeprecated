@@ -828,37 +828,37 @@ enum PlayedTimeIndex
 enum PlayerLoginQueryIndex
 {
     PLAYER_LOGIN_QUERY_LOADFROM                 = 0,
-    PLAYER_LOGIN_QUERY_LOADGROUP                = 1,
-    PLAYER_LOGIN_QUERY_LOADBOUNDINSTANCES       = 2,
-    PLAYER_LOGIN_QUERY_LOADAURAS                = 3,
-    PLAYER_LOGIN_QUERY_LOADSPELLS               = 4,
-    PLAYER_LOGIN_QUERY_LOADQUESTSTATUS          = 5,
-    PLAYER_LOGIN_QUERY_LOADDAILYQUESTSTATUS     = 6,
-    PLAYER_LOGIN_QUERY_LOADREPUTATION           = 7,
-    PLAYER_LOGIN_QUERY_LOADINVENTORY            = 8,
-    PLAYER_LOGIN_QUERY_LOADACTIONS              = 9,
-    PLAYER_LOGIN_QUERY_LOADMAILCOUNT            = 10,
-    PLAYER_LOGIN_QUERY_LOADMAILDATE             = 11,
-    PLAYER_LOGIN_QUERY_LOADSOCIALLIST           = 12,
-    PLAYER_LOGIN_QUERY_LOADHOMEBIND             = 13,
-    PLAYER_LOGIN_QUERY_LOADSPELLCOOLDOWNS       = 14,
-    PLAYER_LOGIN_QUERY_LOADDECLINEDNAMES        = 15,
-    PLAYER_LOGIN_QUERY_LOADGUILD                = 16,
-    PLAYER_LOGIN_QUERY_LOADARENAINFO            = 17,
-    PLAYER_LOGIN_QUERY_LOADACHIEVEMENTS         = 18,
-    PLAYER_LOGIN_QUERY_LOADCRITERIAPROGRESS     = 19,
-    PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS        = 20,
-    PLAYER_LOGIN_QUERY_LOADBGDATA               = 21,
-    PLAYER_LOGIN_QUERY_LOADGLYPHS               = 22,
-    PLAYER_LOGIN_QUERY_LOADTALENTS              = 23,
-    PLAYER_LOGIN_QUERY_LOADACCOUNTDATA          = 24,
-    PLAYER_LOGIN_QUERY_LOADSKILLS               = 25,
-    PLAYER_LOGIN_QUERY_LOADWEEKLYQUESTSTATUS    = 26,
-    PLAYER_LOGIN_QUERY_LOADRANDOMBG             = 27,
-    PLAYER_LOGIN_QUERY_LOADBANNED               = 28,
-    PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW       = 29,
-    PLAYER_LOGIN_QUERY_LOADINSTANCELOCKTIMES    = 30,
-    PLAYER_LOGIN_QUERY_LOADSEASONALQUESTSTATUS  = 31,
+    PLAYER_LOGIN_QUERY_LOADGROUP,
+    PLAYER_LOGIN_QUERY_LOADBOUNDINSTANCES,
+    PLAYER_LOGIN_QUERY_LOADAURAS,
+    PLAYER_LOGIN_QUERY_LOADSPELLS,
+    PLAYER_LOGIN_QUERY_LOADQUESTSTATUS,
+    PLAYER_LOGIN_QUERY_LOADDAILYQUESTSTATUS,
+    PLAYER_LOGIN_QUERY_LOADREPUTATION,
+    PLAYER_LOGIN_QUERY_LOADINVENTORY,
+    PLAYER_LOGIN_QUERY_LOADACTIONS,
+    PLAYER_LOGIN_QUERY_LOADMAILCOUNT,
+    PLAYER_LOGIN_QUERY_LOADMAILDATE,
+    PLAYER_LOGIN_QUERY_LOADSOCIALLIST,
+    PLAYER_LOGIN_QUERY_LOADHOMEBIND,
+    PLAYER_LOGIN_QUERY_LOADSPELLCOOLDOWNS,
+    PLAYER_LOGIN_QUERY_LOADDECLINEDNAMES,
+    PLAYER_LOGIN_QUERY_LOADGUILD,
+    PLAYER_LOGIN_QUERY_LOADARENAINFO,
+    PLAYER_LOGIN_QUERY_LOADACHIEVEMENTS,
+    PLAYER_LOGIN_QUERY_LOADCRITERIAPROGRESS,
+    PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS,
+    PLAYER_LOGIN_QUERY_LOADBGDATA,
+    PLAYER_LOGIN_QUERY_LOADGLYPHS,
+    PLAYER_LOGIN_QUERY_LOADTALENTS,
+    PLAYER_LOGIN_QUERY_LOADACCOUNTDATA,
+    PLAYER_LOGIN_QUERY_LOADSKILLS,
+    PLAYER_LOGIN_QUERY_LOADWEEKLYQUESTSTATUS,
+    PLAYER_LOGIN_QUERY_LOADRANDOMBG,
+    PLAYER_LOGIN_QUERY_LOADBANNED,
+    PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW,
+    PLAYER_LOGIN_QUERY_LOADINSTANCELOCKTIMES,
+    PLAYER_LOGIN_QUERY_LOADSEASONALQUESTSTATUS,
     MAX_PLAYER_LOGIN_QUERY,
 };
 
@@ -2590,6 +2590,8 @@ class Player : public Unit, public GridObject<Player>
             //! TODO: Need a proper calculation for collision height when mounted
         }
 
+        uint32 lastEmoteTime;
+
         void InterruptMovement();
 
         bool IsVIP() { if (GetSession()->GetSecurity() == SEC_VIP) return true; return false; }
@@ -2625,6 +2627,13 @@ class Player : public Unit, public GridObject<Player>
 
         WorldObject* GetCurrentViewpoint() { return currentViewpoint; }
         void SetCurrentViewpoint(WorldObject* viewpoint) { currentViewpoint = viewpoint; }
+
+        uint16 Get2v2MMR() { return m_2v2MMR; }
+        void Set2v2MMR(uint16 mmr) { m_2v2MMR = mmr; }
+        uint16 Get3v3MMR() { return m_3v3MMR; }
+        void Set3v3MMR(uint16 mmr) { m_3v3MMR = mmr; }
+        uint16 Get5v5MMR() { return m_5v5MMR; }
+        void Set5v5MMR(uint16 mmr) { m_5v5MMR = mmr; }
 
     protected:
         // Gamemaster whisper whitelist
@@ -2691,6 +2700,7 @@ class Player : public Unit, public GridObject<Player>
         bool _LoadHomeBind(PreparedQueryResult result);
         void _LoadDeclinedNames(PreparedQueryResult result);
         void _LoadArenaTeamInfo(PreparedQueryResult result);
+        void _LoadMatchMakerRating();
         void _LoadEquipmentSets(PreparedQueryResult result);
         void _LoadBGData(PreparedQueryResult result);
         void _LoadGlyphs(PreparedQueryResult result);
@@ -2979,7 +2989,9 @@ class Player : public Unit, public GridObject<Player>
 
         WorldObject* currentViewpoint;
 
-        uint32 lastEmoteTime;
+        uint16 m_2v2MMR;
+        uint16 m_3v3MMR;
+        uint16 m_5v5MMR;
 };
 
 void AddItemsSetItem(Player*player, Item* item);

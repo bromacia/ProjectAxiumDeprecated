@@ -862,9 +862,8 @@ void Battleground::EndBattleground(uint32 winner)
             if (team == winner)
             {
                 // update achievement BEFORE personal rating update
-               if (ArenaTeamMember* member = winner_arena_team->GetMember(player->GetGUID()))
+                if (ArenaTeamMember* member = winner_arena_team->GetMember(player->GetGUID()))
                 {
-
                     uint32 rating = player->GetArenaPersonalRating(winner_arena_team->GetSlot());
                     player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA, rating ? rating : 1);
                 }
@@ -1206,10 +1205,6 @@ void Battleground::AddPlayer(Player* player)
             player->CastSpell(player, SPELL_ARENA_PREPARATION, true);
             player->ResetAllPowers();
         }
-        WorldPacket teammate;
-        teammate.Initialize(SMSG_ARENA_OPPONENT_UPDATE, 8);
-        teammate << uint64(player->GetGUID());
-        SendPacketToTeam(team, &teammate, player, false);
     }
     else
     {
@@ -1275,6 +1270,7 @@ void Battleground::AddOrSetPlayerToCorrectBgGroup(Player* player, uint32 team)
 void Battleground::EventPlayerLoggedIn(Player* player)
 {
     uint64 guid = player->GetGUID();
+
     // player is correct pointer
     for (std::deque<uint64>::iterator itr = m_OfflineQueue.begin(); itr != m_OfflineQueue.end(); ++itr)
     {
@@ -1294,6 +1290,8 @@ void Battleground::EventPlayerLoggedIn(Player* player)
 void Battleground::EventPlayerLoggedOut(Player* player)
 {
     uint64 guid = player->GetGUID();
+    if (!IsPlayerInBattleground(guid))
+        return;
 
     // player is correct pointer, it is checked in WorldSession::LogoutPlayer()
     m_OfflineQueue.push_back(player->GetGUID());
@@ -1305,8 +1303,8 @@ void Battleground::EventPlayerLoggedOut(Player* player)
 
         // 1 player is logging out, if it is the last, then end arena!
         if (isArena())
-            if (GetPlayersCountByTeam(player->GetTeam()) <= 0 || GetPlayersCountByTeam(GetOtherTeam(player->GetTeam())) <= 0)
-                EndBattleground(GetOtherTeam(player->GetTeam()));
+            if (GetPlayersCountByTeam(player->GetBGTeam()) <= 0 || GetPlayersCountByTeam(GetOtherTeam(player->GetBGTeam())) <= 0)
+                EndBattleground(GetOtherTeam(player->GetBGTeam()));
     }
 }
 
@@ -1907,7 +1905,7 @@ int32 Battleground::GetObjectType(uint64 guid)
     return -1;
 }
 
-void Battleground::HandleKillUnit(Creature* /*creature*/, Player* /*killer*/)
+void Battleground::HandleKillUnit(Creature* /*victim*/, Player* /*killer*/)
 {
 }
 
