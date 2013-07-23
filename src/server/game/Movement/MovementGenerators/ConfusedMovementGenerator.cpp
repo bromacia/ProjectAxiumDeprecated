@@ -107,6 +107,8 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
             i_waypoints[idx][2] =  z;
         }
 
+        unit.UpdateAllowedPositionZ(x, y, z);
+
         if (unit.GetMap()->IsInWater(x, y, z))
         {
             Movement::MoveSplineInit init(unit);
@@ -157,6 +159,8 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
             float x = i_waypoints[i_nextMove][0];
             float y = i_waypoints[i_nextMove][1];
             float z = i_waypoints[i_nextMove][2];
+
+            unit.UpdateAllowedPositionZ(x, y, z);
 
             if (unit.GetMap()->IsInWater(x, y, z))
             {

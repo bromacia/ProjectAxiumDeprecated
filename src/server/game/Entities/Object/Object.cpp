@@ -1555,28 +1555,22 @@ void WorldObject::UpdateGroundOrWaterPositionZ(float x, float y, float &z) const
         z = new_z + 0.05f;
 }
 
-void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z) const
+void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z, bool updateGroundOrWaterZ, float searchDistance) const
 {
-    switch (GetTypeId())
+    if (updateGroundOrWaterZ)
     {
-        case TYPEID_UNIT:
+        switch (GetTypeId())
         {
-            Unit* victim = ToCreature()->getVictim();
-            if (victim)
+            case TYPEID_UNIT:
             {
-                // anyway creature move to victim for thinly Z distance (shun some VMAP wrong ground calculating)
-                if (fabs(GetPositionZ() - victim->GetPositionZ()) < 5.0f)
-                    return;
-            }
-            // non fly unit don't must be in air
-            // non swim unit must be at ground (mostly speedup, because it don't must be in water and water level check less fast
-            if (!ToCreature()->canFly())
-            {
+                Unit* victim = ToCreature()->getVictim();
+                if (victim)
+                    if (fabs(GetPositionZ() - victim->GetPositionZ()) < 5.0f)
+                        return;
+
                 bool canSwim = ToCreature()->canSwim();
                 float ground_z = z;
-                float max_z = canSwim
-                    ? GetBaseMap()->GetWaterOrGroundLevel(x, y, z, &ground_z, !ToUnit()->HasAuraType(SPELL_AURA_WATER_WALK))
-                    : ((ground_z = GetBaseMap()->GetHeight(x, y, z, true)));
+                float max_z = canSwim ? GetBaseMap()->GetWaterOrGroundLevel(x, y, z, &ground_z) : (ground_z = GetBaseMap()->GetHeight(x, y, z, true));
                 if (max_z > INVALID_HEIGHT)
                 {
                     if (z > max_z)
@@ -1584,25 +1578,15 @@ void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z) const
                     else if (z < ground_z)
                         z = ground_z;
                 }
+                break;
             }
-            else
-            {
-                float ground_z = GetBaseMap()->GetHeight(x, y, z, true);
-                if (z < ground_z)
-                    z = ground_z;
-            }
-            break;
-        }
-        case TYPEID_PLAYER:
-        {
-            // for server controlled moves playr work same as creature (but it can always swim)
-            if (!ToPlayer()->canFly())
+            default:
             {
                 float ground_z = z;
                 float max_z = GetBaseMap()->GetWaterOrGroundLevel(x, y, z, &ground_z, true);
                 if (max_z > INVALID_HEIGHT)
                 {
-                    if (fabs(max_z - GetPositionZ()) < 20.0f)
+                    if (fabs(max_z - GetPositionZ()) < searchDistance)
                     {
                         if (z > max_z)
                             z = max_z;
@@ -1610,24 +1594,16 @@ void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z) const
                             z = ground_z;
                     }
                 }
+                break;
             }
-            else
-            {
-                float ground_z = GetBaseMap()->GetHeight(x, y, z, true);
-                if (fabs(ground_z - GetPositionZ()) < 20.0f)
-                    if (z < ground_z)
-                        z = ground_z;
-            }
-            break;
-        }
-        default:
-        {
-            float ground_z = GetBaseMap()->GetHeight(x, y, z, true);
-            if (ground_z > INVALID_HEIGHT)
-                z = ground_z;
-            break;
         }
     }
+
+    if (z > MAX_HEIGHT)
+        z = MAX_HEIGHT - (GetObjectSize() * 2.0f);
+
+    if (z < INVALID_HEIGHT)
+        z = INVALID_HEIGHT + (GetObjectSize() * 2.0f);
 }
 
 bool Position::IsPositionValid() const
@@ -2562,7 +2538,7 @@ void WorldObject::GetNearPoint(WorldObject const* /*searcher*/, float &x, float 
     GetNearPoint2D(x, y, distance2d+searcher_size, absAngle);
     z = GetPositionZ();
     if (updateZ)
-        UpdateAllowedPositionZ(x, y, z);
+        UpdateAllowedPositionZ(x, y, z, true);
 
     /*
     // if detection disabled, return first point
@@ -2769,7 +2745,7 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
     Trinity::NormalizeMapCoord(pos.m_positionX);
     Trinity::NormalizeMapCoord(pos.m_positionY);
     if (updateZ)
-        UpdateAllowedPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+        UpdateAllowedPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ, true);
     pos.m_orientation = m_orientation;
 }
 

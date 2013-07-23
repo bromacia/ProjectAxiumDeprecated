@@ -38,6 +38,8 @@ void FleeingMovementGenerator<T>::_setTargetLocation(T &owner)
     if (!_getPoint(owner, x, y, z))
         return;
 
+    owner.UpdateAllowedPositionZ(x, y, z);
+
     owner.AddUnitState(UNIT_STATE_FLEEING_MOVE);
 
     if (owner.GetMap()->IsInWater(x, y, z))

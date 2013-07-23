@@ -280,6 +280,8 @@ void MotionMaster::MoveFollow(Unit* target, float dist, float angle, MovementSlo
 
 void MotionMaster::MovePoint(uint32 id, float x, float y, float z, bool generatePath)
 {
+    i_owner->UpdateAllowedPositionZ(x, y, z);
+
     if (i_owner->GetTypeId() == TYPEID_PLAYER)
     {
         sLog->outStaticDebug("Player (GUID: %u) targeted point (Id: %u X: %f Y: %f Z: %f)", i_owner->GetGUIDLow(), id, x, y, z);
@@ -297,6 +299,7 @@ void MotionMaster::MoveLand(uint32 id, Position const& pos)
 {
     float x, y, z;
     pos.GetPosition(x, y, z);
+    i_owner->UpdateAllowedPositionZ(x, y, z);
 
     sLog->outStaticDebug("Creature (Entry: %u) landing point (ID: %u X: %f Y: %f Z: %f)", i_owner->GetEntry(), id, x, y, z);
 
@@ -311,6 +314,7 @@ void MotionMaster::MoveTakeoff(uint32 id, Position const& pos)
 {
     float x, y, z;
     pos.GetPosition(x, y, z);
+    i_owner->UpdateAllowedPositionZ(x, y, z);
 
     sLog->outStaticDebug("Creature (Entry: %u) landing point (ID: %u X: %f Y: %f Z: %f)", i_owner->GetEntry(), id, x, y, z);
 
@@ -328,6 +332,7 @@ void MotionMaster::MoveKnockbackFrom(float srcX, float srcY, float speedXY, floa
         return;
 
     float x, y, z;
+    i_owner->UpdateAllowedPositionZ(x, y, z);
     float moveTimeHalf = speedZ / Movement::gravity;
     float dist = 2 * moveTimeHalf * speedXY;
     float max_height = -Movement::computeFallElevation(moveTimeHalf,false,-speedZ);
@@ -373,7 +378,7 @@ void MotionMaster::MoveJumpTo(float angle, float speedXY, float speedZ)
         return;
 
     float x, y, z;
-
+    i_owner->UpdateAllowedPositionZ(x, y, z);
     float moveTimeHalf = speedZ / Movement::gravity;
     float dist = 2 * moveTimeHalf * speedXY;
     i_owner->GetClosePoint(x, y, z, i_owner->GetObjectSize(), dist, angle);
@@ -382,6 +387,8 @@ void MotionMaster::MoveJumpTo(float angle, float speedXY, float speedZ)
 
 void MotionMaster::MoveJump(float x, float y, float z, float speedXY, float speedZ, uint32 id)
 {
+    i_owner->UpdateAllowedPositionZ(x, y, z);
+
     sLog->outStaticDebug("Unit (GUID: %u) jump to point (X: %f Y: %f Z: %f)", i_owner->GetGUIDLow(), x, y, z);
 
     float moveTimeHalf = speedZ / Movement::gravity;
@@ -400,6 +407,7 @@ void MotionMaster::MoveFall(uint32 id/*=0*/)
     // use larger distance for vmap height search than in most other cases
     float groundz = i_owner->GetPositionZ();
     float tz = i_owner->GetMap()->GetWaterOrGroundLevel(i_owner->GetPositionX(), i_owner->GetPositionY(), i_owner->GetPositionZ(), &groundz, true);
+    i_owner->UpdateAllowedPositionZ(i_owner->GetPositionX(), i_owner->GetPositionY(), tz);
 
     // Abort too if the ground is very near
     if (fabs(i_owner->GetPositionZ() - tz) < 0.1f)
@@ -416,6 +424,8 @@ void MotionMaster::MoveCharge(float x, float y, float z, float speed, uint32 id,
 {
     if (Impl[MOTION_SLOT_CONTROLLED] && Impl[MOTION_SLOT_CONTROLLED]->GetMovementGeneratorType() != DISTRACT_MOTION_TYPE)
         return;
+
+    i_owner->UpdateAllowedPositionZ(x, y, z);
 
     if (i_owner->GetTypeId() == TYPEID_PLAYER)
     {

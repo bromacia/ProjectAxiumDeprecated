@@ -90,6 +90,8 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
             i_target->GetPosition(x, y, z);
     }
 
+    owner.UpdateAllowedPositionZ(x, y, z, true);
+
     if (owner.GetMap()->IsInWater(x, y, z))
     {
         Movement::MoveSplineInit init(owner);
