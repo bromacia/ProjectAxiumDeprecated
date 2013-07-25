@@ -1091,13 +1091,18 @@ void GameObject::Use(Unit* user)
     {
         case GAMEOBJECT_TYPE_DOOR:                          //0
         case GAMEOBJECT_TYPE_BUTTON:                        //1
+        {
+            // Prevent players from hacking and prematurely opening doors in battlegrounds
+            if (GetMap()->IsBattleground() && !user->ToPlayer()->IsGameMasterTagOn())
+                return;
+
             //doors/buttons never really despawn, only reset to default state/flags
             UseDoorOrButton(0, false, user);
 
             // activate script
             GetMap()->ScriptsStart(sGameObjectScripts, GetDBTableGUIDLow(), spellCaster, this);
             return;
-
+        }
         case GAMEOBJECT_TYPE_QUESTGIVER:                    //2
         {
             if (user->GetTypeId() != TYPEID_PLAYER)
