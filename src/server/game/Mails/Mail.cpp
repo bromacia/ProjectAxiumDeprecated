@@ -57,7 +57,7 @@ MailSender::MailSender(Object* sender, MailStationery stationery) : m_stationery
 MailSender::MailSender(Player* sender)
 {
     m_messageType = MAIL_NORMAL;
-    m_stationery = sender->isGameMaster() ? MAIL_STATIONERY_GM : MAIL_STATIONERY_DEFAULT;
+    m_stationery = sender->IsGameMasterTagOn() ? MAIL_STATIONERY_GM : MAIL_STATIONERY_DEFAULT;
     m_senderId = sender->GetGUIDLow();
 }
 
@@ -186,7 +186,7 @@ void MailDraft::SendMailTo(SQLTransaction& trans, MailReceiver const& receiver, 
         if (m_COD)
             expire_delay = 3 * DAY;
         else
-            expire_delay = pSender && pSender->isGameMaster() ? 90 * DAY : 30 * DAY;
+            expire_delay = pSender && pSender->IsGameMasterTagOn() ? 90 * DAY : 30 * DAY;
     }
 
     time_t expire_time = deliver_time + expire_delay;

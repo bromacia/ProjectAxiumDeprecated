@@ -105,7 +105,7 @@ public:
             player->ClearComboPoints();
             player->ClearInCombat();
             player->getHostileRefManager().deleteReferences();
-            if (player->isGMInvisible())
+            if (player->IsGMInvisible())
                 if (!player->HasAura(44816))
                     player->AddAura(44816, player);
         }

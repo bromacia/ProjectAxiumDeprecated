@@ -89,7 +89,7 @@ void CreatureAI::DoZoneInCombat(Creature* creature /*= NULL*/, float maxRangeToN
     {
         if (Player* player = itr->getSource())
         {
-            if (player->isGameMaster())
+            if (player->IsGameMasterTagOn())
                 continue;
 
             if (player->isAlive())

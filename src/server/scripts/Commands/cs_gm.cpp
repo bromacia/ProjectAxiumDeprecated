@@ -59,7 +59,7 @@ public:
         if (!*args)
         {
             WorldSession* session = handler->GetSession();
-            if (session->GetPlayer()->isGMChat())
+            if (session->GetPlayer()->IsGMChatBadgeOn())
                 session->SendNotification(LANG_GM_CHAT_ON);
             else
                 session->SendNotification(LANG_GM_CHAT_OFF);
@@ -70,14 +70,14 @@ public:
 
         if (param == "on")
         {
-            handler->GetSession()->GetPlayer()->SetGMChat(true);
+            handler->GetSession()->GetPlayer()->SetGMChatBadge(true);
             handler->GetSession()->SendNotification(LANG_GM_CHAT_ON);
             return true;
         }
 
         if (param == "off")
         {
-            handler->GetSession()->GetPlayer()->SetGMChat(false);
+            handler->GetSession()->GetPlayer()->SetGMChatBadge(false);
             handler->GetSession()->SendNotification(LANG_GM_CHAT_OFF);
             return true;
         }
@@ -215,7 +215,7 @@ public:
     {
         if (!*args)
         {
-            if (handler->GetSession()->GetPlayer()->isGameMaster())
+            if (handler->GetSession()->GetPlayer()->IsGameMasterTagOn())
                 handler->GetSession()->SendNotification(LANG_GM_ON);
             else
                 handler->GetSession()->SendNotification(LANG_GM_OFF);
@@ -226,7 +226,7 @@ public:
 
         if (param == "on")
         {
-            handler->GetSession()->GetPlayer()->SetGameMaster(true);
+            handler->GetSession()->GetPlayer()->SetGameMasterTag(true);
             handler->GetSession()->SendNotification(LANG_GM_ON);
             handler->GetSession()->GetPlayer()->UpdateTriggerVisibility();
 #ifdef _DEBUG_VMAPS
@@ -238,7 +238,7 @@ public:
 
         if (param == "off")
         {
-            handler->GetSession()->GetPlayer()->SetGameMaster(false);
+            handler->GetSession()->GetPlayer()->SetGameMasterTag(false);
             handler->GetSession()->SendNotification(LANG_GM_OFF);
             handler->GetSession()->GetPlayer()->UpdateTriggerVisibility();
 #ifdef _DEBUG_VMAPS

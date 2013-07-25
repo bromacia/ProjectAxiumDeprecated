@@ -126,7 +126,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
     else
     {
         // send in universal language if player in .gmon mode (ignore spell effects)
-        if (sender->isGameMaster())
+        if (sender->IsGameMasterTagOn())
             lang = LANG_UNIVERSAL;
         else
         {
@@ -282,7 +282,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             Player* receiver = sObjectAccessor->FindPlayerByName(to.c_str());
             bool senderIsPlayer = AccountMgr::IsPlayerAccount(GetSecurity());
             bool receiverIsPlayer = AccountMgr::IsPlayerAccount(receiver ? receiver->GetSession()->GetSecurity() : SEC_PLAYER);
-            if (!receiver || (senderIsPlayer && !receiverIsPlayer && !receiver->isAcceptWhispers() && !receiver->IsInWhisperWhiteList(sender->GetGUID())))
+            if (!receiver || (senderIsPlayer && !receiverIsPlayer && !receiver->IsAcceptWhispers() && !receiver->IsInWhisperWhiteList(sender->GetGUID())))
             {
                 SendPlayerNotFoundNotice(to);
                 return;
@@ -295,14 +295,14 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                     return;
                 }
 
-            if (GetPlayer()->HasAura(1852) && !receiver->isGameMaster())
+            if (GetPlayer()->HasAura(1852) && !receiver->IsGameMasterTagOn())
             {
                 SendNotification(GetTrinityString(LANG_GM_SILENCE), GetPlayer()->GetName());
                 return;
             }
 
             // If player is a Gamemaster and doesn't accept whisper, we auto-whitelist every player that the Gamemaster is talking to
-            if (!senderIsPlayer && !sender->isAcceptWhispers() && !sender->IsInWhisperWhiteList(receiver->GetGUID()))
+            if (!senderIsPlayer && !sender->IsAcceptWhispers() && !sender->IsInWhisperWhiteList(receiver->GetGUID()))
                 sender->AddWhisperWhiteList(receiver->GetGUID());
 
             GetPlayer()->Whisper(msg, lang, receiver->GetGUID());

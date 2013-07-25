@@ -158,7 +158,7 @@ bool ChatHandler::HandleSummonCommand(const char* args)
         if (map->IsBattlegroundOrArena())
         {
             // only allow if gm mode is on
-            if (!_player->isGameMaster())
+            if (!_player->IsGameMasterTagOn())
             {
                 PSendSysMessage(LANG_CANNOT_GO_TO_BG_GM, nameLink.c_str());
                 SetSentErrorMessage(true);
@@ -266,7 +266,7 @@ bool ChatHandler::HandleAppearCommand(const char* args)
         if (cMap->IsBattlegroundOrArena())
         {
             // only allow if gm mode is on
-            if (!_player->isGameMaster())
+            if (!_player->IsGameMasterTagOn())
             {
                 PSendSysMessage(LANG_CANNOT_GO_TO_BG_GM, chrNameLink.c_str());
                 SetSentErrorMessage(true);
@@ -301,7 +301,7 @@ bool ChatHandler::HandleAppearCommand(const char* args)
             else
             {
                 // we are not in group, let's verify our GM mode
-                if (!_player->isGameMaster())
+                if (!_player->IsGameMasterTagOn())
                 {
                     PSendSysMessage(LANG_CANNOT_GO_TO_INST_GM, chrNameLink.c_str());
                     SetSentErrorMessage(true);
@@ -593,7 +593,7 @@ bool ChatHandler::HandleWhispersCommand(const char* args)
 {
     if (!*args)
     {
-        PSendSysMessage(LANG_COMMAND_WHISPERACCEPTING, m_session->GetPlayer()->isAcceptWhispers() ?  GetTrinityString(LANG_ON) : GetTrinityString(LANG_OFF));
+        PSendSysMessage(LANG_COMMAND_WHISPERACCEPTING, m_session->GetPlayer()->IsAcceptWhispers() ?  GetTrinityString(LANG_ON) : GetTrinityString(LANG_OFF));
         return true;
     }
 

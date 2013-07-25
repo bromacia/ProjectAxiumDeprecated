@@ -2008,7 +2008,7 @@ uint8 Player::GetChatTag() const
 {
     uint8 tag = CHAT_TAG_NONE;
 
-    if (isGMChat())
+    if (IsGMChatBadgeOn())
         tag |= CHAT_TAG_GM;
     if (isDND())
         tag |= CHAT_TAG_DND;
@@ -2769,7 +2769,7 @@ void Player::SetInWater(bool apply)
     getHostileRefManager().updateThreatTables();
 }
 
-void Player::SetGameMaster(bool on)
+void Player::SetGameMasterTag(bool on)
 {
     if (on)
     {
@@ -17115,10 +17115,10 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         {
             default:
             case 0:                      break;             // disable
-            case 1: SetGameMaster(true); break;             // enable
+            case 1: SetGameMasterTag(true); break;          // enable
             case 2:                                         // save state
                 if (extraflags & PLAYER_EXTRA_GM_ON)
-                    SetGameMaster(true);
+                    SetGameMasterTag(true);
                 break;
         }
 
@@ -17137,10 +17137,10 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         {
             default:
             case 0:                  break;                 // disable
-            case 1: SetGMChat(true); break;                 // enable
+            case 1: SetGMChatBadge(true); break;            // enable
             case 2:                                         // save state
                 if (extraflags & PLAYER_EXTRA_GM_CHAT)
-                    SetGMChat(true);
+                    SetGMChatBadge(true);
                 break;
         }
 
@@ -18344,7 +18344,7 @@ void Player::ConvertInstancesToGroup(Player* player, Group* group, bool switchLe
 
 bool Player::Satisfy(AccessRequirement const* ar, uint32 target_map, bool report)
 {
-    if (!isGameMaster() && ar)
+    if (!IsGameMasterTagOn() && ar)
     {
         uint8 LevelMin = 0;
         uint8 LevelMax = 0;
@@ -18419,7 +18419,7 @@ bool Player::CheckInstanceLoginValid()
     if (!GetMap())
         return false;
 
-    if (!GetMap()->IsDungeon() || isGameMaster())
+    if (!GetMap()->IsDungeon() || IsGameMasterTagOn())
         return true;
 
     if (GetMap()->IsRaid())
@@ -19765,7 +19765,7 @@ void Player::Whisper(const std::string& text, uint32 language, uint64 receiver)
     rPlayer->BuildPlayerChat(&data, CHAT_MSG_WHISPER_INFORM, _text, language);
     GetSession()->SendPacket(&data);
 
-    if (!isAcceptWhispers() && !isGameMaster() && !rPlayer->isGameMaster())
+    if (!IsAcceptWhispers() && !IsGameMasterTagOn() && !rPlayer->IsGameMasterTagOn())
     {
         SetAcceptWhispers(true);
         ChatHandler(this).SendSysMessage(LANG_COMMAND_WHISPERON);
@@ -20958,7 +20958,7 @@ uint32 Player::GetMaxPersonalArenaRatingRequirement(uint32 minarenaslot) const
 void Player::UpdateHomebindTime(uint32 time)
 {
     // GMs never get homebind timer online
-    if (m_InstanceValid || isGameMaster())
+    if (m_InstanceValid || IsGameMasterTagOn())
     {
         if (m_HomebindTimer)                                 // instance valid, but timer not reset
         {
@@ -20998,7 +20998,7 @@ void Player::UpdatePvPState(bool onlyFFA)
 {
     // TODO: should we always synchronize UNIT_FIELD_BYTES_2, 1 of controller and controlled?
     // no, we shouldn't, those are checked for affecting player by client
-    if (!pvpInfo.inNoPvPArea && !isGameMaster()
+    if (!pvpInfo.inNoPvPArea && !IsGameMasterTagOn()
         && (pvpInfo.inFFAPvPArea || sWorld->IsFFAPvPRealm()))
     {
         if (!HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP))
@@ -21403,7 +21403,7 @@ void Player::LeaveBattleground(bool teleportToEntryPoint)
         bg->RemovePlayerAtLeave(GetGUID(), teleportToEntryPoint, true);
 
         // call after remove to be sure that player resurrected for correct cast
-        if (bg->isBattleground() && !isGameMaster() && sWorld->getBoolConfig(CONFIG_BATTLEGROUND_CAST_DESERTER))
+        if (bg->isBattleground() && !IsGameMasterTagOn() && sWorld->getBoolConfig(CONFIG_BATTLEGROUND_CAST_DESERTER))
         {
             if (bg->GetStatus() == STATUS_IN_PROGRESS || bg->GetStatus() == STATUS_WAIT_JOIN)
             {
@@ -23744,7 +23744,7 @@ void Player::_LoadSkills(PreparedQueryResult result)
 uint32 Player::GetPhaseMaskForSpawn() const
 {
     uint32 phase = PHASEMASK_NORMAL;
-    if (!isGameMaster())
+    if (!IsGameMasterTagOn())
         phase = GetPhaseMask();
     else
     {
@@ -23831,7 +23831,7 @@ void Player::HandleFall(MovementInfo const& movementInfo)
 
     //Players with low fall distance, Feather Fall or physical immunity (charges used) are ignored
     // 14.57 can be calculated by resolving damageperc formula below to 0
-    if (z_diff >= 14.57f && !isDead() && !isGameMaster() &&
+    if (z_diff >= 14.57f && !isDead() && !IsGameMasterTagOn() &&
         !HasAuraType(SPELL_AURA_HOVER) && !HasAuraType(SPELL_AURA_FEATHER_FALL) &&
         !HasAuraType(SPELL_AURA_FLY) && !IsImmunedToDamage(SPELL_SCHOOL_MASK_NORMAL))
     {

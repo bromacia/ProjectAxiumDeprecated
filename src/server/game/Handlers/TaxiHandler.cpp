@@ -98,7 +98,7 @@ void WorldSession::SendTaxiMenu(Creature* unit)
     if (curloc == 0)
         return;
 
-    bool lastTaxiCheaterState = GetPlayer()->isTaxiCheater();
+    bool lastTaxiCheaterState = GetPlayer()->IsTaxiCheater();
     if (unit->GetEntry() == 29480) GetPlayer()->SetTaxiCheater(true); // Grimwing in Ebon Hold, special case. NOTE: Not perfect, Zul'Aman should not be included according to WoWhead, and I think taxicheat includes it.
 
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: CMSG_TAXINODE_STATUS_QUERY %u ", curloc);
@@ -107,7 +107,7 @@ void WorldSession::SendTaxiMenu(Creature* unit)
     data << uint32(1);
     data << uint64(unit->GetGUID());
     data << uint32(curloc);
-    GetPlayer()->m_taxi.AppendTaximaskTo(data, GetPlayer()->isTaxiCheater());
+    GetPlayer()->m_taxi.AppendTaximaskTo(data, GetPlayer()->IsTaxiCheater());
     SendPacket(&data);
 
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Sent SMSG_SHOWTAXINODES");
@@ -242,7 +242,7 @@ void WorldSession::HandleMoveSplineDoneOpcode(WorldPacket& recv_data)
         uint32 sourcenode = GetPlayer()->m_taxi.GetTaxiSource();
 
         // Add to taximask middle hubs in taxicheat mode (to prevent having player with disabled taxicheat and not having back flight path)
-        if (GetPlayer()->isTaxiCheater())
+        if (GetPlayer()->IsTaxiCheater())
         {
             if (GetPlayer()->m_taxi.SetTaximaskNode(sourcenode))
             {

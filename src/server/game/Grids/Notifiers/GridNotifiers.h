@@ -1288,7 +1288,7 @@ namespace Trinity
         bool operator() (Player* player)
         {
             //No threat list check, must be done explicit if expected to be in combat with creature
-            if (!player->isGameMaster() && player->isAlive() && !unit->IsWithinDist(player, fRange, false))
+            if (!player->IsGameMasterTagOn() && player->isAlive() && !unit->IsWithinDist(player, fRange, false))
                 return true;
 
             return false;

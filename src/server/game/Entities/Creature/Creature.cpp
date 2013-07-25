@@ -555,9 +555,9 @@ void Creature::Update(uint32 diff)
             if (m_regenTimer != 0)
                break;
 
-            bool bInCombat = isInCombat() && (!getVictim() ||                                        // if isInCombat() is true and this has no victim
-                             !getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() ||                // or the victim/owner/charmer is not a player
-                             !getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself()->isGameMaster()); // or the victim/owner/charmer is not a GameMaster
+            bool bInCombat = isInCombat() && (!getVictim() ||                                             // if isInCombat() is true and this has no victim
+                             !getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself() ||                     // or the victim/owner/charmer is not a player
+                             !getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself()->IsGameMasterTagOn()); // or the victim/owner/charmer is not a GameMaster
 
             /*if (m_regenTimer <= diff)
             {*/
@@ -2135,7 +2135,7 @@ void Creature::SetInCombatWithZone()
     {
         if (Player* player = i->getSource())
         {
-            if (player->isGameMaster())
+            if (player->IsGameMasterTagOn())
                 continue;
 
             if (player->isAlive())
