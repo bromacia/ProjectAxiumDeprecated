@@ -1483,13 +1483,15 @@ void Battleground::DoorClose(uint32 type)
             type, GUID_LOPART(m_BgObjects[type]), m_MapId, m_InstanceID);
 }
 
-void Battleground::DoorOpen(uint32 type)
+void Battleground::DoorOpen(uint32 type, bool despawnAfterAnim)
 {
     if (GameObject* obj = GetBgMap()->GetGameObject(m_BgObjects[type]))
     {
         // Change state to be sure they will be opened
         obj->SetLootState(GO_READY);
         obj->UseDoorOrButton(RESPAWN_ONE_DAY);
+        if (despawnAfterAnim)
+            obj->despawnTimer.Reset(2000);
     }
     else
         sLog->outError("Battleground::DoorOpen: door gameobject (type: %u, GUID: %u) not found for BG (map: %u, instance id: %u)!",

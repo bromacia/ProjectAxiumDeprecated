@@ -549,7 +549,7 @@ class Battleground
         bool AddSpiritGuide(uint32 type, float x, float y, float z, float o, uint32 team);
         int32 GetObjectType(uint64 guid);
 
-        void DoorOpen(uint32 type);
+        void DoorOpen(uint32 type, bool despawnAfterAnim = false);
         void DoorClose(uint32 type);
         //to be removed
         const char* GetTrinityString(int32 entry);

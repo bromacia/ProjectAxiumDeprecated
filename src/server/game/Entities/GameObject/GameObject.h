@@ -25,6 +25,7 @@
 #include "Object.h"
 #include "LootMgr.h"
 #include "DatabaseEnv.h"
+#include "Timer.h"
 
 class GameObjectAI;
 
@@ -796,7 +797,10 @@ class GameObject : public WorldObject, public GridObject<GameObject>
         std::string GetAIName() const;
         void SetDisplayId(uint32 displayid);
         
-        GameObjectModel * m_model;
+        GameObjectModel* m_model;
+
+        TimeTracker despawnTimer;
+
     protected:
         bool AIM_Initialize();
         uint32      m_spellId;

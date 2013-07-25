@@ -33,7 +33,7 @@
 #include "DynamicTree.h"
 #include "Chat.h"
 
-GameObject::GameObject() : WorldObject(false), m_goValue(new GameObjectValue), m_AI(NULL), m_model(NULL)
+GameObject::GameObject() : WorldObject(false), m_goValue(new GameObjectValue), m_AI(NULL), m_model(NULL), despawnTimer(0)
 {
     m_objectType |= TYPEMASK_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;
@@ -275,6 +275,18 @@ void GameObject::Update(uint32 diff)
     {
         //((Transport*)this)->Update(p_time);
         return;
+    }
+
+    if (despawnTimer.GetExpiry())
+    {
+        despawnTimer.Update(diff);
+
+        if (despawnTimer.Passed())
+        {
+            SetRespawnTime(0);
+            Delete();
+            return;
+        }
     }
 
     switch (m_lootState)
@@ -588,6 +600,7 @@ void GameObject::Update(uint32 diff)
             break;
         }
     }
+
     sScriptMgr->OnGameObjectUpdate(this, diff);
 }
 

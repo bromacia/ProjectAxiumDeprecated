@@ -191,8 +191,8 @@ void BattlegroundAB::StartingEventOpenDoors()
         uint8 buff = urand(0, 2);
         SpawnBGObject(BG_AB_OBJECT_SPEEDBUFF_STABLES + buff + i * 3, RESPAWN_IMMEDIATELY);
     }
-    DoorOpen(BG_AB_OBJECT_GATE_A);
-    DoorOpen(BG_AB_OBJECT_GATE_H);
+    DoorOpen(BG_AB_OBJECT_GATE_A, true);
+    DoorOpen(BG_AB_OBJECT_GATE_H, true);
 
     // Achievement: Let's Get This Done
     StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, AB_EVENT_START_BATTLE);

@@ -418,8 +418,8 @@ void BattlegroundAV::StartingEventOpenDoors()
     UpdateWorldState(AV_SHOW_H_SCORE, 1);
     UpdateWorldState(AV_SHOW_A_SCORE, 1);
 
-    DoorOpen(BG_AV_OBJECT_DOOR_H);
-    DoorOpen(BG_AV_OBJECT_DOOR_A);
+    DoorOpen(BG_AV_OBJECT_DOOR_A, true);
+    DoorOpen(BG_AV_OBJECT_DOOR_H, true);
 
     // Achievement: The Alterac Blitz
     StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, AV_EVENT_START_BATTLE);

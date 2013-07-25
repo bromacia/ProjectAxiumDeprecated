@@ -53,7 +53,7 @@ void BattlegroundNA::StartingEventCloseDoors()
 void BattlegroundNA::StartingEventOpenDoors()
 {
     for (uint8 i = BG_NA_OBJECT_DOOR_1; i <= BG_NA_OBJECT_DOOR_2; ++i)
-        DoorOpen(i);
+        DoorOpen(i, true);
 
     for (uint8 i = BG_NA_OBJECT_BUFF_1; i <= BG_NA_OBJECT_BUFF_2; ++i)
         SpawnBGObject(i, 60);
