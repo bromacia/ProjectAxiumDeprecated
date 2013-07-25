@@ -1093,7 +1093,7 @@ void GameObject::Use(Unit* user)
         case GAMEOBJECT_TYPE_BUTTON:                        //1
         {
             // Prevent players from hacking and prematurely opening doors in battlegrounds
-            if (GetMap()->IsBattleground() && !user->ToPlayer()->IsGameMasterTagOn())
+            if (GetMap()->IsBattlegroundOrArena() && !user->ToPlayer()->IsGameMasterTagOn())
                 return;
 
             //doors/buttons never really despawn, only reset to default state/flags
