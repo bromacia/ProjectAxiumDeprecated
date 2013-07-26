@@ -40,6 +40,9 @@ enum HunterSpells
     HUNTER_SPELL_CHIMERA_SHOT_VIPER              = 53358,
     HUNTER_SPELL_CHIMERA_SHOT_SCORPID            = 53359,
     HUNTER_SPELL_ASPECT_OF_THE_BEAST_PET         = 61669,
+    SPELL_HUNTER_IMPROVED_MEND_PET_R1            = 19572,
+    SPELL_HUNTER_IMPROVED_MEND_PET_R2            = 19573,
+    SPELL_HUNTER_IMPROVED_MEND_PET_DISPEL        = 24406,
 };
 
 // 13161 Aspect of the Beast
@@ -566,6 +569,43 @@ public:
     }
 };
 
+class spell_hun_mend_pet : public SpellScriptLoader
+{
+    public:
+        spell_hun_mend_pet() : SpellScriptLoader("spell_hun_mend_pet") { }
+
+        class spell_hun_mend_pet_AuraScript : public AuraScript
+        {
+            PrepareAuraScript(spell_hun_mend_pet_AuraScript);
+
+            bool Validate(SpellInfo const* /*spellInfo*/)
+            {
+                if (!sSpellMgr->GetSpellInfo(SPELL_HUNTER_IMPROVED_MEND_PET_R1) || !sSpellMgr->GetSpellInfo(SPELL_HUNTER_IMPROVED_MEND_PET_R2) || !sSpellMgr->GetSpellInfo(SPELL_HUNTER_IMPROVED_MEND_PET_DISPEL))
+                    return false;
+
+                return true;
+            }
+
+            void OnPeriodic(AuraEffect const* /*aurEff*/)
+            {
+                if (Unit* caster = GetCaster())
+                    if (AuraEffect* improvedMendPet = caster->GetAuraEffectOfRankedSpell(SPELL_HUNTER_IMPROVED_MEND_PET_R1, EFFECT_0))
+                        if (roll_chance_i(improvedMendPet->GetBaseAmount()))
+                            caster->CastSpell(caster, SPELL_HUNTER_IMPROVED_MEND_PET_DISPEL, false);
+            }
+
+            void Register()
+            {
+                OnEffectPeriodic += AuraEffectPeriodicFn(spell_hun_mend_pet_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_HEAL);
+            }
+        };
+
+        AuraScript* GetAuraScript() const
+        {
+            return new spell_hun_mend_pet_AuraScript();
+        }
+};
+
 void AddSC_hunter_spell_scripts()
 {
     new spell_hun_aspect_of_the_beast();
@@ -578,4 +618,5 @@ void AddSC_hunter_spell_scripts()
     new spell_hun_sniper_training();
     new spell_hun_pet_heart_of_the_phoenix();
     new spell_hun_pet_carrion_feeder();
+    new spell_hun_mend_pet();
 }
