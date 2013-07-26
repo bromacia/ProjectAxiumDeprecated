@@ -7335,9 +7335,9 @@ void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 coun
             case TARGET_DEST_CASTER_FRONT: // Feral spirit
                 {
                     if (count == 0) // First wolf
-                        m_caster->GetFirstCollisionPosition(pos, (float)3, (float)0.66 * static_cast<float>(2*M_PI), true);
+                        m_caster->GetFirstCollisionPosition(pos, 3, (float)0.66 * static_cast<float>(2*M_PI), true);
                     else            // Second wolf
-                        m_caster->GetFirstCollisionPosition(pos, (float)3, (float)0.33 * static_cast<float>(2*M_PI), true);
+                        m_caster->GetFirstCollisionPosition(pos, 3, (float)0.33 * static_cast<float>(2*M_PI), true);
                 }
                 break;
             case TARGET_DEST_CASTER_SUMMON:
@@ -7346,6 +7346,7 @@ void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 coun
                 break;
             case TARGET_DEST_DEST_RANDOM:
             case TARGET_DEST_TARGET_RANDOM:
+            case TARGET_UNIT_DEST_AREA_ENTRY:
                 m_caster->GetRandomPoint(*m_targets.GetDst(), radius, pos);
                 break;
             default:
