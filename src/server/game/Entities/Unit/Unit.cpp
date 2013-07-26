@@ -17084,6 +17084,9 @@ void Unit::GetRaidMember(std::list<Unit*> &nearMembers, float radius)
         {
             Player* Target = itr->getSource();
 
+            if (Target && Target->ToPlayer() == owner)
+                continue;
+
             if (Target && !IsHostileTo(Target) && !Target->IsDueling())
             {
                 if (Target->isAlive() && IsWithinDistInMap(Target, radius))
@@ -17100,19 +17103,17 @@ void Unit::GetRaidMember(std::list<Unit*> &nearMembers, float radius)
             }
         }
     }
-    else
+
+    if (owner->isAlive() && (owner == this || IsWithinDistInMap(owner, radius)))
+        nearMembers.push_back(owner);
+
+    for (Unit::ControlList::iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
     {
-        if (owner->isAlive() && (owner == this || IsWithinDistInMap(owner, radius)))
-            nearMembers.push_back(owner);
+        if ((*itr)->isTotem())
+            continue;
 
-        for (Unit::ControlList::iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
-        {
-            if ((*itr)->isTotem())
-                continue;
-
-            if ((*itr)->isAlive() && ((*itr) == this || IsWithinDistInMap((*itr), radius)))
-                nearMembers.push_back((*itr));
-        }
+        if ((*itr)->isAlive() && ((*itr) == this || IsWithinDistInMap((*itr), radius)))
+            nearMembers.push_back((*itr));
     }
 }
 
@@ -17131,6 +17132,9 @@ void Unit::GetPartyMemberInDist(std::list<Unit*> &TagUnitMap, float radius)
         {
             Player* Target = itr->getSource();
 
+            if (Target && Target->ToPlayer() == owner)
+                continue;
+
             // IsHostileTo check duel and controlled by enemy
             if (Target && Target->GetSubGroup() == subgroup && !IsHostileTo(Target) && !Target->IsDueling())
             {
@@ -17148,18 +17152,16 @@ void Unit::GetPartyMemberInDist(std::list<Unit*> &TagUnitMap, float radius)
             }
         }
     }
-    else
-    {
-        if (owner->isAlive() && (owner == this || IsWithinDistInMap(owner, radius)))
-            TagUnitMap.push_back(owner);
-        for (Unit::ControlList::iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
-        {
-            if ((*itr)->isTotem())
-                continue;
 
-            if ((*itr)->isAlive() && ((*itr) == this || IsWithinDistInMap((*itr), radius)))
-                TagUnitMap.push_back((*itr));
-        }
+    if (owner->isAlive() && (owner == this || IsWithinDistInMap(owner, radius)))
+        TagUnitMap.push_back(owner);
+    for (Unit::ControlList::iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
+    {
+        if ((*itr)->isTotem())
+            continue;
+
+        if ((*itr)->isAlive() && ((*itr) == this || IsWithinDistInMap((*itr), radius)))
+            TagUnitMap.push_back((*itr));
     }
 }
 
@@ -17178,6 +17180,9 @@ void Unit::GetPartyMembers(std::list<Unit*> &TagUnitMap)
         {
             Player* Target = itr->getSource();
 
+            if (Target && Target->ToPlayer() == owner)
+                continue;
+
             // IsHostileTo check duel and controlled by enemy
             if (Target && Target->GetSubGroup() == subgroup && !IsHostileTo(Target) && !Target->IsDueling())
             {
@@ -17195,18 +17200,16 @@ void Unit::GetPartyMembers(std::list<Unit*> &TagUnitMap)
             }
         }
     }
-    else
-    {
-        if (owner->isAlive() && (owner == this || IsInMap(owner)))
-            TagUnitMap.push_back(owner);
-        for (Unit::ControlList::iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
-        {
-            if ((*itr)->isTotem())
-                continue;
 
-            if ((*itr)->isAlive() && ((*itr) == this || IsInMap((*itr))))
-                TagUnitMap.push_back((*itr));
-        }
+    if (owner->isAlive() && (owner == this || IsInMap(owner)))
+        TagUnitMap.push_back(owner);
+    for (Unit::ControlList::iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
+    {
+        if ((*itr)->isTotem())
+            continue;
+
+        if ((*itr)->isAlive() && ((*itr) == this || IsInMap((*itr))))
+            TagUnitMap.push_back((*itr));
     }
 }
 
