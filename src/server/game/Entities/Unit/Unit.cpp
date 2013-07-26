@@ -14317,6 +14317,21 @@ void Unit::SetLevel(uint8 lvl)
         ToPlayer()->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_LEVEL);
 }
 
+uint8 Unit::getRace() const
+{
+    return GetByteValue(UNIT_FIELD_BYTES_0, 0);
+}
+
+uint8 Unit::getClass() const
+{
+    return GetByteValue(UNIT_FIELD_BYTES_0, 1);
+}
+
+uint8 Unit::getGender() const
+{
+    return GetByteValue(UNIT_FIELD_BYTES_0, 2);
+}
+
 void Unit::SetHealth(uint32 val)
 {
     if (getDeathState() == JUST_DIED)

@@ -734,7 +734,7 @@ void Player::UpdateDodgePercentage()
     // Dodge from rating
     diminishing += GetRatingBonusValue(CR_DODGE);
     // apply diminishing formula to diminishing dodge chance
-    uint32 pclass = getClass()-1;
+    uint8 pclass = getClass() - 1;
     float value = nondiminishing + (diminishing * dodge_cap[pclass] / (diminishing + dodge_cap[pclass] * m_diminishing_k[pclass]));
 
     value = value < 0.0f ? 0.0f : value;

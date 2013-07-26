@@ -2740,6 +2740,7 @@ bool SpellInfo::IsCrowdControlSpell() const
             Effects[i].ApplyAuraName == SPELL_AURA_AOE_CHARM ||
             Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR ||
             Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN;
+    return false;
 }
 
 bool SpellInfo::IsNegativeAuraSpell() const
@@ -2750,4 +2751,5 @@ bool SpellInfo::IsNegativeAuraSpell() const
             !(AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT) &&
             Id != 7267 || // Grovel (Duel)
             (SpellFamilyName == SPELLFAMILY_WARLOCK && (SpellFamilyFlags[0] & 0x2000000)); // Suffering (Voidwalker)
+    return false;
 }
