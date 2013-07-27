@@ -988,7 +988,7 @@ float SpellMgr::GetSpellDotBonus(SpellInfo const* spellInfo) const
     SpellBonusMap::const_iterator itr = mSpellBonusMap.find(spellInfo->Id);
     if (itr != mSpellBonusMap.end())
     {
-        if (itr->second.dot_damage > 0 && itr->second.dot_damage < 1)
+        if (itr->second.dot_damage > 0)
             bonus = itr->second.dot_damage;
     }
 
