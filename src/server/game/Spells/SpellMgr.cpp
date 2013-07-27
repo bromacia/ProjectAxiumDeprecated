@@ -988,28 +988,12 @@ float SpellMgr::GetSpellDotBonus(SpellInfo const* spellInfo) const
     SpellBonusMap::const_iterator itr = mSpellBonusMap.find(spellInfo->Id);
     if (itr != mSpellBonusMap.end())
     {
-        if (spellInfo->Effects[1].BonusMultiplier > 0.00)
+        if (itr->second.dot_damage > 0.00)
+            bonus = itr->second.dot_damage;
+        else if (spellInfo->Effects[1].BonusMultiplier > 0.00)
             bonus = spellInfo->Effects[1].BonusMultiplier;
         else if (spellInfo->Effects[0].BonusMultiplier > 0.00)
             bonus = spellInfo->Effects[0].BonusMultiplier;
-        else
-            bonus = itr->second.dot_damage;
-    }
-    else
-    {
-        if (uint32 rank_1 = GetFirstSpellInChain(spellInfo->Id))
-        {
-            SpellBonusMap::const_iterator itr2 = mSpellBonusMap.find(rank_1);
-            if (itr2 != mSpellBonusMap.end())
-            {
-                if (spellInfo->Effects[1].BonusMultiplier > 0.00)
-                    bonus = spellInfo->Effects[1].BonusMultiplier;
-                else if (spellInfo->Effects[0].BonusMultiplier > 0.00)
-                    bonus = spellInfo->Effects[0].BonusMultiplier;
-                else
-                    bonus = itr2->second.dot_damage;
-            }
-        }
     }
 
     return bonus;
@@ -1021,24 +1005,10 @@ float SpellMgr::GetSpellDirectBonus(SpellInfo const* spellInfo) const
     SpellBonusMap::const_iterator itr = mSpellBonusMap.find(spellInfo->Id);
     if (itr != mSpellBonusMap.end())
     {
-        if (spellInfo->Effects[0].BonusMultiplier > 0.00)
-            bonus = spellInfo->Effects[0].BonusMultiplier;
-        else
+        if (itr->second.direct_damage > 0.00)
             bonus = itr->second.direct_damage;
-    }
-    else
-    {
-        if (uint32 rank_1 = GetFirstSpellInChain(spellInfo->Id))
-        {
-            SpellBonusMap::const_iterator itr2 = mSpellBonusMap.find(rank_1);
-            if (itr2 != mSpellBonusMap.end())
-            {
-                if (spellInfo->Effects[0].BonusMultiplier > 0.00)
-                    bonus = spellInfo->Effects[0].BonusMultiplier;
-                else
-                    bonus = itr2->second.direct_damage;
-            }
-        }
+        else if (spellInfo->Effects[0].BonusMultiplier > 0.00)
+            bonus = spellInfo->Effects[0].BonusMultiplier;
     }
 
     return bonus;
@@ -1049,13 +1019,8 @@ float SpellMgr::GetAPBonus(SpellInfo const* spellInfo) const
     SpellBonusMap::const_iterator itr = mSpellBonusMap.find(spellInfo->Id);
     if (itr != mSpellBonusMap.end())
         return itr->second.ap_bonus;
-    // Not found, try lookup for 1 spell rank if exist
-    if (uint32 rank_1 = GetFirstSpellInChain(spellInfo->Id))
-    {
-        SpellBonusMap::const_iterator itr2 = mSpellBonusMap.find(rank_1);
-        if (itr2 != mSpellBonusMap.end())
-            return itr2->second.ap_bonus;
-    }
+
+    return 0;
 }
 
 float SpellMgr::GetAPDotBonus(SpellInfo const* spellInfo) const
@@ -1063,13 +1028,8 @@ float SpellMgr::GetAPDotBonus(SpellInfo const* spellInfo) const
     SpellBonusMap::const_iterator itr = mSpellBonusMap.find(spellInfo->Id);
     if (itr != mSpellBonusMap.end())
         return itr->second.ap_dot_bonus;
-    // Not found, try lookup for 1 spell rank if exist
-    if (uint32 rank_1 = GetFirstSpellInChain(spellInfo->Id))
-    {
-        SpellBonusMap::const_iterator itr2 = mSpellBonusMap.find(rank_1);
-        if (itr2 != mSpellBonusMap.end())
-            return itr2->second.ap_dot_bonus;
-    }
+
+    return 0;
 }
 
 SpellThreatEntry const* SpellMgr::GetSpellThreatEntry(uint32 spellID) const
