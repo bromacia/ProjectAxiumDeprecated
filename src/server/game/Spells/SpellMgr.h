@@ -674,7 +674,10 @@ class SpellMgr
         bool CanSpellTriggerProcOnEvent(SpellProcEntry const& procEntry, ProcEventInfo& eventInfo);
 
         // Spell bonus data table
-        SpellBonusEntry const* GetSpellBonusData(uint32 spellId) const;
+        float GetSpellDotBonus(SpellInfo const* spellInfo) const;
+        float GetSpellDirectBonus(SpellInfo const* spellInfo) const;
+        float GetAPBonus(SpellInfo const* spellInfo) const;
+        float GetAPDotBonus(SpellInfo const* spellInfo) const;
 
         // Spell threat table
         SpellThreatEntry const* GetSpellThreatEntry(uint32 spellID) const;
