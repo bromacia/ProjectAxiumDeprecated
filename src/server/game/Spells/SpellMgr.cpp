@@ -994,9 +994,9 @@ float SpellMgr::GetSpellDotBonus(SpellInfo const* spellInfo) const
 
     if (bonus < 0.0001)
     {
-        if (spellInfo->Effects[1].BonusMultiplier > 0 && spellInfo->Effects[1].BonusMultiplier < 1)
+        if (spellInfo->Effects[1].BonusMultiplier > 0)
             bonus = spellInfo->Effects[1].BonusMultiplier;
-        else if (spellInfo->Effects[0].BonusMultiplier > 0 && spellInfo->Effects[0].BonusMultiplier < 1)
+        else if (spellInfo->Effects[0].BonusMultiplier > 0)
             bonus = spellInfo->Effects[0].BonusMultiplier;
     }
 
@@ -1015,9 +1015,9 @@ float SpellMgr::GetSpellDirectBonus(SpellInfo const* spellInfo) const
 
     if (bonus < 0.0001)
     { 
-        if (spellInfo->Effects[0].BonusMultiplier > 0 && spellInfo->Effects[0].BonusMultiplier < 1)
+        if (spellInfo->Effects[0].BonusMultiplier > 0)
             bonus = spellInfo->Effects[0].BonusMultiplier;
-        else if (spellInfo->Effects[1].BonusMultiplier > 0 && spellInfo->Effects[1].BonusMultiplier < 1)
+        else if (spellInfo->Effects[1].BonusMultiplier > 0)
             bonus = spellInfo->Effects[1].BonusMultiplier;
     }
 
