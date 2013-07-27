@@ -992,7 +992,7 @@ float SpellMgr::GetSpellDotBonus(SpellInfo const* spellInfo) const
             bonus = itr->second.dot_damage;
     }
 
-    if (bonus < 0.00)
+    if (bonus < 0.0001)
     {
         if (spellInfo->Effects[1].BonusMultiplier > 0.00)
             bonus = spellInfo->Effects[1].BonusMultiplier;
@@ -1013,7 +1013,7 @@ float SpellMgr::GetSpellDirectBonus(SpellInfo const* spellInfo) const
             bonus = itr->second.direct_damage;
     }
 
-    if (bonus < 0.00)
+    if (bonus < 0.0001)
     { 
         if (spellInfo->Effects[0].BonusMultiplier > 0.00)
             bonus = spellInfo->Effects[0].BonusMultiplier;
