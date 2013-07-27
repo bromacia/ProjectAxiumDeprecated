@@ -1017,6 +1017,8 @@ float SpellMgr::GetSpellDirectBonus(SpellInfo const* spellInfo) const
     { 
         if (spellInfo->Effects[0].BonusMultiplier > 0.00)
             bonus = spellInfo->Effects[0].BonusMultiplier;
+        else if (spellInfo->Effects[1].BonusMultiplier > 0.00)
+            bonus = spellInfo->Effects[1].BonusMultiplier;
     }
 
     return bonus;
