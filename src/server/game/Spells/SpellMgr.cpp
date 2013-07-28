@@ -986,19 +986,27 @@ float SpellMgr::GetSpellDotBonus(SpellInfo const* spellInfo) const
 {
     float bonus = 0;
     SpellBonusMap::const_iterator itr = mSpellBonusMap.find(spellInfo->Id);
-    if (itr != mSpellBonusMap.end())
+    if (itr != mSpellBonusMap.end()) // Found entry in spell_bonus_data to override DBC's
+        bonus = itr->second.dot_damage;
+    else // No spell found in spell_bonus_data, let's check for the last rank of the spell
     {
-        if (itr->second.dot_damage > 0)
-            bonus = itr->second.dot_damage;
+        if (uint32 lastRank = GetLastSpellInChain(spellInfo->Id))
+        {
+            SpellBonusMap::const_iterator itr2 = mSpellBonusMap.find(lastRank);
+            if (itr2 != mSpellBonusMap.end()) // Last rank of spell found in spell_bonus_data, let's use it's data
+                bonus = itr2->second.dot_damage;
+        }
     }
 
-    if (bonus < 0.0001)
+    if (bonus < 0.0001 && bonus > -1) // Bonus = 0, find DBC coefficient
     {
         if (spellInfo->Effects[1].BonusMultiplier > 0)
             bonus = spellInfo->Effects[1].BonusMultiplier;
         else if (spellInfo->Effects[0].BonusMultiplier > 0)
             bonus = spellInfo->Effects[0].BonusMultiplier;
     }
+    else if (bonus < 0) // Bonus = -1, strictly set no coefficient
+        bonus = 0;
 
     return bonus;
 }
@@ -1007,39 +1015,76 @@ float SpellMgr::GetSpellDirectBonus(SpellInfo const* spellInfo) const
 {
     float bonus = 0;
     SpellBonusMap::const_iterator itr = mSpellBonusMap.find(spellInfo->Id);
-    if (itr != mSpellBonusMap.end())
+    if (itr != mSpellBonusMap.end()) // Found entry in spell_bonus_data to override DBC's
     {
         if (itr->second.direct_damage > 0)
             bonus = itr->second.direct_damage;
     }
+    else // No spell found in spell_bonus_data, let's check for the last rank of the spell
+    {
+        if (uint32 lastRank = GetLastSpellInChain(spellInfo->Id))
+        {
+            SpellBonusMap::const_iterator itr2 = mSpellBonusMap.find(lastRank);
+            if (itr2 != mSpellBonusMap.end()) // Last rank of spell found in spell_bonus_data, let's use it's data
+                bonus = itr2->second.direct_damage;
+        }
+    }
 
-    if (bonus < 0.0001)
+    if (bonus < 0.0001 && bonus > -1) // Bonus = 0, find DBC coefficient
     { 
         if (spellInfo->Effects[0].BonusMultiplier > 0)
             bonus = spellInfo->Effects[0].BonusMultiplier;
         else if (spellInfo->Effects[1].BonusMultiplier > 0)
             bonus = spellInfo->Effects[1].BonusMultiplier;
     }
+    else if (bonus < 0) // Bonus = -1, strictly set no coefficient
+        bonus = 0;
 
     return bonus;
 }
 
 float SpellMgr::GetAPBonus(SpellInfo const* spellInfo) const
 {
+    float bonus = 0;
     SpellBonusMap::const_iterator itr = mSpellBonusMap.find(spellInfo->Id);
     if (itr != mSpellBonusMap.end())
-        return itr->second.ap_bonus;
+        bonus = itr->second.ap_bonus;
+    else
+    {
+        if (uint32 lastRank = GetLastSpellInChain(spellInfo->Id))
+        {
+            SpellBonusMap::const_iterator itr2 = mSpellBonusMap.find(lastRank);
+            if (itr2 != mSpellBonusMap.end())
+                bonus = itr2->second.ap_bonus;
+        }
+    }
 
-    return 0;
+    if (bonus < 0)
+        bonus = 0;
+
+    return bonus;
 }
 
 float SpellMgr::GetAPDotBonus(SpellInfo const* spellInfo) const
 {
+    float bonus = 0;
     SpellBonusMap::const_iterator itr = mSpellBonusMap.find(spellInfo->Id);
     if (itr != mSpellBonusMap.end())
-        return itr->second.ap_dot_bonus;
+        bonus = itr->second.ap_dot_bonus;
+    else
+    {
+        if (uint32 lastRank = GetLastSpellInChain(spellInfo->Id))
+        {
+            SpellBonusMap::const_iterator itr2 = mSpellBonusMap.find(lastRank);
+            if (itr2 != mSpellBonusMap.end())
+                bonus = itr2->second.ap_dot_bonus;
+        }
+    }
 
-    return 0;
+    if (bonus < 0)
+        bonus = 0;
+
+    return bonus;
 }
 
 SpellThreatEntry const* SpellMgr::GetSpellThreatEntry(uint32 spellID) const
