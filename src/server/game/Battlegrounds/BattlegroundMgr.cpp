@@ -294,7 +294,7 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket* data, Battleground* bg)
             uint32 team = bg->GetPlayerTeam(itr2->first);
             if (!team && player)
                 team = player->GetBGTeam();
-            *data << uint8(team == ALLIANCE ? 1 : 0); // green or yellow
+            *data << uint8(team == HORDE ? 1 : 0); // green or yellow
         }
         *data << uint32(itr2->second->DamageDone);              // damage done
         *data << uint32(itr2->second->HealingDone);             // healing done
