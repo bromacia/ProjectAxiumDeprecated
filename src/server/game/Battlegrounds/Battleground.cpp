@@ -265,10 +265,10 @@ void Battleground::Update(uint32 diff)
             break;
         case STATUS_IN_PROGRESS:
             _ProcessOfflineQueue();
-            // after 47 minutes without one team losing, the arena closes with no winner and no rating change
+            // after 20 minutes without one team losing, the arena closes with no winner and no rating change
             if (isArena())
             {
-                if (GetStartTime() >= 47*MINUTE*IN_MILLISECONDS)
+                if (GetStartTime() >= 20*MINUTE*IN_MILLISECONDS)
                 {
                     UpdateArenaWorldState();
                     CheckArenaAfterTimerConditions();
@@ -754,7 +754,7 @@ void Battleground::EndBattleground(uint32 winner)
                         if (Player* player = ObjectAccessor::FindPlayer(itr->first))
                             sLog->outArena("Statistics for %s (GUID: " UI64FMTD ", Team: %d, IP: %s): %u damage, %u healing, %u killing blows", player->GetName(), itr->first, player->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3), player->GetSession()->GetRemoteAddress().c_str(), itr->second->DamageDone, itr->second->HealingDone, itr->second->KillingBlows);
             }
-            // Deduct 16 points from each teams arena-rating if there are no winners after 45+2 minutes
+            // Deduct 16 points from each teams arena-rating if there are no winners after 18+2 minutes
             else
             {
                 SetArenaTeamRatingChangeForTeam(ALLIANCE, ARENA_TIMELIMIT_POINTS_LOSS);
