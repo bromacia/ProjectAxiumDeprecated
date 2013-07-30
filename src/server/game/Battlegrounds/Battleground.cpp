@@ -1457,7 +1457,7 @@ bool Battleground::AddObject(uint32 type, uint32 entry, float x, float y, float 
     }
 
     if (go->GetEntry() == BG_OBJECTID_READY_MARKER)
-        ReadyMarkers.insert(go);
+        ReadyMarkers.push_back(go);
 
     m_BgObjects[type] = go->GetGUID();
     return true;
@@ -2025,10 +2025,10 @@ void Battleground::ClearWantsPrematureStart()
 
 void Battleground::RemoveReadyMarkers()
 {
-    for (std::set<GameObject*>::iterator itr = ReadyMarkers.begin(); itr != ReadyMarkers.end(); ++itr)
+    for (std::list<GameObject*>::iterator itr = ReadyMarkers.begin(); itr != ReadyMarkers.end();)
         if (GameObject* go = *itr)
         {
             go->Delete();
-            ReadyMarkers.erase(itr);
+            ReadyMarkers.erase(itr++);
         }
 }

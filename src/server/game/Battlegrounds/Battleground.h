@@ -646,7 +646,7 @@ class Battleground
 
         uint8 TeamA_PrematureStartPlayers;
         uint8 TeamB_PrematureStartPlayers;
-        std::set<GameObject*> ReadyMarkers;
+        std::list<GameObject*> ReadyMarkers;
 
         /* Pre- and post-update hooks */
 
