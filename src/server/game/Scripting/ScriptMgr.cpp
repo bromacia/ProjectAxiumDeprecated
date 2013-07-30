@@ -1124,6 +1124,11 @@ void ScriptMgr::OnStartup()
     FOREACH_SCRIPT(WorldScript)->OnStartup();
 }
 
+void ScriptMgr::OnLoading()
+{
+    FOREACH_SCRIPT(WorldScript)->OnLoading();
+}
+
 void ScriptMgr::OnShutdown()
 {
     FOREACH_SCRIPT(WorldScript)->OnShutdown();

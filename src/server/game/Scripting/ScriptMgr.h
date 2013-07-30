@@ -266,6 +266,9 @@ class WorldScript : public ScriptObject
         // Called when the world is started.
         virtual void OnStartup() { }
 
+        // Called when the world is loading.
+        virtual void OnLoading() { }
+
         // Called when the world is actually shut down.
         virtual void OnShutdown() { }
 };
@@ -828,6 +831,7 @@ class ScriptMgr
         void OnShutdownCancel();
         void OnWorldUpdate(uint32 diff);
         void OnStartup();
+        void OnLoading();
         void OnShutdown();
 
     public: /* FormulaScript */

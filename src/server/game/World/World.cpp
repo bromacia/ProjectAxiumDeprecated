@@ -1875,6 +1875,8 @@ void World::SetInitialWorldSettings()
 
     LoadCharacterNameData();
 
+    sScriptMgr->OnLoading();
+
     // possibly enable db logging; avoid massive startup spam by doing it here.
     if (sLog->GetLogDBLater())
     {
