@@ -719,9 +719,7 @@ void Battleground::EndBattleground(uint32 winner)
         SetWinner(WINNER_HORDE);
     }
     else
-    {
         SetWinner(3);
-    }
 
     SetStatus(STATUS_WAIT_LEAVE);
     //we must set it this way, because end time is sent in packet!
@@ -920,11 +918,14 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         participant = true;
     }
 
-    BattlegroundScoreMap::iterator itr2 = m_PlayerScores.find(guid);
-    if (itr2 != m_PlayerScores.end())
+    if (!isArena()) // Only delete player's scores on battlegrounds, not arenas
     {
-        delete itr2->second;                                // delete player's score
-        m_PlayerScores.erase(itr2);
+        BattlegroundScoreMap::iterator itr2 = m_PlayerScores.find(guid);
+        if (itr2 != m_PlayerScores.end())
+        {
+            delete itr2->second;                                // delete player's score
+            m_PlayerScores.erase(itr2);
+        }
     }
 
     RemovePlayerFromResurrectQueue(guid);
@@ -1003,9 +1004,7 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         if (Group* group = GetBgRaid(team))
         {
             if (!group->RemoveMember(guid))                // group was disbanded
-            {
                 SetBgRaid(team, NULL);
-            }
         }
         DecreaseInvitedCount(team);
         //we should update battleground queue, but only if bg isn't ending
