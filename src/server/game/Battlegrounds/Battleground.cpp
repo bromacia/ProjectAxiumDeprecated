@@ -1607,8 +1607,6 @@ bool Battleground::DelObject(uint32 type)
         m_BgObjects[type] = 0;
         return true;
     }
-    sLog->outError("Battleground::DelObject: gameobject (type: %u, GUID: %u) not found for BG (map: %u, instance id: %u)!",
-        type, GUID_LOPART(m_BgObjects[type]), m_MapId, m_InstanceID);
     m_BgObjects[type] = 0;
     return false;
 }
