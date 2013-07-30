@@ -27,6 +27,7 @@ public:
             { "getmoveflags",     SEC_GAMEMASTER,     false, &HandleGetMoveFlagsCommand,              "", NULL },
             { "itemid",           SEC_GAMEMASTER,     false, &HandleItemIdCommand,                    "", NULL },
             { "spellid",          SEC_GAMEMASTER,     false, &HandleSpellIdCommand,                   "", NULL },
+            { "coeff",            SEC_GAMEMASTER,     false, &HandleCoeffCommand,                     "", NULL },
             { "mmr",              SEC_PLAYER,         false, &HandleMMRCommand,                       "", NULL },
             { NULL,               0,                  false, NULL,                                    "", NULL }
         };
@@ -650,6 +651,34 @@ public:
             return false;
 
         handler->PSendSysMessage("Spell Id: %u", spellId);
+        return true;
+    }
+
+    static bool HandleCoeffCommand(ChatHandler* handler, const char* args)
+    {
+        if (!*args)
+            return false;
+
+        uint32 spellId = handler->extractSpellIdFromLink((char*)args);
+
+        if (!spellId)
+            return false;
+
+        SpellInfo const* spell = sSpellMgr->GetSpellInfo(spellId);
+
+        if (!spell)
+            return false;
+
+        float spell_dotDamage = sSpellMgr->GetSpellDotBonus(spell);
+        float spell_directDamage = sSpellMgr->GetSpellDirectBonus(spell);
+        float spell_apDotBonus = sSpellMgr->GetAPDotBonus(spell);
+        float spell_apBonus = sSpellMgr->GetAPBonus(spell);
+
+        handler->PSendSysMessage("Spell Id: %u", spellId);
+        handler->PSendSysMessage("Spell Dot Bonus: %f", spell_dotDamage);
+        handler->PSendSysMessage("Spell Direct Bonus: %f", spell_directDamage);
+        handler->PSendSysMessage("AP Dot Bonus: %f", spell_apDotBonus);
+        handler->PSendSysMessage("AP Bonus: %f", spell_apBonus);
         return true;
     }
 
