@@ -2,27 +2,23 @@
 
 enum MorphIds
 {
-    NOG = 7550,
-    HUM = 49,
-    HUF = 50,
-    DWM = 53,
-    DWF = 54,
-    NEM = 55,
-    NEF = 56,
-    GNM = 1563,
-    GNF = 1564,
-    DRM = 16125,
-    DRF = 16126,
-    ORM = 51,
-    ORF = 52,
-    UDM = 57,
-    UDF = 58,
-    TAM = 59,
-    TAF = 60,
-    TRM = 1478,
-    TRF = 1479,
-    BEM = 15476,
-    BEF = 15475
+    NOG      = 7550,
+    HUM      = 19723,
+    HUF      = 19724,
+    DWM      = 20317,
+    NEM      = 20318,
+    GNM      = 20580,
+    GNF      = 20581,
+    DRF      = 20323,
+    ORM      = 21267,
+    ORF      = 20316,
+    TAM      = 20585,
+    TAF      = 20584,
+    TRM      = 20321,
+    BEM      = 20578,
+    BEF      = 20579,
+    GOM      = 20582,
+    GOF      = 20583
 };
 
 class morph_commandscript : public CommandScript
@@ -30,87 +26,34 @@ class morph_commandscript : public CommandScript
 public:
     morph_commandscript() : CommandScript("morph_commandscript") { }
 
-    static uint8 GetRaceByDisplayId(uint32 morphId)
-    {
-        switch (morphId)
-        {
-            case HUM: case HUF: return 1;
-            case DWM: case DWF: return 3;
-            case NEM: case NEF: return 4;
-            case GNM: case GNF: return 7;
-            case DRM: case DRF: return 11;
-            case ORM: case ORF: return 2;
-            case UDM: case UDF: return 5;
-            case TAM: case TAF: return 6;
-            case TRM: case TRF: return 8;
-            case BEM: case BEF: return 10;
-            default: return 0;
-        }
-    }
-
-    static uint8 GetGenderByDisplayId(uint32 morphId)
-    {
-        switch (morphId)
-        {
-            case HUM:
-            case DWM:
-            case NEM:
-            case GNM:
-            case DRM:
-            case ORM:
-            case UDM:
-            case TAM:
-            case TRM:
-            case BEM:
-                return 0;
-            case HUF:
-            case DWF:
-            case NEF:
-            case GNF:
-            case DRF:
-            case ORF:
-            case UDF:
-            case TAF:
-            case TRF:
-            case BEF:
-                return 1;
-            default:
-                return 0;
-        }
-    }
-
     ChatCommand* GetCommands() const
     {
         static ChatCommand morphCommandTable[] =
         {
             { "nog",        SEC_PLAYER,         false, &HandleMorphNoggenfoggerCommand,     "", NULL },
-            /*{ "hum",        SEC_VIP,            false, &HandleMorphHumanMaleCommand,        "", NULL },
+            { "hum",        SEC_VIP,            false, &HandleMorphHumanMaleCommand,        "", NULL },
             { "huf",        SEC_VIP,            false, &HandleMorphHumanFemaleCommand,      "", NULL },
             { "dwm",        SEC_VIP,            false, &HandleMorphDwarfMaleCommand,        "", NULL },
-            { "dwf",        SEC_VIP,            false, &HandleMorphDwarfFemaleCommand,      "", NULL },
             { "nem",        SEC_VIP,            false, &HandleMorphNightElfMaleCommand,     "", NULL },
-            { "nef",        SEC_VIP,            false, &HandleMorphNightElfFemaleCommand,   "", NULL },
             { "gnm",        SEC_VIP,            false, &HandleMorphGnomeMaleCommand,        "", NULL },
             { "gnf",        SEC_VIP,            false, &HandleMorphGnomeFemaleCommand,      "", NULL },
-            { "drm",        SEC_VIP,            false, &HandleMorphDraeneiMaleCommand,      "", NULL },
             { "drf",        SEC_VIP,            false, &HandleMorphDraeneiFemaleCommand,    "", NULL },
-            { "orm",        SEC_VIP,            false, &HandleMorphOrcMaleCommand,          "", NULL },
+            { "orm",        SEC_VIP,            false, &HandleMorphFelOrcMaleCommand,       "", NULL },
             { "orf",        SEC_VIP,            false, &HandleMorphOrcFemaleCommand,        "", NULL },
-            { "udm",        SEC_VIP,            false, &HandleMorphUndeadMaleCommand,       "", NULL },
-            { "udf",        SEC_VIP,            false, &HandleMorphUndeadFemaleCommand,     "", NULL },
             { "tam",        SEC_VIP,            false, &HandleMorphTaurenMaleCommand,       "", NULL },
             { "taf",        SEC_VIP,            false, &HandleMorphTaurenFemaleCommand,     "", NULL },
             { "trm",        SEC_VIP,            false, &HandleMorphTrollMaleCommand,        "", NULL },
-            { "trf",        SEC_VIP,            false, &HandleMorphTrollFemaleCommand,      "", NULL },
             { "bem",        SEC_VIP,            false, &HandleMorphBloodElfMaleCommand,     "", NULL },
-            { "bef",        SEC_VIP,            false, &HandleMorphBloodElfFemaleCommand,   "", NULL },*/
+            { "bef",        SEC_VIP,            false, &HandleMorphBloodElfFemaleCommand,   "", NULL },
+            { "gom",        SEC_VIP,            false, &HandleMorphGoblinMaleCommand,       "", NULL },
+            { "gof",        SEC_VIP,            false, &HandleMorphGoblinFemaleCommand,     "", NULL },
             { "none",       SEC_VIP,            false, &HandleMorphNoneCommand,             "", NULL },
             { "help",       SEC_PLAYER,         false, &HandleMorphHelpCommand,             "", NULL },
             { NULL,         0,                  false, NULL,                                "", NULL }
         };
         static ChatCommand commandTable[] =
         {
-            { "morph",      SEC_VIP,            false, NULL,                   "", morphCommandTable },
+            { "morph",      SEC_GAMEMASTER,     false, NULL,                   "", morphCommandTable },
             { NULL,         0,                  false, NULL,                                "", NULL }
         };
         return commandTable;
@@ -122,41 +65,26 @@ public:
 
         if (player->HasAuraType(SPELL_AURA_TRANSFORM))
         {
-            handler->PSendSysMessage("You can't morph when you are transformed.");
+            handler->PSendSysMessage("You cannot morph when you are transformed.");
             return;
         }
 
         if (player->getClass() == CLASS_DRUID && player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
         {
-            handler->PSendSysMessage("You can't morph when you are shapeshifted.");
+            handler->PSendSysMessage("You cannot morph when you are shapeshifted.");
             return;
         }
 
         if (player->InArena())
         {
-            handler->PSendSysMessage("You can't morph when you are in arena.");
+            handler->PSendSysMessage("You cannot morph when you are in arena.");
             return;
         }
 
-        if (morphId == NOG)
-        {
-            player->SetDisplayId(morphId);
-            player->SetNativeDisplayId(morphId);
-            player->SetMorphed(true);
-            player->SetNoggenfoggerMorphed(true);
-            return;
-        }
-
-        uint32 bytes0 = 0;
-        uint32 oldBytes0 = player->GetUInt32Value(UNIT_FIELD_BYTES_0);
-        bytes0 |= GetRaceByDisplayId(morphId);
-        bytes0 |= player->getClass() << 8;
-        bytes0 |= GetGenderByDisplayId(morphId) << 16;
-        player->SetUInt32Value(UNIT_FIELD_BYTES_0, bytes0);
-        player->SetDisplayId(morphId);
         player->SetNativeDisplayId(morphId);
-        player->SetUInt32Value(UNIT_FIELD_BYTES_0, oldBytes0);
+        player->SetDisplayId(morphId);
         player->SetMorphed(true);
+
     }
 
     static void Demorph(ChatHandler* handler)
@@ -181,9 +109,9 @@ public:
             return;
         }
 
+        player->InitDisplayIds();
         player->SetNoggenfoggerMorphed(false);
         player->SetMorphed(false);
-        player->InitDisplayIds();
     }
 
     static bool HandleMorphNoggenfoggerCommand(ChatHandler* handler, const char* /*args*/)
@@ -219,21 +147,9 @@ public:
         return true;
     }
 
-    static bool HandleMorphDwarfFemaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Morph(handler, DWF);
-        return true;
-    }
-
     static bool HandleMorphNightElfMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Morph(handler, NEM);
-        return true;
-    }
-
-    static bool HandleMorphNightElfFemaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Morph(handler, NEF);
         return true;
     }
 
@@ -249,19 +165,13 @@ public:
         return true;
     }
 
-    static bool HandleMorphDraeneiMaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Morph(handler, DRM);
-        return true;
-    }
-
     static bool HandleMorphDraeneiFemaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Morph(handler, DRF);
         return true;
     }
 
-    static bool HandleMorphOrcMaleCommand(ChatHandler* handler, const char* /*args*/)
+    static bool HandleMorphFelOrcMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Morph(handler, ORM);
         return true;
@@ -270,18 +180,6 @@ public:
     static bool HandleMorphOrcFemaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Morph(handler, ORF);
-        return true;
-    }
-
-    static bool HandleMorphUndeadMaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Morph(handler, UDM);
-        return true;
-    }
-
-    static bool HandleMorphUndeadFemaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Morph(handler, UDF);
         return true;
     }
 
@@ -303,12 +201,6 @@ public:
         return true;
     }
 
-    static bool HandleMorphTrollFemaleCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Morph(handler, TRF);
-        return true;
-    }
-
     static bool HandleMorphBloodElfMaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Morph(handler, BEM);
@@ -318,6 +210,18 @@ public:
     static bool HandleMorphBloodElfFemaleCommand(ChatHandler* handler, const char* /*args*/)
     {
         Morph(handler, BEF);
+        return true;
+    }
+
+    static bool HandleMorphGoblinMaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, GOM);
+        return true;
+    }
+
+    static bool HandleMorphGoblinFemaleCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Morph(handler, GOF);
         return true;
     }
 
@@ -334,8 +238,8 @@ public:
         if (player->GetSession()->GetSecurity() > SEC_PLAYER)
         {
             handler->PSendSysMessage("As a VIP you have access to morphs. The naming structure for morphs "
-                                     "is based on the first two/three letters of the race and the first letter of the gender "
-                                     "with the with some exceptions like UDM which stands for Undead Male. (e.g. Human Male = Hum)");
+                                     "is based on the first two/three letters of the race and the first letter "
+                                     "of the gender with the only exception being `nog` which stands for Noggenfogger. (e.g. Human Male = Hum)");
             handler->PSendSysMessage("In order to demorph type in `.morph none`. When morphed into a Skeleton via the "
                                      "`.morph nog` command you can type the command in again to demorph, just remember "
                                      "that this will only work for the `.morph nog` command.");
