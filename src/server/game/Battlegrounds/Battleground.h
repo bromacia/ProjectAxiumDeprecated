@@ -104,15 +104,18 @@ enum BattlegroundSpells
 
 enum BattlegroundTimeIntervals
 {
-    RESURRECTION_INTERVAL           = 30000,                // ms
-    //REMIND_INTERVAL                 = 10000,                // ms
-    INVITATION_REMIND_TIME          = 20000,                // ms
-    INVITE_ACCEPT_WAIT_TIME         = 60000,                // ms
-    TIME_TO_AUTOREMOVE              = 120000,               // ms
-    MAX_OFFLINE_TIME                = 30,                  // secs
-    RESPAWN_ONE_DAY                 = 86400,                // secs
-    RESPAWN_IMMEDIATELY             = 0,                    // secs
-    BUFF_RESPAWN_TIME               = 180,                  // secs
+    // Milliseconds
+    RESURRECTION_INTERVAL           = 30000,
+    REMIND_INTERVAL                 = 10000,
+    INVITATION_REMIND_TIME          = 20000,
+    INVITE_ACCEPT_WAIT_TIME         = 60000,
+    TIME_TO_AUTOREMOVE              = 120000,
+    ARENA_TIME_LIMIT                = 1200000,
+    // Seconds
+    MAX_OFFLINE_TIME                = 30,
+    RESPAWN_ONE_DAY                 = 86400,
+    RESPAWN_IMMEDIATELY             = 0,
+    BUFF_RESPAWN_TIME               = 180,
 };
 
 enum BattlegroundStartTimeIntervals

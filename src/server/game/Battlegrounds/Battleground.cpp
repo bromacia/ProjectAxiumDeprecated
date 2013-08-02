@@ -268,7 +268,7 @@ void Battleground::Update(uint32 diff)
             // after 20 minutes without one team losing, the arena closes with no winner and no rating change
             if (isArena())
             {
-                if (GetStartTime() >= 20*MINUTE*IN_MILLISECONDS)
+                if (GetStartTime() >= ARENA_TIME_LIMIT)
                 {
                     UpdateArenaWorldState();
                     CheckArenaAfterTimerConditions();
