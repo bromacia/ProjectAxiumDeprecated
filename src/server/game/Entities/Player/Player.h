@@ -54,6 +54,7 @@ class PlayerMenu;
 class PlayerSocial;
 class SpellCastTargets;
 class UpdateMask;
+struct GameTele;
 
 typedef std::deque<Mail*> PlayerMails;
 
@@ -1189,9 +1190,9 @@ class Player : public Unit, public GridObject<Player>
                                                             // mount_id can be used in scripting calls
         bool IsAcceptWhispers() const { return m_ExtraFlags & PLAYER_EXTRA_ACCEPT_WHISPERS; }
         void SetAcceptWhispers(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_ACCEPT_WHISPERS; else m_ExtraFlags &= ~PLAYER_EXTRA_ACCEPT_WHISPERS; }
-        bool IsGameMasterTagOn() const { return m_ExtraFlags & PLAYER_EXTRA_GM_ON; }
+        bool HasGameMasterTagOn() const { return m_ExtraFlags & PLAYER_EXTRA_GM_ON; }
         void SetGameMasterTag(bool on);
-        bool IsGMChatBadgeOn() const { return m_ExtraFlags & PLAYER_EXTRA_GM_CHAT; }
+        bool HasGMChatBadgeOn() const { return m_ExtraFlags & PLAYER_EXTRA_GM_CHAT; }
         void SetGMChatBadge(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_GM_CHAT; else m_ExtraFlags &= ~PLAYER_EXTRA_GM_CHAT; }
         bool IsTaxiCheater() const { return m_ExtraFlags & PLAYER_EXTRA_TAXICHEAT; }
         void SetTaxiCheater(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_TAXICHEAT; else m_ExtraFlags &= ~PLAYER_EXTRA_TAXICHEAT; }
@@ -2124,7 +2125,7 @@ class Player : public Unit, public GridObject<Player>
         void SetCanBlock(bool value);
         bool CanTitanGrip() const { return m_canTitanGrip; }
         void SetCanTitanGrip(bool value) { m_canTitanGrip = value; }
-        bool CanTameExoticPets() const { return IsGameMasterTagOn() || HasAuraType(SPELL_AURA_ALLOW_TAME_PET_TYPE); }
+        bool CanTameExoticPets() const { return HasGameMasterTagOn() || HasAuraType(SPELL_AURA_ALLOW_TAME_PET_TYPE); }
 
         void SetRegularAttackTime();
         void SetBaseModValue(BaseModGroup modGroup, BaseModType modType, float value) { m_auraBaseMod[modGroup][modType] = value; }
@@ -2574,14 +2575,14 @@ class Player : public Unit, public GridObject<Player>
 
         void InterruptMovement();
 
-        bool IsVIP() { if (GetSession()->GetSecurity() == SEC_VIP) return true; return false; }
-        bool IsGameMaster() { if (GetSession()->GetSecurity() == SEC_GAMEMASTER) return true; return false; }
-        bool IsHeadGameMaster() { if (GetSession()->GetSecurity() == SEC_HEAD_GAMEMASTER) return true; return false; }
-        bool IsAdministrator() { if (GetSession()->GetSecurity() == SEC_ADMINISTRATOR) return true; return false; }
-        bool IsConsole() { if (GetSession()->GetSecurity() == SEC_CONSOLE) return true; return false; }
+        bool IsVIP() const { if (GetSession()->GetSecurity() == SEC_VIP) return true; return false; }
+        bool IsGameMaster() const { if (GetSession()->GetSecurity() == SEC_GAMEMASTER) return true; return false; }
+        bool IsHeadGameMaster() const { if (GetSession()->GetSecurity() == SEC_HEAD_GAMEMASTER) return true; return false; }
+        bool IsAdministrator() const { if (GetSession()->GetSecurity() == SEC_ADMINISTRATOR) return true; return false; }
+        bool IsConsole() const { if (GetSession()->GetSecurity() == SEC_CONSOLE) return true; return false; }
 
         void SetMovementBlocked(bool x) { blockedMovement = x; }
-        bool IsMovementBlocked() { return blockedMovement; }
+        bool IsMovementBlocked() const { return blockedMovement; }
 
         void SetShowDBWTransformation(bool x) { m_show_dbw_transformation = x; }
         bool ShowDBWTransformation() const { return m_show_dbw_transformation; }
@@ -2605,15 +2606,23 @@ class Player : public Unit, public GridObject<Player>
         bool IsTankingSpec() const;
         bool IsHealingSpec() const;
 
-        WorldObject* GetCurrentViewpoint() { return currentViewpoint; }
-        void SetCurrentViewpoint(WorldObject* viewpoint) { currentViewpoint = viewpoint; }
+        WorldObject* GetCurrentViewpoint() const { return currentViewpoint; }
+        void SetCurrentViewpoint(WorldObject *viewpoint) { currentViewpoint = viewpoint; }
 
-        uint16 Get2v2MMR() { return m_2v2MMR; }
+        uint16 Get2v2MMR() const { return m_2v2MMR; }
         void Set2v2MMR(uint16 mmr) { m_2v2MMR = mmr; }
-        uint16 Get3v3MMR() { return m_3v3MMR; }
+        uint16 Get3v3MMR() const { return m_3v3MMR; }
         void Set3v3MMR(uint16 mmr) { m_3v3MMR = mmr; }
-        uint16 Get5v5MMR() { return m_5v5MMR; }
+        uint16 Get5v5MMR() const { return m_5v5MMR; }
         void Set5v5MMR(uint16 mmr) { m_5v5MMR = mmr; }
+
+        bool IsInWorldPvPZone() const { if (GetZoneId() == 3521) return true; return false; }
+
+        bool CanAppearToTarget(Player *target);
+        bool CanTeleportTo(const GameTele *tele);
+        uint32 lastCombatTime;
+        uint32 lastAppearTime;
+        uint32 lastTeleportTime;
 
     protected:
         // Gamemaster whisper whitelist
@@ -2972,8 +2981,8 @@ class Player : public Unit, public GridObject<Player>
         uint16 m_5v5MMR;
 };
 
-void AddItemsSetItem(Player*player, Item* item);
-void RemoveItemsSetItem(Player*player, ItemTemplate const* proto);
+void AddItemsSetItem(Player *player, Item *item);
+void RemoveItemsSetItem(Player *player, const ItemTemplate *proto);
 
 // "the bodies of template functions must be made available in a header file"
 template <class T> T Player::ApplySpellMod(uint32 spellId, SpellModOp op, T &basevalue, Spell* spell)

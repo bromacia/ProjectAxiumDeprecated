@@ -9,7 +9,7 @@ class PrematureStart : public GameObjectScript
 
         bool OnGossipHello(Player* player, GameObject* go)
         {
-            if (!player->IsGameMasterTagOn())
+            if (!player->HasGameMasterTagOn())
                 if (!player->WantsPrematureBattleGroundStart() && !player->IsAddedToPrematureBattleGroundStartList())
                 {
                     if (Battleground* bg = player->GetBattleground())

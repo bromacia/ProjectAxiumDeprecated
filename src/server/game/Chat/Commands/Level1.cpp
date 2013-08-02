@@ -157,15 +157,7 @@ bool ChatHandler::HandleSummonCommand(const char* args)
 
         if (map->IsBattlegroundOrArena())
         {
-            // only allow if gm mode is on
-            if (!_player->IsGameMasterTagOn())
-            {
-                PSendSysMessage(LANG_CANNOT_GO_TO_BG_GM, nameLink.c_str());
-                SetSentErrorMessage(true);
-                return false;
-            }
-            // if both players are in different bgs
-            else if (target->GetBattlegroundId() && m_session->GetPlayer()->GetBattlegroundId() != target->GetBattlegroundId())
+            if (target->GetBattlegroundId() && m_session->GetPlayer()->GetBattlegroundId() != target->GetBattlegroundId())
                 target->LeaveBattleground(false); // Note: should be changed so target gets no Deserter debuff
 
             // all's well, set bg id
@@ -194,10 +186,6 @@ bool ChatHandler::HandleSummonCommand(const char* args)
             }
         }
 
-        PSendSysMessage(LANG_SUMMONING, nameLink.c_str(), "");
-        if (needReportToTarget(target))
-            ChatHandler(target).PSendSysMessage(LANG_SUMMONED_BY, playerLink(_player->GetName()).c_str());
-
         // stop flight if need
         if (target->isInFlight())
         {
@@ -219,10 +207,6 @@ bool ChatHandler::HandleSummonCommand(const char* args)
         // check offline security
         if (HasLowerSecurity(NULL, target_guid))
             return false;
-
-        std::string nameLink = playerLink(target_name);
-
-        PSendSysMessage(LANG_SUMMONING, nameLink.c_str(), GetTrinityString(LANG_OFFLINE));
 
         // in point where GM stay
         Player::SavePositionInDB(m_session->GetPlayer()->GetMapId(),
@@ -246,134 +230,23 @@ bool ChatHandler::HandleAppearCommand(const char* args)
     if (!extractPlayerTarget((char*)args, &target, &target_guid, &target_name))
         return false;
 
-    Player* _player = m_session->GetPlayer();
-    if (target == _player || target_guid == _player->GetGUID())
-    {
-        SendSysMessage(LANG_CANT_TELEPORT_SELF);
-        SetSentErrorMessage(true);
+    if (!target)
         return false;
-    }
 
-    if (target)
+    Player* player = m_session->GetPlayer();
+    if (player->CanAppearToTarget(target))
     {
-        // check online security
-        if (HasLowerSecurity(target, 0))
-            return false;
-
-        std::string chrNameLink = playerLink(target_name);
-
-        Map* cMap = target->GetMap();
-        if (cMap->IsBattlegroundOrArena())
+        if (player->isInFlight())
         {
-            // only allow if gm mode is on
-            if (!_player->IsGameMasterTagOn())
-            {
-                PSendSysMessage(LANG_CANNOT_GO_TO_BG_GM, chrNameLink.c_str());
-                SetSentErrorMessage(true);
-                return false;
-            }
-            // if both players are in different bgs
-            else if (_player->GetBattlegroundId() && _player->GetBattlegroundId() != target->GetBattlegroundId())
-                _player->LeaveBattleground(false); // Note: should be changed so _player gets no Deserter debuff
-
-            // all's well, set bg id
-            // when porting out from the bg, it will be reset to 0
-            _player->SetBattlegroundId(target->GetBattlegroundId(), target->GetBattlegroundTypeId());
-            // remember current position as entry point for return at bg end teleportation
-            if (!_player->GetMap()->IsBattlegroundOrArena())
-                _player->SetBattlegroundEntryPoint();
+            player->GetMotionMaster()->MovementExpired();
+            player->CleanupAfterTaxiFlight();
         }
-        else if (cMap->IsDungeon())
-        {
-            // we have to go to instance, and can go to player only if:
-            //   1) we are in his group (either as leader or as member)
-            //   2) we are not bound to any group and have GM mode on
-            if (_player->GetGroup())
-            {
-                // we are in group, we can go only if we are in the player group
-                if (_player->GetGroup() != target->GetGroup())
-                {
-                    PSendSysMessage(LANG_CANNOT_GO_TO_INST_PARTY, chrNameLink.c_str());
-                    SetSentErrorMessage(true);
-                    return false;
-                }
-            }
-            else
-            {
-                // we are not in group, let's verify our GM mode
-                if (!_player->IsGameMasterTagOn())
-                {
-                    PSendSysMessage(LANG_CANNOT_GO_TO_INST_GM, chrNameLink.c_str());
-                    SetSentErrorMessage(true);
-                    return false;
-                }
-            }
-
-            // if the player or the player's group is bound to another instance
-            // the player will not be bound to another one
-            InstancePlayerBind* pBind = _player->GetBoundInstance(target->GetMapId(), target->GetDifficulty(cMap->IsRaid()));
-            if (!pBind)
-            {
-                Group* group = _player->GetGroup();
-                // if no bind exists, create a solo bind
-                InstanceGroupBind* gBind = group ? group->GetBoundInstance(target) : NULL;                // if no bind exists, create a solo bind
-                if (!gBind)
-                    if (InstanceSave* save = sInstanceSaveMgr->GetInstanceSave(target->GetInstanceId()))
-                        _player->BindToInstance(save, !save->CanReset());
-            }
-
-            if (cMap->IsRaid())
-                _player->SetRaidDifficulty(target->GetRaidDifficulty());
-            else
-                _player->SetDungeonDifficulty(target->GetDungeonDifficulty());
-        }
-
-        PSendSysMessage(LANG_APPEARING_AT, chrNameLink.c_str());
-
-        // stop flight if need
-        if (_player->isInFlight())
-        {
-            _player->GetMotionMaster()->MovementExpired();
-            _player->CleanupAfterTaxiFlight();
-        }
-        // save only in non-flight case
         else
-            _player->SaveRecallPosition();
+            player->SaveRecallPosition();
 
-        // to point to see at target with same orientation
-        float x, y, z;
-        target->GetPosition(x, y, z);
-        _player->TeleportTo(target->GetMapId(), x, y, z, _player->GetAngle(target), TELE_TO_GM_MODE);
-        _player->SetPhaseMask(target->GetPhaseMask(), true);
-    }
-    else
-    {
-        // check offline security
-        if (HasLowerSecurity(NULL, target_guid))
-            return false;
-
-        std::string nameLink = playerLink(target_name);
-
-        PSendSysMessage(LANG_APPEARING_AT, nameLink.c_str());
-
-        // to point where player stay (if loaded)
-        float x, y, z, o;
-        uint32 map;
-        bool in_flight;
-        if (!Player::LoadPositionFromDB(map, x, y, z, o, in_flight, target_guid))
-            return false;
-
-        // stop flight if need
-        if (_player->isInFlight())
-        {
-            _player->GetMotionMaster()->MovementExpired();
-            _player->CleanupAfterTaxiFlight();
-        }
-        // save only in non-flight case
-        else
-            _player->SaveRecallPosition();
-
-        _player->TeleportTo(map, x, y, z, _player->GetOrientation());
+        player->TeleportTo(target->GetMapId(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
+        player->SetPhaseMask(target->GetPhaseMask(), true);
+        player->lastAppearTime = getMSTime();
     }
 
     return true;

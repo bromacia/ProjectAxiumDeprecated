@@ -172,10 +172,6 @@ public:
                 return false;
             }
 
-            handler->PSendSysMessage(LANG_TELEPORTING_TO, chrNameLink.c_str(), "", tele->name.c_str());
-            if (handler->needReportToTarget(target))
-                (ChatHandler(target)).PSendSysMessage(LANG_TELEPORTED_TO_BY, handler->GetNameLink().c_str());
-
             // stop flight if need
             if (target->isInFlight())
             {
@@ -293,10 +289,10 @@ public:
         if (!*args)
             return false;
 
-        Player* me = handler->GetSession()->GetPlayer();
+        Player *player = handler->GetSession()->GetPlayer();
 
         // id, or string, or [name] Shift-click form |color|Htele:id|h[name]|h|r
-        GameTele const* tele = handler->extractGameTeleFromLink((char*)args);
+        const GameTele *tele = handler->extractGameTeleFromLink((char*)args);
 
         if (!tele)
         {
@@ -305,32 +301,20 @@ public:
             return false;
         }
 
-        if (me->isInCombat())
+        if (player->CanTeleportTo(tele))
         {
-            handler->SendSysMessage(LANG_YOU_IN_COMBAT);
-            handler->SetSentErrorMessage(true);
-            return false;
+            if (player->isInFlight())
+            {
+                player->GetMotionMaster()->MovementExpired();
+                player->CleanupAfterTaxiFlight();
+            }
+            else
+                player->SaveRecallPosition();
+
+            player->TeleportTo(tele->mapId, tele->position_x, tele->position_y, tele->position_z, tele->orientation);
+            player->lastTeleportTime = getMSTime();
         }
 
-        MapEntry const* map = sMapStore.LookupEntry(tele->mapId);
-        if (!map || map->IsBattlegroundOrArena())
-        {
-            handler->SendSysMessage(LANG_CANNOT_TELE_TO_BG);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        // stop flight if need
-        if (me->isInFlight())
-        {
-            me->GetMotionMaster()->MovementExpired();
-            me->CleanupAfterTaxiFlight();
-        }
-        // save only in non-flight case
-        else
-            me->SaveRecallPosition();
-
-        me->TeleportTo(tele->mapId, tele->position_x, tele->position_y, tele->position_z, tele->orientation);
         return true;
     }
 };

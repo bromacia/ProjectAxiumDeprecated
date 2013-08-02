@@ -9603,7 +9603,7 @@ bool Unit::Attack(Unit* victim, bool meleeAttack)
     // nobody can attack GM in GM-mode
     if (victim->GetTypeId() == TYPEID_PLAYER)
     {
-        if (victim->ToPlayer()->IsGameMasterTagOn())
+        if (victim->ToPlayer()->HasGameMasterTagOn())
             return false;
     }
     else
@@ -12839,8 +12839,12 @@ void Unit::ClearInCombat()
         else if (!isCharmed())
             return;
     }
-    else
-        ToPlayer()->UpdatePotionCooldown();
+
+    if (Player* player = ToPlayer())
+    {
+        player->UpdatePotionCooldown();
+        player->lastCombatTime = getMSTime();
+    }
 
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_IN_COMBAT);
 }
@@ -12854,7 +12858,7 @@ bool Unit::isTargetableForAttack(bool checkFakeDeath) const
         UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC))
         return false;
 
-    if (GetTypeId() == TYPEID_PLAYER && ToPlayer()->IsGameMasterTagOn())
+    if (GetTypeId() == TYPEID_PLAYER && ToPlayer()->HasGameMasterTagOn())
         return false;
 
     return !HasUnitState(UNIT_STATE_UNATTACKABLE) && (!checkFakeDeath || !HasUnitState(UNIT_STATE_DIED));
@@ -12876,7 +12880,7 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell, Wo
 
     // can't attack unattackable units or GMs
     if (target->HasUnitState(UNIT_STATE_UNATTACKABLE)
-        || (target->GetTypeId() == TYPEID_PLAYER && target->ToPlayer()->IsGameMasterTagOn()))
+        || (target->GetTypeId() == TYPEID_PLAYER && target->ToPlayer()->HasGameMasterTagOn()))
         return false;
 
     // can't attack own vehicle or passenger
@@ -12967,7 +12971,7 @@ bool Unit::_IsValidAssistTarget(Unit const* target, SpellInfo const* bySpell) co
 
     // can't assist unattackable units or GMs
     if (target->HasUnitState(UNIT_STATE_UNATTACKABLE)
-        || (target->GetTypeId() == TYPEID_PLAYER && target->ToPlayer()->IsGameMasterTagOn()))
+        || (target->GetTypeId() == TYPEID_PLAYER && target->ToPlayer()->HasGameMasterTagOn()))
         return false;
 
     // can't assist own vehicle or passenger
@@ -13576,7 +13580,7 @@ void Unit::TauntApply(Unit* taunter)
 {
     ASSERT(GetTypeId() == TYPEID_UNIT);
 
-    if (!taunter || (taunter->GetTypeId() == TYPEID_PLAYER && taunter->ToPlayer()->IsGameMasterTagOn()))
+    if (!taunter || (taunter->GetTypeId() == TYPEID_PLAYER && taunter->ToPlayer()->HasGameMasterTagOn()))
         return;
 
     if (!CanHaveThreatList())
@@ -13604,7 +13608,7 @@ void Unit::TauntFadeOut(Unit* taunter)
 {
     ASSERT(GetTypeId() == TYPEID_UNIT);
 
-    if (!taunter || (taunter->GetTypeId() == TYPEID_PLAYER && taunter->ToPlayer()->IsGameMasterTagOn()))
+    if (!taunter || (taunter->GetTypeId() == TYPEID_PLAYER && taunter->ToPlayer()->HasGameMasterTagOn()))
         return;
 
     if (!CanHaveThreatList())

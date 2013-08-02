@@ -466,7 +466,7 @@ void AchievementMgr::ResetAchievementCriteria(AchievementCriteriaTypes type, uin
     sLog->outDebug(LOG_FILTER_ACHIEVEMENTSYS, "AchievementMgr::ResetAchievementCriteria(%u, %u, %u)", type, miscvalue1, miscvalue2);
 
     // disable for gamemasters with GM-mode enabled
-    if (m_player->IsGameMasterTagOn())
+    if (m_player->HasGameMasterTagOn())
         return;
 
     AchievementCriteriaEntryList const& achievementCriteriaList = sAchievementMgr->GetAchievementCriteriaByType(type);
@@ -770,7 +770,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, ui
     sLog->outDebug(LOG_FILTER_ACHIEVEMENTSYS, "AchievementMgr::UpdateAchievementCriteria(%u, %u, %u)", type, miscValue1, miscValue2);
 
     // disable for gamemasters with GM-mode enabled
-    if (m_player->IsGameMasterTagOn())
+    if (m_player->HasGameMasterTagOn())
         return;
 
     AchievementCriteriaEntryList const& achievementCriteriaList = sAchievementMgr->GetAchievementCriteriaByType(type);
@@ -2025,7 +2025,7 @@ void AchievementMgr::CompletedAchievement(AchievementEntry const* achievement)
     sLog->outDetail("AchievementMgr::CompletedAchievement(%u)", achievement->ID);
 
     // disable for gamemasters with GM-mode enabled
-    if (m_player->IsGameMasterTagOn())
+    if (m_player->HasGameMasterTagOn())
         return;
 
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER || HasAchieved(achievement->ID))

@@ -178,7 +178,7 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
     }
 
     //Bypass checks for GMs
-    if (player->IsGameMasterTagOn())
+    if (player->HasGameMasterTagOn())
         return true;
 
     char const* mapName = entry->name[player->GetSession()->GetSessionDbcLocale()];

@@ -126,7 +126,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
     else
     {
         // send in universal language if player in .gmon mode (ignore spell effects)
-        if (sender->IsGameMasterTagOn())
+        if (sender->HasGameMasterTagOn())
             lang = LANG_UNIVERSAL;
         else
         {
@@ -295,7 +295,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                     return;
                 }
 
-            if (GetPlayer()->HasAura(1852) && !receiver->IsGameMasterTagOn())
+            if (GetPlayer()->HasAura(1852) && !receiver->HasGameMasterTagOn())
             {
                 SendNotification(GetTrinityString(LANG_GM_SILENCE), GetPlayer()->GetName());
                 return;

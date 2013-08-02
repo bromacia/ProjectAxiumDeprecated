@@ -59,7 +59,7 @@ public:
         if (!*args)
         {
             WorldSession* session = handler->GetSession();
-            if (session->GetPlayer()->IsGMChatBadgeOn())
+            if (session->GetPlayer()->HasGMChatBadgeOn())
                 session->SendNotification(LANG_GM_CHAT_ON);
             else
                 session->SendNotification(LANG_GM_CHAT_OFF);
@@ -215,7 +215,7 @@ public:
     {
         if (!*args)
         {
-            if (handler->GetSession()->GetPlayer()->IsGameMasterTagOn())
+            if (handler->GetSession()->GetPlayer()->HasGameMasterTagOn())
                 handler->GetSession()->SendNotification(LANG_GM_ON);
             else
                 handler->GetSession()->SendNotification(LANG_GM_OFF);

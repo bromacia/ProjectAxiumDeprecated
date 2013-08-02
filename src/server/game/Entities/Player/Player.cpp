@@ -885,6 +885,10 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_2v2MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
     m_3v3MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
     m_5v5MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
+
+    lastCombatTime = 0;
+    lastAppearTime = 0;
+    lastTeleportTime = 0;
 }
 
 Player::~Player ()
@@ -2008,7 +2012,7 @@ uint8 Player::GetChatTag() const
 {
     uint8 tag = CHAT_TAG_NONE;
 
-    if (IsGMChatBadgeOn())
+    if (HasGMChatBadgeOn())
         tag |= CHAT_TAG_GM;
     if (isDND())
         tag |= CHAT_TAG_DND;
@@ -18344,7 +18348,7 @@ void Player::ConvertInstancesToGroup(Player* player, Group* group, bool switchLe
 
 bool Player::Satisfy(AccessRequirement const* ar, uint32 target_map, bool report)
 {
-    if (!IsGameMasterTagOn() && ar)
+    if (!HasGameMasterTagOn() && ar)
     {
         uint8 LevelMin = 0;
         uint8 LevelMax = 0;
@@ -18419,7 +18423,7 @@ bool Player::CheckInstanceLoginValid()
     if (!GetMap())
         return false;
 
-    if (!GetMap()->IsDungeon() || IsGameMasterTagOn())
+    if (!GetMap()->IsDungeon() || HasGameMasterTagOn())
         return true;
 
     if (GetMap()->IsRaid())
@@ -19765,7 +19769,7 @@ void Player::Whisper(const std::string& text, uint32 language, uint64 receiver)
     rPlayer->BuildPlayerChat(&data, CHAT_MSG_WHISPER_INFORM, _text, language);
     GetSession()->SendPacket(&data);
 
-    if (!IsAcceptWhispers() && !IsGameMasterTagOn() && !rPlayer->IsGameMasterTagOn())
+    if (!IsAcceptWhispers() && !HasGameMasterTagOn() && !rPlayer->HasGameMasterTagOn())
     {
         SetAcceptWhispers(true);
         ChatHandler(this).SendSysMessage(LANG_COMMAND_WHISPERON);
@@ -20958,7 +20962,7 @@ uint32 Player::GetMaxPersonalArenaRatingRequirement(uint32 minarenaslot) const
 void Player::UpdateHomebindTime(uint32 time)
 {
     // GMs never get homebind timer online
-    if (m_InstanceValid || IsGameMasterTagOn())
+    if (m_InstanceValid || HasGameMasterTagOn())
     {
         if (m_HomebindTimer)                                 // instance valid, but timer not reset
         {
@@ -20998,7 +21002,7 @@ void Player::UpdatePvPState(bool onlyFFA)
 {
     // TODO: should we always synchronize UNIT_FIELD_BYTES_2, 1 of controller and controlled?
     // no, we shouldn't, those are checked for affecting player by client
-    if (!pvpInfo.inNoPvPArea && !IsGameMasterTagOn()
+    if (!pvpInfo.inNoPvPArea && !HasGameMasterTagOn()
         && (pvpInfo.inFFAPvPArea || sWorld->IsFFAPvPRealm()))
     {
         if (!HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP))
@@ -21403,7 +21407,7 @@ void Player::LeaveBattleground(bool teleportToEntryPoint)
         bg->RemovePlayerAtLeave(GetGUID(), teleportToEntryPoint, true);
 
         // call after remove to be sure that player resurrected for correct cast
-        if (bg->isBattleground() && !IsGameMasterTagOn() && sWorld->getBoolConfig(CONFIG_BATTLEGROUND_CAST_DESERTER))
+        if (bg->isBattleground() && !HasGameMasterTagOn() && sWorld->getBoolConfig(CONFIG_BATTLEGROUND_CAST_DESERTER))
         {
             if (bg->GetStatus() == STATUS_IN_PROGRESS || bg->GetStatus() == STATUS_WAIT_JOIN)
             {
@@ -23744,7 +23748,7 @@ void Player::_LoadSkills(PreparedQueryResult result)
 uint32 Player::GetPhaseMaskForSpawn() const
 {
     uint32 phase = PHASEMASK_NORMAL;
-    if (!IsGameMasterTagOn())
+    if (!HasGameMasterTagOn())
         phase = GetPhaseMask();
     else
     {
@@ -23831,7 +23835,7 @@ void Player::HandleFall(MovementInfo const& movementInfo)
 
     //Players with low fall distance, Feather Fall or physical immunity (charges used) are ignored
     // 14.57 can be calculated by resolving damageperc formula below to 0
-    if (z_diff >= 14.57f && !isDead() && !IsGameMasterTagOn() &&
+    if (z_diff >= 14.57f && !isDead() && !HasGameMasterTagOn() &&
         !HasAuraType(SPELL_AURA_HOVER) && !HasAuraType(SPELL_AURA_FEATHER_FALL) &&
         !HasAuraType(SPELL_AURA_FLY) && !IsImmunedToDamage(SPELL_SCHOOL_MASK_NORMAL))
     {
@@ -25286,4 +25290,152 @@ bool Player::IsHealingSpec() const
 {
     return m_playerSpec == PLAYERSPEC_PALADIN_HOLY || m_playerSpec == PLAYERSPEC_SHAMAN_RESTORATION ||
         m_playerSpec == PLAYERSPEC_DRUID_RESTORATION || m_playerSpec == PLAYERSPEC_PRIEST_DISCIPLINE || m_playerSpec == PLAYERSPEC_PRIEST_HOLY;
+}
+
+bool Player::CanAppearToTarget(Player *target)
+{
+    uint8 playerSecurity = GetSession()->GetSecurity();
+
+    if (target == this || target->GetGUIDLow() == GetGUIDLow())
+    {
+        ChatHandler(this).PSendSysMessage("You can't appear to yourself.");
+        return false;
+    }
+
+    if (!target->IsInWorld())
+    {
+        ChatHandler(this).PSendSysMessage("You can't appear to players who are loading.");
+        return false;
+    }
+
+    if (target->IsBeingTeleported())
+    {
+        ChatHandler(this).PSendSysMessage("You can't appear to players who are being teleported.");
+        return false;
+    }
+
+    if (target->isInFlight())
+    {
+        ChatHandler(this).PSendSysMessage("You can't appear to players who are on a flight path.");
+        return false;
+    }
+
+    switch (playerSecurity)
+    {
+        case SEC_PLAYER:
+        {
+            ChatHandler(this).PSendSysMessage("You don't have high enough security to use this command.");
+            return false;
+        }
+        case SEC_VIP:
+        {
+            if (lastAppearTime + 10000 > getMSTime())
+            {
+                ChatHandler(this).PSendSysMessage("You can only appear once every 10 seconds.");
+                ChatHandler(this).PSendSysMessage("Remaining Time: %u", ((lastAppearTime + 10000) - getMSTime()) / IN_MILLISECONDS);
+                return false;
+            }
+
+            if (IsInWorldPvPZone())
+            {
+                ChatHandler(this).PSendSysMessage("You can't appear while in the World PvP zone.");
+                return false;
+            }
+
+            if (target->IsInWorldPvPZone())
+            {
+                ChatHandler(this).PSendSysMessage("You can't appear to players in the World PvP zone.");
+                return false;
+            }
+
+            if (InBattleground() || InArena())
+            {
+                ChatHandler(this).PSendSysMessage("You can't appear while in a battleground or arena.");
+                return false;
+            }
+
+            if (target->InBattleground() || target->InArena())
+            {
+                ChatHandler(this).PSendSysMessage("You can't appear to players in battlegrounds or arenas.");
+                return false;
+            }
+
+            if (isInCombat())
+            {
+                ChatHandler(this).PSendSysMessage("You can't appear while in combat.");
+                return false;
+            }
+
+            if (lastCombatTime + 10000 > getMSTime())
+            {
+                ChatHandler(this).PSendSysMessage("You can only appear 10 seconds after leaving combat.");
+                ChatHandler(this).PSendSysMessage("Remaining Time: %u", ((lastCombatTime + 10000) - getMSTime()) / IN_MILLISECONDS);
+                return false;
+            }
+
+            if (target->HasAuraType(SPELL_AURA_MOD_STEALTH) || target->HasAuraType(SPELL_AURA_MOD_INVISIBILITY))
+            {
+                ChatHandler(this).PSendSysMessage("You can't appear to sleathed or invisible players.");
+                return false;
+            }
+
+            if (GetMap()->IsDungeon() || GetMap()->IsRaid())
+            {
+                ChatHandler(this).PSendSysMessage("You can't appear to players in dungeons or raids.");
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool Player::CanTeleportTo(const GameTele *tele)
+{
+    uint8 playerSecurity = GetSession()->GetSecurity();
+
+    switch (playerSecurity)
+    {
+        case SEC_PLAYER:
+        {
+            ChatHandler(this).PSendSysMessage("You don't have high enough security to use this command.");
+            return false;
+        }
+        case SEC_VIP:
+        {
+            if (lastTeleportTime + 10000 > getMSTime())
+            {
+                ChatHandler(this).PSendSysMessage("You can only appear once every 10 seconds.");
+                ChatHandler(this).PSendSysMessage("Remaining Time: %u", ((lastTeleportTime + 10000) - getMSTime()) / IN_MILLISECONDS);
+                return false;
+            }
+
+            if (IsInWorldPvPZone())
+            {
+                ChatHandler(this).PSendSysMessage("You can't appear while in the World PvP zone.");
+                return false;
+            }
+
+            if (InBattleground() || InArena())
+            {
+                ChatHandler(this).PSendSysMessage("You can't appear while in a battleground or arena.");
+                return false;
+            }
+
+            if (isInCombat())
+            {
+                ChatHandler(this).PSendSysMessage("You can't appear while in combat.");
+                return false;
+            }
+
+            if (lastCombatTime + 10000 > getMSTime())
+            {
+                ChatHandler(this).PSendSysMessage("You can only appear 10 seconds after leaving combat.");
+                ChatHandler(this).PSendSysMessage("Remaining Time: %u", (lastCombatTime + 10000) - getMSTime());
+                return false;
+            }
+        }
+    }
+
+    return true;
 }

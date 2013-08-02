@@ -340,7 +340,7 @@ void CreatureTextMgr::SendChatPacket(WorldPacket* data, WorldObject* source, Cha
             Map::PlayerList const& pList = source->GetMap()->GetPlayers();
             for (Map::PlayerList::const_iterator itr = pList.begin(); itr != pList.end(); ++itr)
             {
-                if (itr->getSource()->GetAreaId() == areaId && (!team || Team(itr->getSource()->GetTeam()) == team) && (!gmOnly || itr->getSource()->IsGameMasterTagOn()))
+                if (itr->getSource()->GetAreaId() == areaId && (!team || Team(itr->getSource()->GetTeam()) == team) && (!gmOnly || itr->getSource()->HasGameMasterTagOn()))
                 {
                     if (data->GetOpcode() == SMSG_MESSAGECHAT)//override whisperguid with actual player's guid
                         data->put<uint64>(1+4+8+4+4+(int32)(strlen(source->GetName())+1), uint64(itr->getSource()->GetGUID()));
@@ -355,7 +355,7 @@ void CreatureTextMgr::SendChatPacket(WorldPacket* data, WorldObject* source, Cha
             Map::PlayerList const& pList = source->GetMap()->GetPlayers();
             for (Map::PlayerList::const_iterator itr = pList.begin(); itr != pList.end(); ++itr)
             {
-                if (itr->getSource()->GetZoneId() == zoneId && (!team || Team(itr->getSource()->GetTeam()) == team) && (!gmOnly || itr->getSource()->IsGameMasterTagOn()))
+                if (itr->getSource()->GetZoneId() == zoneId && (!team || Team(itr->getSource()->GetTeam()) == team) && (!gmOnly || itr->getSource()->HasGameMasterTagOn()))
                 {
                     if (data->GetOpcode() == SMSG_MESSAGECHAT)//override whisperguid with actual player's guid
                         data->put<uint64>(1+4+8+4+4+(int32)(strlen(source->GetName())+1), uint64(itr->getSource()->GetGUID()));
@@ -371,7 +371,7 @@ void CreatureTextMgr::SendChatPacket(WorldPacket* data, WorldObject* source, Cha
             {
                 if (data->GetOpcode() == SMSG_MESSAGECHAT)//override whisperguid with actual player's guid
                     data->put<uint64>(1+4+8+4+4+(int32)(strlen(source->GetName())+1), uint64(itr->getSource()->GetGUID()));
-                if ((!team || Team(itr->getSource()->GetTeam()) == team) && (!gmOnly || itr->getSource()->IsGameMasterTagOn()))
+                if ((!team || Team(itr->getSource()->GetTeam()) == team) && (!gmOnly || itr->getSource()->HasGameMasterTagOn()))
                     (itr->getSource())->GetSession()->SendPacket(data);
             }
             return;
@@ -385,7 +385,7 @@ void CreatureTextMgr::SendChatPacket(WorldPacket* data, WorldObject* source, Cha
                 {
                     if (data->GetOpcode() == SMSG_MESSAGECHAT)//override whisperguid with actual player's guid
                         data->put<uint64>(1+4+8+4+4+(int32)(strlen(source->GetName())+1), uint64(player->GetGUID()));
-                    if (player->GetSession()  && (!team || Team(player->GetTeam()) == team) && (!gmOnly || player->IsGameMasterTagOn()))
+                    if (player->GetSession()  && (!team || Team(player->GetTeam()) == team) && (!gmOnly || player->HasGameMasterTagOn()))
                         player->GetSession()->SendPacket(data);
                 }
             }
