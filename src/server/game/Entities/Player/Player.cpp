@@ -16992,7 +16992,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     SetUInt32Value(PLAYER_TRACK_RESOURCES, 0);
 
     // make sure the unit is considered out of combat for proper loading
-    ClearInCombat();
+    if (isInCombat())
+        ClearInCombat();
 
     // make sure the unit is considered not in duel for proper loading
     SetUInt64Value(PLAYER_DUEL_ARBITER, 0);
@@ -25332,7 +25333,7 @@ bool Player::CanAppearToTarget(Player *target)
             if (lastAppearTime + 10000 > getMSTime())
             {
                 ChatHandler(this).PSendSysMessage("You can only appear once every 10 seconds.");
-                ChatHandler(this).PSendSysMessage("Remaining Time: %u", ((lastAppearTime + 10000) - getMSTime()) / IN_MILLISECONDS);
+                ChatHandler(this).PSendSysMessage("Remaining Time: %u seconds", ((lastAppearTime + 10000) - getMSTime()) / IN_MILLISECONDS);
                 return false;
             }
 
@@ -25369,7 +25370,7 @@ bool Player::CanAppearToTarget(Player *target)
             if (lastCombatTime + 10000 > getMSTime())
             {
                 ChatHandler(this).PSendSysMessage("You can only appear 10 seconds after leaving combat.");
-                ChatHandler(this).PSendSysMessage("Remaining Time: %u", ((lastCombatTime + 10000) - getMSTime()) / IN_MILLISECONDS);
+                ChatHandler(this).PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - getMSTime()) / IN_MILLISECONDS);
                 return false;
             }
 
@@ -25405,8 +25406,8 @@ bool Player::CanTeleportTo(const GameTele *tele)
         {
             if (lastTeleportTime + 10000 > getMSTime())
             {
-                ChatHandler(this).PSendSysMessage("You can only appear once every 10 seconds.");
-                ChatHandler(this).PSendSysMessage("Remaining Time: %u", ((lastTeleportTime + 10000) - getMSTime()) / IN_MILLISECONDS);
+                ChatHandler(this).PSendSysMessage("You can only teleport once every 10 seconds.");
+                ChatHandler(this).PSendSysMessage("Remaining Time: %u seconds", ((lastTeleportTime + 10000) - getMSTime()) / IN_MILLISECONDS);
                 return false;
             }
 
@@ -25431,7 +25432,7 @@ bool Player::CanTeleportTo(const GameTele *tele)
             if (lastCombatTime + 10000 > getMSTime())
             {
                 ChatHandler(this).PSendSysMessage("You can only appear 10 seconds after leaving combat.");
-                ChatHandler(this).PSendSysMessage("Remaining Time: %u", (lastCombatTime + 10000) - getMSTime());
+                ChatHandler(this).PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - getMSTime() / IN_MILLISECONDS));
                 return false;
             }
         }

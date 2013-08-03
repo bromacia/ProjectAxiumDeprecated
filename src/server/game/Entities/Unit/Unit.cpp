@@ -9746,6 +9746,8 @@ void Unit::CombatStop(bool includingCast)
     if (GetTypeId() == TYPEID_PLAYER)
         ToPlayer()->SendAttackSwingCancelAttack();     // melee and ranged forced attack cancel
     ClearInCombat();
+    if (Player *player = ToPlayer())
+        player->lastCombatTime = getMSTime();
 }
 
 void Unit::CombatStopWithPets(bool includingCast)
@@ -12850,10 +12852,7 @@ void Unit::ClearInCombat()
     }
 
     if (Player* player = ToPlayer())
-    {
         player->UpdatePotionCooldown();
-        player->lastCombatTime = getMSTime();
-    }
 
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_IN_COMBAT);
 }
