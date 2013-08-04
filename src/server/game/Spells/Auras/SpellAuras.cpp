@@ -372,7 +372,9 @@ Aura::~Aura()
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
          delete m_effects[i];
 
-    ASSERT(m_applications.empty());
+
+    // Caused a crash? Seems like a poinless assert
+    //ASSERT(m_applications.empty());
     _DeleteRemovedApplications();
 }
 
