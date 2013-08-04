@@ -509,6 +509,8 @@ inline void Battleground::_ProcessJoin(uint32 diff)
                         else
                             ++iter;
                     }
+
+                    UpdatePlayerScore(player, SCORE_PLAYER_TEAM, GetPlayerTeam(player->GetGUID()));
                 }
 
             CheckArenaWinConditions();
@@ -1390,6 +1392,9 @@ void Battleground::UpdatePlayerScore(Player* Source, uint32 type, uint32 value, 
             break;
         case SCORE_HEALING_DONE:                            // Healing Done
             itr->second->HealingDone += value;
+            break;
+        case SCORE_PLAYER_TEAM:
+            itr->second->PlayerTeam = value;
             break;
         default:
             sLog->outError("Battleground::UpdatePlayerScore: unknown score type (%u) for BG (map: %u, instance id: %u)!",
