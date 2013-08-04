@@ -231,21 +231,43 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
     if (IsConnectionIdle())
         m_Socket->CloseSocket();
 
-    ///- Retrieve packets from the receive queue and call the appropriate handlers
-    /// not process packets if socket already closed
-    WorldPacket* packet = NULL;
+    if (m_Socket && !m_Socket->IsClosed() && _warden)
+        _warden->Update();
+
+    ProcessQueryCallbacks();
+
+    //check if we are safe to proceed with logout
+    //logout procedure should happen only in World::UpdateSessions() method!!!
+    if (updater.ProcessLogout())
+    {
+        time_t currTime = time(NULL);
+        ///- If necessary, log the player out
+        if (ShouldLogOut(currTime) && !m_playerLoading)
+            LogoutPlayer(true);
+
+        if (m_Socket && GetPlayer() && _warden)
+            _warden->Update();
+
+        ///- Cleanup socket pointer if need
+        if (m_Socket && m_Socket->IsClosed())
+        {
+            m_Socket->RemoveReference();
+            m_Socket = NULL;
+        }
+
+        if (!m_Socket)
+            return false;                                       //Will remove this session from the world session map
+    }
+
+    return true;
+}
+
+void WorldSession::HandlePacket(WorldPacket* packet)
+{
     //! Delete packet after processing by default
     bool deletePacket = true;
-    //! To prevent infinite loop
-    WorldPacket* firstDelayedPacket = NULL;
-    //! If _recvQueue.peek() == firstDelayedPacket it means that in this Update call, we've processed all
-    //! *properly timed* packets, and we're now at the part of the queue where we find
-    //! delayed packets that were re-enqueued due to improper timing. To prevent an infinite
-    //! loop caused by re-enqueueing the same packets over and over again, we stop updating this session
-    //! and continue updating others. The re-enqueued packets will be handled in the next Update call for this session.
-    while (m_Socket && !m_Socket->IsClosed() &&
-            !_recvQueue.empty() && _recvQueue.peek(true) != firstDelayedPacket &&
-            _recvQueue.next(packet, updater))
+
+    if (m_Socket && !m_Socket->IsClosed())
     {
         if (packet->GetOpcode() >= NUM_MSG_TYPES)
         {
@@ -267,9 +289,6 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
                             //! the client to be in world yet. We will re-add the packets to the bottom of the queue and process them later.
                             if (!m_playerRecentlyLogout)
                             {
-                                //! Prevent infinite loop
-                                if (!firstDelayedPacket)
-                                    firstDelayedPacket = packet;
                                 //! Because checking a bool is faster than reallocating memory
                                 deletePacket = false;
                                 QueuePacket(packet);
@@ -359,36 +378,6 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
         if (deletePacket)
             delete packet;
     }
-
-    if (m_Socket && !m_Socket->IsClosed() && _warden)
-        _warden->Update();
-
-    ProcessQueryCallbacks();
-
-    //check if we are safe to proceed with logout
-    //logout procedure should happen only in World::UpdateSessions() method!!!
-    if (updater.ProcessLogout())
-    {
-        time_t currTime = time(NULL);
-        ///- If necessary, log the player out
-        if (ShouldLogOut(currTime) && !m_playerLoading)
-            LogoutPlayer(true);
-
-        if (m_Socket && GetPlayer() && _warden)
-            _warden->Update();
-
-        ///- Cleanup socket pointer if need
-        if (m_Socket && m_Socket->IsClosed())
-        {
-            m_Socket->RemoveReference();
-            m_Socket = NULL;
-        }
-
-        if (!m_Socket)
-            return false;                                       //Will remove this session from the world session map
-    }
-
-    return true;
 }
 
 /// %Log the player out

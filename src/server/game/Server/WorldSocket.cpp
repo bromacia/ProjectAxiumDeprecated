@@ -739,7 +739,7 @@ int WorldSocket::ProcessIncoming (WorldPacket* new_pct)
                     aptr.release();
                     // WARNINIG here we call it with locks held.
                     // Its possible to cause deadlock if QueuePacket calls back
-                    m_Session->QueuePacket (new_pct);
+                    m_Session->HandlePacket(new_pct);
                     return 0;
                 }
                 else
