@@ -198,29 +198,30 @@ void CasterAI::UpdateAI(const uint32 diff)
         return;
     }
 
-    if (!me->IsWithinDist(target, m_attackDist))
-    {
-        me->CombatStop(true);
-        me->AttackStop();
-        me->StopMoving();
-        me->GetMotionMaster()->Clear();
-        me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
-        return;
-    }
-
-    if (!me->IsWithinLOS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
-    {
-        me->InterruptNonMeleeSpells(false);
-        me->StopMoving();
-        me->GetMotionMaster()->Clear();
-        me->GetMotionMaster()->MoveChase(target);
-    }
-
     if (me->HasUnitState(UNIT_STATE_CASTING))
         return;
 
     if (target)
     {
+
+        if (!me->IsWithinDist(target, m_attackDist))
+        {
+            me->CombatStop(true);
+            me->AttackStop();
+            me->StopMoving();
+            me->GetMotionMaster()->Clear();
+            me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
+            return;
+        }
+
+        if (!me->IsWithinLOS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
+        {
+            me->InterruptNonMeleeSpells(false);
+            me->StopMoving();
+            me->GetMotionMaster()->Clear();
+            me->GetMotionMaster()->MoveChase(target);
+        }
+
         if (me->GetEntry() == 31216) // Mirror Image
         {
             for (SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr)
