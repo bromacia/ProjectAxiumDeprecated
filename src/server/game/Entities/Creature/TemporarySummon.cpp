@@ -210,13 +210,13 @@ void TempSummon::InitStats(uint32 duration)
 void TempSummon::InitSummon()
 {
     Unit* owner = GetSummoner();
-    if (owner)
-    {
-        if (owner->GetTypeId() == TYPEID_UNIT && owner->ToCreature()->IsAIEnabled)
-            owner->ToCreature()->AI()->JustSummoned(this);
-        if (IsAIEnabled)
-            AI()->IsSummonedBy(owner);
-    }
+    if (!owner)
+        return;
+
+    if (owner->GetTypeId() == TYPEID_UNIT && owner->ToCreature()->IsAIEnabled)
+        owner->ToCreature()->AI()->JustSummoned(this);
+    if (IsAIEnabled)
+        AI()->IsSummonedBy(owner);
 }
 
 void TempSummon::SetTempSummonType(TempSummonType type)

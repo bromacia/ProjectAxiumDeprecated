@@ -3876,6 +3876,26 @@ void Spell::finish(bool ok)
     if (!ok)
         return;
 
+    if (Pet* pet = m_caster->ToPet())
+    {
+        if (pet->GetReactState() == REACT_PASSIVE)
+        {
+            if (pet->IsAIEnabled)
+            {
+                if (pet->GetCharmInfo())
+                    pet->GetCharmInfo()->SetIsCommandAttack(false);
+
+                for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                {
+                    if (m_spellInfo->Effects[j].Effect != SPELL_EFFECT_CHARGE)
+                        if (m_spellInfo->Effects[j].Effect != SPELL_EFFECT_LEAP)
+                            if (m_spellInfo->Id != 57627 && m_spellInfo->Id != 53148 && m_spellInfo->Id != 61685) // Pet talent - Charge *Triggered spell(s) causes charge, so it needs custom case*
+                                pet->AI()->HandleReturnMovement();
+                }
+            }
+        }
+    }
+
     if (m_caster->GetTypeId() == TYPEID_UNIT && m_caster->ToCreature()->isSummon())
     {
         // Unsummon statue

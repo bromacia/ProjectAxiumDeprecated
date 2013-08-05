@@ -290,6 +290,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                     pet->setQueuedSpellTarget(NULL);
                     pet->AttackStop();
                     pet->InterruptNonMeleeSpells(false);
+                    charmInfo->SetIsCommandAttack(false);
                     if (pet->ToCreature()->IsAIEnabled)
                         pet->ToCreature()->AI()->HandleReturnMovement();
                 case REACT_DEFENSIVE:                       //recovery

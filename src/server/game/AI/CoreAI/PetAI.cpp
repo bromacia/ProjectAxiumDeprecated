@@ -82,6 +82,12 @@ void PetAI::UpdateAI(const uint32 diff)
         return;
 
     Unit* owner = me->GetCharmerOrOwner();
+    if (!owner)
+        return;
+
+    CharmInfo* ci = me->GetCharmInfo();
+    if (!ci)
+        return;
 
     if (m_updateAlliesTimer <= diff)
         // UpdateAllies self set update timer
@@ -89,63 +95,52 @@ void PetAI::UpdateAI(const uint32 diff)
     else
         m_updateAlliesTimer -= diff;
 
-    if (owner)
+    if (Spell* spell = me->getQueuedSpell())
     {
-        if (Spell* spell = me->getQueuedSpell())
+        if (Unit* queuedTarget = me->getQueuedSpellTarget())
         {
-            if (Unit* queuedTarget = me->getQueuedSpellTarget())
+            if (me->isRunningToTarget()) // Is running to a target to cast a spell
             {
-                if (me->isRunningToTarget()) // Is running to a target to cast a spell
-                {
-                    SpellCastResult result = spell->CheckPetCast(queuedTarget);
+                SpellCastResult result = spell->CheckPetCast(queuedTarget);
 
-                    if (result == SPELL_CAST_OK)
-                    {
-                        me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
-                        spell->prepare(&(spell->m_targets));
-                        if (me->GetReactState() == REACT_PASSIVE)
-                        {
-                            if (spell->getState() != SPELL_STATE_CASTING)
-                                HandleReturnMovement();
-                        }
-                        else
-                        {
-                            if (me->ToCreature()->IsAIEnabled)
-                                me->ToCreature()->AI()->AttackStart(queuedTarget);
-                        }
-                        me->setIsRunningToTarget(false);
-                        me->setQueuedSpell(NULL);
-                        me->setQueuedSpellTarget(NULL);
-                    }
-                    else if (result != SPELL_FAILED_OUT_OF_RANGE && result != SPELL_FAILED_LINE_OF_SIGHT)
-                    {
-                        me->setIsRunningToTarget(false);
-                        me->setQueuedSpell(NULL);
-                        me->setQueuedSpellTarget(NULL);
-                        me->AttackStop();
-                    }
+                if (result == SPELL_CAST_OK)
+                {
+                    me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
+                    spell->prepare(&(spell->m_targets));
+
+                    if (me->GetReactState() != REACT_PASSIVE)
+                        if (me->ToCreature()->IsAIEnabled)
+                            me->ToCreature()->AI()->AttackStart(queuedTarget);
+
+                    me->setIsRunningToTarget(false);
+                    me->setQueuedSpell(NULL);
+                    me->setQueuedSpellTarget(NULL);
                 }
-                else // Has a spell in queue, but not running to target
+                else if (result != SPELL_FAILED_OUT_OF_RANGE && result != SPELL_FAILED_LINE_OF_SIGHT)
                 {
-                    SpellCastResult result = spell->CheckPetCast(queuedTarget);
+                    me->setIsRunningToTarget(false);
+                    me->setQueuedSpell(NULL);
+                    me->setQueuedSpellTarget(NULL);
+                    me->AttackStop();
+                }
+            }
+            else // Has a spell in queue, but not running to target
+            {
+                SpellCastResult result = spell->CheckPetCast(queuedTarget);
 
-                    if (result == SPELL_CAST_OK)
-                    {
-                        me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
-                        spell->prepare(&(spell->m_targets));
-                        me->setQueuedSpell(NULL);
-                        me->setQueuedSpellTarget(NULL);
-                    }
+                if (result == SPELL_CAST_OK)
+                {
+                    me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
+                    spell->prepare(&(spell->m_targets));
+                    me->setQueuedSpell(NULL);
+                    me->setQueuedSpellTarget(NULL);
                 }
             }
         }
     }
 
-    // me->getVictim() can't be used for check in case stop fighting, me->getVictim() clear at Unit death etc.
-    // Must also check if victim is alive
     if (me->getVictim() && me->getVictim()->isAlive())
     {
-        // is only necessary to stop casting, the pet must not exit combat
         if (me->getVictim()->HasBreakableByDamageCrowdControlAura(me))
         {
             me->InterruptNonMeleeSpells(false);
@@ -154,22 +149,10 @@ void PetAI::UpdateAI(const uint32 diff)
             return;
         }
 
-        if (_needToStop())
-        {
-            sLog->outStaticDebug("Pet AI stopped attacking [guid=%u]", me->GetGUIDLow());
-            _stopAttack();
-            return;
-        }
-
         DoMeleeAttackIfReady();
     }
-    else if (owner && me->GetCharmInfo()) //no victim
+    else
     {
-        // Only aggressive pets do target search every update.
-        // Defensive pets do target search only in these cases:
-        //  * Owner attacks something - handled by OwnerAttacked()
-        //  * Owner receives damage - handled by OwnerDamagedBy()
-        //  * Pet is in combat and current target dies - handled by KilledUnit()
         if (me->HasReactState(REACT_AGGRESSIVE))
         {
             Unit* nextTarget = SelectNextTarget();
@@ -182,17 +165,12 @@ void PetAI::UpdateAI(const uint32 diff)
                 HandleReturnMovement();
             }
         }
-        else if (!me->isRunningToTarget())
-        {
-            me->GetCharmInfo()->SetIsCommandAttack(false);
-            HandleReturnMovement();
-        }
     }
-    else if (owner && !me->HasUnitState(UNIT_STATE_FOLLOW)) // no charm info and no victim
-        HandleReturnMovement();
 
-    if (!me->GetCharmInfo())
-        return;
+    if (ci->HasCommandState(COMMAND_FOLLOW))
+        if (!ci->IsCommandAttack())
+            if (!me->isInCombat())
+                HandleReturnMovement();
 
     // Autocast (casted only in combat or persistent spells in any state)
     if (!me->HasUnitState(UNIT_STATE_CASTING))
@@ -316,10 +294,6 @@ void PetAI::UpdateAI(const uint32 diff)
         for (TargetSpellList::const_iterator itr = targetSpellStore.begin(); itr != targetSpellStore.end(); ++itr)
             delete itr->second;
     }
-
-    me->UpdateSpeed(MOVE_RUN, true);
-    me->UpdateSpeed(MOVE_WALK, true);
-    me->UpdateSpeed(MOVE_FLIGHT, true);
 }
 
 void PetAI::UpdateAllies()
