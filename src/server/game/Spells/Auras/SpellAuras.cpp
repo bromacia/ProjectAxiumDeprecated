@@ -374,7 +374,7 @@ Aura::~Aura()
 
 
     // Caused a crash? Seems like a poinless assert
-    //ASSERT(m_applications.empty());
+    ASSERT(m_applications.empty());
     _DeleteRemovedApplications();
 }
 
