@@ -33,89 +33,58 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     if (!GetPlayer()->duel)
         return;
 
-    Player* player = GetPlayer();
-    Player* plTarget = GetPlayer()->duel->opponent;
+    Player *players[2] = { GetPlayer(), GetPlayer()->duel->opponent };
 
-    bool reset = false;
-
-    if (player == player->duel->initiator || !plTarget || player == plTarget || player->duel->startTime != 0 || plTarget->duel->startTime != 0)
+    if (players[0] == players[0]->duel->initiator || !players[1] || players[0] == players[1] || players[0]->duel->startTime != 0 || players[1]->duel->startTime != 0)
         return;
 
     //sLog->outDebug(LOG_FILTER_PACKETIO, "WORLD: Received CMSG_DUEL_ACCEPTED");
-    sLog->outStaticDebug("Player 1 is: %u (%s)", player->GetGUIDLow(), player->GetName());
-    sLog->outStaticDebug("Player 2 is: %u (%s)", plTarget->GetGUIDLow(), plTarget->GetName());
+    sLog->outStaticDebug("Player 1 is: %u (%s)", players[0]->GetGUIDLow(), players[0]->GetName());
+    sLog->outStaticDebug("Player 2 is: %u (%s)", players[1]->GetGUIDLow(), players[1]->GetName());
 
     time_t now = time(NULL);
-    player->duel->startTimer = now;
-    plTarget->duel->startTimer = now;
 
-    player->SendDuelCountdown(3000);
-    plTarget->SendDuelCountdown(3000);
-
-    if (player->GetAreaId() == 85 || plTarget->GetAreaId() == 85)
-        reset = true;
-
-    player->SetIsDueling(true);
-    plTarget->SetIsDueling(true);
-
-    if (reset)
+    for (uint8 i = 0; i < 2; ++i)
     {
-        player->RemoveAllNegativeAuras();
-        plTarget->RemoveAllNegativeAuras();
-        player->SetHealth(player->GetMaxHealth());
-        plTarget->SetHealth(plTarget->GetMaxHealth());
-        player->SetPower(POWER_MANA, player->GetMaxPower(POWER_MANA));
-        plTarget->SetPower(POWER_MANA,  plTarget->GetMaxPower(POWER_MANA));
-        player->SetPower(POWER_ENERGY, player->GetMaxPower(POWER_ENERGY));
-        plTarget->SetPower(POWER_ENERGY,  plTarget->GetMaxPower(POWER_ENERGY));
-        player->SetPower(POWER_RAGE, 0);
-        plTarget->SetPower(POWER_RAGE, 0);
-        player->SetPower(POWER_RUNIC_POWER, 0);
-        plTarget->SetPower(POWER_RUNIC_POWER, 0);
-        player->RemoveAllPlayerSpellCooldowns();
-        plTarget->RemoveAllPlayerSpellCooldowns();
-        player->ClearDiminishings();
-        plTarget->ClearDiminishings();
-        player->ClearComboPoints();
-        plTarget->ClearComboPoints();
-        player->ClearInCombat();
-        plTarget->ClearInCombat();
-        player->getHostileRefManager().deleteReferences();
-        plTarget->getHostileRefManager().deleteReferences();
-        player->RemoveAllTempSummons();
-        plTarget->RemoveAllTempSummons();
+        players[i]->duel->startTimer = now;
+        players[i]->SendDuelCountdown(3000);
+        players[i]->SetIsDueling(true);
 
-        if (Pet* playerPet = player->GetPet())
+        bool reset = false;
+
+        if (players[0]->GetAreaId() == 85 || players[1]->GetAreaId() == 85)
+            reset = true;
+
+        if (reset)
         {
-            playerPet->SetIsDueling(true);
+            players[i]->RemoveAllNegativeAuras();
+            players[i]->SetHealth(players[i]->GetMaxHealth());
+            players[i]->SetPower(POWER_MANA, players[i]->GetMaxPower(POWER_MANA));
+            players[i]->SetPower(POWER_ENERGY, players[i]->GetMaxPower(POWER_ENERGY));
+            players[i]->SetPower(POWER_RAGE, 0);
+            players[i]->SetPower(POWER_RUNIC_POWER, 0);
+            players[i]->RemoveAllPlayerSpellCooldowns();
+            players[i]->ClearDiminishings();
+            players[i]->ClearComboPoints();
+            players[i]->ClearInCombat();
+            players[i]->getHostileRefManager().deleteReferences();
+            players[i]->RemoveAllTempSummons();
 
-            if (reset)
+            if (Pet* playerPet = players[i]->GetPet())
             {
-                playerPet->RemoveAllNegativeAuras();
-                playerPet->SetHealth(playerPet->GetMaxHealth());
-                playerPet->SetPower(POWER_MANA, playerPet->GetMaxPower(POWER_MANA));
-                playerPet->SetPower(POWER_FOCUS, playerPet->GetMaxPower(POWER_FOCUS));
-                playerPet->RemoveAllPetSpellCooldowns(player);
-                playerPet->ClearDiminishings();
-                playerPet->ClearInCombat();
-                playerPet->getHostileRefManager().deleteReferences();
-            }
-        }
+                playerPet->SetIsDueling(true);
 
-        if (Pet* plTargetPet = plTarget->GetPet())
-        {
-            plTargetPet->SetIsDueling(true);
-
-            if (reset)
-            {
-                plTargetPet->RemoveAllNegativeAuras();
-                plTargetPet->SetHealth(plTargetPet->GetMaxHealth());
-                plTargetPet->SetPower(POWER_MANA, plTargetPet->GetMaxPower(POWER_MANA));
-                plTargetPet->SetPower(POWER_FOCUS, plTargetPet->GetMaxPower(POWER_FOCUS));
-                plTargetPet->RemoveAllPetSpellCooldowns(plTarget);
-                plTargetPet->ClearDiminishings();
-                plTargetPet->ClearInCombat();
-                plTargetPet->getHostileRefManager().deleteReferences();
+                if (reset)
+                {
+                    playerPet->RemoveAllNegativeAuras();
+                    playerPet->SetHealth(playerPet->GetMaxHealth());
+                    playerPet->SetPower(POWER_MANA, playerPet->GetMaxPower(POWER_MANA));
+                    playerPet->SetPower(POWER_FOCUS, playerPet->GetMaxPower(POWER_FOCUS));
+                    playerPet->RemoveAllPetSpellCooldowns(players[i]);
+                    playerPet->ClearDiminishings();
+                    playerPet->ClearInCombat();
+                    playerPet->getHostileRefManager().deleteReferences();
+                }
             }
         }
     }

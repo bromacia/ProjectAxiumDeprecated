@@ -8,16 +8,16 @@ class Reset_OnDuelEnd : public PlayerScript
 
         void OnDuelEnd(Player* winner, Player* loser, DuelCompleteType type)
         {
-            winner->SetIsDueling(false);
-            loser->SetIsDueling(false);
-            winner->RemoveAllNegativeAuras();
-            loser->RemoveAllNegativeAuras();
+            Player *players[2] = { winner, loser };
 
-            if (Pet* winnerPet = winner->GetPet())
-                winnerPet->SetIsDueling(false);
+            for (uint8 i = 0; i < 2; ++i)
+            {
+                players[i]->SetIsDueling(false);
+                players[i]->RemoveAllNegativeAuras();
 
-            if (Pet* loserPet = loser->GetPet())
-                loserPet->SetIsDueling(false);
+                if (Pet* winnerPet = players[i]->GetPet())
+                    winnerPet->SetIsDueling(false);
+            }
         }
 };
 
