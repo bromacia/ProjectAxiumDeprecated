@@ -3238,7 +3238,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
             return;
         }
 
-        if (!m_casttime)
+        if (!m_casttime && !m_spellInfo->IsAutocastable())
             cast(false);
     }
 }
