@@ -1521,7 +1521,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         // Needs to be called after dealing damage/healing to not remove breaking on damage auras
         DoTriggersOnSpellHit(spellHitTarget, mask);
 
-        // if target is fallged for pvp also flag caster if a player
+        // if target is flagged for pvp also flag caster if a player
         if (unit->IsPvP() && m_caster->GetTypeId() == TYPEID_PLAYER)
             m_caster->ToPlayer()->UpdatePvP(true);
 
@@ -3207,7 +3207,10 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
     //TODO:Apply this to all casted spells if needed
     // Why check duration? 29350: channelled triggers channelled
     if ((_triggeredCastFlags & TRIGGERED_CAST_DIRECTLY) && (!m_spellInfo->IsChanneled() || !m_spellInfo->GetMaxDuration()))
+    {
         cast(true);
+        return;
+    }
     else
     {
         // stealth must be removed at cast starting (at show channel bar)
@@ -3939,6 +3942,14 @@ void Spell::finish(bool ok)
     // Stop Attack for some spells
     if (m_spellInfo->Attributes & SPELL_ATTR0_STOP_ATTACK_TARGET)
         m_caster->AttackStop();
+
+        // Clean up current spell
+    if (CurrentSpellTypes CSpellType = GetCurrentContainer())
+        if (Spell* cSpell = m_caster->GetCurrentSpell(CSpellType))
+        {
+            m_caster->m_currentSpells[CSpellType]->SetReferencedFromCurrent(false);
+            m_caster->m_currentSpells[CSpellType] = NULL;
+        }
 }
 
 void Spell::SendCastResult(SpellCastResult result)
