@@ -3080,14 +3080,7 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
 void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggeredByAura)
 {
     if (m_CastItem)
-    {
-        if (CurrentSpellTypes CSpellType = GetCurrentContainer())
-            if (Spell* cSpell = m_caster->GetCurrentSpell(CSpellType))
-                if (cSpell->m_CastItem == m_CastItem && cSpell->GetSpellInfo()->Id == m_spellInfo->Id)
-                    return;
-
         m_castItemGUID = m_CastItem->GetGUID();
-    }
     else
         m_castItemGUID = 0;
 
@@ -3942,14 +3935,6 @@ void Spell::finish(bool ok)
     // Stop Attack for some spells
     if (m_spellInfo->Attributes & SPELL_ATTR0_STOP_ATTACK_TARGET)
         m_caster->AttackStop();
-
-        // Clean up current spell
-    if (CurrentSpellTypes CSpellType = GetCurrentContainer())
-        if (Spell* cSpell = m_caster->GetCurrentSpell(CSpellType))
-        {
-            m_caster->m_currentSpells[CSpellType]->SetReferencedFromCurrent(false);
-            m_caster->m_currentSpells[CSpellType] = NULL;
-        }
 }
 
 void Spell::SendCastResult(SpellCastResult result)
