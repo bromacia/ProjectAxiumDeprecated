@@ -16,7 +16,7 @@ class npc_class_trainer : public CreatureScript
     public:
         npc_class_trainer() : CreatureScript("npc_class_trainer") {}
 
-        bool OnGossipHello(Player* player, Creature* creature)
+        bool OnGossipHello(Player *player, Creature *creature)
         {
             player->PlayerTalkClass->ClearMenus();
 
@@ -44,7 +44,7 @@ class npc_class_trainer : public CreatureScript
             return true;
         }
 
-        bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+        bool OnGossipSelect(Player *player, Creature *creature, uint32 sender, uint32 action)
         {
             player->PlayerTalkClass->ClearMenus();
 
@@ -100,9 +100,9 @@ class npc_class_trainer : public CreatureScript
             return false;
         }
 
-        bool LearnAllSpells(Player* player, Creature* creature)
+        bool LearnAllSpells(Player *player, Creature *creature)
         {
-            TrainerSpellData const* TrainerSpells = creature->GetTrainerSpells();
+            const TrainerSpellData *TrainerSpells = creature->GetTrainerSpells();
             if (!TrainerSpells)
             {
                 ChatHandler(player).PSendSysMessage("Unable to find spell data");
@@ -117,64 +117,57 @@ class npc_class_trainer : public CreatureScript
 
             for (TrainerSpellMap::const_iterator itr = TrainerSpells->spellList.begin(); itr != TrainerSpells->spellList.end(); ++itr)
             {
-                TrainerSpell const* tSpell = &itr->second;
+                const TrainerSpell *tSpell = &itr->second;
                 uint32 spellId = tSpell->spell;
-
-                if (!(tSpell->reqClass & player->getClassMask()))
-                    continue;
 
                 if (player->HasSpell(spellId))
                     continue;
 
-                if (player->GetTeam() == ALLIANCE)
-                {
-                    // Seal of Corruption, Thalassian Warhorse, Thalassian Charger & Bloodlust
-                    if (spellId == 53736 || spellId == 34769 ||
-                        spellId == 34767 || spellId == 2825)
-                            continue;
-                }
-                else
-                {
-                    // Seal of Vengeance, Warhorse, Charger & Heroism
-                    if (spellId == 31801 || spellId == 13819 ||
-                        spellId == 23214 || spellId == 32182)
-                            continue;
-                }
+                if (!(tSpell->reqClass & player->getClassMask()))
+                    continue;
+
+                bool disabled = false;
+
+                if (!player->IsSpellFitByClassAndRace(spellId))
+                    disabled = true;
 
                 if (uint32 firstSpell = sSpellMgr->GetFirstSpellInChain(spellId))
                     if (sSpellMgr->IsTalentSpell(firstSpell))
                         if (!player->HasSpell(firstSpell))
-                            continue;
+                            disabled = true;
 
                 // Greater Blessing of Sanctuary
                 if (!player->HasSpell(20911))
                     if (spellId == 25899)
-                        continue;
+                        disabled = true;
 
                 // Mangle (Bear)
                 if (!player->HasSpell(33878))
                     if (spellId == 33986 || spellId == 33987 ||
                         spellId == 48563 || spellId == 48564)
-                            continue;
+                            disabled = true;
 
                 // Mangle (Cat)
                 if (!player->HasSpell(33876))
                     if (spellId == 33982 || spellId == 33983 ||
                         spellId == 48565 || spellId == 48566)
-                            continue;
+                            disabled = true;
 
                 player->addSpell(spellId, true, true, false, false, false, true);
 
-                if (!learnedSpells)
-                    learnedSpells = true;
-
-                if (player->IsInWorld())
+                if (!disabled && player->IsInWorld())
                 {
                     WorldPacket data(SMSG_LEARNED_SPELL, 6);
                     data << uint32(spellId);
                     data << uint16(0);
                     player->GetSession()->SendPacket(&data);
                 }
+
+                if (disabled)
+                    player->removeSpell(spellId, true);
+
+                if (!learnedSpells)
+                    learnedSpells = true;
             }
 
             if (learnedSpells)
@@ -184,9 +177,9 @@ class npc_class_trainer : public CreatureScript
             return true;
         }
 
-        bool ShowGlyphs(Player* player, Creature* creature)
+        bool ShowGlyphs(Player *player, Creature *creature)
         {
-            VendorItemData const* items = creature->GetVendorItems();
+            const VendorItemData *items = creature->GetVendorItems();
             if (!items)
             {
                 ChatHandler(player).PSendSysMessage("Unable to find item data");
@@ -208,9 +201,9 @@ class npc_class_trainer : public CreatureScript
 
             for (uint16 slot = 0; slot < itemCount; ++slot)
             {
-                if (VendorItem const* vItem = items->GetItem(slot))
+                if (const VendorItem *vItem = items->GetItem(slot))
                 {
-                    if (ItemTemplate const* vItemTemplate = sObjectMgr->GetItemTemplate(vItem->item))
+                    if (const ItemTemplate *vItemTemplate = sObjectMgr->GetItemTemplate(vItem->item))
                     {
                         if (!(vItemTemplate->AllowableClass & player->getClassMask()))
                             continue;
@@ -241,9 +234,9 @@ class npc_class_trainer : public CreatureScript
             return true;
         }
 
-        static bool BuyGlyph(Player* player, Creature* creature, uint32 itemId)
+        static bool BuyGlyph(Player *player, Creature *creature, uint32 itemId)
         {
-            ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
+            const ItemTemplate *itemTemplate = sObjectMgr->GetItemTemplate(itemId);
             if (!itemTemplate)
                 return false;
 

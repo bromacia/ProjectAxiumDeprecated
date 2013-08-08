@@ -30,15 +30,12 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 
     recvPacket >> guid;
 
-    if (!GetPlayer()->duel)
-        return;
-
     Player *players[2] = { GetPlayer(), GetPlayer()->duel->opponent };
 
-    if (players[0] == players[0]->duel->initiator || !players[1] || players[0] == players[1] || players[0]->duel->startTime != 0 || players[1]->duel->startTime != 0)
+    if (!players[0] || !players[1] || players[0] == players[1] || !players[0]->duel ||
+        players[0] == players[0]->duel->initiator || players[0]->duel->startTime != 0 || players[1]->duel->startTime != 0)
         return;
 
-    //sLog->outDebug(LOG_FILTER_PACKETIO, "WORLD: Received CMSG_DUEL_ACCEPTED");
     sLog->outStaticDebug("Player 1 is: %u (%s)", players[0]->GetGUIDLow(), players[0]->GetName());
     sLog->outStaticDebug("Player 2 is: %u (%s)", players[1]->GetGUIDLow(), players[1]->GetName());
 
