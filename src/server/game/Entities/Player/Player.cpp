@@ -1510,13 +1510,13 @@ void Player::Update(uint32 p_time)
     // If this is set during update SetSpellModTakingSpell call is missing somewhere in the code
     // Having this would prevent more aura charges to be dropped, so let's crash
     //ASSERT (!m_spellModTakingSpell);
-    if (m_spellModTakingSpell)
-    {
+    //if (m_spellModTakingSpell)
+    //{
         //sLog->outCrash("Player has m_pad %u during update!", m_pad);
         //if (m_spellModTakingSpell)
-        sLog->outCrash("Player has m_spellModTakingSpell %u during update!", m_spellModTakingSpell->m_spellInfo->Id);
-        m_spellModTakingSpell = NULL;
-    }
+    //    sLog->outCrash("Player has m_spellModTakingSpell %u during update!", m_spellModTakingSpell->m_spellInfo->Id);
+    //    m_spellModTakingSpell = NULL;
+    //}
 
     //used to implement delayed far teleports
     SetCanDelayTeleport(true);

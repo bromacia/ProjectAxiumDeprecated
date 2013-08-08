@@ -3237,7 +3237,13 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
 
         //item: first cast may destroy item and second cast causes crash
         if (!m_casttime && !m_spellInfo->StartRecoveryTime && !m_castItemGUID && GetCurrentContainer() == CURRENT_GENERIC_SPELL)
+        {
             cast(true);
+            return;
+        }
+
+        if (!m_casttime)
+            cast(false);
     }
 }
 
@@ -3772,9 +3778,9 @@ void Spell::update(uint32 difftime)
                     m_timer -= difftime;
             }
 
-            if (m_timer == 0 && !IsNextMeleeSwingSpell() && !IsAutoRepeat())
+            if (m_timer == 0 && !IsNextMeleeSwingSpell() && !IsAutoRepeat() && m_casttime != 0)
                 // don't CheckCast for instant spells - done in spell::prepare, skip duplicate checks, needed for range checks for example
-                cast(!m_casttime);
+                cast(!m_casttime); // Confirmed to cause crashes with no packet queueing
             break;
         }
         case SPELL_STATE_CASTING:
