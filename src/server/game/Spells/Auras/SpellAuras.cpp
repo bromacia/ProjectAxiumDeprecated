@@ -638,10 +638,10 @@ void Aura::UpdateOwner(uint32 diff, WorldObject* owner)
 
     Update(diff, caster);
 
-    if (m_updateTargetMapInterval <= int32(diff))
-        UpdateTargetMap(caster);
-    else
-        m_updateTargetMapInterval -= diff;
+    //if (m_updateTargetMapInterval <= int32(diff))
+    //   UpdateTargetMap(caster);
+    //else
+    //    m_updateTargetMapInterval -= diff;
 
     // update aura effects
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -652,7 +652,7 @@ void Aura::UpdateOwner(uint32 diff, WorldObject* owner)
     if (modSpell)
         modOwner->SetSpellModTakingSpell(modSpell, false);
 
-    _DeleteRemovedApplications();
+    //_DeleteRemovedApplications();
 }
 
 void Aura::Update(uint32 diff, Unit* caster)
