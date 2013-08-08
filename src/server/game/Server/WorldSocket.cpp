@@ -741,12 +741,8 @@ int WorldSocket::ProcessIncoming (WorldPacket* new_pct)
                     // Its possible to cause deadlock if QueuePacket calls back
                     if (opcode == CMSG_CAST_SPELL || opcode == CMSG_PET_CAST_SPELL || opcode == CMSG_CANCEL_AURA)
                     {
-                        if (sWorld->getBoolConfig(CONFIG_SPELL_PACKET_DELAY))
-                        {
-                            sLog->outError("Packet Queued!");
-                            m_Session->QueuePacket(new_pct);
-                            return 0;
-                        }
+                        m_Session->QueuePacket(new_pct);
+                        return 0;
                     }
 
                     m_Session->HandlePacket(new_pct);
