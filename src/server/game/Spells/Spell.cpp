@@ -3204,43 +3204,41 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
         cast(true);
         return;
     }
-    else
+
+    // stealth must be removed at cast starting (at show channel bar)
+    // skip triggered spell (item equip spell casting and other not explicit character casts/item uses)
+    if (!(_triggeredCastFlags & TRIGGERED_IGNORE_AURA_INTERRUPT_FLAGS) && m_spellInfo->IsBreakingStealth())
     {
-        // stealth must be removed at cast starting (at show channel bar)
-        // skip triggered spell (item equip spell casting and other not explicit character casts/item uses)
-        if (!(_triggeredCastFlags & TRIGGERED_IGNORE_AURA_INTERRUPT_FLAGS) && m_spellInfo->IsBreakingStealth())
-        {
-            m_caster->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_CAST);
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                if (m_spellInfo->Effects[i].GetUsedTargetObjectType() == TARGET_OBJECT_TYPE_UNIT)
-                {
-                    m_caster->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_SPELL_ATTACK);
-                    break;
-                }
-        }
-
-        m_caster->SetCurrentCastedSpell(this);
-        SendSpellStart();
-
-        // set target for proper facing
-        if (m_casttime && !(_triggeredCastFlags & TRIGGERED_IGNORE_SET_FACING))
-            if (uint64 target = m_targets.GetUnitTargetGUID())
-                if (m_caster->GetGUID() != target && m_caster->GetTypeId() == TYPEID_UNIT)
-                    m_caster->FocusTarget(this, target);
-
-        if (!(_triggeredCastFlags & TRIGGERED_IGNORE_GCD))
-            TriggerGlobalCooldown();
-
-        //item: first cast may destroy item and second cast causes crash
-        if (!m_casttime && !m_spellInfo->StartRecoveryTime && !m_castItemGUID && GetCurrentContainer() == CURRENT_GENERIC_SPELL)
-        {
-            cast(true);
-            return;
-        }
-
-        if (!m_casttime && !m_spellInfo->IsAutocastable())
-            cast(false);
+        m_caster->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_CAST);
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            if (m_spellInfo->Effects[i].GetUsedTargetObjectType() == TARGET_OBJECT_TYPE_UNIT)
+            {
+                m_caster->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_SPELL_ATTACK);
+                break;
+            }
     }
+
+    m_caster->SetCurrentCastedSpell(this);
+    SendSpellStart();
+
+    // set target for proper facing
+    if (m_casttime && !(_triggeredCastFlags & TRIGGERED_IGNORE_SET_FACING))
+        if (uint64 target = m_targets.GetUnitTargetGUID())
+            if (m_caster->GetGUID() != target && m_caster->GetTypeId() == TYPEID_UNIT)
+                m_caster->FocusTarget(this, target);
+
+    if (!(_triggeredCastFlags & TRIGGERED_IGNORE_GCD))
+        TriggerGlobalCooldown();
+
+    //item: first cast may destroy item and second cast causes crash
+    if (!m_casttime && !m_spellInfo->StartRecoveryTime && !m_castItemGUID && GetCurrentContainer() == CURRENT_GENERIC_SPELL)
+    {
+        cast(true);
+        return;
+    }
+
+    if (!m_casttime && !IsAutoRepeat())
+        cast(false);
 }
 
 void Spell::cancel()
