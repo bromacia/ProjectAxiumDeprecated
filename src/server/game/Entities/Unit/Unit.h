@@ -2289,8 +2289,6 @@ class Unit : public WorldObject
         ArenaTeamColor GetArenaTeamColor() { return arenaTeam; }
         void ClearArenaTeamColor() { arenaTeam = ARENA_TEAM_COLOR_NONE; }
 
-        Spell* m_currentSpells[CURRENT_MAX_SPELL];
-
     protected:
         explicit Unit (bool isWorldObject);
 
@@ -2321,6 +2319,8 @@ class Unit : public WorldObject
         GameObjectList m_gameObj;
         bool m_isSorted;
         uint32 m_transform;
+
+        Spell* m_currentSpells[CURRENT_MAX_SPELL];
 
         AuraMap m_ownedAuras;
         AuraApplicationMap m_appliedAuras;

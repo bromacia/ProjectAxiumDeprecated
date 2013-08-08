@@ -3080,7 +3080,14 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
 void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggeredByAura)
 {
     if (m_CastItem)
+    {
+        if (CurrentSpellTypes CSpellType = GetCurrentContainer())
+            if (Spell* cSpell = m_caster->GetCurrentSpell(CSpellType))
+                if (cSpell->m_CastItem == m_CastItem && cSpell->GetSpellInfo()->Id == m_spellInfo->Id)
+                    return;
+
         m_castItemGUID = m_CastItem->GetGUID();
+    }
     else
         m_castItemGUID = 0;
 
@@ -3200,10 +3207,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
     //TODO:Apply this to all casted spells if needed
     // Why check duration? 29350: channelled triggers channelled
     if ((_triggeredCastFlags & TRIGGERED_CAST_DIRECTLY) && (!m_spellInfo->IsChanneled() || !m_spellInfo->GetMaxDuration()))
-    {
         cast(true);
-        return;
-    }
     else
     {
         // stealth must be removed at cast starting (at show channel bar)
@@ -3233,13 +3237,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
 
         //item: first cast may destroy item and second cast causes crash
         if (!m_casttime && !m_spellInfo->StartRecoveryTime && !m_castItemGUID && GetCurrentContainer() == CURRENT_GENERIC_SPELL)
-        {
             cast(true);
-            return;
-        }
-
-        if (!m_casttime && !m_spellInfo->IsAutocastable())
-            cast(false);
     }
 }
 
@@ -3774,9 +3772,9 @@ void Spell::update(uint32 difftime)
                     m_timer -= difftime;
             }
 
-            if (m_timer == 0 && !IsNextMeleeSwingSpell() && !IsAutoRepeat() && m_casttime != 0)
+            if (m_timer == 0 && !IsNextMeleeSwingSpell() && !IsAutoRepeat())
                 // don't CheckCast for instant spells - done in spell::prepare, skip duplicate checks, needed for range checks for example
-                cast(!m_casttime); // Confirmed to cause crashes with no packet queueing
+                cast(!m_casttime);
             break;
         }
         case SPELL_STATE_CASTING:
