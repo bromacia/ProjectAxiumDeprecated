@@ -3882,9 +3882,6 @@ void Spell::finish(bool ok)
         {
             if (pet->IsAIEnabled)
             {
-                if (pet->GetCharmInfo())
-                    pet->GetCharmInfo()->SetIsCommandAttack(false);
-
                 for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
                 {
                     if (m_spellInfo->Effects[j].Effect != SPELL_EFFECT_CHARGE)

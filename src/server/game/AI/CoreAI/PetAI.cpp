@@ -167,10 +167,11 @@ void PetAI::UpdateAI(const uint32 diff)
         }
     }
 
-    if (ci->HasCommandState(COMMAND_FOLLOW))
+    if (ci->HasCommandState(COMMAND_FOLLOW) || ci->HasCommandState(COMMAND_STAY))
         if (!ci->IsCommandAttack())
             if (!me->isInCombat())
-                HandleReturnMovement();
+                if (!me->isRunningToTarget())
+                    HandleReturnMovement();
 
     // Autocast (casted only in combat or persistent spells in any state)
     if (!me->HasUnitState(UNIT_STATE_CASTING))
