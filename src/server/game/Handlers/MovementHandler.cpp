@@ -468,6 +468,14 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
                 }
             }
         }
+
+        if (movementInfo.pos.m_positionZ > 10000.0f || movementInfo.pos.m_positionZ < -10000.0f)
+        {
+            float z = plMover->GetMap()->GetWaterOrGroundLevel(movementInfo.pos.m_positionX, movementInfo.pos.m_positionY, movementInfo.pos.m_positionZ);
+            if (!z)
+                z = plMover->GetMap()->GetHeight(movementInfo.pos.m_positionX, movementInfo.pos.m_positionY, movementInfo.pos.m_positionZ, true);
+            plMover->TeleportTo(plMover->GetMapId(), movementInfo.pos.m_positionX, movementInfo.pos.m_positionY, z, movementInfo.pos.m_orientation);
+        }
     }
 }
 
