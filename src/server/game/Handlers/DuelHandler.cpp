@@ -30,12 +30,24 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 
     recvPacket >> guid;
 
-    if (!GetPlayer()->duel)
+    if (!guid)
         return;
 
-    Player *players[2] = { GetPlayer(), GetPlayer()->duel->opponent };
+    if (!_player)
+        return;
 
-    if (!players[0] || !players[1] || players[0] == players[1] || players[0] == players[0]->duel->initiator || players[0]->duel->startTime != 0 || players[1]->duel->startTime != 0)
+    if (!_player->duel)
+        return;
+
+    Player *players[2] = { _player->duel->initiator, _player->duel->opponent };
+
+    if (!players[0] || !players[1])
+        return;
+
+    if (players[0] == players[1])
+        return;
+
+    if (players[0]->duel->startTime != 0 || players[1]->duel->startTime != 0)
         return;
 
     sLog->outStaticDebug("Player 1 is: %u (%s)", players[0]->GetGUIDLow(), players[0]->GetName());
@@ -92,24 +104,30 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recvPacket)
 {
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Received CMSG_DUEL_CANCELLED");
+
     uint64 guid;
     recvPacket >> guid;
 
-    // no duel requested
-    if (!GetPlayer()->duel)
+    if (!guid)
+        return;
+
+    if (!_player)
+        return;
+
+    if (!_player->duel)
         return;
 
     // player surrendered in a duel using /forfeit
-    if (GetPlayer()->duel->startTime != 0)
+    if (_player->duel->startTime != 0)
     {
-        GetPlayer()->CombatStopWithPets(true);
-        if (GetPlayer()->duel->opponent)
-            GetPlayer()->duel->opponent->CombatStopWithPets(true);
+        _player->CombatStopWithPets(true);
+        if (_player->duel->opponent)
+            _player->duel->opponent->CombatStopWithPets(true);
 
-        GetPlayer()->CastSpell(GetPlayer(), 7267, true); // Grovel
-        GetPlayer()->DuelComplete(DUEL_WON);
+        _player->CastSpell(GetPlayer(), 7267, true); // Grovel
+        _player->DuelComplete(DUEL_WON);
         return;
     }
 
-    GetPlayer()->DuelComplete(DUEL_INTERRUPTED);
+    _player->DuelComplete(DUEL_INTERRUPTED);
 }
