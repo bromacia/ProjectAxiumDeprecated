@@ -941,7 +941,7 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
 bool SpellInfo::HasEffect(SpellEffects effect) const
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        if (Effects[i].IsEffect(effect))
+        if (Effects[i].Effect == effect)
             return true;
     return false;
 }
@@ -949,7 +949,7 @@ bool SpellInfo::HasEffect(SpellEffects effect) const
 bool SpellInfo::HasAura(AuraType aura) const
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        if (Effects[i].IsAura(aura))
+        if (Effects[i].ApplyAuraName == aura)
             return true;
     return false;
 }
@@ -2601,165 +2601,163 @@ bool SpellInfo::_IsPositiveTarget(uint32 targetA, uint32 targetB)
 bool SpellInfo::IsSpellDelaySpell() const
 {
 //------------Generic--------------
-    // War Stomp
+        // War Stomp
     return Id == 20549 ||
 //------------Warrior--------------
-    // Charge Stun
-    Id == 7922 ||
-    // Intercept Stun
-    Id == 20253 ||
-    // Intimidating Shout
-    Id == 5246 ||
-    // Shockwave
-    Id == 46968 ||
-    // Concussion Blow
-    Id == 12809 ||
+        // Charge Stun
+        Id == 7922 ||
+        // Intercept Stun
+        Id == 20253 ||
+        // Intimidating Shout
+        Id == 5246 ||
+        // Shockwave
+        Id == 46968 ||
+        // Concussion Blow
+        Id == 12809 ||
 //------------Paladin--------------
-    // Hammer of Justice
-    (SpellFamilyName == SPELLFAMILY_PALADIN && SpellFamilyFlags[0] == 0x800) ||
-    // Repentance
-    Id == 20066 ||
+        // Hammer of Justice
+        (SpellFamilyName == SPELLFAMILY_PALADIN && SpellFamilyFlags[0] == 0x800) ||
+        // Repentance
+        Id == 20066 ||
 //---------Death Knight------------
-    // Gnaw
-    Id == 47481 ||
-    // Hungering Cold
-    Id == 49203 ||
-    // Death Grip
-    Id == 49576 ||
+        // Gnaw
+        Id == 47481 ||
+        // Hungering Cold
+        Id == 49203 ||
+        // Death Grip
+        Id == 49576 ||
 //------------Shaman---------------
-    // Hex
-    Id == 51514 ||
-    // Spirit Wolf Bash
-    Id == 58861 ||
+        // Hex
+        Id == 51514 ||
+        // Spirit Wolf Bash
+        Id == 58861 ||
 //------------Rogue----------------
-    // Blind
-    Id == 2094 ||
-    // Cheap Shot
-    Id == 1833 ||
-    // Kidney Shot
-    (SpellFamilyName == SPELLFAMILY_ROGUE && SpellFamilyFlags[0] == 0x200000) ||
-    // Gouge
-    Id == 1776 ||
-    // Sap
-    (SpellFamilyName == SPELLFAMILY_ROGUE && SpellFamilyFlags[0] == 0x80) ||
+        // Blind
+        Id == 2094 ||
+        // Cheap Shot
+        Id == 1833 ||
+        // Kidney Shot
+        (SpellFamilyName == SPELLFAMILY_ROGUE && SpellFamilyFlags[0] == 0x200000) ||
+        // Gouge
+        Id == 1776 ||
+        // Sap
+        (SpellFamilyName == SPELLFAMILY_ROGUE && SpellFamilyFlags[0] == 0x80) ||
 //------------Druid----------------
-    // Cyclone
-    Id == 33786 ||
-    // Bash
-    (SpellFamilyName == SPELLFAMILY_DRUID && SpellFamilyFlags[0] == 0x2000) ||
-    // Pounce
-    (SpellFamilyName == SPELLFAMILY_DRUID && SpellFamilyFlags[0] == 0x20000) ||
-    // Maim
-    (SpellFamilyName == SPELLFAMILY_DRUID && SpellFamilyFlags[1] == 0x80) ||
-    // Faerie Fire
-    (SpellFamilyName == SPELLFAMILY_DRUID && SpellIconID == 109) ||
-    // Hibernate
-    (SpellFamilyName == SPELLFAMILY_DRUID && SpellIconID == 44) ||
+        // Cyclone
+        Id == 33786 ||
+        // Bash
+        (SpellFamilyName == SPELLFAMILY_DRUID && SpellFamilyFlags[0] == 0x2000) ||
+        // Pounce
+        (SpellFamilyName == SPELLFAMILY_DRUID && SpellFamilyFlags[0] == 0x20000) ||
+        // Maim
+        (SpellFamilyName == SPELLFAMILY_DRUID && SpellFamilyFlags[1] == 0x80) ||
+        // Faerie Fire
+        (SpellFamilyName == SPELLFAMILY_DRUID && SpellIconID == 109) ||
+        // Hibernate
+        (SpellFamilyName == SPELLFAMILY_DRUID && SpellIconID == 44) ||
 //------------Priest---------------
-    // Psychic Scream
-    (SpellFamilyName == SPELLFAMILY_PRIEST && SpellFamilyFlags[0] == 0x10000) ||
-    // Psychic Horror - Trigger and Stun
-    Id == 64044 ||
-    // Psychic Horror - Disarm
-    Id == 64058 ||
-    // Shadow Word Death
-    (SpellFamilyName == SPELLFAMILY_PRIEST && SpellFamilyFlags[1] == 0x2) ||
+        // Psychic Scream
+        (SpellFamilyName == SPELLFAMILY_PRIEST && SpellFamilyFlags[0] == 0x10000) ||
+        // Psychic Horror - Trigger and Stun
+        Id == 64044 ||
+        // Psychic Horror - Disarm
+        Id == 64058 ||
+        // Shadow Word Death
+        (SpellFamilyName == SPELLFAMILY_PRIEST && SpellFamilyFlags[1] == 0x2) ||
 //------------Mage-----------------
-    // Polymorph
-    (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[0] == 0x1000000) ||
-    // Deep Freeze
-    Id == 44572 ||
-    // Dragon's Breath
-    (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[0] == 0x800000) ||
-    // Fire Blast
-    (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[0] == 0x2) ||
-    // Burning Determination
-    Id == 54748 ||
+        // Polymorph
+        (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[0] == 0x1000000) ||
+        // Deep Freeze
+        Id == 44572 ||
+        // Dragon's Breath
+        (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[0] == 0x800000) ||
+        // Fire Blast
+        (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[0] == 0x2) ||
+        // Burning Determination
+        Id == 54748 ||
 //----------Warlock----------------
-    // Fear
-    (SpellFamilyName == SPELLFAMILY_WARLOCK && SpellFamilyFlags[1] == 0x400) ||
-    // Howl of Terror
-    (SpellFamilyName == SPELLFAMILY_WARLOCK && SpellFamilyFlags[1] == 0x8) ||
-    // Shadowfury
-    (SpellFamilyName == SPELLFAMILY_WARLOCK && SpellFamilyFlags[1] == 0x1000);
+        // Fear
+        (SpellFamilyName == SPELLFAMILY_WARLOCK && SpellFamilyFlags[1] == 0x400) ||
+        // Howl of Terror
+        (SpellFamilyName == SPELLFAMILY_WARLOCK && SpellFamilyFlags[1] == 0x8) ||
+        // Shadowfury
+        (SpellFamilyName == SPELLFAMILY_WARLOCK && SpellFamilyFlags[1] == 0x1000);
 }
 
 bool SpellInfo::IsMovementDelaySpell() const
 {
 //------------Rogue----------------
-    // Shadowstep
+        // Shadowstep
     return Id == 36563 ||
 //------------Mage-----------------
-    // Blink
-    Id == 1953 ||
+        // Blink
+        Id == 1953 ||
 //------------Druid----------------
-    // Feral Charge - Bear
-    Id == 16979 ||
-    // Feral Charge - Cat
-    Id == 49376 ||
+        // Feral Charge - Bear
+        Id == 16979 ||
+        // Feral Charge - Cat
+        Id == 49376 ||
 //----------Warlock----------------
-    // Demonic Circle: Teleport
-    Id == 48020;
+        // Demonic Circle: Teleport
+        Id == 48020;
 }
 
 bool SpellInfo::IsSilenceDelaySpell() const
 {
 //------------Generic--------------
-    // Arcane Torrent - Mana
+        // Arcane Torrent - Mana
     return Id == 28730 ||
-    // Arcane Torrent - Energy
-    Id == 25046 ||
-    // Arcane Torrent - Runic Power
-    Id == 50613 ||
+        // Arcane Torrent - Energy
+        Id == 25046 ||
+        // Arcane Torrent - Runic Power
+        Id == 50613 ||
 //------------Warrior--------------
-    // Silenced - Gag Order
-    Id == 18498 ||
+        // Silenced - Gag Order
+        Id == 18498 ||
 //---------Death Knight------------
-    // Strangulate
-    (SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && SpellFamilyFlags[0] == 0x200) ||
+        // Strangulate
+        (SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && SpellFamilyFlags[0] == 0x200) ||
 //------------Rogue----------------
-    // Silenced - Improved Kick
-    Id == 18425 ||
+        // Silenced - Improved Kick
+        Id == 18425 ||
 //------------Priest---------------
-    // Silence
-    Id == 15487 ||
+        // Silence
+        Id == 15487 ||
 //------------Mage-----------------
-    // Silenced - Improved Counterspell
-    (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[1] == 0x40000000) ||
+        // Silenced - Improved Counterspell
+        (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[1] == 0x40000000) ||
 //----------Warlock----------------
-    // Spell Lock
-    Id == 24259;
+        // Spell Lock
+        Id == 24259;
 }
 
 bool SpellInfo::IsMiscDelaySpell() const
 {
 //------------Generic--------------
-    // Global Thermal Sapper Charge
+        // Global Thermal Sapper Charge
     return Id == 56488 ||
 //------------Priest---------------
-    // Mass Dispel
-    Id == 32375;
+        // Mass Dispel
+        Id == 32375;
 }
 
 bool SpellInfo::IsCrowdControlSpell() const
 {
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
-        return Effects[i].ApplyAuraName == SPELL_AURA_MOD_POSSESS ||
-            Effects[i].ApplyAuraName == SPELL_AURA_MOD_CONFUSE ||
-            Effects[i].ApplyAuraName == SPELL_AURA_MOD_CHARM ||
-            Effects[i].ApplyAuraName == SPELL_AURA_AOE_CHARM ||
-            Effects[i].ApplyAuraName == SPELL_AURA_MOD_FEAR ||
-            Effects[i].ApplyAuraName == SPELL_AURA_MOD_STUN;
+    return HasAura(SPELL_AURA_MOD_POSSESS) ||
+        HasAura(SPELL_AURA_MOD_CONFUSE) ||
+        HasAura(SPELL_AURA_MOD_CHARM) ||
+        HasAura(SPELL_AURA_AOE_CHARM) ||
+        HasAura(SPELL_AURA_MOD_FEAR) ||
+        HasAura(SPELL_AURA_MOD_STUN);
     return false;
 }
 
 bool SpellInfo::IsNegativeAuraSpell() const
 {
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
-        return Effects[i].Effect == SPELL_EFFECT_APPLY_AURA && !IsPassive() && !IsPositive() &&
-            !(AttributesEx4 & SPELL_ATTR4_UNK21) &&
-            !(AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT) &&
-            Id != 7267 || // Grovel (Duel)
-            (SpellFamilyName == SPELLFAMILY_WARLOCK && (SpellFamilyFlags[0] & 0x2000000)); // Suffering (Voidwalker)
+    return HasEffect(SPELL_EFFECT_APPLY_AURA) && !IsPassive() && !IsPositive() &&
+        !(AttributesEx4 & SPELL_ATTR4_UNK21) &&
+        !(AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT) &&
+        Id != 7267 || // Grovel (Duel)
+        (SpellFamilyName == SPELLFAMILY_WARLOCK && (SpellFamilyFlags[0] & 0x2000000)); // Suffering (Voidwalker)
     return false;
 }
