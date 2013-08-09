@@ -371,15 +371,6 @@ void Unit::Update(uint32 p_time)
 
     UpdateSplineMovement(p_time);
     i_motionMaster.UpdateMotion(p_time);
-
-    Position pos;
-    GetPosition(&pos);
-
-    if (pos.m_positionZ > 10000.0f || pos.m_positionZ < -10000.0f)
-    {
-        UpdateGroundOrWaterPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
-        NearTeleportTo(pos.m_positionX, pos.m_positionY, pos.m_positionZ, pos.m_orientation);
-    }
 }
 
 bool Unit::haveOffhandWeapon() const
