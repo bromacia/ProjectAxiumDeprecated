@@ -3237,7 +3237,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
         return;
     }
 
-    if (!m_casttime && !IsAutoRepeat())
+    if (!m_casttime && !IsAutoRepeat() && !IsNextMeleeSwingSpell())
         cast(false);
 }
 
