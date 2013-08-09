@@ -2731,6 +2731,16 @@ bool SpellInfo::IsSilenceDelaySpell() const
     Id == 24259;
 }
 
+bool SpellInfo::IsMiscDelaySpell() const
+{
+//------------Generic--------------
+    // Global Thermal Sapper Charge
+    return Id == 56488 ||
+//------------Priest---------------
+    // Mass Dispel
+    Id == 32375;
+}
+
 bool SpellInfo::IsCrowdControlSpell() const
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)

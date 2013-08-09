@@ -1038,6 +1038,11 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
         targetInfo.timeDelay = 10;
         m_delayMoment = targetInfo.timeDelay;
     }
+    if (m_spellInfo->IsMiscDelaySpell())
+    {
+        targetInfo.timeDelay = 50;
+        m_delayMoment = targetInfo.timeDelay;
+    }
 
     // If target reflect spell back to caster
     if (targetInfo.missCondition == SPELL_MISS_REFLECT)
@@ -1540,7 +1545,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         if (effectMask & (1 << i) && unit->IsImmunedToSpellEffect(m_spellInfo, i))
             effectMask &= ~(1 << i);
     if (!effectMask || ((m_spellInfo->Speed || m_spellInfo->IsSpellDelaySpell() ||
-        m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell()) &&
+        m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell() || m_spellInfo->IsMiscDelaySpell()) &&
         (unit->IsImmunedToDamage(m_spellInfo) || unit->IsImmunedToSpell(m_spellInfo))))
         return SPELL_MISS_IMMUNE;
 
@@ -1563,7 +1568,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
     if (m_caster != unit)
     {
         // Recheck UNIT_FLAG_NON_ATTACKABLE for delayed spells
-        if ((m_spellInfo->Speed > 0.0f || m_spellInfo->IsSpellDelaySpell() || m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell()) &&
+        if ((m_spellInfo->Speed > 0.0f || m_spellInfo->IsSpellDelaySpell() || m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell() || m_spellInfo->IsMiscDelaySpell()) &&
             unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
             return SPELL_MISS_EVADE;
 
@@ -1619,7 +1624,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             // for delayed spells ignore negative spells (after duel end) for friendly targets
             // TODO: this cause soul transfer bugged
             if ((m_spellInfo->Speed > 0.0f || m_spellInfo->IsSpellDelaySpell() ||
-                m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell()) &&
+                m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell() || m_spellInfo->IsMiscDelaySpell()) &&
                 unit->GetTypeId() == TYPEID_PLAYER && !m_spellInfo->IsPositive())
                 return SPELL_MISS_EVADE;
 
@@ -3456,7 +3461,7 @@ void Spell::cast(bool skipCheck)
 
     // Okay, everything is prepared. Now we need to distinguish between immediate and evented delayed spells
     if ((m_spellInfo->Speed > 0.0f && !m_spellInfo->IsChanneled()) || m_spellInfo->Id == 14157 || // 14157: Ruthlessness (Neeeded?)
-        m_spellInfo->IsSpellDelaySpell() || m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell())
+        m_spellInfo->IsSpellDelaySpell() || m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell() || m_spellInfo->IsMiscDelaySpell())
     {
         // Remove used for cast item if need (it can be already NULL after TakeReagents call
         // in case delayed spell remove item at cast delay start
@@ -6937,7 +6942,7 @@ bool Spell::IsNeedSendToClient() const
 {
     return m_spellInfo->SpellVisual[0] || m_spellInfo->SpellVisual[1] || m_spellInfo->IsChanneled() ||
         (!m_triggeredByAuraSpell && !IsTriggered()) || m_spellInfo->Speed > 0.0f ||
-        m_spellInfo->IsSpellDelaySpell() || m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell();
+        m_spellInfo->IsSpellDelaySpell() || m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell() || m_spellInfo->IsMiscDelaySpell();
 }
 
 bool Spell::HaveTargetsForEffect(uint8 effect) const
