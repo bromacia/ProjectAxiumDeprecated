@@ -2162,12 +2162,9 @@ class Unit : public WorldObject
         void SetCantProc(bool apply)
         {
             if (apply)
-                ++m_procDeep;
+                m_procDeep = true;
             else
-            {
-                ASSERT(m_procDeep);
-                --m_procDeep;
-            }
+                m_procDeep = false;
         }
 
         // pet auras
@@ -2312,7 +2309,7 @@ class Unit : public WorldObject
 
         DeathState m_deathState;
 
-        int32 m_procDeep;
+        bool m_procDeep;
 
         typedef std::list<DynamicObject*> DynObjectList;
         DynObjectList m_dynObj;

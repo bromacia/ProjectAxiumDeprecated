@@ -151,7 +151,7 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
     m_ControlledByPlayer(false),
     i_AI(NULL),
     i_disabledAI(NULL),
-    m_procDeep(0),
+    m_procDeep(false),
     m_removedAurasCount(0),
     i_motionMaster(this),
     m_ThreatManager(this),
@@ -327,10 +327,6 @@ void Unit::Update(uint32 p_time)
         return;
 
     _UpdateSpells(p_time);
-
-    // If this is set during update SetCantProc(false) call is missing somewhere in the code
-    // Having this would prevent spells from being proced, so let's crash
-    ASSERT(!m_procDeep);
 
     if (CanHaveThreatList() && getThreatManager().isNeedUpdateToClient(p_time))
         SendThreatListUpdate();
