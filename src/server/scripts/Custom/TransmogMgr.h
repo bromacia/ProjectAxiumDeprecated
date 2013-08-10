@@ -24,8 +24,7 @@ enum TransmogSlots
 
 enum TransmogOptions
 {
-    TRANSMOG_ACTION_SHOW_ARMOR = 10000,
-    TRANSMOG_ACTION_SHOW_INDIVIDUAL,
+    TRANSMOG_ACTION_SHOW_INDIVIDUAL = 10000,
     TRANSMOG_ACTION_SHOW_ENCHANTS,
     TRANSMOG_ACTION_SHOW_INDIVIDUAL_HEAD,
     TRANSMOG_ACTION_SHOW_INDIVIDUAL_SHOULDERS,
@@ -61,38 +60,59 @@ enum TransmogOptions
     TRANSMOG_ACTION_MAIN_MENU,
 };
 
+enum TransmogEnchantIds
+{
+    TRANSMOG_ENCHANT_MONGOOSE       = 2673,
+    TRANSMOG_ENCHANT_EXECUTIONER    = 3225,
+    TRANSMOG_ENCHANT_SUNFIRE        = 2671,
+    TRANSMOG_ENCHANT_SOULFROST      = 2672,
+    TRANSMOG_ENCHANT_BLOOD_DRAINING = 3870,
+    TRANSMOG_ENCHANT_RAZORICE       = 3370,
+    TRANSMOG_ENCHANT_BERSERKING     = 3789,
+    TRANSMOG_ENCHANT_SPELLSURGE     = 2674,
+    TRANSMOG_ENCHANT_DEATHFROST     = 3273,
+    TRANSMOG_ENCHANT_SPARKLES       = 2669,
+    TRANSMOG_ENCHANT_GLOW_RED       = 853,
+    TRANSMOG_ENCHANT_GLOW_YELLOW    = 2567,
+    TRANSMOG_ENCHANT_GLOW_BLUE      = 1897,
+    TRANSMOG_ENCHANT_GLOW_PURPLE    = 1898,
+    TRANSMOG_ENCHANT_GLOW_ORANGE    = 803,
+    TRANSMOG_ENCHANT_GLOW_GREEN     = 2564,
+    TRANSMOG_ENCHANT_GLOW_GREY      = 1900,
+    TRANSMOG_ENCHANT_GLOW_WHITE     = 1894,
+    TRANSMOG_ENCHANT_NO_VISUAL      = 10000
+};
+
 class Transmogrification : public CreatureScript
 {
     public:
         Transmogrification() : CreatureScript("Transmogrifier") {}
-        bool OnGossipHello(Player* player, Creature* creature);
-        bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action);
-        static bool ShowTransmogArmorSets(Player* player, Creature* creature);
-        static bool ShowIndividualTransmogOptions(Player* player, Creature* creature);
-        static bool ShowTransmogEnchants(Player* player, Creature* creature);
-        static bool ShowRemoveTransmogItemOptions(Player* player, Creature* creature);
-        static bool ShowRemoveTransmogEnchantOptions(Player* player, Creature* creature);
-        static bool SelectIndividualTransmog(Player* player, Creature* creature, uint16 action);
-        static bool TransmogrifyArmor(Player* player, uint16 action);
-        static bool TransmogrifyIndividual(Player* player, Creature* creature, uint32 item);
-        static bool TransmogrifyEnchant(Player* player, uint16 action);
-        static bool RemoveItemTransmog(Player* player, uint16 action);
-        static bool RemoveEnchantTransmog(Player* player, uint16 action);
-        static bool RemoveAllArmorTransmog(Player* player);
-        static bool RemoveAllWeaponTransmog(Player* player);
-        static bool RemoveAllEnchantTransmog(Player* player);
-        static bool RemoveAllTransmog(Player* player);
+        bool OnGossipHello(Player *player, Creature *creature);
+        bool OnGossipSelect(Player *player, Creature *creature, uint32 sender, uint32 action);
+        static bool ShowIndividualTransmogOptions(Player *player, Creature *creature);
+        static bool ShowTransmogEnchants(Player *player, Creature *creature);
+        static bool ShowRemoveTransmogItemOptions(Player *player, Creature *creature);
+        static bool ShowRemoveTransmogEnchantOptions(Player *player, Creature *creature);
+        static bool SelectIndividualTransmog(Player *player, Creature *creature, uint16 action);
+        static bool TransmogrifyIndividual(Player *player, Creature *creature, uint32 item);
+        static bool TransmogrifyEnchant(Player *player, uint16 action);
+        static bool RemoveItemTransmog(Player *player, uint16 action);
+        static bool RemoveEnchantTransmog(Player *player, uint16 action);
+        static bool RemoveAllArmorTransmog(Player *player);
+        static bool RemoveAllWeaponTransmog(Player *player);
+        static bool RemoveAllEnchantTransmog(Player *player);
+        static bool RemoveAllTransmog(Player *player);
     private:
-        static bool IsArmor(ItemTemplate const* itemTemplate) { return itemTemplate->Class == ITEM_CLASS_ARMOR; }
-        static bool IsWeapon(ItemTemplate const* itemTemplate) { return itemTemplate->Class == ITEM_CLASS_WEAPON; }
-        static bool CheckItem(Player* player, ItemTemplate const* vItemTemplate, ItemTemplate const* pItemTemplate);
+        static bool IsArmor(const ItemTemplate *itemTemplate) { return itemTemplate->Class == ITEM_CLASS_ARMOR; }
+        static bool IsWeapon(const ItemTemplate *itemTemplate) { return itemTemplate->Class == ITEM_CLASS_WEAPON; }
+        static bool CheckItem(Player *player, const ItemTemplate *vItemTemplate, const ItemTemplate *pItemTemplate);
         static uint16 GetTeamById(uint8 Id)
         {
             switch (Id)
             {
                 case 1:  return ALLIANCE;
                 case 2:  return HORDE;
-                default: return NULL;
+                default: return 0;
             }
         }
         static uint8 GetItemSlotByAction(uint16 action)
@@ -135,7 +155,7 @@ class Transmogrification : public CreatureScript
                 case TRANSMOG_ACTION_SELECT_REMOVE_RANGED:
                     return EQUIPMENT_SLOT_RANGED;
                 default:
-                    return NULL;
+                    return 0;
             }
         }
         static uint16 GetTransmogSlotByEquipSlot(uint8 slot)
@@ -153,7 +173,7 @@ class Transmogrification : public CreatureScript
                 case EQUIPMENT_SLOT_MAINHAND:  return PLAYER_VISIBLE_ITEM_16_ENTRYID;
                 case EQUIPMENT_SLOT_OFFHAND:   return PLAYER_VISIBLE_ITEM_17_ENTRYID;
                 case EQUIPMENT_SLOT_RANGED:    return PLAYER_VISIBLE_ITEM_18_ENTRYID;
-                default: return NULL;
+                default: return 0;
             }
         }
 };

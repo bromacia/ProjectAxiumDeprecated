@@ -485,32 +485,6 @@ struct GossipMenuItems
     ConditionList   Conditions;
 };
 
-struct TransmogArmor
-{
-    uint32 id;
-    uint32 head_id;
-    uint32 shoulders_id;
-    uint32 chest_id;
-    uint32 gloves_id;
-    uint32 legs_id;
-    uint32 waist_id;
-    uint32 boots_id;
-};
-
-struct TransmogWeapon
-{
-    uint32 id;
-    uint32 mainhand_id;
-    uint32 offhand_id;
-    uint32 ranged_id;
-};
-
-struct TransmogEnchant
-{
-    uint32 id;
-    uint32 enchant_id;
-};
-
 struct GossipMenus
 {
     uint32          entry;
@@ -634,9 +608,6 @@ class ObjectMgr
 
         typedef UNORDERED_MAP<uint32, RepRewardRate > RepRewardRateMap;
         typedef UNORDERED_MAP<uint32, ReputationOnKillEntry> RepOnKillMap;
-        typedef UNORDERED_MAP<uint32, TransmogArmor> TransmogArmorMap;
-        typedef UNORDERED_MAP<uint32, TransmogWeapon> TransmogWeaponMap;
-        typedef UNORDERED_MAP<uint32, TransmogEnchant> TransmogEnchantMap;
         typedef UNORDERED_MAP<uint32, RepSpilloverTemplate> RepSpilloverTemplateMap;
 
         typedef UNORDERED_MAP<uint32, PointOfInterest> PointOfInterestMap;
@@ -780,30 +751,6 @@ class ObjectMgr
         {
             RepOnKillMap::const_iterator itr = mRepOnKill.find(id);
             if (itr != mRepOnKill.end())
-                return &itr->second;
-            return NULL;
-        }
-
-        TransmogArmor const* GetTransmogArmorEntry(uint32 id) const
-        {
-            TransmogArmorMap::const_iterator itr = mTransmogArmor.find(id);
-            if (itr != mTransmogArmor.end())
-                return &itr->second;
-            return NULL;
-        }
-
-        TransmogWeapon const* GetTransmogWeaponEntry(uint32 id) const
-        {
-            TransmogWeaponMap::const_iterator itr = mTransmogWeapon.find(id);
-            if (itr != mTransmogWeapon.end())
-                return &itr->second;
-            return NULL;
-        }
-
-        TransmogEnchant const* GetTransmogEnchantEntry(uint32 id) const
-        {
-            TransmogEnchantMap::const_iterator itr = mTransmogEnchant.find(id);
-            if (itr != mTransmogEnchant.end())
                 return &itr->second;
             return NULL;
         }
@@ -964,10 +911,6 @@ class ObjectMgr
 
         void LoadGossipMenu();
         void LoadGossipMenuItems();
-
-        void LoadArmorTransmogs();
-        void LoadWeaponTransmogs();
-        void LoadEnchantTransmogs();
 
         void LoadVendors();
         void LoadTrainerSpell();
@@ -1257,10 +1200,6 @@ class ObjectMgr
         RepRewardRateMap    m_RepRewardRateMap;
         RepOnKillMap        mRepOnKill;
         RepSpilloverTemplateMap m_RepSpilloverTemplateMap;
-
-        TransmogArmorMap     mTransmogArmor;
-        TransmogWeaponMap    mTransmogWeapon;
-        TransmogEnchantMap   mTransmogEnchant;
 
         GossipMenusMap      m_mGossipMenusMap;
         GossipMenuItemsMap  m_mGossipMenuItemsMap;

@@ -153,9 +153,6 @@ public:
             { "waypoint_data",                SEC_ADMINISTRATOR, true,  &HandleReloadWpCommand,                         "", NULL },
             { "vehicle_accessory",            SEC_ADMINISTRATOR, true,  &HandleReloadVehicleAccessoryCommand,           "", NULL },
             { "vehicle_template_accessory",   SEC_ADMINISTRATOR, true,  &HandleReloadVehicleTemplateAccessoryCommand,   "", NULL },
-            { "transmog_armor_sets",          SEC_ADMINISTRATOR, true,  &HandleReloadTransmogArmorSetsCommand,          "", NULL },
-            { "transmog_weapons",             SEC_ADMINISTRATOR, true,  &HandleReloadTransmogWeaponsCommand,            "", NULL },
-            { "transmog_enchants",            SEC_ADMINISTRATOR, true,  &HandleReloadTransmogEnchantsCommand,           "", NULL },
             { NULL,                           0,                 false, NULL,                                           "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -197,9 +194,6 @@ public:
 
         HandleReloadVehicleAccessoryCommand(handler, "");
         HandleReloadVehicleTemplateAccessoryCommand(handler, "");
-
-        HandleReloadTransmogArmorSetsCommand(handler, "");
-        HandleReloadTransmogWeaponsCommand(handler, "");
 
         HandleReloadAutobroadcastCommand(handler, "");
         return true;
@@ -1274,30 +1268,6 @@ public:
         sLog->outString("Reloading vehicle_template_accessory table...");
         sObjectMgr->LoadVehicleTemplateAccessories();
         handler->SendGlobalGMSysMessage("Vehicle template accessories reloaded.");
-        return true;
-    }
-
-    static bool HandleReloadTransmogArmorSetsCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        sLog->outString("Reloading transmog_armory_sets table...");
-        sObjectMgr->LoadArmorTransmogs();
-        handler->SendGlobalGMSysMessage("Transmog Armor Sets reloaded.");
-        return true;
-    }
-
-    static bool HandleReloadTransmogWeaponsCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        sLog->outString("Reloading transmog_weapons table...");
-        sObjectMgr->LoadWeaponTransmogs();
-        handler->SendGlobalGMSysMessage("Transmog Weapons reloaded.");
-        return true;
-    }
-
-    static bool HandleReloadTransmogEnchantsCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        sLog->outString("Reloading transmog_enchants table...");
-        sObjectMgr->LoadEnchantTransmogs();
-        handler->SendGlobalGMSysMessage("Transmog Enchants reloaded.");
         return true;
     }
 };

@@ -187,9 +187,9 @@ public:
         return true;
     }
 
-    static bool HandleTransmogCopyCommand(ChatHandler* handler, const char* /*args*/)
+    static bool HandleTransmogCopyCommand(ChatHandler *handler, const char * /*args*/)
     {
-        Unit* unitTarget = handler->getSelectedUnit();
+        Unit *unitTarget = handler->getSelectedUnit();
 
         if (unitTarget->GetTypeId() != TYPEID_PLAYER)
         {
@@ -198,19 +198,20 @@ public:
             return false;
         }
 
-        Player* player = handler->GetSession()->GetPlayer();
-        Player* target = unitTarget->ToPlayer();
+        Player *player = handler->GetSession()->GetPlayer();
+        Player *target = unitTarget->ToPlayer();
 
         for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
         {
-            if (Item* playerItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
-                if (Item* targetItem = target->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+            if (Item *playerItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+                if (Item *targetItem = target->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
                 {
                     if (slot == EQUIPMENT_SLOT_HEAD ||
                         slot == EQUIPMENT_SLOT_SHOULDERS ||
                         slot == EQUIPMENT_SLOT_CHEST ||
                         slot == EQUIPMENT_SLOT_HANDS ||
                         slot == EQUIPMENT_SLOT_LEGS ||
+                        slot == EQUIPMENT_SLOT_WRISTS ||
                         slot == EQUIPMENT_SLOT_WAIST ||
                         slot == EQUIPMENT_SLOT_FEET ||
                         slot == EQUIPMENT_SLOT_MAINHAND ||
@@ -243,9 +244,9 @@ public:
         return true;
     }
 
-    static bool HandleTransmogSendCommand(ChatHandler* handler, const char* /*args*/)
+    static bool HandleTransmogSendCommand(ChatHandler *handler, const char * /*args*/)
     {
-        Unit* unitTarget = handler->getSelectedUnit();
+        Unit *unitTarget = handler->getSelectedUnit();
 
         if (unitTarget->GetTypeId() != TYPEID_PLAYER)
         {
@@ -254,19 +255,20 @@ public:
             return false;
         }
 
-        Player* player = handler->GetSession()->GetPlayer();
-        Player* target = unitTarget->ToPlayer();
+        Player *player = handler->GetSession()->GetPlayer();
+        Player *target = unitTarget->ToPlayer();
 
         for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
         {
-            if (Item* playerItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
-                if (Item* targetItem = target->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+            if (Item *playerItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+                if (Item *targetItem = target->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
                 {
                     if (slot == EQUIPMENT_SLOT_HEAD ||
                         slot == EQUIPMENT_SLOT_SHOULDERS ||
                         slot == EQUIPMENT_SLOT_CHEST ||
                         slot == EQUIPMENT_SLOT_HANDS ||
                         slot == EQUIPMENT_SLOT_LEGS ||
+                        slot == EQUIPMENT_SLOT_WRISTS ||
                         slot == EQUIPMENT_SLOT_WAIST ||
                         slot == EQUIPMENT_SLOT_FEET ||
                         slot == EQUIPMENT_SLOT_MAINHAND ||
