@@ -39,7 +39,7 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     if (!_player->duel)
         return;
 
-    Player *players[2] = { _player, _player->duel->opponent };
+    Player* players[2] = { _player, _player->duel->opponent };
 
     if (!players[0] || !players[1])
         return;

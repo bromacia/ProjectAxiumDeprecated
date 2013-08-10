@@ -87,25 +87,25 @@ class Transmogrification : public CreatureScript
 {
     public:
         Transmogrification() : CreatureScript("Transmogrifier") {}
-        bool OnGossipHello(Player *player, Creature *creature);
-        bool OnGossipSelect(Player *player, Creature *creature, uint32 sender, uint32 action);
-        static bool ShowIndividualTransmogOptions(Player *player, Creature *creature);
-        static bool ShowTransmogEnchants(Player *player, Creature *creature);
-        static bool ShowRemoveTransmogItemOptions(Player *player, Creature *creature);
-        static bool ShowRemoveTransmogEnchantOptions(Player *player, Creature *creature);
-        static bool SelectIndividualTransmog(Player *player, Creature *creature, uint16 action);
-        static bool TransmogrifyIndividual(Player *player, Creature *creature, uint32 item);
-        static bool TransmogrifyEnchant(Player *player, uint16 action);
-        static bool RemoveItemTransmog(Player *player, uint16 action);
-        static bool RemoveEnchantTransmog(Player *player, uint16 action);
-        static bool RemoveAllArmorTransmog(Player *player);
-        static bool RemoveAllWeaponTransmog(Player *player);
-        static bool RemoveAllEnchantTransmog(Player *player);
-        static bool RemoveAllTransmog(Player *player);
+        bool OnGossipHello(Player* player, Creature* creature);
+        bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action);
+        static bool ShowIndividualTransmogOptions(Player* player, Creature* creature);
+        static bool ShowTransmogEnchants(Player* player, Creature* creature);
+        static bool ShowRemoveTransmogItemOptions(Player* player, Creature* creature);
+        static bool ShowRemoveTransmogEnchantOptions(Player* player, Creature* creature);
+        static bool SelectIndividualTransmog(Player* player, Creature* creature, uint16 action);
+        static bool TransmogrifyIndividual(Player* player, Creature* creature, uint32 item);
+        static bool TransmogrifyEnchant(Player* player, uint16 action);
+        static bool RemoveItemTransmog(Player* player, uint16 action);
+        static bool RemoveEnchantTransmog(Player* player, uint16 action);
+        static bool RemoveAllArmorTransmog(Player* player);
+        static bool RemoveAllWeaponTransmog(Player* player);
+        static bool RemoveAllEnchantTransmog(Player* player);
+        static bool RemoveAllTransmog(Player* player);
     private:
-        static bool IsArmor(const ItemTemplate *itemTemplate) { return itemTemplate->Class == ITEM_CLASS_ARMOR; }
-        static bool IsWeapon(const ItemTemplate *itemTemplate) { return itemTemplate->Class == ITEM_CLASS_WEAPON; }
-        static bool CheckItem(Player *player, const ItemTemplate *vItemTemplate, const ItemTemplate *pItemTemplate);
+        static bool IsArmor(const ItemTemplate* itemTemplate) { return itemTemplate->Class == ITEM_CLASS_ARMOR; }
+        static bool IsWeapon(const ItemTemplate* itemTemplate) { return itemTemplate->Class == ITEM_CLASS_WEAPON; }
+        static bool CheckItem(Player* player, const ItemTemplate* vItemTemplate, const ItemTemplate* pItemTemplate);
         static uint16 GetTeamById(uint8 Id)
         {
             switch (Id)

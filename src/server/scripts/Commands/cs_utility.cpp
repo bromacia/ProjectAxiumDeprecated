@@ -16,8 +16,8 @@ public:
             { "prepare",          SEC_GAMEMASTER,     false, &HandlePrepareCommand,                   "", NULL },
             { "barbershop",       SEC_PLAYER,         false, &HandleBarbershopCommand,                "", NULL },
             { "sendcooldown",     SEC_GAMEMASTER,     false, &HandleSendCooldownCommand,              "", NULL },
-            { "transmogcopy",     SEC_GAMEMASTER,     false, &HandleTransmogCopyCommand,              "", NULL },
-            { "transmogsend",     SEC_GAMEMASTER,     false, &HandleTransmogSendCommand,              "", NULL },
+            { "transmogcopygear", SEC_GAMEMASTER,     false, &HandleTransmogCopyGearCommand,          "", NULL },
+            { "transmogsendgear", SEC_GAMEMASTER,     false, &HandleTransmogSendGearCommand,          "", NULL },
             { "warp",             SEC_GAMEMASTER,     false, &HandleWarpCommand,                      "", NULL },
             { "hijackcharacter",  SEC_ADMINISTRATOR,  false, &HandleHijackCharacterCommand,           "", NULL },
             { "returncharacter",  SEC_ADMINISTRATOR,  false, &HandleReturnCharacterCommand,           "", NULL },
@@ -187,7 +187,7 @@ public:
         return true;
     }
 
-    static bool HandleTransmogCopyCommand(ChatHandler *handler, const char * /*args*/)
+    static bool HandleTransmogCopyGearCommand(ChatHandler* handler, const char* /*args*/)
     {
         Unit *unitTarget = handler->getSelectedUnit();
 
@@ -198,13 +198,13 @@ public:
             return false;
         }
 
-        Player *player = handler->GetSession()->GetPlayer();
-        Player *target = unitTarget->ToPlayer();
+        Player* player = handler->GetSession()->GetPlayer();
+        Player* target = unitTarget->ToPlayer();
 
         for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
         {
-            if (Item *playerItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
-                if (Item *targetItem = target->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+            if (Item* playerItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+                if (Item* targetItem = target->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
                 {
                     if (slot == EQUIPMENT_SLOT_HEAD ||
                         slot == EQUIPMENT_SLOT_SHOULDERS ||
@@ -244,7 +244,7 @@ public:
         return true;
     }
 
-    static bool HandleTransmogSendCommand(ChatHandler *handler, const char * /*args*/)
+    static bool HandleTransmogSendGearCommand(ChatHandler* handler, const char* /*args*/)
     {
         Unit *unitTarget = handler->getSelectedUnit();
 
@@ -255,13 +255,13 @@ public:
             return false;
         }
 
-        Player *player = handler->GetSession()->GetPlayer();
-        Player *target = unitTarget->ToPlayer();
+        Player* player = handler->GetSession()->GetPlayer();
+        Player* target = unitTarget->ToPlayer();
 
         for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
         {
-            if (Item *playerItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
-                if (Item *targetItem = target->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+            if (Item* playerItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+                if (Item* targetItem = target->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
                 {
                     if (slot == EQUIPMENT_SLOT_HEAD ||
                         slot == EQUIPMENT_SLOT_SHOULDERS ||

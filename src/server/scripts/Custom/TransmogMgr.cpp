@@ -1,6 +1,6 @@
 #include "TransmogMgr.h"
 
-bool Transmogrification::OnGossipHello(Player *player, Creature *creature)
+bool Transmogrification::OnGossipHello(Player* player, Creature* creature)
 {
     player->SetSelectedTransmogItemSlot(0);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "|TInterface\\icons\\Inv_Shoulder_66:30|t Individual", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_SHOW_INDIVIDUAL);
@@ -13,7 +13,7 @@ bool Transmogrification::OnGossipHello(Player *player, Creature *creature)
     return true;
 }
 
-bool Transmogrification::OnGossipSelect(Player *player, Creature *creature, uint32 sender, uint32 action)
+bool Transmogrification::OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
 {
     player->PlayerTalkClass->ClearMenus();
 
@@ -48,7 +48,7 @@ bool Transmogrification::OnGossipSelect(Player *player, Creature *creature, uint
     return false;
 }
 
-bool Transmogrification::ShowIndividualTransmogOptions(Player *player, Creature *creature)
+bool Transmogrification::ShowIndividualTransmogOptions(Player* player, Creature* creature)
 {
     if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD))
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "Head", TRANSMOG_ACTION_SHOW_INDIVIDUAL, TRANSMOG_ACTION_SHOW_INDIVIDUAL_HEAD);
@@ -92,7 +92,7 @@ bool Transmogrification::ShowIndividualTransmogOptions(Player *player, Creature 
     return true;
 }
 
-bool Transmogrification::ShowTransmogEnchants(Player *player, Creature *creature)
+bool Transmogrification::ShowTransmogEnchants(Player* player, Creature* creature)
 {
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "Mongoose", TRANSMOG_ACTION_SHOW_ENCHANTS, TRANSMOG_ENCHANT_MONGOOSE);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "Executioner", TRANSMOG_ACTION_SHOW_ENCHANTS, TRANSMOG_ENCHANT_EXECUTIONER);
@@ -119,7 +119,7 @@ bool Transmogrification::ShowTransmogEnchants(Player *player, Creature *creature
     return true;
 }
 
-bool Transmogrification::ShowRemoveTransmogItemOptions(Player *player, Creature *creature)
+bool Transmogrification::ShowRemoveTransmogItemOptions(Player* player, Creature* creature)
 {
     if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD))
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "Head", TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS, TRANSMOG_ACTION_SELECT_REMOVE_HEAD);
@@ -164,7 +164,7 @@ bool Transmogrification::ShowRemoveTransmogItemOptions(Player *player, Creature 
     return true;
 }
 
-bool Transmogrification::ShowRemoveTransmogEnchantOptions(Player *player, Creature *creature)
+bool Transmogrification::ShowRemoveTransmogEnchantOptions(Player* player, Creature* creature)
 {
     if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "Main Hand", TRANSMOG_ACTION_SHOW_REMOVE_ENCHANT_TRANSMOG_OPTIONS, TRANSMOG_ACTION_SELECT_REMOVE_MAINHAND_ENCHANT);
@@ -181,12 +181,12 @@ bool Transmogrification::ShowRemoveTransmogEnchantOptions(Player *player, Creatu
     return true;
 }
 
-bool Transmogrification::SelectIndividualTransmog(Player *player, Creature *creature, uint16 action)
+bool Transmogrification::SelectIndividualTransmog(Player* player, Creature* creature, uint16 action)
 {
     uint8 itemSlot = GetItemSlotByAction(action);
     player->SetSelectedTransmogItemSlot(itemSlot);
-    const ItemTemplate *pItemTemplate = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot)->GetTemplate();
-    const VendorItemData *items = creature->GetVendorItems();
+    const ItemTemplate* pItemTemplate = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot)->GetTemplate();
+    const VendorItemData* items = creature->GetVendorItems();
     if (!items)
     {
         ChatHandler(player).PSendSysMessage("Unable to find item data");
@@ -208,9 +208,9 @@ bool Transmogrification::SelectIndividualTransmog(Player *player, Creature *crea
 
     for (uint16 slot = 0; slot < itemCount; ++slot)
     {
-        if (const VendorItem *vItem = items->GetItem(slot))
+        if (const VendorItem* vItem = items->GetItem(slot))
         {
-            if (const ItemTemplate *vItemTemplate = sObjectMgr->GetItemTemplate(vItem->item))
+            if (const ItemTemplate* vItemTemplate = sObjectMgr->GetItemTemplate(vItem->item))
             {
                 if (!CheckItem(player, vItemTemplate, pItemTemplate))
                     continue;
@@ -241,7 +241,7 @@ bool Transmogrification::SelectIndividualTransmog(Player *player, Creature *crea
     return true;
 }
 
-bool Transmogrification::CheckItem(Player *player, const ItemTemplate *vItemTemplate, const ItemTemplate *pItemTemplate)
+bool Transmogrification::CheckItem(Player* player, const ItemTemplate* vItemTemplate, const ItemTemplate* pItemTemplate)
 {
     // Faction specific items
     if ((vItemTemplate->Flags2 == ITEM_FLAGS_EXTRA_ALLIANCE_ONLY && player->GetTeam() == HORDE) ||
@@ -269,15 +269,15 @@ bool Transmogrification::CheckItem(Player *player, const ItemTemplate *vItemTemp
     return true;
 }
 
-bool Transmogrification::TransmogrifyIndividual(Player *player, Creature *creature, uint32 item)
+bool Transmogrification::TransmogrifyIndividual(Player* player, Creature* creature, uint32 item)
 {
-    const ItemTemplate *vItemTemplate = sObjectMgr->GetItemTemplate(item);
+    const ItemTemplate* vItemTemplate = sObjectMgr->GetItemTemplate(item);
     uint8 itemSlot = player->GetSelectedTransmogItemSlot();
     uint16 transmogSlot = GetTransmogSlotByEquipSlot(itemSlot);
     if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot))
     {
         Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot);
-        const ItemTemplate *pItemTemplate = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot)->GetTemplate();
+        const ItemTemplate* pItemTemplate = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot)->GetTemplate();
 
         if (!CheckItem(player, vItemTemplate, pItemTemplate))
         {
@@ -298,11 +298,11 @@ bool Transmogrification::TransmogrifyIndividual(Player *player, Creature *creatu
     return true;
 }
 
-bool Transmogrification::TransmogrifyEnchant(Player *player, uint16 action)
+bool Transmogrification::TransmogrifyEnchant(Player* player, uint16 action)
 {
     if (action && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != 0)
     {
-        const ItemTemplate *inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate();
+        const ItemTemplate* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate();
         if (inventoryItem->Class == ITEM_CLASS_WEAPON)
         {
             CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEnchant = %u WHERE guid = %u",
@@ -316,7 +316,7 @@ bool Transmogrification::TransmogrifyEnchant(Player *player, uint16 action)
 
     if (action && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND) != 0)
     {
-        const ItemTemplate *inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetTemplate();
+        const ItemTemplate* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetTemplate();
         if (inventoryItem->Class == ITEM_CLASS_WEAPON)
         {
             CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEnchant = %u WHERE guid = %u",
@@ -332,10 +332,10 @@ bool Transmogrification::TransmogrifyEnchant(Player *player, uint16 action)
     return true;
 }
 
-bool Transmogrification::RemoveItemTransmog(Player *player, uint16 action)
+bool Transmogrification::RemoveItemTransmog(Player* player, uint16 action)
 {
     uint8 itemSlot = GetItemSlotByAction(action);
-    if (Item *item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot))
+    if (Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot))
     {
         CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEntry = 0 WHERE guid = %u", item->GetGUIDLow());
         item->TransmogEntry = 0;
@@ -345,10 +345,10 @@ bool Transmogrification::RemoveItemTransmog(Player *player, uint16 action)
     return true;
 }
 
-bool Transmogrification::RemoveEnchantTransmog(Player *player, uint16 action)
+bool Transmogrification::RemoveEnchantTransmog(Player* player, uint16 action)
 {
     uint8 itemSlot = GetItemSlotByAction(action);
-    if (Item *item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot))
+    if (Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot))
     {
         CharacterDatabase.PExecute("UPDATE item_instance SET TransmogEnchant = 0 WHERE guid = %u", item->GetGUIDLow());
         item->TransmogEnchant = 0;
@@ -359,11 +359,11 @@ bool Transmogrification::RemoveEnchantTransmog(Player *player, uint16 action)
     return true;
 }
 
-bool Transmogrification::RemoveAllArmorTransmog(Player *player)
+bool Transmogrification::RemoveAllArmorTransmog(Player* player)
 {
     for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
     {
-        if (Item *item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+        if (Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
         {
             if (slot == EQUIPMENT_SLOT_HEAD ||
                 slot == EQUIPMENT_SLOT_SHOULDERS ||
@@ -385,11 +385,11 @@ bool Transmogrification::RemoveAllArmorTransmog(Player *player)
     return true;
 }
 
-bool Transmogrification::RemoveAllWeaponTransmog(Player *player)
+bool Transmogrification::RemoveAllWeaponTransmog(Player* player)
 {
     for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
     {
-        if (Item *item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+        if (Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
         {
             if (slot == EQUIPMENT_SLOT_MAINHAND ||
                 slot == EQUIPMENT_SLOT_OFFHAND ||
@@ -406,11 +406,11 @@ bool Transmogrification::RemoveAllWeaponTransmog(Player *player)
     return true;
 }
 
-bool Transmogrification::RemoveAllEnchantTransmog(Player *player)
+bool Transmogrification::RemoveAllEnchantTransmog(Player* player)
 {
     for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
     {
-        if (Item *item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+        if (Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
         {
             if (slot == EQUIPMENT_SLOT_MAINHAND ||
                 slot == EQUIPMENT_SLOT_OFFHAND ||
@@ -428,11 +428,11 @@ bool Transmogrification::RemoveAllEnchantTransmog(Player *player)
     return true;
 }
 
-bool Transmogrification::RemoveAllTransmog(Player *player)
+bool Transmogrification::RemoveAllTransmog(Player* player)
 {
     for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
     {
-        if (Item *item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+        if (Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
         {
             if (slot == EQUIPMENT_SLOT_HEAD ||
                 slot == EQUIPMENT_SLOT_SHOULDERS ||

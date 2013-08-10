@@ -289,7 +289,7 @@ public:
         if (!*args)
             return false;
 
-        Player *player = handler->GetSession()->GetPlayer();
+        Player* player = handler->GetSession()->GetPlayer();
 
         // id, or string, or [name] Shift-click form |color|Htele:id|h[name]|h|r
         const GameTele *tele = handler->extractGameTeleFromLink((char*)args);

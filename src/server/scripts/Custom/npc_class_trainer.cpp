@@ -16,7 +16,7 @@ class npc_class_trainer : public CreatureScript
     public:
         npc_class_trainer() : CreatureScript("npc_class_trainer") {}
 
-        bool OnGossipHello(Player *player, Creature *creature)
+        bool OnGossipHello(Player* player, Creature* creature)
         {
             player->PlayerTalkClass->ClearMenus();
 
@@ -44,7 +44,7 @@ class npc_class_trainer : public CreatureScript
             return true;
         }
 
-        bool OnGossipSelect(Player *player, Creature *creature, uint32 sender, uint32 action)
+        bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
         {
             player->PlayerTalkClass->ClearMenus();
 
@@ -100,7 +100,7 @@ class npc_class_trainer : public CreatureScript
             return false;
         }
 
-        bool LearnAllSpells(Player *player, Creature *creature)
+        bool LearnAllSpells(Player* player, Creature* creature)
         {
             const TrainerSpellData *TrainerSpells = creature->GetTrainerSpells();
             if (!TrainerSpells)
@@ -177,7 +177,7 @@ class npc_class_trainer : public CreatureScript
             return true;
         }
 
-        bool ShowGlyphs(Player *player, Creature *creature)
+        bool ShowGlyphs(Player* player, Creature* creature)
         {
             const VendorItemData *items = creature->GetVendorItems();
             if (!items)
@@ -234,7 +234,7 @@ class npc_class_trainer : public CreatureScript
             return true;
         }
 
-        static bool BuyGlyph(Player *player, Creature *creature, uint32 itemId)
+        static bool BuyGlyph(Player* player, Creature* creature, uint32 itemId)
         {
             const ItemTemplate *itemTemplate = sObjectMgr->GetItemTemplate(itemId);
             if (!itemTemplate)

@@ -8,7 +8,7 @@ class Reset_OnDuelEnd : public PlayerScript
 
         void OnDuelEnd(Player* winner, Player* loser, DuelCompleteType type)
         {
-            Player *players[2] = { winner, loser };
+            Player* players[2] = { winner, loser };
 
             for (uint8 i = 0; i < 2; ++i)
             {
