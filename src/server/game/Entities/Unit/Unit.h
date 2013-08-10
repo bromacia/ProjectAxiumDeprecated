@@ -2158,14 +2158,8 @@ class Unit : public WorldObject
         void UpdateAuraForGroup(uint8 slot);
 
         // proc trigger system
-        bool CanProc(){return !m_procDeep;}
-        void SetCantProc(bool apply)
-        {
-            if (apply)
-                m_procDeep = true;
-            else
-                m_procDeep = false;
-        }
+        bool CanProc() { return !m_procDeep; }
+        void SetCantProc(bool apply) { m_procDeep = apply; }
 
         // pet auras
         typedef std::set<PetAura const*> PetAuraSet;
