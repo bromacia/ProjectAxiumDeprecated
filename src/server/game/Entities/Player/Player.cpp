@@ -4790,9 +4790,9 @@ void Player::DeleteFromDB(uint64 playerguid, uint32 accountId, bool updateRealmC
     uint32 charDelete_method = sWorld->getIntConfig(CONFIG_CHARDELETE_METHOD);
     uint32 charDelete_minLvl = sWorld->getIntConfig(CONFIG_CHARDELETE_MIN_LEVEL);
 
-    // if we want to finally delete the character or the character does not meet the level requirement,
+    // if we want to finally delete the character
     // we set it to mode CHAR_DELETE_REMOVE
-    if (deleteFinally || Player::GetLevelFromDB(playerguid) < charDelete_minLvl)
+    if (deleteFinally)
         charDelete_method = CHAR_DELETE_REMOVE;
 
     uint32 guid = GUID_LOPART(playerguid);
@@ -4809,7 +4809,7 @@ void Player::DeleteFromDB(uint64 playerguid, uint32 accountId, bool updateRealmC
     LeaveAllArenaTeams(playerguid);
 
     // the player was uninvited already on logout so just remove from group
-    QueryResult resultGroup = CharacterDatabase.PQuery("SELECT guid FROM group_member WHERE memberGuid=%u", guid);
+    QueryResult resultGroup = CharacterDatabase.PQuery("SELECT guid FROM group_member WHERE memberGuid='%u'", guid);
     if (resultGroup)
         if (Group* group = sGroupMgr->GetGroupByDbStoreId((*resultGroup)[0].GetUInt32()))
             RemoveFromGroup(group, playerguid);
