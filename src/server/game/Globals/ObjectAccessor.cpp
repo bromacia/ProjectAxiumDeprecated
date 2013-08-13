@@ -358,10 +358,10 @@ void ObjectAccessor::Update(uint32 /*diff*/)
 
     while (!i_objects.empty())
     {
-        Object* obj = *i_objects.begin();
-        ASSERT(obj && obj->IsInWorld());
+        if (Object* obj = *i_objects.begin())
+            obj->BuildUpdate(update_players);
+
         i_objects.erase(i_objects.begin());
-        obj->BuildUpdate(update_players);
     }
 
     WorldPacket packet;                                     // here we allocate a std::vector with a size of 0x10000
