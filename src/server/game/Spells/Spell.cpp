@@ -1249,9 +1249,9 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             break;
     }
 
-    if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay + 100) <= unit->m_lastSanctuaryTime)
+    if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= (unit->m_lastSanctuaryTime + 100))
     {
-        if (m_spellInfo->Speed == 0)
+        if (!m_spellInfo->Speed)
         {
             unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
             unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
