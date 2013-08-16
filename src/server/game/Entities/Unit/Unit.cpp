@@ -10317,14 +10317,21 @@ void Unit::RemoveAllTempSummons()
     {
         for (ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
         {
-            if (TempSummon* tempSummon = (*itr)->ToCreature()->ToTempSummon())
-                if (tempSummon->GetTimer() && !tempSummon->isTotem())
-                {
-                    m_Controlled.erase(tempSummon);
-                    if (tempSummon->GetCharmerGUID() == GetGUID())
-                        tempSummon->RemoveCharmAuras();
-                    tempSummon->setDeathState(JUST_DIED);
-                }
+            Creature* creature = ToCreature();
+            if (!creature)
+                continue;
+
+            TempSummon* tempSummon = creature->ToTempSummon();
+            if (!tempSummon)
+                continue;
+
+            if (tempSummon->GetTimer() && !tempSummon->isTotem())
+            {
+                m_Controlled.erase(tempSummon);
+                if (tempSummon->GetCharmerGUID() == GetGUID())
+                    tempSummon->RemoveCharmAuras();
+                tempSummon->setDeathState(JUST_DIED);
+            }
         }
     }
 }

@@ -102,7 +102,7 @@ class npc_class_trainer : public CreatureScript
 
         bool LearnAllSpells(Player* player, Creature* creature)
         {
-            const TrainerSpellData *TrainerSpells = creature->GetTrainerSpells();
+            const TrainerSpellData* TrainerSpells = creature->GetTrainerSpells();
             if (!TrainerSpells)
             {
                 ChatHandler(player).PSendSysMessage("Unable to find spell data");
@@ -117,7 +117,7 @@ class npc_class_trainer : public CreatureScript
 
             for (TrainerSpellMap::const_iterator itr = TrainerSpells->spellList.begin(); itr != TrainerSpells->spellList.end(); ++itr)
             {
-                const TrainerSpell *tSpell = &itr->second;
+                const TrainerSpell* tSpell = &itr->second;
                 uint32 spellId = tSpell->spell;
 
                 if (player->HasSpell(spellId))
@@ -179,7 +179,7 @@ class npc_class_trainer : public CreatureScript
 
         bool ShowGlyphs(Player* player, Creature* creature)
         {
-            const VendorItemData *items = creature->GetVendorItems();
+            const VendorItemData* items = creature->GetVendorItems();
             if (!items)
             {
                 ChatHandler(player).PSendSysMessage("Unable to find item data");
@@ -201,9 +201,9 @@ class npc_class_trainer : public CreatureScript
 
             for (uint16 slot = 0; slot < itemCount; ++slot)
             {
-                if (const VendorItem *vItem = items->GetItem(slot))
+                if (const VendorItem* vItem = items->GetItem(slot))
                 {
-                    if (const ItemTemplate *vItemTemplate = sObjectMgr->GetItemTemplate(vItem->item))
+                    if (const ItemTemplate* vItemTemplate = sObjectMgr->GetItemTemplate(vItem->item))
                     {
                         if (!(vItemTemplate->AllowableClass & player->getClassMask()))
                             continue;
@@ -236,7 +236,7 @@ class npc_class_trainer : public CreatureScript
 
         static bool BuyGlyph(Player* player, Creature* creature, uint32 itemId)
         {
-            const ItemTemplate *itemTemplate = sObjectMgr->GetItemTemplate(itemId);
+            const ItemTemplate* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
             if (!itemTemplate)
                 return false;
 
