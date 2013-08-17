@@ -740,7 +740,11 @@ int WorldSocket::ProcessIncoming (WorldPacket* new_pct)
                     // WARNINIG here we call it with locks held.
                     // Its possible to cause deadlock if QueuePacket calls back
 
-                    m_Session->HandlePacket(new_pct);
+                    if (opcode == CMSG_PLAYER_LOGOUT || opcode == CMSG_LOGOUT_REQUEST)
+                        m_Session->QueuePacket(new_pct);
+                    else
+                        m_Session->HandlePacket(new_pct);
+
                     return 0;
                 }
                 else

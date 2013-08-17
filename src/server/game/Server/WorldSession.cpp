@@ -277,7 +277,6 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
                                 sLog->outDebug(LOG_FILTER_NETWORKIO, "Re-enqueueing packet with opcode %s (0x%.4X) with with status STATUS_LOGGEDIN. "
                                     "Player is currently not in world yet.", opHandle.name, packet->GetOpcode());
                             }
-
                         }
                         else if (_player->IsInWorld())
                         {
@@ -391,7 +390,7 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
     return true;
 }
 
-// Handles immediate packets *Slightly different than WorldSession::Update*
+// Handles packets immediately
 bool WorldSession::HandlePacket(WorldPacket* packet)
 {
     if (!m_Socket || m_Socket->IsClosed())
@@ -425,7 +424,6 @@ bool WorldSession::HandlePacket(WorldPacket* packet)
                             sLog->outDebug(LOG_FILTER_NETWORKIO, "Re-enqueueing packet with opcode %s (0x%.4X) with with status STATUS_LOGGEDIN. "
                                 "Player is currently not in world yet.", opHandle.name, packet->GetOpcode());
                         }
-
                     }
                     else if (_player->IsInWorld())
                     {
