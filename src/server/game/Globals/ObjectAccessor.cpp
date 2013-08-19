@@ -358,8 +358,15 @@ void ObjectAccessor::Update(uint32 /*diff*/)
 
     while (!i_objects.empty())
     {
-        if (Object* obj = *i_objects.begin())
+        Object* obj = *i_objects.begin();
+        if (obj)
             obj->BuildUpdate(update_players);
+
+        if (!obj)
+            sLog->outError("Update object is null");
+
+        if (obj && !obj->IsInWorld())
+            sLog->outError("Update object exists, but is not in world.");
 
         i_objects.erase(i_objects.begin());
     }
