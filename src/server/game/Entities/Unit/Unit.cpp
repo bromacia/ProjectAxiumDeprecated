@@ -10317,7 +10317,7 @@ void Unit::RemoveAllTempSummons()
     {
         for (ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
         {
-            Creature* creature = ToCreature();
+            Creature* creature = (*itr)->ToCreature();
             if (!creature)
                 continue;
 
