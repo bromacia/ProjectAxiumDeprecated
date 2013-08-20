@@ -4007,7 +4007,7 @@ void Spell::EffectLearnPetSpell(SpellEffIndex effIndex)
 
 void Spell::EffectTaunt(SpellEffIndex /*effIndex*/)
 {
-    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
+    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET && effectHandleMode != SPELL_EFFECT_HANDLE_LAUNCH)
         return;
 
     if (!unitTarget)
