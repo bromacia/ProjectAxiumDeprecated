@@ -219,7 +219,7 @@ void DelayedUnitRelocation::Visit(PlayerMapType &m)
         if (!player)
             continue;
 
-        const WorldObject* viewPoint = player->m_seer;
+        WorldObject* viewPoint = player->m_seer;
         if (!viewPoint)
             continue;
 

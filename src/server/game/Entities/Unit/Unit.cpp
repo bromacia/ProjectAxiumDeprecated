@@ -10327,10 +10327,9 @@ void Unit::RemoveAllTempSummons()
 
             if (tempSummon->GetTimer() && !tempSummon->isTotem())
             {
-                m_Controlled.erase(tempSummon);
                 if (tempSummon->GetCharmerGUID() == GetGUID())
                     tempSummon->RemoveCharmAuras();
-                tempSummon->setDeathState(JUST_DIED);
+                tempSummon->UnSummon();
             }
         }
     }
