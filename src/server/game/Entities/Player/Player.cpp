@@ -882,13 +882,31 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
 
     lastEmoteTime = 0;
 
+    lastCombatTime = 0;
+    lastAppearTime = 0;
+    lastTeleportTime = 0;
+
     m_2v2MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
     m_3v3MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
     m_5v5MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
 
-    lastCombatTime = 0;
-    lastAppearTime = 0;
-    lastTeleportTime = 0;
+    m_PvPRating = 0;
+    m_PvPRatingLifetime = 0;
+
+    m_2v2RatingLifetime = 0;
+    m_2v2MMRLifetime = 0;
+    m_2v2WinsLifetime = 0;
+    m_2v2GamesLifetime = 0;
+
+    m_3v3RatingLifetime = 0;
+    m_3v3MMRLifetime = 0;
+    m_3v3WinsLifetime = 0;
+    m_3v3GamesLifetime = 0;
+
+    m_5v5RatingLifetime = 0;
+    m_5v5MMRLifetime = 0;
+    m_5v5WinsLifetime = 0;
+    m_5v5GamesLifetime = 0;
 }
 
 Player::~Player ()
@@ -16412,12 +16430,51 @@ void Player::_LoadMatchMakerRating()
         Field* fields = result->Fetch();
         switch (fields[0].GetUInt8())
         {
-            case 0: Set2v2MMR(fields[1].GetUInt16()); break;
-            case 1: Set3v3MMR(fields[1].GetUInt16()); break;
-            case 2: Set5v5MMR(fields[1].GetUInt16()); break;
+            case 0: m_2v2MMR = fields[1].GetUInt16(); break;
+            case 1: m_3v3MMR = fields[1].GetUInt16(); break;
+            case 2: m_5v5MMR = fields[1].GetUInt16(); break;
         }
     }
     while (result->NextRow());
+}
+
+void Player::_LoadPvPStats()
+{
+                                               //         0           1
+   QueryResult result = CharacterDatabase.PQuery("SELECT  PvP_Rating, PvP_Rating_Lifetime, "
+                                               // 2                  3               4                5
+                                                 "2_Rating_Lifetime, 2_MMR_Lifetime, 2_Wins_Lifetime, 2_Games_Lifetime, "
+                                               // 6                  7               8                9
+                                                 "3_Rating_Lifetime, 3_MMR_Lifetime, 3_Wins_Lifetime, 3_Games_Lifetime, "
+                                               // 10                 11              12               13
+                                                 "5_Rating_Lifetime, 5_MMR_Lifetime, 5_Wins_Lifetime, 5_Games_Lifetime "
+                                                 "FROM character_pvp_stats WHERE guid = %u");
+
+    if (!result)
+        return;
+
+    do
+    {
+        Field* fields = result->Fetch();
+        m_PvPRating = fields[0].GetUInt16();
+        m_PvPRatingLifetime = fields[1].GetUInt16();
+
+        m_2v2RatingLifetime = fields[2].GetUInt16();
+        m_2v2MMRLifetime = fields[3].GetUInt16();
+        m_2v2WinsLifetime = fields[4].GetUInt16();
+        m_2v2GamesLifetime = fields[5].GetUInt16();
+
+        m_3v3RatingLifetime = fields[6].GetUInt16();
+        m_3v3MMRLifetime = fields[7].GetUInt16();
+        m_3v3WinsLifetime = fields[8].GetUInt16();
+        m_3v3GamesLifetime = fields[9].GetUInt16();
+
+        m_5v5RatingLifetime = fields[10].GetUInt16();
+        m_5v5MMRLifetime = fields[11].GetUInt16();
+        m_5v5WinsLifetime = fields[12].GetUInt16();
+        m_5v5GamesLifetime = fields[13].GetUInt16();
+    } while (result->NextRow());
+                                                 
 }
 
 void Player::_LoadEquipmentSets(PreparedQueryResult result)
@@ -16684,6 +16741,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     _LoadArenaTeamInfo(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADARENAINFO));
     _LoadMatchMakerRating();
+    _LoadPvPStats();
 
     SetArenaPoints(fields[39].GetUInt32());
 
@@ -25293,7 +25351,7 @@ bool Player::IsHealingSpec() const
         m_playerSpec == PLAYERSPEC_DRUID_RESTORATION || m_playerSpec == PLAYERSPEC_PRIEST_DISCIPLINE || m_playerSpec == PLAYERSPEC_PRIEST_HOLY;
 }
 
-bool Player::CanAppearToTarget(Player *target)
+bool Player::CanAppearToTarget(Player* target)
 {
     uint8 playerSecurity = GetSession()->GetSecurity();
 
@@ -25391,7 +25449,7 @@ bool Player::CanAppearToTarget(Player *target)
     return true;
 }
 
-bool Player::CanTeleportTo(const GameTele *tele)
+bool Player::CanTeleportTo(const GameTele* tele)
 {
     uint8 playerSecurity = GetSession()->GetSecurity();
 

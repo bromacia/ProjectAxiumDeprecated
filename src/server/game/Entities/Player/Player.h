@@ -2609,6 +2609,14 @@ class Player : public Unit, public GridObject<Player>
         WorldObject* GetCurrentViewpoint() const { return currentViewpoint; }
         void SetCurrentViewpoint(WorldObject *viewpoint) { currentViewpoint = viewpoint; }
 
+        bool IsInWorldPvPZone() const { if (GetZoneId() == 3521) return true; return false; }
+
+        bool CanAppearToTarget(Player* target);
+        bool CanTeleportTo(const GameTele* tele);
+        uint32 lastCombatTime;
+        uint32 lastAppearTime;
+        uint32 lastTeleportTime;
+
         uint16 Get2v2MMR() const { return m_2v2MMR; }
         void Set2v2MMR(uint16 mmr) { m_2v2MMR = mmr; }
         uint16 Get3v3MMR() const { return m_3v3MMR; }
@@ -2616,13 +2624,37 @@ class Player : public Unit, public GridObject<Player>
         uint16 Get5v5MMR() const { return m_5v5MMR; }
         void Set5v5MMR(uint16 mmr) { m_5v5MMR = mmr; }
 
-        bool IsInWorldPvPZone() const { if (GetZoneId() == 3521) return true; return false; }
+        uint16 GetPvPRating() { return m_PvPRating; }
+        void SetPvPRating(uint16 rating) { m_PvPRating = rating; }
+        uint16 GetPvPRatingLifetime() { return m_PvPRatingLifetime; }
+        void SetPvPRatingLifetime(uint16 rating) { m_PvPRatingLifetime = rating; }
 
-        bool CanAppearToTarget(Player *target);
-        bool CanTeleportTo(const GameTele *tele);
-        uint32 lastCombatTime;
-        uint32 lastAppearTime;
-        uint32 lastTeleportTime;
+        uint16 Get2v2RatingLifetime() { return m_2v2RatingLifetime; }
+        void Set2v2RatingLifetime(uint16 rating) { m_2v2RatingLifetime = rating; }
+        uint16 Get2v2MMRLifetime() { return m_2v2MMRLifetime; }
+        void Set2v2MMRLifetime(uint16 mmr) { m_2v2MMRLifetime = mmr; }
+        uint16 Get2v2WinsLifetime() { return m_2v2WinsLifetime; }
+        void Set2v2WinsLifetime(uint16 wins) { m_2v2WinsLifetime = wins; }
+        uint16 Get2v2GamesLifetime() { return m_2v2GamesLifetime; }
+        void Set2v2GamesLifetime(uint16 games) { m_2v2GamesLifetime = games; }
+
+        uint16 Get3v3RatingLifetime() { return m_3v3RatingLifetime; }
+        void Set3v3RatingLifetime(uint16 rating) { m_3v3RatingLifetime = rating; }
+        uint16 Get3v3MMRLifetime() { return m_3v3MMRLifetime; }
+        void Set3v3MMRLifetime(uint16 mmr) { m_3v3MMRLifetime = mmr; }
+        uint16 Get3v3WinsLifetime() { return m_3v3WinsLifetime; }
+        void Set3v3WinsLifetime(uint16 wins) { m_3v3WinsLifetime = wins; }
+        uint16 Get3v3GamesLifetime() { return m_3v3GamesLifetime; }
+        void Set3v3GamesLifetime(uint16 games) { m_3v3GamesLifetime = games; }
+
+        uint16 Get5v5RatingLifetime() { return m_5v5RatingLifetime; }
+        void Set5v5RatingLifetime(uint16 rating) { m_5v5RatingLifetime = rating; }
+        uint16 Get5v5MMRLifetime() { return m_5v5MMRLifetime; }
+        void Set5v5MMRLifetime(uint16 mmr) { m_5v5MMRLifetime = mmr; }
+        uint16 Get5v5WinsLifetime() { return m_5v5WinsLifetime; }
+        void Set5v5WinsLifetime(uint16 wins) { m_5v5WinsLifetime = wins; }
+        uint16 Get5v5GamesLifetime() { return m_5v5GamesLifetime; }
+        void Set5v5GamesLifetime(uint16 games) { m_5v5GamesLifetime = games; }
 
     protected:
         // Gamemaster whisper whitelist
@@ -2690,6 +2722,7 @@ class Player : public Unit, public GridObject<Player>
         void _LoadDeclinedNames(PreparedQueryResult result);
         void _LoadArenaTeamInfo(PreparedQueryResult result);
         void _LoadMatchMakerRating();
+        void _LoadPvPStats();
         void _LoadEquipmentSets(PreparedQueryResult result);
         void _LoadBGData(PreparedQueryResult result);
         void _LoadGlyphs(PreparedQueryResult result);
@@ -2979,6 +3012,24 @@ class Player : public Unit, public GridObject<Player>
         uint16 m_2v2MMR;
         uint16 m_3v3MMR;
         uint16 m_5v5MMR;
+
+        uint16 m_PvPRating;
+        uint16 m_PvPRatingLifetime;
+
+        uint16 m_2v2RatingLifetime;
+        uint16 m_2v2MMRLifetime;
+        uint16 m_2v2WinsLifetime;
+        uint16 m_2v2GamesLifetime;
+
+        uint16 m_3v3RatingLifetime;
+        uint16 m_3v3MMRLifetime;
+        uint16 m_3v3WinsLifetime;
+        uint16 m_3v3GamesLifetime;
+
+        uint16 m_5v5RatingLifetime;
+        uint16 m_5v5MMRLifetime;
+        uint16 m_5v5WinsLifetime;
+        uint16 m_5v5GamesLifetime;
 };
 
 void AddItemsSetItem(Player *player, Item *item);

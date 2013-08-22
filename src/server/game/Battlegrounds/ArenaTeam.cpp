@@ -875,9 +875,48 @@ void ArenaTeam::SaveToDB()
         {
             switch (GetId())
             {
-                case 0: player->Set2v2MMR(itr->MatchMakerRating); break;
-                case 1: player->Set3v3MMR(itr->MatchMakerRating); break;
-                case 2: player->Set5v5MMR(itr->MatchMakerRating); break;
+                case 0:
+                {
+                    player->Set2v2MMR(itr->MatchMakerRating);
+                    
+                    if (itr->PersonalRating > player->Get2v2RatingLifetime())
+                        player->Set2v2RatingLifetime(itr->PersonalRating);
+
+                    if (itr->MatchMakerRating > player->Get2v2RatingLifetime())
+                        player->Set2v2RatingLifetime(itr->MatchMakerRating);
+
+                    player->Set2v2WinsLifetime(player->Get2v2WinsLifetime() + itr->SeasonWins);
+                    player->Set2v2GamesLifetime(player->Get2v2GamesLifetime() + itr->SeasonGames);
+                    break;
+                }
+                case 1:
+                {
+                    player->Set3v3MMR(itr->MatchMakerRating);
+                    
+                    if (itr->PersonalRating > player->Get3v3RatingLifetime())
+                        player->Set3v3RatingLifetime(itr->PersonalRating);
+
+                    if (itr->MatchMakerRating > player->Get3v3RatingLifetime())
+                        player->Set3v3RatingLifetime(itr->MatchMakerRating);
+
+                    player->Set3v3WinsLifetime(player->Get3v3WinsLifetime() + itr->SeasonWins);
+                    player->Set3v3GamesLifetime(player->Get3v3GamesLifetime() + itr->SeasonGames);
+                    break;
+                }
+                case 2:
+                {
+                    player->Set5v5MMR(itr->MatchMakerRating);
+                    
+                    if (itr->PersonalRating > player->Get5v5RatingLifetime())
+                        player->Set5v5RatingLifetime(itr->PersonalRating);
+
+                    if (itr->MatchMakerRating > player->Get5v5RatingLifetime())
+                        player->Set5v5RatingLifetime(itr->MatchMakerRating);
+
+                    player->Set5v5WinsLifetime(player->Get5v5WinsLifetime() + itr->SeasonWins);
+                    player->Set5v5GamesLifetime(player->Get5v5GamesLifetime() + itr->SeasonGames);
+                    break;
+                }
             }
         }
     }
