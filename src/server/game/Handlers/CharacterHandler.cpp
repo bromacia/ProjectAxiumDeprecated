@@ -231,6 +231,12 @@ void WorldSession::HandleCharEnum(PreparedQueryResult result)
 
 void WorldSession::HandleCharEnumOpcode(WorldPacket & /*recv_data*/)
 {
+    if (CharEnumOpcodeRecieved() || _player)
+    {
+        KickPlayer();
+        return;
+    }
+
     // remove expired bans
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_EXPIRED_BANS);
     CharacterDatabase.Execute(stmt);
@@ -246,6 +252,8 @@ void WorldSession::HandleCharEnumOpcode(WorldPacket & /*recv_data*/)
     stmt->setUInt32(1, GetAccountId());
 
     _charEnumCallback = CharacterDatabase.AsyncQuery(stmt);
+
+    SetCharEnumOpcodeRecieved(true);
 }
 
 void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
@@ -390,6 +398,8 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket & recv_data)
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_NAME);
     stmt->setString(0, name);
     _charCreateCallback.SetFutureResult(CharacterDatabase.AsyncQuery(stmt));
+
+    SetCharEnumOpcodeRecieved(false);
 }
 
 void WorldSession::HandleCharCreateCallback(PreparedQueryResult result, CharacterCreateInfo* createInfo)
@@ -730,6 +740,8 @@ void WorldSession::HandleCharDeleteOpcode(WorldPacket & recv_data)
     WorldPacket data(SMSG_CHAR_DELETE, 1);
     data << (uint8)CHAR_DELETE_SUCCESS;
     SendPacket(&data);
+
+    SetCharEnumOpcodeRecieved(false);
 }
 
 void WorldSession::HandlePlayerLoginOpcode(WorldPacket & recv_data)
@@ -1129,6 +1141,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
     stmt->setString(4, newName);
 
     _charRenameCallback.SetFutureResult(CharacterDatabase.AsyncQuery(stmt));
+
+    SetCharEnumOpcodeRecieved(false);
 }
 
 void WorldSession::HandleChangePlayerNameOpcodeCallBack(PreparedQueryResult result, std::string newName)
@@ -1972,4 +1986,6 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     data << uint8(facialHair);
     data << uint8(race);
     SendPacket(&data);
+
+    SetCharEnumOpcodeRecieved(false);
 }

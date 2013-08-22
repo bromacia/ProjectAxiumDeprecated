@@ -376,6 +376,9 @@ class WorldSession
             return (m_timeOutTime <= 0 && !m_inQueue);
         }
 
+        void SetCharEnumOpcodeRecieved(bool x) { _charEnumOpcodeRecieved = x; }
+        bool CharEnumOpcodeRecieved() const { return _charEnumOpcodeRecieved; }
+
     public:                                                 // opcodes handlers
 
         void Handle_NULL(WorldPacket& recvPacket);          // not used
@@ -898,6 +901,8 @@ class WorldSession
         AddonsList m_addonsList;
         ACE_Based::LockedQueue<WorldPacket*, ACE_Thread_Mutex> _recvQueue;
         time_t timeLastWhoCommand;
+
+        bool _charEnumOpcodeRecieved;
 };
 #endif
 /// @}

@@ -95,7 +95,8 @@ m_inQueue(false), m_playerLoading(false), m_playerLogout(false),
 m_playerRecentlyLogout(false), m_playerSave(false),
 m_sessionDbcLocale(sWorld->GetAvailableDbcLocale(locale)),
 m_sessionDbLocaleIndex(locale),
-m_latency(0), m_TutorialsChanged(false), timeLastWhoCommand(0)
+m_latency(0), m_TutorialsChanged(false), timeLastWhoCommand(0),
+_charEnumOpcodeRecieved(false)
 {
     _warden = NULL;
 
@@ -113,6 +114,8 @@ m_latency(0), m_TutorialsChanged(false), timeLastWhoCommand(0)
 /// WorldSession destructor
 WorldSession::~WorldSession()
 {
+    _charEnumOpcodeRecieved = false;
+
     ///- unload player if not unloaded
     if (_player)
         LogoutPlayer(true);
