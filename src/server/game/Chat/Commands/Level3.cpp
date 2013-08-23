@@ -1930,7 +1930,8 @@ bool ChatHandler::HandleAuraCommand(const char* args)
     uint32 spellID = extractSpellIdFromLink((char*)args);
 
     if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellID))
-        Aura::TryRefreshStackOrCreate(spellInfo, MAX_EFFECT_MASK, target, target);
+        if (Aura* aura = Aura::TryRefreshStackOrCreate(spellInfo, MAX_EFFECT_MASK, target, target))
+            aura->ApplyForTargets();
 
     return true;
 }
