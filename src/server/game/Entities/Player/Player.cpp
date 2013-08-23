@@ -16447,7 +16447,7 @@ void Player::_LoadPvPStats()
                                                  "3_Rating_Lifetime, 3_MMR_Lifetime, 3_Wins_Lifetime, 3_Games_Lifetime, "
                                                // 10                 11              12               13
                                                  "5_Rating_Lifetime, 5_MMR_Lifetime, 5_Wins_Lifetime, 5_Games_Lifetime "
-                                                 "FROM character_pvp_stats WHERE guid = %u");
+                                                 "FROM character_pvp_stats WHERE guid = %u", GetGUIDLow());
 
     if (!result)
         return;
