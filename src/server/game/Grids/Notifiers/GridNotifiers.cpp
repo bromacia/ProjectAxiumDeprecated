@@ -219,17 +219,13 @@ void DelayedUnitRelocation::Visit(PlayerMapType &m)
         if (!player)
             continue;
 
-        WorldObject* viewPoint = player->m_seer;
-        if (!viewPoint)
+        if (!player->m_seer->isNeedNotify(NOTIFY_VISIBILITY_CHANGED))
             continue;
 
-        if (!viewPoint->isNeedNotify(NOTIFY_VISIBILITY_CHANGED))
+        if (player != player->m_seer && !player->m_seer->IsPositionValid())
             continue;
 
-        if (player != viewPoint && !viewPoint->IsPositionValid())
-            continue;
-
-        CellCoord pair2(Trinity::ComputeCellCoord(viewPoint->GetPositionX(), viewPoint->GetPositionY()));
+        CellCoord pair2(Trinity::ComputeCellCoord(player->m_seer->GetPositionX(), player->m_seer->GetPositionY()));
         Cell cell2(pair2);
         //cell.SetNoCreate(); need load cells around viewPoint or player, that's why its commented
 
@@ -237,8 +233,8 @@ void DelayedUnitRelocation::Visit(PlayerMapType &m)
         TypeContainerVisitor<PlayerRelocationNotifier, WorldTypeMapContainer> c2world_relocation(relocate);
         TypeContainerVisitor<PlayerRelocationNotifier, GridTypeMapContainer>  c2grid_relocation(relocate);
 
-        cell2.Visit(pair2, c2world_relocation, i_map, *viewPoint, i_radius);
-        cell2.Visit(pair2, c2grid_relocation, i_map, *viewPoint, i_radius);
+        cell2.Visit(pair2, c2world_relocation, i_map, *player->m_seer, i_radius);
+        cell2.Visit(pair2, c2grid_relocation, i_map, *player->m_seer, i_radius);
 
         relocate.SendToSelf();
     }
