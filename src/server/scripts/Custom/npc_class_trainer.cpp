@@ -126,45 +126,40 @@ class npc_class_trainer : public CreatureScript
                 if (!(tSpell->reqClass & player->getClassMask()))
                     continue;
 
-                bool disabled = false;
-
                 if (!player->IsSpellFitByClassAndRace(spellId))
-                    disabled = true;
+                    continue;
 
                 if (uint32 firstSpell = sSpellMgr->GetFirstSpellInChain(spellId))
                     if (sSpellMgr->IsTalentSpell(firstSpell))
                         if (!player->HasSpell(firstSpell))
-                            disabled = true;
+                            continue;
 
                 // Greater Blessing of Sanctuary
                 if (!player->HasSpell(20911))
                     if (spellId == 25899)
-                        disabled = true;
+                        continue;
 
                 // Mangle (Bear)
                 if (!player->HasSpell(33878))
                     if (spellId == 33986 || spellId == 33987 ||
                         spellId == 48563 || spellId == 48564)
-                            disabled = true;
+                            continue;
 
                 // Mangle (Cat)
                 if (!player->HasSpell(33876))
                     if (spellId == 33982 || spellId == 33983 ||
                         spellId == 48565 || spellId == 48566)
-                            disabled = true;
+                            continue;
 
                 player->addSpell(spellId, true, true, false, false, false, true);
 
-                if (!disabled && player->IsInWorld())
+                if (player->IsInWorld())
                 {
                     WorldPacket data(SMSG_LEARNED_SPELL, 6);
                     data << uint32(spellId);
                     data << uint16(0);
                     player->GetSession()->SendPacket(&data);
                 }
-
-                if (disabled)
-                    player->removeSpell(spellId, true);
 
                 if (!learnedSpells)
                     learnedSpells = true;
