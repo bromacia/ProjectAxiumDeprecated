@@ -1458,6 +1458,8 @@ void WorldSession::HandleCharCustomize(WorldPacket& recv_data)
     data << uint8(hairColor);
     data << uint8(facialHair);
     SendPacket(&data);
+
+    SetCharEnumOpcodeRecieved(false);
 }
 
 void WorldSession::HandleEquipmentSetSave(WorldPacket &recv_data)
