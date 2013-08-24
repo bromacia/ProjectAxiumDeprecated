@@ -350,6 +350,10 @@ class WorldSession
         // Account mute time
         time_t m_muteTime;
 
+        // Packet rate limiting
+        uint32 m_lastPacketCount;
+        time_t m_lastPacketCountCheck;
+
         // Locales
         LocaleConstant GetSessionDbcLocale() const { return m_sessionDbcLocale; }
         LocaleConstant GetSessionDbLocaleIndex() const { return m_sessionDbLocaleIndex; }

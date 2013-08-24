@@ -706,6 +706,23 @@ int WorldSocket::ProcessIncoming (WorldPacket* new_pct)
         sWorldLog->outLog ("\n");
     }
 
+    // Packet rate limiting
+    if (m_Session)
+    {
+        time_t now = time(NULL);
+        if (now - m_Session->m_lastPacketCountCheck > 5) // Check every 5 seconds
+        {
+            if (m_Session->m_lastPacketCount >= 10000)
+            {
+                sLog->outError("Player %s exceeded packet rate limit. Count: %u. Player kicked.", m_Session->GetPlayerName(), m_Session->m_lastPacketCount);
+                return -1;
+            }
+            m_Session->m_lastPacketCount = 0;
+            m_Session->m_lastPacketCountCheck = now;
+        }
+        m_Session->m_lastPacketCount++;
+    }
+
     try
     {
         switch (opcode)

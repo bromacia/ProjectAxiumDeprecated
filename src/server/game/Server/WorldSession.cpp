@@ -96,7 +96,7 @@ m_playerRecentlyLogout(false), m_playerSave(false),
 m_sessionDbcLocale(sWorld->GetAvailableDbcLocale(locale)),
 m_sessionDbLocaleIndex(locale),
 m_latency(0), m_TutorialsChanged(false), timeLastWhoCommand(0),
-_charEnumOpcodeRecieved(false)
+_charEnumOpcodeRecieved(false), m_lastPacketCount(0), m_lastPacketCountCheck(0)
 {
     _warden = NULL;
 
