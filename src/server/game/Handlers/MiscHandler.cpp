@@ -741,21 +741,6 @@ void WorldSession::HandleBugOpcode(WorldPacket & recv_data)
     recv_data >> suggestion >> contentlen >> content;
 
     recv_data >> typelen >> type;
-
-    if (suggestion == 0)
-        sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Received CMSG_BUG [Bug Report]");
-    else
-        sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Received CMSG_BUG [Suggestion]");
-
-    sLog->outDebug(LOG_FILTER_NETWORKIO, "%s", type.c_str());
-    sLog->outDebug(LOG_FILTER_NETWORKIO, "%s", content.c_str());
-
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_BUG_REPORT);
-
-    stmt->setString(0, type);
-    stmt->setString(1, content);
-
-    CharacterDatabase.Execute(stmt);
 }
 
 void WorldSession::HandleReclaimCorpseOpcode(WorldPacket &recv_data)
