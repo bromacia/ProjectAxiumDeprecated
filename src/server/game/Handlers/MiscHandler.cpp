@@ -1390,20 +1390,33 @@ void WorldSession::HandleRealmSplitOpcode(WorldPacket & recv_data)
 {
     sLog->outDebug(LOG_FILTER_NETWORKIO, "CMSG_REALM_SPLIT");
 
-    uint32 unk;
+    uint32 split_choice;
     std::string split_date = "01/01/01";
-    recv_data >> unk;
+    recv_data >> split_choice;
+
+    if (split_choice == 0)
+    {
+        // Clear choice
+    }
+    else if (split_choice == 1 || split_choice == 2)
+    {
+        // Save choice
+    }
 
     WorldPacket data(SMSG_REALM_SPLIT, 4+4+split_date.size()+1);
-    data << unk;
-    data << uint32(0x00000000);                             // realm split state
+    data << split_choice;
+    // split choices:
+    // uint32.max no choice
+    // 0 clear choice
+    // 1 realm one
+    // 2 realm two
+    data << uint32(0x0);                             // realm split state
     // split states:
     // 0x0 realm normal
     // 0x1 realm split
     // 0x2 realm split pending
     data << split_date;
     SendPacket(&data);
-    //sLog->outDebug("response sent %u", unk);
 }
 
 void WorldSession::HandleFarSightOpcode(WorldPacket & recv_data)
