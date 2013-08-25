@@ -30,9 +30,6 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 
     recvPacket >> guid;
 
-    if (!guid)
-        return;
-
     if (!_player)
         return;
 
@@ -110,9 +107,6 @@ void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recvPacket)
 
     uint64 guid;
     recvPacket >> guid;
-
-    if (!guid)
-        return;
 
     if (!_player)
         return;
