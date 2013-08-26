@@ -3246,6 +3246,7 @@ enum ResponseCodes
     CHAR_DELETE_FAILED_GUILD_LEADER                        = 0x4A,
     CHAR_DELETE_FAILED_ARENA_CAPTAIN                       = 0x4B,
 
+    // Wrong
     CHAR_LOGIN_IN_PROGRESS                                 = 0x4C,
     CHAR_LOGIN_SUCCESS                                     = 0x4D,
     CHAR_LOGIN_NO_WORLD                                    = 0x4E,
@@ -3275,6 +3276,19 @@ enum ResponseCodes
     CHAR_NAME_RUSSIAN_CONSECUTIVE_SILENT_CHARACTERS        = 0x65,
     CHAR_NAME_RUSSIAN_SILENT_CHARACTER_AT_BEGINNING_OR_END = 0x66,
     CHAR_NAME_DECLENSION_DOESNT_MATCH_BASE_NAME            = 0x67
+};
+
+enum LoginFailedCodes
+{
+    LOGIN_FAILED_FAIL                   = 0, // Login failed
+    LOGIN_FAILED_WORLD_DOWN             = 1, // World server down
+    LOGIN_FAILED_CHAR_EXISTS            = 2, // A character with that name already exists
+    LOGIN_FAILED_NO_INSTANCE_SERVERS    = 3, // No instance servers are available
+    LOGIN_FAILED_DISABLED               = 4, // Login for that race, class or character is currently disabled.
+    LOGIN_FAILED_CHAR_NOT_FOUND         = 5, // Character not found
+    LOGIN_FAILED_CHAR_UPDATE_INPROGRESS = 6, // You cannot log in until the character update process you recently initiated is complete.
+    LOGIN_FAILED_CHAR_LOCKED_BILLING    = 7, // Character locked. Contact billing for more information
+    LOGIN_FAILED_USING_REMOTE           = 8  // You cannot log in while using World of Warcraft Remote.
 };
 
 /// Ban function modes

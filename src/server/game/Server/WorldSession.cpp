@@ -663,6 +663,15 @@ void WorldSession::KickPlayer()
         m_Socket->CloseSocket();
 }
 
+void WorldSession::SendLoginFailed(uint8 code)
+{
+    m_playerRecentlyLogout = true;
+    SetCharEnumOpcodeRecieved(false);
+    WorldPacket data(SMSG_CHARACTER_LOGIN_FAILED, 1);
+    data << code;
+    SendPacket(&data);
+}
+
 void WorldSession::SendNotification(const char *format, ...)
 {
     if (format)

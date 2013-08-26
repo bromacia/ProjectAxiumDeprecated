@@ -748,7 +748,14 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket & recv_data)
 {
     if (PlayerLoading() || GetPlayer() != NULL)
     {
-        sLog->outError("Player tryes to login again, AccountId = %d", GetAccountId());
+        sLog->outError("Player tried to login again, AccountId = %d", GetAccountId());
+        SendLoginFailed(LOGIN_FAILED_FAIL);
+        return;
+    }
+
+    if (sWorld->IsClosed())
+    {
+        SendLoginFailed(LOGIN_FAILED_WORLD_DOWN);
         return;
     }
 
@@ -762,7 +769,8 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket & recv_data)
     if (!CharCanLogin(GUID_LOPART(playerGuid)))
     {
         sLog->outError("Account (%u) can't login with that character (%u).", GetAccountId(), GUID_LOPART(playerGuid));
-        KickPlayer();
+        SendLoginFailed(LOGIN_FAILED_FAIL);
+        m_playerLoading = false;
         return;
     }
 
@@ -770,6 +778,7 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket & recv_data)
     if (!holder->Initialize())
     {
         delete holder;                                      // delete all unprocessed queries
+        SendLoginFailed(LOGIN_FAILED_FAIL);
         m_playerLoading = false;
         return;
     }
@@ -789,7 +798,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     if (!pCurrChar->LoadFromDB(GUID_LOPART(playerGuid), holder))
     {
         SetPlayer(NULL);
-        KickPlayer();                                       // disconnect client, player no set to session and it will not deleted or saved at kick
+        SendLoginFailed(LOGIN_FAILED_FAIL);
         delete pCurrChar;                                   // delete it manually
         delete holder;                                      // delete all unprocessed queries
         m_playerLoading = false;

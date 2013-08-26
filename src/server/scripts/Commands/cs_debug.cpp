@@ -91,6 +91,7 @@ public:
             { "los",            SEC_GAMEMASTER,     false, &HandleDebugLoSCommand,              "", NULL },
             { "petinfo",        SEC_GAMEMASTER,     false, &HandleDebugPetInfoCommand,          "", NULL },
             { "visibility",     SEC_GAMEMASTER,     false, &HandleDebugVisibilityCommand,       "", NULL },
+            { "loginfailed",    SEC_ADMINISTRATOR,  false, &HandleDebugLoginFailedCommand,      "", NULL },
             { NULL,             0,                  false, NULL,                                "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -1095,6 +1096,40 @@ public:
 
         handler->PSendSysMessage("Visibility update on %s. Forced: %s", unit->GetName(), isForced.c_str());
         return true;
+    }
+
+    static bool HandleDebugLoginFailedCommand(ChatHandler* handler, char const* args)
+    {
+        if (!*args)
+            return false;
+
+        Unit* unit = handler->getSelectedUnit();
+        if (!unit)
+        {
+            handler->PSendSysMessage("Unable to find unit");
+            return false;
+        }
+
+        if (unit->GetTypeId() != TYPEID_PLAYER)
+        {
+            handler->PSendSysMessage("Unit is not a player");
+            return false;
+        }
+
+        Player* player = unit->ToPlayer();
+        if (!player)
+            return false;
+
+        uint8 loginFailed = atoi((char*)args);
+
+        player->GetSession()->SendLoginFailed(loginFailed);
+
+        handler->PSendSysMessage("Sent login failed to %s with code %u", unit->GetName(), loginFailed);
+        handler->SetSentErrorMessage(true);
+
+        // TODO: Can cause crashes if used within ~1 second of teleporting to a new map.
+        player->GetSession()->LogoutPlayer(true);
+        return false;
     }
 
     static bool HandleDebugSetAuraStateCommand(ChatHandler* handler, char const* args)
