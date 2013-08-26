@@ -96,7 +96,7 @@ m_playerRecentlyLogout(false), m_playerSave(false),
 m_sessionDbcLocale(sWorld->GetAvailableDbcLocale(locale)),
 m_sessionDbLocaleIndex(locale),
 m_latency(0), m_TutorialsChanged(false), timeLastWhoCommand(0),
-_charEnumOpcodeRecieved(false), m_lastPacketCount(0), m_lastPacketCountCheck(0)
+_lastCharEnumOpcodeRecievedTime(0), m_lastPacketCount(0), m_lastPacketCountCheck(0)
 {
     _warden = NULL;
 
@@ -114,8 +114,6 @@ _charEnumOpcodeRecieved(false), m_lastPacketCount(0), m_lastPacketCountCheck(0)
 /// WorldSession destructor
 WorldSession::~WorldSession()
 {
-    _charEnumOpcodeRecieved = false;
-
     ///- unload player if not unloaded
     if (_player)
         LogoutPlayer(true);
@@ -657,7 +655,7 @@ void WorldSession::LogoutPlayer(bool Save)
 }
 
 /// Kick a player out of the World
-void WorldSession::KickPlayer()
+void WorldSession::CloseSession()
 {
     if (m_Socket)
         m_Socket->CloseSocket();
@@ -666,7 +664,6 @@ void WorldSession::KickPlayer()
 void WorldSession::SendLoginFailed(uint8 code)
 {
     m_playerRecentlyLogout = true;
-    SetCharEnumOpcodeRecieved(false);
     WorldPacket data(SMSG_CHARACTER_LOGIN_FAILED, 1);
     data << code;
     SendPacket(&data);

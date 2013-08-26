@@ -215,7 +215,7 @@ void WardenMac::HandleData(ByteBuffer &buff)
     //{
     //    buff.rpos(buff.wpos());
     //    if (sWorld->getBoolConfig(CONFIG_BOOL_WARDEN_KICK))
-    //        Client->KickPlayer();
+    //        Client->CloseSession();
     //    return;
     //}
 
@@ -245,5 +245,5 @@ void WardenMac::HandleData(ByteBuffer &buff)
     if (memcmp(ourMD5Hash, theirsMD5Hash, 16))
         sLog->outDebug(LOG_FILTER_WARDEN, "Handle data failed: MD5 hash is wrong!");
 
-    _session->KickPlayer();
+    _session->CloseSession();
 }

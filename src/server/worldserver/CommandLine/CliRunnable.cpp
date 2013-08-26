@@ -456,7 +456,7 @@ bool ChatHandler::HandleCharacterEraseCommand(const char* args){
     {
         character_guid = player->GetGUID();
         account_id = player->GetSession()->GetAccountId();
-        player->GetSession()->KickPlayer();
+        player->GetSession()->CloseSession();
     }
     else
     {

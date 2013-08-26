@@ -264,7 +264,7 @@ class WorldSession
         }
 
         void LogoutPlayer(bool Save);
-        void KickPlayer();
+        void CloseSession();
         void SendLoginFailed(uint8 code);
 
         void QueuePacket(WorldPacket* new_packet);
@@ -381,8 +381,8 @@ class WorldSession
             return (m_timeOutTime <= 0 && !m_inQueue);
         }
 
-        void SetCharEnumOpcodeRecieved(bool x) { _charEnumOpcodeRecieved = x; }
-        bool CharEnumOpcodeRecieved() const { return _charEnumOpcodeRecieved; }
+        void SetLastCharEnumOpcodeRecievedTime(uint32 ms) { _lastCharEnumOpcodeRecievedTime = ms; }
+        uint32 GetLastCharEnumOpcodeRecievedTime() const { return _lastCharEnumOpcodeRecievedTime; }
 
     public:                                                 // opcodes handlers
 
@@ -907,7 +907,7 @@ class WorldSession
         ACE_Based::LockedQueue<WorldPacket*, ACE_Thread_Mutex> _recvQueue;
         time_t timeLastWhoCommand;
 
-        bool _charEnumOpcodeRecieved;
+        bool _lastCharEnumOpcodeRecievedTime;
 };
 #endif
 /// @}

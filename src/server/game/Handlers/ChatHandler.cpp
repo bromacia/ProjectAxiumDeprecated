@@ -235,7 +235,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
                     GetPlayer()->GetName(), GetPlayer()->GetGUIDLow(), msg.c_str());
 
                 if (sWorld->getIntConfig(CONFIG_CHAT_STRICT_LINK_CHECKING_KICK))
-                    KickPlayer();
+                    CloseSession();
 
                 return;
             }

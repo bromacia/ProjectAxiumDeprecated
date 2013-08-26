@@ -70,7 +70,7 @@ AccountOpResult DeleteAccount(uint32 accountId)
             if (Player* p = ObjectAccessor::FindPlayer(guid))
             {
                 WorldSession* s = p->GetSession();
-                s->KickPlayer();                            // mark session to remove at next session list update
+                s->CloseSession();                            // mark session to remove at next session list update
                 s->LogoutPlayer(false);                     // logout player without waiting next session list update
             }
 
