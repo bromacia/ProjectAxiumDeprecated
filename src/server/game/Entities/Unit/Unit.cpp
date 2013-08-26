@@ -10313,19 +10313,25 @@ void Unit::RemoveAllTempSummons()
     if (GetTypeId() == TYPEID_PLAYER)
         ToPlayer()->StopCastingCharm();
 
-    while (!m_Controlled.empty())
+    if (!m_Controlled.empty())
     {
-        Unit* target = *m_Controlled.begin();
-        if (!target)
-            continue;
+        for (ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
+        {
+            Unit* target = *itr;
+            if (!target)
+                continue;
 
-        if (target->isSummon())
-            if (TempSummon* tempSummon = target->ToTempSummon())
-                if (tempSummon->GetTimer() && !tempSummon->isTotem())
-                {
-                    m_Controlled.erase(m_Controlled.begin());
-                    tempSummon->UnSummon();
-                }
+            TempSummon* tempSummon = target->ToTempSummon();
+            if (!tempSummon)
+                continue;
+
+            if (tempSummon->GetTimer() && !tempSummon->isTotem())
+            {
+                if (tempSummon->GetCharmerGUID() == GetGUID())
+                    tempSummon->RemoveCharmAuras();
+                tempSummon->UnSummon();
+            }
+        }
     }
 }
 
