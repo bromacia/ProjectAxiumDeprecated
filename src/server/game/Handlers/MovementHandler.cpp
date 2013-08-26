@@ -52,6 +52,7 @@ void WorldSession::HandleMoveWorldportAckOpcode()
     // possible errors in the coordinate validity check
     if (!MapManager::IsValidMapCoord(loc))
     {
+        sLog->outError("Player %s tried to teleport to invalid map coords, logging player out", GetPlayer()->GetName());
         LogoutPlayer(false);
         return;
     }
