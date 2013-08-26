@@ -31,7 +31,7 @@
 #include "Timer.h"
 #include "WorldRunnable.h"
 
-#define WORLD_SLEEP_CONST 10
+#define WORLD_SLEEP_CONST 25
 
 #ifdef _WIN32
 #include "ServiceWin32.h"
