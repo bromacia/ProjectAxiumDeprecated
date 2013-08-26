@@ -90,6 +90,7 @@ public:
             { "areatriggers",   SEC_ADMINISTRATOR,  false, &HandleDebugAreaTriggersCommand,     "", NULL },
             { "los",            SEC_GAMEMASTER,     false, &HandleDebugLoSCommand,              "", NULL },
             { "petinfo",        SEC_GAMEMASTER,     false, &HandleDebugPetInfoCommand,          "", NULL },
+            { "visibility",     SEC_GAMEMASTER,     false, &HandleDebugVisibilityCommand,       "", NULL },
             { NULL,             0,                  false, NULL,                                "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -1066,6 +1067,33 @@ public:
             else
                 handler->PSendSysMessage("No pet found");
         }
+        return true;
+    }
+
+    static bool HandleDebugVisibilityCommand(ChatHandler* handler, char const* args)
+    {
+        Unit* unit = handler->getSelectedUnit();
+        if (!unit)
+        {
+            handler->PSendSysMessage("Unable to find target");
+            return false;
+        }
+
+        bool forced = false;
+        if (*args)
+        {
+            std::string param = (char*)args;
+            if (param == "true")
+                forced = true;
+        }
+
+        std::string isForced = "false";
+        if (forced == true)
+            isForced = "true";
+
+        unit->UpdateObjectVisibility(forced);
+
+        handler->PSendSysMessage("Visibility update on %s. Forced: %s", unit->GetName(), isForced.c_str());
         return true;
     }
 
