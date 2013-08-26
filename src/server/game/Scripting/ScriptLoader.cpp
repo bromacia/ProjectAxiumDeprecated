@@ -38,7 +38,6 @@ void AddSC_SmartSCripts();
 //Commands
 void AddSC_account_commandscript();
 void AddSC_achievement_commandscript();
-void AddSC_dbw_commandscript();
 void AddSC_debug_commandscript();
 void AddSC_event_commandscript();
 void AddSC_gm_commandscript();
@@ -131,7 +130,6 @@ void AddCommandScripts()
 {
     AddSC_account_commandscript();
     AddSC_achievement_commandscript();
-    AddSC_dbw_commandscript();
     AddSC_debug_commandscript();
     AddSC_event_commandscript();
     AddSC_gm_commandscript();

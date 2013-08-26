@@ -15527,39 +15527,8 @@ void Unit::RestoreDisplayId()
         {
             if (AuraApplication const* aurApp = (*i)->GetBase()->GetApplicationOfTarget(GetGUID()))
             {
-                if (GetTypeId() == TYPEID_PLAYER)
-                {
-                    switch (aurApp->GetBase()->GetSpellInfo()->Id)
-                    {
-                        case DBW_PROC_STR_NORMAL:
-                        case DBW_PROC_AP_NORMAL:
-                        case DBW_PROC_AGI_NORMAL:
-                        case DBW_PROC_HASTE_NORMAL:
-                        case DBW_PROC_CRIT_NORMAL:
-                        case DBW_PROC_ARP_NORMAL:
-                        case DBW_PROC_STR_HEROIC:
-                        case DBW_PROC_AP_HEROIC:
-                        case DBW_PROC_AGI_HEROIC:
-                        case DBW_PROC_HASTE_HEROIC:
-                        case DBW_PROC_CRIT_HEROIC:
-                        case DBW_PROC_ARP_HEROIC:
-                            if (!ToPlayer()->ShowDBWTransformation())
-                            {
-                                SetDisplayId(GetNativeDisplayId());
-                                return;
-                            }
-                            break;
-                        default:
-                            if (!handledAura)
-                                handledAura = (*i);
-                            break;
-                    }
-                }
-                else
-                {
-                    if (!handledAura)
-                        handledAura = (*i);
-                }
+                if (!handledAura)
+                    handledAura = (*i);
 
                 // prefer negative auras
                 if (!aurApp->IsPositive())

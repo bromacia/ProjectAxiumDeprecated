@@ -16593,10 +16593,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     //"resettalents_time, trans_x, trans_y, trans_z, trans_o, transguid, extra_flags, stable_slots, at_login, zone, online, death_expire_time, taxi_path, instance_mode_mask, "
     // 39           40                41                 42                    43          44          45              46           47               48              49
     //"arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk, "
-    // 50      51      52      53      54      55      56      57      58           59         60          61             62              63      64           65          66
-    //"health, power1, power2, power3, power4, power5, power6, power7, instance_id, speccount, activespec, exploredZones, equipmentCache, ammoId, knownTitles, actionBars, grantableLevels,
-    // 67                       68
-    //"show_dbw_transformation, hijackedAccountId "
+    // 50      51      52      53      54      55      56      57      58           59         60          61             62              63      64           65          66               67
+    //"health, power1, power2, power3, power4, power5, power6, power7, instance_id, speccount, activespec, exploredZones, equipmentCache, ammoId, knownTitles, actionBars, grantableLevels, hijackedAccountId "
     //"FROM characters WHERE guid = '%u'", guid);
     PreparedQueryResult result = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
@@ -17228,9 +17226,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     _LoadEquipmentSets(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS));
 
-    m_show_dbw_transformation = fields[67].GetUInt8();
-
-    m_hijackedCharacterAccountId = fields[68].GetUInt32();
+    m_hijackedCharacterAccountId = fields[67].GetUInt32();
 
     m_playerSpec = GetTalentSpec();
 

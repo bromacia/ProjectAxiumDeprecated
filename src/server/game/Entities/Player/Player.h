@@ -2584,9 +2584,6 @@ class Player : public Unit, public GridObject<Player>
         void SetMovementBlocked(bool x) { blockedMovement = x; }
         bool IsMovementBlocked() const { return blockedMovement; }
 
-        void SetShowDBWTransformation(bool x) { m_show_dbw_transformation = x; }
-        bool ShowDBWTransformation() const { return m_show_dbw_transformation; }
-
         void SetMorphed(bool x) { m_isMorphed = x; }
         bool IsMorphed() const { return m_isMorphed; }
         void SetNoggenfoggerMorphed(bool x) { m_isNoggenfoggerMorphed = x; }
@@ -2994,8 +2991,6 @@ class Player : public Unit, public GridObject<Player>
         uint32 _pendingBindTimer;
 
         bool blockedMovement;
-
-        bool m_show_dbw_transformation;
 
         bool m_isMorphed;
         bool m_isNoggenfoggerMorphed;
