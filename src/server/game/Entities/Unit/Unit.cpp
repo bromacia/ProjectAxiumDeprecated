@@ -2967,14 +2967,14 @@ void Unit::_UpdateSpells(uint32 time)
         _UpdateAutoRepeatSpell();
 
     // remove finished spells from current pointers
-    /*for (uint8 i = 0; i < CURRENT_MAX_SPELL; ++i)
+    for (uint8 i = 0; i < CURRENT_MAX_SPELL; ++i)
     {
         if (m_currentSpells[i] && m_currentSpells[i]->getState() == SPELL_STATE_FINISHED)
         {
             m_currentSpells[i]->SetReferencedFromCurrent(false);
             m_currentSpells[i] = NULL;                      // remove pointer
         }
-    }*/
+    }
 
     // m_auraUpdateIterator can be updated in indirect called code at aura remove to skip next planned to update but removed auras
     for (m_auraUpdateIterator = m_ownedAuras.begin(); m_auraUpdateIterator != m_ownedAuras.end();)
@@ -2997,7 +2997,7 @@ void Unit::_UpdateSpells(uint32 time)
         if (itr->second->IsNeedClientUpdate())
             itr->second->ClientUpdate();
 
-    //_DeleteRemovedAuras();
+    _DeleteRemovedAuras();
 
     if (!m_gameObj.empty())
     {

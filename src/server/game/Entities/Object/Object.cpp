@@ -2871,14 +2871,11 @@ struct WorldObjectChangeAccumulator
 
     void BuildPacket(Player* player)
     {
-        if (player && player->IsInWorld())
+        // Only send update once to a player
+        if (plr_list.find(player->GetGUID()) == plr_list.end() && player->HaveAtClient(&i_object))
         {
-            // Only send update once to a player
-            if (plr_list.find(player->GetGUID()) == plr_list.end() && player->HaveAtClient(&i_object))
-            {
-                i_object.BuildFieldsUpdate(player, i_updateDatas);
-                plr_list.insert(player->GetGUID());
-            }
+            i_object.BuildFieldsUpdate(player, i_updateDatas);
+            plr_list.insert(player->GetGUID());
         }
     }
 

@@ -270,8 +270,6 @@ class WorldSession
         void QueuePacket(WorldPacket* new_packet);
         bool Update(uint32 diff, PacketFilter& updater);
 
-        bool HandlePacket(WorldPacket* packet);
-
         /// Handle the authentication waiting queue (to be completed)
         void SendAuthWaitQue(uint32 position);
 

@@ -359,16 +359,9 @@ void ObjectAccessor::Update(uint32 /*diff*/)
     while (!i_objects.empty())
     {
         Object* obj = *i_objects.begin();
-        if (obj)
-            obj->BuildUpdate(update_players);
-
-        if (!obj)
-            sLog->outError("Update object is null");
-
-        if (obj && !obj->IsInWorld())
-            sLog->outError("Update object exists, but is not in world.");
-
+        ASSERT(obj && obj->IsInWorld());
         i_objects.erase(i_objects.begin());
+        obj->BuildUpdate(update_players);
     }
 
     WorldPacket packet;                                     // here we allocate a std::vector with a size of 0x10000

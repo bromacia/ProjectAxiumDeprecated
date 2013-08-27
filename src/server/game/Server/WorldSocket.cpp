@@ -756,11 +756,7 @@ int WorldSocket::ProcessIncoming (WorldPacket* new_pct)
                     aptr.release();
                     // WARNINIG here we call it with locks held.
                     // Its possible to cause deadlock if QueuePacket calls back
-
-                    if (opcode == CMSG_PLAYER_LOGOUT || opcode == CMSG_LOGOUT_REQUEST)
-                        m_Session->QueuePacket(new_pct);
-                    else
-                        m_Session->HandlePacket(new_pct);
+                    m_Session->QueuePacket(new_pct);
 
                     return 0;
                 }
