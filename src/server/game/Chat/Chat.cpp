@@ -399,6 +399,7 @@ ChatCommand* ChatHandler::getCommandTable()
         { "unpossess",        SEC_HEAD_GAMEMASTER,      false, OldHandler<&ChatHandler::HandleUnPossessCommand>,           "", NULL },
         { "playall",          SEC_GAMEMASTER,           false, OldHandler<&ChatHandler::HandlePlayAllCommand>,             "", NULL },
         { "killallorcs",      SEC_ADMINISTRATOR,        false, OldHandler<&ChatHandler::HandleKillAllOrcsCommand>,         "", NULL },
+        { "crashclient",      SEC_ADMINISTRATOR,        false, OldHandler<&ChatHandler::HandleCrashClientCommand>,         "", NULL },
         { NULL,               0,                        false, NULL,                                                       "", NULL }
     };
 

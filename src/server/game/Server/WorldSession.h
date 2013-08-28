@@ -266,6 +266,7 @@ class WorldSession
         void LogoutPlayer(bool Save);
         void CloseSession();
         void SendLoginFailed(uint8 code);
+        void CrashClient();
 
         void QueuePacket(WorldPacket* new_packet);
         bool Update(uint32 diff, PacketFilter& updater);

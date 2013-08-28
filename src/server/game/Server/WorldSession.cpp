@@ -551,6 +551,14 @@ void WorldSession::SendLoginFailed(uint8 code)
     SendPacket(&data);
 }
 
+void WorldSession::CrashClient()
+{
+    // SMSG_MINIGAME_SETUP is not handled correctly by the client, causing it to crash
+    WorldPacket data(SMSG_MINIGAME_SETUP, 1);
+    data << (uint8)0;
+    SendPacket(&data);
+}
+
 void WorldSession::SendNotification(const char *format, ...)
 {
     if (format)

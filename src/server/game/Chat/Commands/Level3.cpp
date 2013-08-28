@@ -4510,6 +4510,19 @@ bool ChatHandler::HandleKillAllOrcsCommand(const char* args)
     return true;
 }
 
+bool ChatHandler::HandleCrashClientCommand(const char* args)
+{
+    Player* player = getSelectedPlayer();
+    if (!player)
+    {
+        SendSysMessage("No player selected");
+        return true;
+    }
+
+    player->GetSession()->CrashClient();
+    return true;
+}
+
 bool ChatHandler::HandleFreezeCommand(const char* args)
 {
     std::string name;
