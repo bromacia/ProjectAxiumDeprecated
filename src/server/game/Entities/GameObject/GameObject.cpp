@@ -465,7 +465,7 @@ void GameObject::Update(uint32 diff)
                         target = player;
                     }
 
-                    if (target)
+                    if (target && owner->IsValidAttackTarget(target))
                     {
                         // some traps do not have spell but should be triggered
                         if (goInfo->trap.spellId)
