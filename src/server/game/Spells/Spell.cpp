@@ -3418,11 +3418,24 @@ void Spell::cast(bool skipCheck)
     CallScriptOnCastHandlers();
 
     if (Player* player = m_caster->ToPlayer())
+    {
         if (player->duel)
         {
             DuelSpell = true;
             m_caster->m_lastDuelSpellTime = getMSTime();
         }
+
+        if (m_targets.GetUnitTarget())
+        {
+            if ((!player->IsFriendlyTo(m_targets.GetUnitTarget()) || m_spellInfo->HasAura(SPELL_AURA_MOD_POSSESS)) &&
+                (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
+                player->CombatStart(m_targets.GetUnitTarget(), !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO));
+
+            if (m_targets.GetUnitTarget() != m_caster && player->IsFriendlyTo(m_targets.GetUnitTarget()) && m_spellInfo->IsPositive() &&
+                m_targets.GetUnitTarget()->isInCombat() && !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO))
+                player->SetInCombatWith(m_targets.GetUnitTarget());
+        }
+    }
 
     // traded items have trade slot instead of guid in m_itemTargetGUID
     // set to real guid to be sent later to the client
