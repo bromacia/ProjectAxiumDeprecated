@@ -201,6 +201,8 @@ m_bind(NULL)
 MySQLPreparedStatement::~MySQLPreparedStatement()
 {
     ClearParameters();
+    delete[] m_Mstmt->bind->length;
+    delete[] m_Mstmt->bind->is_null;
     mysql_stmt_close(m_Mstmt);
     delete[] m_bind;
 }
@@ -312,6 +314,7 @@ void MySQLPreparedStatement::setString(const uint8 index, const char* value)
     param->buffer = new char[len];
     param->buffer_length = len;
     param->is_null_value = 0;
+    delete param->length;
     param->length = new unsigned long(len-1);
 
     memcpy(param->buffer, value, len);
