@@ -43,6 +43,7 @@
 #include "ScriptMgr.h"
 #include "Battleground.h"
 #include "AccountMgr.h"
+#include "TicketMgr.h"
 
 class LoginQueryHolder : public SQLQueryHolder
 {
@@ -1004,6 +1005,9 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
 
     if (pCurrChar->HasGameMasterTagOn())
         SendNotification(LANG_GM_ON);
+
+    if (pCurrChar->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
+        chH.PSendSysMessage("There is currently %u open tickets.", sTicketMgr->GetOpenTicketCount());
 
     std::string IP_str = GetRemoteAddress();
     sLog->outChar("Account: %d (IP: %s) Login Character:[%s] (GUID: %u)",
