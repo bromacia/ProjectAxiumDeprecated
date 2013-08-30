@@ -61,6 +61,7 @@ public:
             { "sellerror",      SEC_ADMINISTRATOR,  false, &HandleDebugSendSellErrorCommand,       "", NULL },
             { "setphaseshift",  SEC_ADMINISTRATOR,  false, &HandleDebugSendSetPhaseShiftCommand,   "", NULL },
             { "spellfail",      SEC_ADMINISTRATOR,  false, &HandleDebugSendSpellFailCommand,       "", NULL },
+            { "loginfailed",    SEC_ADMINISTRATOR,  false, &HandleDebugSendLoginFailedCommand,      "", NULL },
             { NULL,             0,                  false, NULL,                                   "", NULL }
         };
         static ChatCommand debugCommandTable[] =
@@ -91,7 +92,6 @@ public:
             { "los",            SEC_GAMEMASTER,     false, &HandleDebugLoSCommand,              "", NULL },
             { "petinfo",        SEC_GAMEMASTER,     false, &HandleDebugPetInfoCommand,          "", NULL },
             { "visibility",     SEC_GAMEMASTER,     false, &HandleDebugVisibilityCommand,       "", NULL },
-            { "loginfailed",    SEC_ADMINISTRATOR,  false, &HandleDebugLoginFailedCommand,      "", NULL },
             { NULL,             0,                  false, NULL,                                "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -1098,7 +1098,7 @@ public:
         return true;
     }
 
-    static bool HandleDebugLoginFailedCommand(ChatHandler* handler, char const* args)
+    static bool HandleDebugSendLoginFailedCommand(ChatHandler* handler, char const* args)
     {
         if (!*args)
             return false;
@@ -1127,7 +1127,6 @@ public:
         handler->PSendSysMessage("Sent login failed to %s with code %u", unit->GetName(), loginFailed);
         handler->SetSentErrorMessage(true);
 
-        // TODO: Can cause crashes if used within ~1 second of teleporting to a new map.
         player->GetSession()->LogoutPlayer(true);
         return false;
     }
