@@ -222,10 +222,10 @@ void AddBattlegroundScripts()
     void AddSC_npc_prof();
     void AddSC_npc_beastmaster();
     void AddSC_Transmogrification();
-    void AddSC_npc_gossip_vendor();
     void AddSC_npc_class_trainer();
     void AddSC_pvp_titles();
     void AddSC_PrematureStart();
+    void AddSC_MallMgr();
 #endif
 
 void AddCustomScripts()
@@ -236,9 +236,9 @@ void AddCustomScripts()
     AddSC_npc_prof();
     AddSC_npc_beastmaster();
     AddSC_Transmogrification();
-    AddSC_npc_gossip_vendor();
     AddSC_npc_class_trainer();
     AddSC_pvp_titles();
     AddSC_PrematureStart();
+    AddSC_MallMgr();
 #endif
 }

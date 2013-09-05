@@ -620,7 +620,7 @@ enum EquipmentSlots                                         // 19 slots
     EQUIPMENT_SLOT_HEAD         = 0,
     EQUIPMENT_SLOT_NECK         = 1,
     EQUIPMENT_SLOT_SHOULDERS    = 2,
-    EQUIPMENT_SLOT_BODY         = 3,
+    EQUIPMENT_SLOT_SHIRT        = 3,
     EQUIPMENT_SLOT_CHEST        = 4,
     EQUIPMENT_SLOT_WAIST        = 5,
     EQUIPMENT_SLOT_LEGS         = 6,

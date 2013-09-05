@@ -9752,8 +9752,8 @@ uint8 Player::FindEquipSlot(ItemTemplate const* proto, uint32 slot, bool swap) c
         case INVTYPE_SHOULDERS:
             slots[0] = EQUIPMENT_SLOT_SHOULDERS;
             break;
-        case INVTYPE_BODY:
-            slots[0] = EQUIPMENT_SLOT_BODY;
+        case INVTYPE_SHIRT:
+            slots[0] = EQUIPMENT_SLOT_SHIRT;
             break;
         case INVTYPE_CHEST:
             slots[0] = EQUIPMENT_SLOT_CHEST;
@@ -25255,7 +25255,7 @@ float Player::GetAverageItemLevel()
     for (int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
     {
         // don't check tabard, ranged, offhand or shirt
-        if (i == EQUIPMENT_SLOT_TABARD || i == EQUIPMENT_SLOT_RANGED || i == EQUIPMENT_SLOT_OFFHAND || i == EQUIPMENT_SLOT_BODY)
+        if (i == EQUIPMENT_SLOT_TABARD || i == EQUIPMENT_SLOT_RANGED || i == EQUIPMENT_SLOT_OFFHAND || i == EQUIPMENT_SLOT_SHIRT)
             continue;
 
         if (m_items[i] && m_items[i]->GetTemplate())

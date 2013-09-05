@@ -144,7 +144,7 @@ uint32 GenerateEnchSuffixFactor(uint32 item_id)
             return 0;
             // Select point coefficient
         case INVTYPE_HEAD:
-        case INVTYPE_BODY:
+        case INVTYPE_SHIRT:
         case INVTYPE_CHEST:
         case INVTYPE_LEGS:
         case INVTYPE_2HWEAPON:

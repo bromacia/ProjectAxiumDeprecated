@@ -228,7 +228,7 @@ enum InventoryType
     INVTYPE_HEAD                                = 1,
     INVTYPE_NECK                                = 2,
     INVTYPE_SHOULDERS                           = 3,
-    INVTYPE_BODY                                = 4,
+    INVTYPE_SHIRT                               = 4,
     INVTYPE_CHEST                               = 5,
     INVTYPE_WAIST                               = 6,
     INVTYPE_LEGS                                = 7,

@@ -178,7 +178,6 @@ class npc_class_trainer : public CreatureScript
             if (!items)
             {
                 ChatHandler(player).PSendSysMessage("Unable to find item data");
-                player->SetSelectedTransmogItemSlot(NULL);
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -205,7 +204,7 @@ class npc_class_trainer : public CreatureScript
 
                         ++count;
                         data << uint32(count + 1);                      // Client expects counting to start at 1
-                        data << uint32(vItem->item);                    // Entry ?
+                        data << uint32(vItem->item);                    // Entry
                         data << uint32(vItemTemplate->DisplayInfoID);   // DisplayId
                         data << int32(0xFFFFFFFF);                      // Left in stock
                         data << uint32(0);                              // Price
@@ -219,7 +218,6 @@ class npc_class_trainer : public CreatureScript
             if (!count)
             {
                 ChatHandler(player).PSendSysMessage("Unable to find item data");
-                player->SetSelectedTransmogItemSlot(NULL);
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
