@@ -2024,10 +2024,6 @@ void AchievementMgr::CompletedAchievement(AchievementEntry const* achievement)
 {
     sLog->outDetail("AchievementMgr::CompletedAchievement(%u)", achievement->ID);
 
-    // disable for gamemasters with GM-mode enabled
-    if (m_player->HasGameMasterTagOn())
-        return;
-
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER || HasAchieved(achievement->ID))
         return;
 
