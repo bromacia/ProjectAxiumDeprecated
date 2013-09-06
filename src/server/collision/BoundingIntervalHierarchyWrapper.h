@@ -33,18 +33,26 @@ class BIHWrap
     {
         const T* const* objects;
         RayCallback& _callback;
+        uint32 objects_size;
 
-        MDLCallback(RayCallback& callback, const T* const* objects_array ) : _callback(callback), objects(objects_array){}
+        MDLCallback(RayCallback& callback, const T* const* objects_array, uint32 objects_size ) : objects(objects_array), _callback(callback), objects_size(objects_size) {}
 
         bool operator() (const Ray& ray, uint32 Idx, float& MaxDist, bool /*stopAtFirst*/)
         {
+            if (Idx >= objects_size)
+                return false;
+
             if (const T* obj = objects[Idx])
                 return _callback(ray, *obj, MaxDist/*, stopAtFirst*/);
+
             return false;
         }
 
         void operator() (const Vector3& p, uint32 Idx)
         {
+            if (Idx >= objects_size)
+                return false;
+
             if (const T* obj = objects[Idx])
                 _callback(p, *obj);
         }
@@ -92,16 +100,18 @@ public:
     }
 
     template<typename RayCallback>
-    void intersectRay(const Ray& ray, RayCallback& intersectCallback, float& maxDist) const
+    void intersectRay(const Ray& ray, RayCallback& intersectCallback, float& maxDist)
     {
-        MDLCallback<RayCallback> temp_cb(intersectCallback, m_objects.getCArray());
+        balance();
+        MDLCallback<RayCallback> temp_cb(intersectCallback, m_objects.getCArray(), m_objects.size());
         m_tree.intersectRay(ray, temp_cb, maxDist, true);
     }
 
     template<typename IsectCallback>
-    void intersectPoint(const Vector3& point, IsectCallback& intersectCallback) const
+    void intersectPoint(const Vector3& point, IsectCallback& intersectCallback)
     {
-        MDLCallback<IsectCallback> callback(intersectCallback, m_objects.getCArray());
+        balance();
+        MDLCallback<IsectCallback> callback(intersectCallback, m_objects.getCArray(), m_objects.size());
         m_tree.intersectPoint(point, callback);
     }
 };
