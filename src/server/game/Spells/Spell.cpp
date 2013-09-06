@@ -1040,7 +1040,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
     }
     if (m_spellInfo->IsMiscDelaySpell())
     {
-        targetInfo.timeDelay = 50;
+        targetInfo.timeDelay = 100;
         m_delayMoment = targetInfo.timeDelay;
     }
 
