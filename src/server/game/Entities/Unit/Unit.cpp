@@ -625,7 +625,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
     {
         Pet* pet = victim->ToPlayer()->GetPet();
 
-        if (pet && pet->isAlive())
+        if (pet && pet->isAlive() && victim != this)
             pet->AI()->OwnerDamagedBy(this);
     }
 
