@@ -468,8 +468,8 @@ void GameObject::Update(uint32 diff)
                     if (target)
                     {
                         if (owner)
-                            if (owner->IsValidAttackTarget(target))
-                                return;
+                            if (!owner->IsValidAttackTarget(target))
+                                break;
 
                         // some traps do not have spell but should be triggered
                         if (goInfo->trap.spellId)
