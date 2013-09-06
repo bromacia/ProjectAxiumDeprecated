@@ -1257,7 +1257,14 @@ bool SpellInfo::CanPierceImmuneAura(SpellInfo const* aura) const
 
     // If the aura and spell are positive
     if (aura && aura->_IsPositiveSpell() && _IsPositiveSpell())
+    {
+        // This needs to be checked otherwise Dispel Magic
+        // is able to dispel immunity auras such as Ice Block, Divine Shield, etc.
+        if (HasEffect(SPELL_EFFECT_DISPEL) && !(Attributes & SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY))
+            return false;
+
         return true;
+    }
 
     return false;
 }
