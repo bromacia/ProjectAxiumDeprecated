@@ -1119,8 +1119,13 @@ void Battleground::AddPlayer(Player* player)
     // add arena specific auras
     if (isArena())
     {
-        // Remove any morphs before entering arena
-        player->InitDisplayIds();
+        // Remove morphs done via the .morph command before entering arena
+        if (player->IsMorphed())
+        {
+            player->InitDisplayIds();
+            player->RestoreDisplayId();
+        }
+
         if (team == ALLIANCE)                                // gold
         {
             if (player->GetTeam() == HORDE)
