@@ -25346,29 +25346,30 @@ bool Player::IsHealingSpec() const
 
 bool Player::CanAppearToTarget(Player* target)
 {
+    ChatHandler* handler = new ChatHandler(this);
     uint8 playerSecurity = GetSession()->GetSecurity();
 
     if (target == this || target->GetGUIDLow() == GetGUIDLow())
     {
-        ChatHandler(this).PSendSysMessage("You can't appear to yourself.");
+        handler->PSendSysMessage("You can't appear to yourself.");
         return false;
     }
 
     if (!target->IsInWorld())
     {
-        ChatHandler(this).PSendSysMessage("You can't appear to players who are loading.");
+        handler->PSendSysMessage("You can't appear to players who are loading.");
         return false;
     }
 
     if (target->IsBeingTeleported())
     {
-        ChatHandler(this).PSendSysMessage("You can't appear to players who are being teleported.");
+        handler->PSendSysMessage("You can't appear to players who are being teleported.");
         return false;
     }
 
     if (target->isInFlight())
     {
-        ChatHandler(this).PSendSysMessage("You can't appear to players who are on a flight path.");
+        handler->PSendSysMessage("You can't appear to players who are on a flight path.");
         return false;
     }
 
@@ -25376,64 +25377,64 @@ bool Player::CanAppearToTarget(Player* target)
     {
         case SEC_PLAYER:
         {
-            ChatHandler(this).PSendSysMessage("You don't have high enough security to use this command.");
+            handler->PSendSysMessage("You don't have high enough security to use this command.");
             return false;
         }
         case SEC_VIP:
         {
             if (lastAppearTime + 10000 > getMSTime())
             {
-                ChatHandler(this).PSendSysMessage("You can only appear once every 10 seconds.");
-                ChatHandler(this).PSendSysMessage("Remaining Time: %u seconds", ((lastAppearTime + 10000) - getMSTime()) / IN_MILLISECONDS);
+                handler->PSendSysMessage("You can only appear once every 10 seconds.");
+                handler->PSendSysMessage("Remaining Time: %u seconds", ((lastAppearTime + 10000) - getMSTime()) / IN_MILLISECONDS);
                 return false;
             }
 
             if (IsInWorldPvPZone())
             {
-                ChatHandler(this).PSendSysMessage("You can't appear while in the World PvP zone.");
+                handler->PSendSysMessage("You can't appear while in the World PvP zone.");
                 return false;
             }
 
             if (target->IsInWorldPvPZone())
             {
-                ChatHandler(this).PSendSysMessage("You can't appear to players in the World PvP zone.");
+                handler->PSendSysMessage("You can't appear to players in the World PvP zone.");
                 return false;
             }
 
             if (InBattleground() || InArena())
             {
-                ChatHandler(this).PSendSysMessage("You can't appear while in a battleground or arena.");
+                handler->PSendSysMessage("You can't appear while in a battleground or arena.");
                 return false;
             }
 
             if (target->InBattleground() || target->InArena())
             {
-                ChatHandler(this).PSendSysMessage("You can't appear to players in battlegrounds or arenas.");
+                handler->PSendSysMessage("You can't appear to players in battlegrounds or arenas.");
                 return false;
             }
 
             if (isInCombat())
             {
-                ChatHandler(this).PSendSysMessage("You can't appear while in combat.");
+                handler->PSendSysMessage("You can't appear while in combat.");
                 return false;
             }
 
             if (lastCombatTime + 10000 > getMSTime())
             {
-                ChatHandler(this).PSendSysMessage("You can only appear 10 seconds after leaving combat.");
-                ChatHandler(this).PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - getMSTime()) / IN_MILLISECONDS);
+                handler->PSendSysMessage("You can only appear 10 seconds after leaving combat.");
+                handler->PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - getMSTime()) / IN_MILLISECONDS);
                 return false;
             }
 
             if (target->HasAuraType(SPELL_AURA_MOD_STEALTH) || target->HasAuraType(SPELL_AURA_MOD_INVISIBILITY))
             {
-                ChatHandler(this).PSendSysMessage("You can't appear to sleathed or invisible players.");
+                handler->PSendSysMessage("You can't appear to sleathed or invisible players.");
                 return false;
             }
 
             if (GetMap()->IsDungeon() || GetMap()->IsRaid())
             {
-                ChatHandler(this).PSendSysMessage("You can't appear to players in dungeons or raids.");
+                handler->PSendSysMessage("You can't appear to players in dungeons or raids.");
                 return false;
             }
         }
@@ -25444,46 +25445,47 @@ bool Player::CanAppearToTarget(Player* target)
 
 bool Player::CanTeleportTo(const GameTele* tele)
 {
+    ChatHandler* handler = new ChatHandler(this);
     uint8 playerSecurity = GetSession()->GetSecurity();
 
     switch (playerSecurity)
     {
         case SEC_PLAYER:
         {
-            ChatHandler(this).PSendSysMessage("You don't have high enough security to use this command.");
+            handler->PSendSysMessage("You don't have high enough security to use this command.");
             return false;
         }
         case SEC_VIP:
         {
             if (lastTeleportTime + 10000 > getMSTime())
             {
-                ChatHandler(this).PSendSysMessage("You can only teleport once every 10 seconds.");
-                ChatHandler(this).PSendSysMessage("Remaining Time: %u seconds", ((lastTeleportTime + 10000) - getMSTime()) / IN_MILLISECONDS);
+                handler->PSendSysMessage("You can only teleport once every 10 seconds.");
+                handler->PSendSysMessage("Remaining Time: %u seconds", ((lastTeleportTime + 10000) - getMSTime()) / IN_MILLISECONDS);
                 return false;
             }
 
             if (IsInWorldPvPZone())
             {
-                ChatHandler(this).PSendSysMessage("You can't appear while in the World PvP zone.");
+                handler->PSendSysMessage("You can't appear while in the World PvP zone.");
                 return false;
             }
 
             if (InBattleground() || InArena())
             {
-                ChatHandler(this).PSendSysMessage("You can't appear while in a battleground or arena.");
+                handler->PSendSysMessage("You can't appear while in a battleground or arena.");
                 return false;
             }
 
             if (isInCombat())
             {
-                ChatHandler(this).PSendSysMessage("You can't appear while in combat.");
+                handler->PSendSysMessage("You can't appear while in combat.");
                 return false;
             }
 
             if (lastCombatTime + 10000 > getMSTime())
             {
-                ChatHandler(this).PSendSysMessage("You can only appear 10 seconds after leaving combat.");
-                ChatHandler(this).PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - getMSTime() / IN_MILLISECONDS));
+                handler->PSendSysMessage("You can only appear 10 seconds after leaving combat.");
+                handler->PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - getMSTime() / IN_MILLISECONDS));
                 return false;
             }
         }

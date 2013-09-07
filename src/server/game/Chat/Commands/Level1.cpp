@@ -236,6 +236,40 @@ bool ChatHandler::HandleAppearCommand(const char* args)
     Player* player = m_session->GetPlayer();
     if (player->CanAppearToTarget(target))
     {
+        Map* tMap = target->GetMap();
+        if (tMap->IsBattlegroundOrArena())
+        {
+            if (player->GetBattlegroundId() && player->GetBattlegroundId() != target->GetBattlegroundId())
+                player->LeaveBattleground(false);
+
+            player->SetBattlegroundId(target->GetBattlegroundId(), target->GetBattlegroundTypeId());
+
+            if (!player->GetMap()->IsBattlegroundOrArena())
+                player->SetBattlegroundEntryPoint();
+        }
+        else if (tMap->IsDungeon())
+        {
+            if (player->GetGroup())
+                if (player->GetGroup() != target->GetGroup())
+                    return false;
+
+            InstancePlayerBind* pBind = player->GetBoundInstance(target->GetMapId(), target->GetDifficulty(tMap->IsRaid()));
+            if (!pBind)
+            {
+                Group* group = player->GetGroup();
+                InstanceGroupBind* gBind = group ? group->GetBoundInstance(target) : NULL;
+
+                if (!gBind)
+                    if (InstanceSave* save = sInstanceSaveMgr->GetInstanceSave(target->GetInstanceId()))
+                        player->BindToInstance(save, !save->CanReset());
+            }
+
+            if (tMap->IsRaid())
+                player->SetRaidDifficulty(target->GetRaidDifficulty());
+            else
+                player->SetDungeonDifficulty(target->GetDungeonDifficulty());
+        }
+
         if (player->isInFlight())
         {
             player->GetMotionMaster()->MovementExpired();
