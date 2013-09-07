@@ -776,6 +776,8 @@ class GameObject : public WorldObject, public GridObject<GameObject>
         void SendCustomAnim(uint32 anim);
         bool IsInRange(float x, float y, float z, float radius) const;
 
+        Unit* SelectNearestTrapableTarget(Unit* owner, float dist) const;
+
         void ModifyHealth(int32 change, Unit* attackerOrHealer = NULL, uint32 spellId = 0);
         // sets GameObject type 33 destruction flags and optionally default health for that state
         void SetDestructibleState(GameObjectDestructibleState state, Player* eventInvoker = NULL, bool setHealth = false);

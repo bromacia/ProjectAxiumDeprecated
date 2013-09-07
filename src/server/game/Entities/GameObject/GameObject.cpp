@@ -447,13 +447,7 @@ void GameObject::Update(uint32 diff)
                     // Note: this hack with search required until GO casting not implemented
                     // search unfriendly creature
                     if (owner) // Hunter trap
-                    {
-                        Trinity::AnyUnfriendlyNoTotemUnitInObjectRangeCheck checker(this, owner, radius);
-                        Trinity::UnitSearcher<Trinity::AnyUnfriendlyNoTotemUnitInObjectRangeCheck> searcher(this, target, checker);
-                        VisitNearbyGridObject(radius, searcher);
-                        if (!target)
-                            VisitNearbyWorldObject(radius, searcher);
-                    }
+                        target = SelectNearestTrapableTarget(owner, radius);
                     else // Environmental trap
                     {
                         // environmental damage spells already have around enemies targeting but this not help in case not existed GO casting support
@@ -1725,6 +1719,31 @@ bool GameObject::IsInRange(float x, float y, float z, float radius) const
     return dx < info->maxX + radius && dx > info->minX - radius
         && dy < info->maxY + radius && dy > info->minY - radius
         && dz < info->maxZ + radius && dz > info->minZ - radius;
+}
+
+Unit* GameObject::SelectNearestTrapableTarget(Unit* owner, float dist) const
+{
+    CellCoord p(Trinity::ComputeCellCoord(GetPositionX(), GetPositionY()));
+    Cell cell(p);
+    cell.SetNoCreate();
+
+    Unit* target = NULL;
+
+    {
+        if (dist == 0.0f)
+            dist = 3.0f; // Guessed, doubt this will ever happen.
+
+        Trinity::NearestAttackableUnitInTrapRangeCheck u_check(this, owner, dist);
+        Trinity::UnitLastSearcher<Trinity::NearestAttackableUnitInTrapRangeCheck> searcher(this, target, u_check);
+
+        TypeContainerVisitor<Trinity::UnitLastSearcher<Trinity::NearestAttackableUnitInTrapRangeCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+        TypeContainerVisitor<Trinity::UnitLastSearcher<Trinity::NearestAttackableUnitInTrapRangeCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+
+        cell.Visit(p, world_unit_searcher, *GetMap(), *this, dist);
+        cell.Visit(p, grid_unit_searcher, *GetMap(), *this, dist);
+    }
+
+    return target;
 }
 
 void GameObject::EventInform(uint32 eventId)
