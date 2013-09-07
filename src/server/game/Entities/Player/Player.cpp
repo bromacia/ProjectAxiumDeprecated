@@ -23187,7 +23187,7 @@ void Player::StopCastingBindSight()
 {
     if (WorldObject* target = GetViewpoint())
     {
-        if (target->isType(TYPEMASK_UNIT))
+        if (target->isType(TYPEMASK_PLAYER | TYPEMASK_UNIT))
         {
             ((Unit*)target)->RemoveAurasByType(SPELL_AURA_BIND_SIGHT, GetGUID());
             ((Unit*)target)->RemoveAurasByType(SPELL_AURA_MOD_POSSESS, GetGUID());
@@ -23217,7 +23217,7 @@ void Player::SetViewpoint(WorldObject* target, bool apply)
         // farsight dynobj or puppet may be very far away
         UpdateVisibilityOf(target);
 
-        if (target->isType(TYPEMASK_UNIT) && !GetVehicle())
+        if (target->isType(TYPEMASK_PLAYER | TYPEMASK_UNIT) && !GetVehicle())
             ((Unit*)target)->AddPlayerToVision(this);
 
         SetCurrentViewpoint(target);
@@ -23232,7 +23232,7 @@ void Player::SetViewpoint(WorldObject* target, bool apply)
             return;
         }
 
-        if (target->isType(TYPEMASK_UNIT) && !GetVehicle())
+        if (target->isType(TYPEMASK_PLAYER | TYPEMASK_UNIT) && !GetVehicle())
             ((Unit*)target)->RemovePlayerFromVision(this);
 
         //must immediately set seer back otherwise may crash
