@@ -3176,15 +3176,12 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
     // Prepare data for triggers
     prepareDataForTriggerSystem(triggeredByAura);
 
-    if (Player* player = m_caster->ToPlayer())
-    {
+    if (m_caster->GetTypeId() == TYPEID_PLAYER)
         m_caster->ToPlayer()->SetSpellModTakingSpell(this, true);
-        // calculate cast time (calculated after first CheckCast check to prevent charge counting for first CheckCast fail)
-        m_casttime = m_spellInfo->CalcCastTime(this);
+    // calculate cast time (calculated after first CheckCast check to prevent charge counting for first CheckCast fail)
+    m_casttime = m_spellInfo->CalcCastTime(m_caster, this);
+    if (m_caster->GetTypeId() == TYPEID_PLAYER)
         m_caster->ToPlayer()->SetSpellModTakingSpell(this, false);
-    }
-    else
-        m_casttime = m_spellInfo->CalcCastTime(this);
 
     // Custom Cast Times
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
