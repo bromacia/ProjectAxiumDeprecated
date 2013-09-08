@@ -3358,6 +3358,8 @@ void SpellMgr::LoadDbcDataCorrections()
             case 2094:  // Blind
                 spellInfo->EffectBasePoints[0] = -40;
                 break;
+            case 770:   // Faerie Fire
+            case 16857: // Faerie Fire (Feral)
             case 33786: // Cyclone
                 spellInfo->AttributesEx &= ~SPELL_ATTR1_UNAFFECTED_BY_SCHOOL_IMMUNE;
                 break;
