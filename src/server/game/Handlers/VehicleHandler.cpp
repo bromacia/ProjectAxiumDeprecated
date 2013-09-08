@@ -131,10 +131,15 @@ void WorldSession::HandleEnterPlayerVehicle(WorldPacket &data)
 
     if (Player* player = ObjectAccessor::FindPlayer(guid))
     {
+        if (player->InArena())
+            return;
+
         if (!player->GetVehicleKit())
             return;
+
         if (!player->IsInRaidWith(_player))
             return;
+
         if (!player->IsWithinDistInMap(_player, INTERACTION_DISTANCE))
             return;
 
