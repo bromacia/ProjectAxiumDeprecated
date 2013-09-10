@@ -104,7 +104,11 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket & recv_data)
     BattlegroundQueueTypeId bgQueueTypeId = BattlegroundMgr::BGQueueTypeId(bgTypeId, 0);
     BattlegroundQueueTypeId bgQueueTypeIdRandom = BattlegroundMgr::BGQueueTypeId(BATTLEGROUND_RB, 0);
 
-    // ignore if player is already in BG
+    // Ignore if the player is frozen
+    if (_player->IsFrozen())
+        return;
+
+    // Ignore if player is already in BG
     if (_player->InBattleground())
         return;
 
@@ -604,7 +608,11 @@ void WorldSession::HandleBattlemasterJoinArena(WorldPacket & recv_data)
 
     recv_data >> guid >> arenaslot >> asGroup >> isRated;
 
-    // ignore if we already in BG or BG queue
+    // Ignore if the player is frozen
+    if (_player->IsFrozen())
+        return;
+
+    // Ignore if player is already in BG
     if (_player->InBattleground())
         return;
 
