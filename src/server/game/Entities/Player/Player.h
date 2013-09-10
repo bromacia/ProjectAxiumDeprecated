@@ -2614,6 +2614,9 @@ class Player : public Unit, public GridObject<Player>
         uint32 lastAppearTime;
         uint32 lastTeleportTime;
 
+        bool IsFrozen() { return m_isFrozen; }
+        void SetIsFrozen(bool x) { m_isFrozen = x; }
+
         uint16 Get2v2MMR() const { return m_2v2MMR; }
         void Set2v2MMR(uint16 mmr) { m_2v2MMR = mmr; }
         uint16 Get3v3MMR() const { return m_3v3MMR; }
@@ -3003,6 +3006,8 @@ class Player : public Unit, public GridObject<Player>
         bool m_addedToPrematureBattleGroundStartList;
 
         WorldObject* currentViewpoint;
+
+        bool m_isFrozen;
 
         uint16 m_2v2MMR;
         uint16 m_3v3MMR;

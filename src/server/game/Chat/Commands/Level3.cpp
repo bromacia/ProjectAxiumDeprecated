@@ -4527,17 +4527,17 @@ bool ChatHandler::HandleFreezeCommand(const char* args)
 {
     std::string name;
     Player* player;
-    char *TargetName = strtok((char*)args, " "); //get entered name
-    if (!TargetName) //if no name entered use target
+    char* TargetName = strtok((char*)args, " ");
+    if (!TargetName)
     {
         player = getSelectedPlayer();
-        if (player) //prevent crash with creature as target
+        if (player)
         {
             name = player->GetName();
             normalizePlayerName(name);
         }
     }
-    else // if name entered
+    else
     {
         name = TargetName;
         normalizePlayerName(name);
@@ -4547,46 +4547,22 @@ bool ChatHandler::HandleFreezeCommand(const char* args)
     if (!player)
     {
         SendSysMessage(LANG_COMMAND_FREEZE_WRONG);
-        return true;
+        SetSentErrorMessage(true);
+        return false;
     }
 
-    if (player == m_session->GetPlayer())
-    {
-        SendSysMessage(LANG_COMMAND_FREEZE_ERROR);
-        return true;
-    }
+    PSendSysMessage(LANG_COMMAND_FREEZE, name.c_str());
 
-    //effect
-    if (player && player != m_session->GetPlayer())
-    {
-        PSendSysMessage(LANG_COMMAND_FREEZE, name.c_str());
+    player->CombatStop();
+    if (player->IsNonMeleeSpellCasted(true))
+        player->InterruptNonMeleeSpells(true);
+    player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+    player->RemoveAllControlled();
 
-        //stop combat + make player unattackable + duel stop + stop some spells
-        player->setFaction(35);
-        player->CombatStop();
-        if (player->IsNonMeleeSpellCasted(true))
-            player->InterruptNonMeleeSpells(true);
-        player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+    if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(9454))
+        Aura::TryRefreshStackOrCreate(spellInfo, MAX_EFFECT_MASK, player, player);
 
-        //if player class = hunter || warlock remove pet if alive
-        if ((player->getClass() == CLASS_HUNTER) || (player->getClass() == CLASS_WARLOCK))
-        {
-            if (Pet* pet = player->GetPet())
-            {
-                pet->SavePetToDB(PET_SAVE_AS_CURRENT);
-                // not let dismiss dead pet
-                if (pet && pet->isAlive())
-                    player->RemovePet(pet, PET_SAVE_NOT_IN_SLOT);
-            }
-        }
-
-        //m_session->GetPlayer()->CastSpell(player, spellID, false);
-        if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(9454))
-            Aura::TryRefreshStackOrCreate(spellInfo, MAX_EFFECT_MASK, player, player);
-
-        //save player
-        player->SaveToDB();
-    }
+    CharacterDatabase.PQuery("UPDATE characters SET isFrozen = 1 WHERE name = '%s'", name);
     return true;
 }
 
@@ -4594,60 +4570,52 @@ bool ChatHandler::HandleUnFreezeCommand(const char* args)
 {
     std::string name;
     Player* player;
-    char *TargetName = strtok((char*)args, " "); //get entered name
-    if (!TargetName) //if no name entered use target
+    char* TargetName = strtok((char*)args, " ");
+    if (!TargetName)
     {
         player = getSelectedPlayer();
-        if (player) //prevent crash with creature as target
+        if (player)
             name = player->GetName();
     }
-
-    else // if name entered
+    else
     {
         name = TargetName;
         normalizePlayerName(name);
         player = sObjectAccessor->FindPlayerByName(name.c_str());
     }
 
-    //effect
     if (player)
     {
         PSendSysMessage(LANG_COMMAND_UNFREEZE, name.c_str());
 
-        //Reset player faction + allow combat + allow duels
-        player->setFactionForRace(player->getRace());
         player->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-
-        //allow movement and spells
-        player->RemoveAurasDueToSpell(9454);
-
-        //save player
-        player->SaveToDB();
+        player->RemoveAura(9454);
+        CharacterDatabase.PQuery("UPDATE characters SET isFrozen = 0 WHERE name = '%s'", name);
     }
 
     if (!player)
     {
         if (TargetName)
         {
-            //check for offline players
             QueryResult result = CharacterDatabase.PQuery("SELECT characters.guid FROM characters WHERE characters.name = '%s'", name.c_str());
             if (!result)
             {
                 SendSysMessage(LANG_COMMAND_FREEZE_WRONG);
-                return true;
+                SetSentErrorMessage(true);
+                return false;
             }
-            //if player found: delete his freeze aura
-            Field* fields=result->Fetch();
-            uint64 pguid = fields[0].GetUInt64();
 
-            CharacterDatabase.PQuery("DELETE FROM character_aura WHERE character_aura.spell = 9454 AND character_aura.guid = '%u'", pguid);
+            Field* fields = result->Fetch();
+
+            CharacterDatabase.PQuery("DELETE FROM character_aura WHERE character_aura.spell = 9454 AND character_aura.guid = '%u'", fields[0].GetUInt64());
+            CharacterDatabase.PQuery("UPDATE characters SET isFrozen = 0 WHERE name = '%s'", name);
             PSendSysMessage(LANG_COMMAND_UNFREEZE, name.c_str());
-            return true;
         }
         else
         {
             SendSysMessage(LANG_COMMAND_FREEZE_WRONG);
-            return true;
+            SetSentErrorMessage(true);
+            return false;
         }
     }
 
@@ -4656,23 +4624,23 @@ bool ChatHandler::HandleUnFreezeCommand(const char* args)
 
 bool ChatHandler::HandleListFreezeCommand(const char* /*args*/)
 {
-    //Get names from DB
-    QueryResult result = CharacterDatabase.Query("SELECT characters.name FROM characters LEFT JOIN character_aura ON (characters.guid = character_aura.guid) WHERE character_aura.spell = 9454");
+    QueryResult result = CharacterDatabase.Query("SELECT name FROM characters WHERE isFrozen = 1 ORDER BY name ASC");
     if (!result)
     {
         SendSysMessage(LANG_COMMAND_NO_FROZEN_PLAYERS);
-        return true;
+        SetSentErrorMessage(true);
+        return false;
     }
-    //Header of the names
+
     PSendSysMessage(LANG_COMMAND_LIST_FREEZE);
 
-    //Output of the results
     do
     {
         Field* fields = result->Fetch();
-        std::string fplayers = fields[0].GetString();
-        PSendSysMessage(LANG_COMMAND_FROZEN_PLAYERS, fplayers.c_str());
-    } while (result->NextRow());
+        std::string name = fields[0].GetString();
+        PSendSysMessage(LANG_COMMAND_FROZEN_PLAYERS, name.c_str());
+    }
+    while (result->NextRow());
 
     return true;
 }

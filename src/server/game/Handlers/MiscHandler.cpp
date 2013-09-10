@@ -408,8 +408,6 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket & /*recv_data*/)
 
     if (_player->isInCombat())
         reason = 1;
-    else if (_player->HasAura(9454)) // is dueling or frozen by GM via freeze command
-        reason = 2; // FIXME - Need the correct value
 
     if (reason)
     {
