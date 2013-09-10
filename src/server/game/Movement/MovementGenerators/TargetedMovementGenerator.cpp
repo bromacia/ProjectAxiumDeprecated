@@ -113,10 +113,6 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
 
         Movement::MoveSplineInit init(owner);
         init.MovebyPath(i_path->GetPath());
-        // Using the same condition for facing target as the one that is used for SetInFront on movement end
-        // - applies to ChaseMovementGenerator mostly
-        if (i_angle == 0.0f)
-            init.SetFacing(i_target.getTarget());
         init.Launch();
     }
 
@@ -140,6 +136,9 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
         D::_clearUnitStateMove(owner);
         return true;
     }
+
+    if (owner.GetTypeId() == TYPEID_UNIT && !i_target->isInAccessiblePlaceFor((const Creature*)&owner))
+        return false;
 
     // prevent movement while casting spells with cast time or channel time
     if (owner.HasUnitState(UNIT_STATE_CASTING))
@@ -173,10 +172,13 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
             float allowed_dist = sWorld->getRate(RATE_TARGET_POS_RECALCULATION_RANGE);
             G3D::Vector3 dest = owner.movespline->FinalDestination();
 
-            if (owner.GetTypeId() == TYPEID_UNIT && owner.ToCreature()->canFly())
-                targetMoved = !i_target->IsWithinDist3d(dest.x, dest.y, dest.z, allowed_dist);
-            else
-                targetMoved = !i_target->IsWithinDist2d(dest.x, dest.y, allowed_dist);
+            if (owner.GetTypeId() == TYPEID_UNIT)
+            {
+                if (owner.ToCreature()->canFly())
+                    targetMoved = !i_target->IsWithinDist3d(dest.x, dest.y, dest.z, allowed_dist);
+                else
+                    targetMoved = !i_target->IsWithinDist2d(dest.x, dest.y, allowed_dist);
+            }
         }
 
         if (i_recalculateTravel || targetMoved)
@@ -266,19 +268,11 @@ bool FollowMovementGenerator<Player>::EnableWalking() const
 template<>
 void FollowMovementGenerator<Player>::_updateSpeed(Player &/*owner*/)
 {
-    // nothing to do for Player
 }
 
 template<>
 void FollowMovementGenerator<Creature>::_updateSpeed(Creature &owner)
 {
-    /// Make sure we are not in the process of a map change (IsInWorld)
-    if (!owner.isPet() || !owner.IsInWorld() || !i_target.isValid() || i_target->GetGUID() != owner.GetOwnerGUID())
-        return;
-
-    owner.UpdateSpeed(MOVE_RUN, true);
-    owner.UpdateSpeed(MOVE_WALK, true);
-    owner.UpdateSpeed(MOVE_SWIM, true);
 }
 
 template<>

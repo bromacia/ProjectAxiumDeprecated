@@ -104,6 +104,8 @@ class PathFinderMovementGenerator
         void _setEndPosition(Vector3 point) { _actualEndPosition = point; _endPosition = point; }
         void _setActualEndPosition(Vector3 point) { _actualEndPosition = point; }
 
+        void NormalizePath();
+
         void _clear() { _polyLength = 0; _pathPoints.clear(); }
 
         bool _inRange(const Vector3 &p1, const Vector3 &p2, float r, float h) const;
