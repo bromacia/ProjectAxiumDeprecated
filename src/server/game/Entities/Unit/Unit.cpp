@@ -9596,8 +9596,9 @@ bool Unit::Attack(Unit* victim, bool meleeAttack)
     }
     else
     {
-        if (victim->ToCreature()->IsInEvadeMode())
-            return false;
+        if (Creature* creature = victim->ToCreature())
+            if (creature->IsInEvadeMode())
+                return false;
     }
 
     // remove SPELL_AURA_MOD_UNATTACKABLE at attack (in case non-interruptible spells stun aura applied also that not let attack)
