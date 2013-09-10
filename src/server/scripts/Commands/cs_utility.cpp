@@ -407,7 +407,7 @@ public:
             return false;
         }
 
-        CharacterDatabase.PExecute("UPDATE characters SET account = %u, hijackedAccountId = %u WHERE guid = %u", playerAccountId, targetAccountId, targetGUID);
+        CharacterDatabase.PExecute("UPDATE characters SET account = %u, originalAccountId = %u WHERE guid = %u", playerAccountId, targetAccountId, targetGUID);
         target->GetSession()->CloseSession();
 
         return true;
@@ -428,7 +428,7 @@ public:
             return false;
         }
 
-            CharacterDatabase.PExecute("UPDATE characters SET account = %u, hijackedAccountId = 0 WHERE guid = %u", hijackedCharacterAccountId, hijackedCharacterGUID);
+            CharacterDatabase.PExecute("UPDATE characters SET account = %u, originalAccountId = 0 WHERE guid = %u", hijackedCharacterAccountId, hijackedCharacterGUID);
             hijackedCharacter->GetSession()->CloseSession();
 
         return true;
