@@ -386,7 +386,7 @@ public:
         uint32 targetAccountId = target->GetSession()->GetAccountId();
         uint32 targetGUID = target->GetGUIDLow();
 
-        if (target->GetHijackedCharacterAccountId())
+        if (target->GetOriginalCharacterAccountId())
         {
             handler->PSendSysMessage("You cant hijack a character that has already been hijacked");
             handler->SetSentErrorMessage(true);
@@ -417,10 +417,10 @@ public:
     {
         Player* hijackedCharacter = handler->GetSession()->GetPlayer();
         uint32 hijackedCharacterGUID = hijackedCharacter->GetGUIDLow();
-        uint32 hijackedCharacterAccountId = 0;
+        uint32 originalCharacterAccountId = 0;
 
-        if (hijackedCharacter->GetHijackedCharacterAccountId())
-            hijackedCharacterAccountId = hijackedCharacter->GetHijackedCharacterAccountId();
+        if (hijackedCharacter->GetOriginalCharacterAccountId())
+            originalCharacterAccountId = hijackedCharacter->GetOriginalCharacterAccountId();
         else
         {
             handler->PSendSysMessage("This character is not hijacked");
@@ -428,8 +428,8 @@ public:
             return false;
         }
 
-            CharacterDatabase.PExecute("UPDATE characters SET account = %u, originalAccountId = 0 WHERE guid = %u", hijackedCharacterAccountId, hijackedCharacterGUID);
-            hijackedCharacter->GetSession()->CloseSession();
+        CharacterDatabase.PExecute("UPDATE characters SET account = %u, originalAccountId = 0 WHERE guid = %u", originalCharacterAccountId, hijackedCharacterGUID);
+        hijackedCharacter->GetSession()->CloseSession();
 
         return true;
     }

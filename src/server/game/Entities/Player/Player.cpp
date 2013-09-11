@@ -17230,7 +17230,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     _LoadEquipmentSets(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS));
 
-    m_hijackedCharacterAccountId = fields[67].GetUInt32();
+    m_originalCharacterAccountId = fields[67].GetUInt32();
 
     m_isFrozen = fields[68].GetBool();
 

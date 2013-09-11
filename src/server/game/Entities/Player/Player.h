@@ -2592,7 +2592,7 @@ class Player : public Unit, public GridObject<Player>
         void SetSelectedTransmogItemSlot(uint8 slot) { m_selectedTransmogItemSlot = slot; }
         uint8 GetSelectedTransmogItemSlot() const { return m_selectedTransmogItemSlot; }
 
-        uint32 GetHijackedCharacterAccountId() const { return m_hijackedCharacterAccountId; }
+        uint32 GetOriginalCharacterAccountId() const { return m_originalCharacterAccountId; }
 
         void SetWantsPrematureBattleGroundStart(bool x) { m_wantsPrematureBattleGroundStart = x; }
         bool WantsPrematureBattleGroundStart() const { return m_wantsPrematureBattleGroundStart; }
@@ -2998,7 +2998,7 @@ class Player : public Unit, public GridObject<Player>
         bool m_isMorphed;
         bool m_isNoggenfoggerMorphed;
 
-        uint32 m_hijackedCharacterAccountId;
+        uint32 m_originalCharacterAccountId;
 
         uint8 m_selectedTransmogItemSlot;
 
