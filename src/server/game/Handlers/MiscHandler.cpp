@@ -202,9 +202,10 @@ void WorldSession::HandleWhoOpcode(WorldPacket & recv_data)
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Recvd CMSG_WHO Message");
 
     time_t now = time(NULL);
-    if (now - timeLastWhoCommand < 5)
+    if (now - timeLastWhoCommand < 5 && _player->GetSession()->GetSecurity() < SEC_GAMEMASTER)
         return;
-    else timeLastWhoCommand = now;
+
+    timeLastWhoCommand = now;
 
     uint32 matchcount = 0;
 

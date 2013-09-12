@@ -1007,7 +1007,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         SendNotification(LANG_GM_ON);
 
     if (pCurrChar->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
-        chH.PSendSysMessage("There is currently %u open tickets.", sTicketMgr->GetOpenTicketCount());
+        chH.PSendSysMessage("There is currently %u open ticket(s).", sTicketMgr->GetOpenTicketCount());
 
     std::string IP_str = GetRemoteAddress();
     sLog->outChar("Account: %d (IP: %s) Login Character:[%s] (GUID: %u)",
