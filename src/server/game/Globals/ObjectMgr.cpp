@@ -8071,9 +8071,7 @@ void ObjectMgr::LoadTrainerSpell()
 int ObjectMgr::LoadReferenceVendor(int32 vendor, int32 item, std::set<uint32> *skip_vendors)
 {
     // find all items from the reference vendor
-    QueryResult result = WorldDatabase.PQuery("SELECT item, maxcount, incrtime, ExtendedCost, "
-        "TransmogEquipSlot, TransmogClass, TransmogSubClass FROM npc_vendor WHERE entry='%d' ORDER BY slot ASC", item);
-
+    QueryResult result = WorldDatabase.PQuery("SELECT item, maxcount, incrtime, ExtendedCost FROM npc_vendor WHERE entry='%d' ORDER BY slot ASC", item);
     if (!result)
         return 0;
 
@@ -8089,19 +8087,16 @@ int ObjectMgr::LoadReferenceVendor(int32 vendor, int32 item, std::set<uint32> *s
             count += LoadReferenceVendor(vendor, -item_id, skip_vendors);
         else
         {
-            int32  maxcount          = fields[1].GetInt32();
-            uint32 incrtime          = fields[2].GetUInt32();
-            uint32 ExtendedCost      = fields[3].GetUInt32();
-            uint8  TransmogEquipSlot = fields[4].GetUInt32();
-            uint8  TransmogClass     = fields[5].GetUInt32();
-            uint8  TransmogSubClass  = fields[6].GetUInt32();
+            int32  maxcount     = fields[1].GetInt32();
+            uint32 incrtime     = fields[2].GetUInt32();
+            uint32 ExtendedCost = fields[3].GetUInt32();
 
-            if (!IsVendorItemValid(vendor, item_id, maxcount, incrtime, ExtendedCost, TransmogEquipSlot, TransmogClass, TransmogSubClass, NULL, skip_vendors))
+            if (!IsVendorItemValid(vendor, item_id, maxcount, incrtime, ExtendedCost, NULL, skip_vendors))
                 continue;
 
             VendorItemData& vList = m_mCacheVendorItemMap[vendor];
 
-            vList.AddItem(item_id, maxcount, incrtime, ExtendedCost, TransmogEquipSlot, TransmogClass, TransmogSubClass);
+            vList.AddItem(item_id, maxcount, incrtime, ExtendedCost);
             ++count;
         }
 
@@ -8122,9 +8117,7 @@ void ObjectMgr::LoadVendors()
 
     std::set<uint32> skip_vendors;
 
-    QueryResult result = WorldDatabase.Query("SELECT entry, item, maxcount, incrtime, ExtendedCost, "
-        "TransmogEquipSlot, TransmogClass, TransmogSubClass FROM npc_vendor ORDER BY entry, slot ASC");
-
+    QueryResult result = WorldDatabase.Query("SELECT entry, item, maxcount, incrtime, ExtendedCost FROM npc_vendor ORDER BY entry, slot ASC");
     if (!result)
     {
         sLog->outString();
@@ -8146,19 +8139,16 @@ void ObjectMgr::LoadVendors()
             count += LoadReferenceVendor(entry, -item_id, &skip_vendors);
         else
         {
-            int32  maxcount          = fields[2].GetInt32();
-            uint32 incrtime          = fields[3].GetUInt32();
-            uint32 ExtendedCost      = fields[4].GetUInt32();
-            uint8  TransmogEquipSlot = fields[5].GetUInt32();
-            uint8  TransmogClass     = fields[6].GetUInt32();
-            uint8  TransmogSubClass  = fields[7].GetUInt32();
+            int32  maxcount     = fields[2].GetInt32();
+            uint32 incrtime     = fields[3].GetUInt32();
+            uint32 ExtendedCost = fields[4].GetUInt32();
 
-            if (!IsVendorItemValid(entry, item_id, maxcount, incrtime, ExtendedCost, TransmogEquipSlot, TransmogClass, TransmogSubClass, NULL, &skip_vendors))
+            if (!IsVendorItemValid(entry, item_id, maxcount, incrtime, ExtendedCost, NULL, &skip_vendors))
                 continue;
 
             VendorItemData& vList = m_mCacheVendorItemMap[entry];
 
-            vList.AddItem(item_id, maxcount, incrtime, ExtendedCost, TransmogEquipSlot, TransmogClass, TransmogSubClass);
+            vList.AddItem(item_id, maxcount, incrtime, ExtendedCost);
             ++count;
         }
     }
@@ -8272,10 +8262,10 @@ void ObjectMgr::LoadGossipMenuItems()
     sLog->outString();
 }
 
-void ObjectMgr::AddVendorItem(uint32 entry, uint32 item, int32 maxcount, uint32 incrtime, uint32 extendedCost, uint8 TransmogEquipSlot, uint8 TransmogClass, uint8 TransmogSubClass, bool persist /*= true*/)
+void ObjectMgr::AddVendorItem(uint32 entry, uint32 item, int32 maxcount, uint32 incrtime, uint32 extendedCost, bool persist /*= true*/)
 {
     VendorItemData& vList = m_mCacheVendorItemMap[entry];
-    vList.AddItem(item, maxcount, incrtime, extendedCost, TransmogEquipSlot, TransmogClass, TransmogSubClass);
+    vList.AddItem(item, maxcount, incrtime, extendedCost);
 
     if (persist)
     {
@@ -8313,8 +8303,7 @@ bool ObjectMgr::RemoveVendorItem(uint32 entry, uint32 item, bool persist /*= tru
     return true;
 }
 
-bool ObjectMgr::IsVendorItemValid(uint32 vendor_entry, uint32 item_id, int32 maxcount, uint32 incrtime, uint32 ExtendedCost,
-    uint8 TransmogEquipSlot, uint8 TransmogClass, uint8 TransmogSubClass, Player* player, std::set<uint32>* skip_vendors, uint32 ORnpcflag) const
+bool ObjectMgr::IsVendorItemValid(uint32 vendor_entry, uint32 item_id, int32 maxcount, uint32 incrtime, uint32 ExtendedCost, Player* player, std::set<uint32>* skip_vendors, uint32 ORnpcflag) const
 {
     CreatureTemplate const* cInfo = sObjectMgr->GetCreatureTemplate(vendor_entry);
     if (!cInfo)
@@ -8386,6 +8375,15 @@ bool ObjectMgr::IsVendorItemValid(uint32 vendor_entry, uint32 item_id, int32 max
             ChatHandler(player).PSendSysMessage(LANG_ITEM_ALREADY_IN_LIST, item_id, ExtendedCost);
         else
             sLog->outErrorDb("Table `npc_vendor` has duplicate items %u (with extended cost %u) for vendor (Entry: %u), ignoring", item_id, ExtendedCost, vendor_entry);
+        return false;
+    }
+
+    if (vItems->GetItemCount() >= MAX_VENDOR_ITEMS)
+    {
+        if (player)
+            ChatHandler(player).SendSysMessage(LANG_COMMAND_ADDVENDORITEMITEMS);
+        else
+            sLog->outErrorDb("Table `npc_vendor` has too many items (%u >= %i) for vendor (Entry: %u), ignore", vItems->GetItemCount(), MAX_VENDOR_ITEMS, vendor_entry);
         return false;
     }
 
