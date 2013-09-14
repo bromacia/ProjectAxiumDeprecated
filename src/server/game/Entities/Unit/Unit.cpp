@@ -12865,6 +12865,10 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell, Wo
     if (this == target)
         return false;
 
+    // can't attack if not in world/target not in world
+    if (!IsInWorld() || !target->IsInWorld())
+        return false;
+
     // can't attack unattackable units or GMs
     if (target->HasUnitState(UNIT_STATE_UNATTACKABLE)
         || (target->GetTypeId() == TYPEID_PLAYER && target->ToPlayer()->HasGameMasterTagOn()))
