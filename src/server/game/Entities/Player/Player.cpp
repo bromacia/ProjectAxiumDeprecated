@@ -1144,12 +1144,6 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
     // original spells
     learnDefaultSpells();
 
-    StoreNewItemInBestSlots(23162, 4); // Foror's Crate of Endless Resist Gear Storage
-    StoreNewItemInBestSlots(6948, 1);  // Hearthstone
-
-    if (getClass() == CLASS_SHAMAN)
-        StoreNewItemInBestSlots(5175, 1); // Master Totem
-
     if (getClass() == CLASS_WARRIOR)
         CastSpell(this, 2457, true); // Battle Stance
 
@@ -17321,6 +17315,26 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(9454))
             Aura::TryRefreshStackOrCreate(spellInfo, MAX_EFFECT_MASK, this, this);
     }
+
+    // Foror's Crate of Endless Resist Gear Storage
+    if (int8 itemCount = GetItemCount(23162, true))
+    {
+        itemCount -= 4;
+        itemCount = abs(itemCount);
+        if (itemCount > 0 && itemCount < 5)
+            StoreNewItemInBestSlots(23162, itemCount);
+    }
+    else
+        StoreNewItemInBestSlots(23162, 4);
+
+    // Hearthstone
+    if (!GetItemCount(6948, true))
+        StoreNewItemInBestSlots(6948, 1);
+
+    // Master Totem
+    if (getClass() == CLASS_SHAMAN)
+        if (!GetItemCount(5175, true))
+            StoreNewItemInBestSlots(5175, 1);
 
     return true;
 }
