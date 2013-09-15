@@ -196,7 +196,7 @@ public:
             if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(9454))
                 Aura::TryRefreshStackOrCreate(spellInfo, MAX_EFFECT_MASK, player, player);
 
-            CharacterDatabase.PQuery("UPDATE characters SET isFrozen = 1 WHERE name = '%s'", player->GetName());
+            CharacterDatabase.PQuery("UPDATE characters SET isFrozen = 1 WHERE guid = '%u'", player->GetGUIDLow());
         }
         return true;
     }
@@ -228,7 +228,7 @@ public:
 
             player->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             player->RemoveAura(9454);
-            CharacterDatabase.PQuery("UPDATE characters SET isFrozen = 0 WHERE name = '%s'", player->GetName());
+            CharacterDatabase.PQuery("UPDATE characters SET isFrozen = 0 WHERE guid = '%u'", player->GetGUIDLow());
         }
         return true;
     }
