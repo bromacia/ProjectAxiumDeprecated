@@ -76,7 +76,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
     }
 
     // Release Spirit
-    if (_player->IsInZangarmarsh())
+    if (_player->IsInWorldPvPZone())
     {
         _player->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
         _player->ResurrectPlayer(1.0f);
@@ -421,7 +421,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket & /*recv_data*/)
     }
 
     // Instant logout in taverns/cities or on taxi or for admins, gm's, mod's if its enabled in worldserver.conf and not in zangarmarsh if player
-    if (_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_RESTING) || _player->isInFlight() || (!_player->IsInZangarmarsh() || _player->GetSession()->GetSecurity() >= SEC_GAMEMASTER))
+    if (_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_RESTING) || _player->isInFlight() || (!_player->IsInWorldPvPZone() || _player->GetSession()->GetSecurity() >= SEC_GAMEMASTER))
     {
         WorldPacket data(SMSG_LOGOUT_RESPONSE, 1+4);
         data << uint8(0);

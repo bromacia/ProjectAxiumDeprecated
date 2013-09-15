@@ -2263,11 +2263,8 @@ class Unit : public WorldObject
 
         float m_positiveCastTimePrecent;
 
-        bool IsInZangarmarsh() { return GetZoneId() == 3521; }
-        bool IsInDuelingZone() { return GetZoneId() == 85; }
-
-        void SetIsJumping(bool x) { m_isJumping = x; }
-        bool IsJumping() const { return m_isJumping; }
+        bool IsInWorldPvPZone() const { return GetZoneId() == 3521; }
+        bool IsInDuelingZone() const { return GetZoneId() == 85; }
 
         void SetIsDueling(bool x)
         {
@@ -2402,8 +2399,6 @@ class Unit : public WorldObject
 
         Spell const* _focusSpell;
         bool _targetLocked; // locks the target during spell cast for proper facing
-
-        bool m_isJumping;
 
         bool m_runningToTarget;
         Spell* m_queuedSpell;

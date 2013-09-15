@@ -2605,13 +2605,14 @@ class Player : public Unit, public GridObject<Player>
         WorldObject* GetCurrentViewpoint() const { return currentViewpoint; }
         void SetCurrentViewpoint(WorldObject *viewpoint) { currentViewpoint = viewpoint; }
 
-        bool IsInWorldPvPZone() const { if (GetZoneId() == 3521) return true; return false; }
-
         bool CanAppearToTarget(Player* target);
         bool CanTeleportTo(const GameTele* tele);
         uint32 lastCombatTime;
         uint32 lastAppearTime;
         uint32 lastTeleportTime;
+
+        void SetIsJumping(bool x) { m_isJumping = x; }
+        bool IsJumping() const { return m_isJumping; }
 
         bool IsFrozen() { return m_isFrozen; }
         void SetIsFrozen(bool x) { m_isFrozen = x; }
@@ -3005,6 +3006,8 @@ class Player : public Unit, public GridObject<Player>
         bool m_addedToPrematureBattleGroundStartList;
 
         WorldObject* currentViewpoint;
+
+        bool m_isJumping;
 
         bool m_isFrozen;
 

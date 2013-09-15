@@ -2292,8 +2292,11 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         //    return false;
     }
 
+    SetIsJumping(false);
+
     if (GetMotionMaster()->GetCurrentMovementGeneratorType() == CONFUSED_MOTION_TYPE || GetMotionMaster()->GetCurrentMovementGeneratorType() == FLEEING_MOTION_TYPE)
         SetClientControl(this, false);
+
     return true;
 }
 
