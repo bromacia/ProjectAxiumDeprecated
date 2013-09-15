@@ -1803,6 +1803,8 @@ void World::SetInitialWorldSettings()
 
     m_timers[WUPDATE_MAILQUEUE].SetInterval(getIntConfig(CONFIG_MAIL_QUEUE_TIMER)*MINUTE*IN_MILLISECONDS);
 
+    m_timers[WUPDATE_DELETE_EXPIRED_BANS].SetInterval(10*MINUTE*IN_MILLISECONDS); // Delete expired bans every 10 minutes
+
     ///- Initilize static helper structures
     AIRegistry::Initialize();
     Player::InitVisibleBits();
@@ -1852,7 +1854,8 @@ void World::SetInitialWorldSettings()
     sWardenCheckMgr->LoadWardenOverrides();
 
     sLog->outString("Deleting expired bans...");
-    LoginDatabase.Execute("DELETE FROM ip_banned WHERE unbandate <= UNIX_TIMESTAMP() AND unbandate<>bandate");
+    LoginDatabase.Execute(LoginDatabase.GetPreparedStatement(LOGIN_DEL_EXPIRED_IP_BANS));
+    CharacterDatabase.Execute(CharacterDatabase.GetPreparedStatement(CHAR_DEL_EXPIRED_BANS));
 
     sLog->outString("Calculate next daily quest reset time...");
     InitDailyQuestResetTime();
@@ -2139,6 +2142,15 @@ void World::Update(uint32 diff)
         m_timers[WUPDATE_MAILQUEUE].Reset();
         sLog->outDetail("Pulling mail queue");
         sObjectMgr->LoadMailQueue();
+    }
+
+    ///- Delete expired bans
+    if (m_timers[WUPDATE_DELETE_EXPIRED_BANS].Passed())
+    {
+        m_timers[WUPDATE_DELETE_EXPIRED_BANS].Reset();
+        sLog->outDetail("Deleting expired bans");
+        LoginDatabase.Execute(LoginDatabase.GetPreparedStatement(LOGIN_DEL_EXPIRED_IP_BANS));
+        CharacterDatabase.Execute(CharacterDatabase.GetPreparedStatement(CHAR_DEL_EXPIRED_BANS));
     }
 
     // update the instance reset times

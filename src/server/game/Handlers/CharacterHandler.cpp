@@ -238,12 +238,8 @@ void WorldSession::HandleCharEnumOpcode(WorldPacket & /*recv_data*/)
         return;
     }
 
-    // remove expired bans
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_EXPIRED_BANS);
-    CharacterDatabase.Execute(stmt);
-
+    PreparedStatement* stmt = NULL;
     /// get all the data necessary for loading all characters (along with their pets) on the account
-
     if (sWorld->getBoolConfig(CONFIG_DECLINED_NAMES_USED))
         stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_ENUM_DECLINED_NAME);
     else
