@@ -90,29 +90,34 @@ void BattlegroundMgr::DeleteAllBattlegrounds()
 // used to update running battlegrounds, and delete finished ones
 void BattlegroundMgr::Update(uint32 diff)
 {
+    BattlegroundSet::iterator itr, next;
     for (uint8 i = BATTLEGROUND_TYPE_NONE; i < MAX_BATTLEGROUND_TYPE_ID; ++i)
     {
-        for (BattlegroundSet::iterator itr = m_Battlegrounds[i].begin(); itr != m_Battlegrounds[i].end();)
+        itr = m_Battlegrounds[i].begin();
+        // skip updating battleground template
+        if (itr != m_Battlegrounds[i].end())
+            ++itr;
+        for (; itr != m_Battlegrounds[i].end(); itr = next)
         {
+            next = itr;
+            ++next;
             itr->second->Update(diff);
             // use the SetDeleteThis variable
             // direct deletion caused crashes
             if (itr->second->ToBeDeleted())
             {
                 Battleground* bg = itr->second;
-                m_Battlegrounds[i].erase(itr++);
+                m_Battlegrounds[i].erase(itr);
                 if (!m_ClientBattlegroundIds[i][bg->GetBracketId()].empty())
                     m_ClientBattlegroundIds[i][bg->GetBracketId()].erase(bg->GetClientInstanceID());
 
                 delete bg;
             }
-            else
-                ++itr;
         }
     }
 
     // update events timer
-    for (uint8 qtype = BATTLEGROUND_QUEUE_NONE; qtype < MAX_BATTLEGROUND_QUEUE_TYPES; ++qtype)
+    for (int qtype = BATTLEGROUND_QUEUE_NONE; qtype < MAX_BATTLEGROUND_QUEUE_TYPES; ++qtype)
         m_BattlegroundQueues[qtype].UpdateEvents(diff);
 
     // update scheduled queues
