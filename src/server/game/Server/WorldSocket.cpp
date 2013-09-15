@@ -1089,6 +1089,10 @@ int WorldSocket::HandlePing(WorldPacket& recvPacket)
     recvPacket >> ping;
     recvPacket >> latency;
 
+    WorldPacket packet(SMSG_PONG, 4);
+    packet << ping;
+    int packetSent = SendPacket(packet);
+
     if (m_LastPingTime == ACE_Time_Value::zero)
         m_LastPingTime = ACE_OS::gettimeofday(); // for 1st ping
     else
@@ -1141,7 +1145,5 @@ int WorldSocket::HandlePing(WorldPacket& recvPacket)
         }
     }
 
-    WorldPacket packet(SMSG_PONG, 4);
-    packet << ping;
-    return SendPacket(packet);
+    return packetSent;
 }
