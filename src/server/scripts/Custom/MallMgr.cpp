@@ -166,7 +166,7 @@ bool MallMgr::HandleGear(Player* player, Creature* creature, uint32 action)
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Relentless Gladiator", MALL_MENU_GEAR, MALL_GEAR_RELENTLESS_GLADIATOR);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Trial of the Crusader", MALL_MENU_GEAR, MALL_GEAR_TRIAL_OF_THE_CRUSADER);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Wrathful Gladiator", MALL_MENU_GEAR, MALL_GEAR_WRATHFUL_GLADIATOR);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Icecrown Citdel", MALL_MENU_GEAR, MALL_GEAR_ICECROWN_CITADEL);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Icecrown Citadel", MALL_MENU_GEAR, MALL_GEAR_ICECROWN_CITADEL);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Apparel", MALL_MENU_GEAR, MALL_GEAR_APPAREL);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
