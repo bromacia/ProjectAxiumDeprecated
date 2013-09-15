@@ -208,7 +208,7 @@ void WorldSession::QueuePacket(WorldPacket* new_packet)
 /// Logging helper for unexpected opcodes
 void WorldSession::LogUnexpectedOpcode(WorldPacket* packet, const char* status, const char *reason)
 {
-    sLog->outError("SESSION (account: %u, guidlow: %u, char: %s): received unexpected opcode %s (0x%.4X, status: %s) %s",
+    sLog->outDetail("SESSION (account: %u, guidlow: %u, char: %s): received unexpected opcode %s (0x%.4X, status: %s) %s",
         GetAccountId(), m_GUIDLow, _player ? _player->GetName() : "<none>",
         LookupOpcodeName(packet->GetOpcode()), packet->GetOpcode(), status, reason);
 }
