@@ -6358,9 +6358,12 @@ void Player::UpdateSkillsForLevel()
             /// maximize skill always
             if (alwaysMaxSkill)
             {
-                SetUInt32Value(valueIndex, MAKE_SKILL_VALUE(maxSkill, maxSkill));
-                if (itr->second.uState != SKILL_NEW)
-                    itr->second.uState = SKILL_CHANGED;
+                if (val != max)
+                {
+                    SetUInt32Value(valueIndex, MAKE_SKILL_VALUE(maxSkill, maxSkill));
+                    if (itr->second.uState != SKILL_NEW)
+                        itr->second.uState = SKILL_CHANGED;
+                }
             }
             else if (max != maxconfskill)                    /// update max skill value if current max skill not maximized
             {
@@ -6420,7 +6423,7 @@ void Player::SetSkill(uint16 id, uint16 step, uint16 newVal, uint16 maxVal)
             SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(itr->second.pos), MAKE_PAIR32(id, step));
             // update value
             SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(itr->second.pos), MAKE_SKILL_VALUE(newVal, maxVal));
-            if (itr->second.uState != SKILL_NEW)
+            if (itr->second.uState != SKILL_NEW && newVal != currVal)
                 itr->second.uState = SKILL_CHANGED;
             learnSkillRewardedSpells(id, newVal);
             // if skill value is going up, update enchantments after setting the new value
