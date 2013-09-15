@@ -57,8 +57,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
     }
 
     Player* sender = GetPlayer();
-	if (!sender)
-		return;
+    if (!sender)
+        return;
 
     //sLog->outDebug("CHAT: packet received. type %u, lang %u", type, lang);
 
