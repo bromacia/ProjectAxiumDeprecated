@@ -2480,6 +2480,11 @@ void Creature::SetLevitate(bool enable)
     SendMessageToSet(&data, true);
 }
 
+bool Creature::IsMallNPC() const
+{
+    return GetScriptName() == "MallNPC";
+}
+
 bool Creature::IsTransmogrifier() const
 {
     return GetScriptName() == "Transmogrifier";

@@ -24,7 +24,9 @@ enum MallOptions
 
     GEAR_OPTION_MAINSET,
     GEAR_OPTION_OFFSET,
-    GEAR_OPTION_ACCESSORIES,
+    GEAR_OPTION_NECKLACES,
+    GEAR_OPTION_CLOAKS,
+    GEAR_OPTION_RINGS,
     GEAR_OPTION_WEAPONS,
     GEAR_OPTION_TRINKETS,
 
@@ -42,30 +44,44 @@ enum MallOptions
     ENCHANT_OPTION_MAIN_HAND,
     ENCHANT_OPTION_OFF_HAND,
     ENCHANT_OPTION_RANGED,
+
+    GEM_OPTION_META,
+    GEM_OPTION_COLORED,
+    GEM_OPTION_DRAGONS_EYE,
 };
 
 enum InventoryListOption
 {
     INVENTORY_LIST_GENERAL_GOODS = 1,
-    INVENTORY_LIST_GEMS,
+    INVENTORY_LIST_META_GEMS,
+    INVENTORY_LIST_COLORED_GEMS,
+    INVENTORY_LIST_DRAGONS_EYE_GEMS,
     INVENTORY_LIST_MOUNTS,
     INVENTORY_LIST_GLYPHS,
-    INVENTORY_LIST_RELENTLESS_GLADIATOR_MAINSET,
-    INVENTORY_LIST_RELENTLESS_GLADIATOR_OFFSET,
-    INVENTORY_LIST_RELENTLESS_GLADIATOR_ACCESSORIES,
+    INVENTORY_LIST_RELENTLESS_GLADIATOR_MAINSETS,
+    INVENTORY_LIST_RELENTLESS_GLADIATOR_OFFSETS,
+    INVENTORY_LIST_RELENTLESS_GLADIATOR_NECKLACES,
+    INVENTORY_LIST_RELENTLESS_GLADIATOR_CLOAKS,
+    INVENTORY_LIST_RELENTLESS_GLADIATOR_RINGS,
     INVENTORY_LIST_RELENTLESS_GLADIATOR_WEAPONS,
-    INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSET,
-    INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_OFFSET,
-    INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_ACCESSORIES,
+    INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS,
+    INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_OFFSETS,
+    INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_NECKLACES,
+    INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_CLOAKS,
+    INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_RINGS,
     INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_WEAPONS,
     INVENTORY_LIST_245_TRINKETS,
-    INVENTORY_LIST_WRATHFUL_GLADIATOR_MAINSET,
-    INVENTORY_LIST_WRATHFUL_GLADIATOR_OFFSET,
-    INVENTORY_LIST_WRATHFUL_GLADIATOR_ACCESSORIES,
+    INVENTORY_LIST_WRATHFUL_GLADIATOR_MAINSETS,
+    INVENTORY_LIST_WRATHFUL_GLADIATOR_OFFSETS,
+    INVENTORY_LIST_WRATHFUL_GLADIATOR_NECKLACES,
+    INVENTORY_LIST_WRATHFUL_GLADIATOR_CLOAKS,
+    INVENTORY_LIST_WRATHFUL_GLADIATOR_RINGS,
     INVENTORY_LIST_WRATHFUL_GLADIATOR_WEAPONS,
-    INVENTORY_LIST_ICECROWN_CITADEL_MAINSET,
-    INVENTORY_LIST_ICECROWN_CITADEL_OFFSET,
-    INVENTORY_LIST_ICECROWN_CITADEL_ACCESSORIES,
+    INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS,
+    INVENTORY_LIST_ICECROWN_CITADEL_OFFSETS,
+    INVENTORY_LIST_ICECROWN_CITADEL_NECKLACES,
+    INVENTORY_LIST_ICECROWN_CITADEL_CLOAKS,
+    INVENTORY_LIST_ICECROWN_CITADEL_RINGS,
     INVENTORY_LIST_ICECROWN_CITADEL_WEAPONS,
     INVENTORY_LIST_264_TRINKETS,
     INVENTORY_LIST_APPAREL,
@@ -203,18 +219,19 @@ class MallMgr : public CreatureScript
         bool HandleGear(Player* player, Creature* creature, uint32 action);
         bool HandleProfessions(Player* player, Creature* creature);
         bool HandleEnchants(Player* player, Creature* creature, uint32 action);
+        bool HandleGems(Player* player, Creature* creature, uint32 action);
         bool HandleResetTalents(Player* player, Creature* creature);
         bool HandleLearnDualSpecialization(Player* player, Creature* creature);
         bool HandleSetupShadowDanceBar(Player* player, Creature* creature);
         bool HandleFinishShadowDanceBar(Player* player, Creature* creature);
-        bool ShowInventory(Player* player, Creature* creature, InventoryListOption option);
-        bool EnchantItem(Player* player, Creature* creature, EnchantId enchantId, MallOptions enchantOption);
-        bool LearnSkill(Player* player, Creature* creature, SkillType skill);
+        bool ShowInventory(Player* player, Creature* creature, uint32 action);
+        bool EnchantItem(Player* player, Creature* creature, uint16 enchantId, uint8 enchantOption);
+        bool LearnSkill(Player* player, Creature* creature, uint16 skill);
     private:
-        bool CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate, InventoryListOption option);
-        bool CheckSkill(Player* player, SkillType skill);
-        bool CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate, EnchantId enchantId, uint8 slot);
-        uint8 GetItemSlotByEnchantOption(MallOptions invType)
+        bool CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate, uint32 action);
+        bool CheckSkill(Player* player, uint16 skill);
+        bool CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate, uint16 enchantId, uint8 slot);
+        uint8 GetItemSlotByEnchantOption(uint8 invType)
         {
             switch (invType)
             {
@@ -235,41 +252,58 @@ class MallMgr : public CreatureScript
                 default:                       return EQUIPMENT_SLOT_END;
             }
         }
+        uint8 GetUsableArmorProficiencyByClass(uint8 Class)
+        {
+            switch (Class)
+            {
+                case CLASS_WARRIOR:      return ITEM_SUBCLASS_ARMOR_PLATE;
+                case CLASS_PALADIN:      return ITEM_SUBCLASS_ARMOR_PLATE;
+                case CLASS_DEATH_KNIGHT: return ITEM_SUBCLASS_ARMOR_PLATE;
+                case CLASS_HUNTER:       return ITEM_SUBCLASS_ARMOR_MAIL;
+                case CLASS_SHAMAN:       return ITEM_SUBCLASS_ARMOR_MAIL;
+                case CLASS_ROGUE:        return ITEM_SUBCLASS_ARMOR_LEATHER;
+                case CLASS_DRUID:        return ITEM_SUBCLASS_ARMOR_LEATHER;
+                case CLASS_PRIEST:       return ITEM_SUBCLASS_ARMOR_CLOTH;
+                case CLASS_MAGE:         return ITEM_SUBCLASS_ARMOR_CLOTH;
+                case CLASS_WARLOCK:      return ITEM_SUBCLASS_ARMOR_CLOTH;
+                default:                 return MAX_ITEM_SUBCLASS_ARMOR;
+            }
+        }
         std::string SlotToSlotString(uint8 slot)
         {
             switch (slot)
             {
-                case EQUIPMENT_SLOT_HEAD:      return "EQUIPMENT_SLOT_HEAD";
-                case EQUIPMENT_SLOT_SHOULDERS: return "EQUIPMENT_SLOT_SHOULDERS";
-                case EQUIPMENT_SLOT_CHEST:     return "EQUIPMENT_SLOT_CHEST";
-                case EQUIPMENT_SLOT_HANDS:     return "EQUIPMENT_SLOT_HANDS";
-                case EQUIPMENT_SLOT_LEGS:      return "EQUIPMENT_SLOT_LEGS";
-                case EQUIPMENT_SLOT_WRISTS:    return "EQUIPMENT_SLOT_WRISTS";
-                case EQUIPMENT_SLOT_WAIST:     return "EQUIPMENT_SLOT_WAIST";
-                case EQUIPMENT_SLOT_FEET:      return "EQUIPMENT_SLOT_FEET";
-                case EQUIPMENT_SLOT_BACK:      return "EQUIPMENT_SLOT_BACK";
-                case EQUIPMENT_SLOT_FINGER1:   return "EQUIPMENT_SLOT_FINGER1";
-                case EQUIPMENT_SLOT_FINGER2:   return "EQUIPMENT_SLOT_FINGER2";
-                case EQUIPMENT_SLOT_MAINHAND:  return "EQUIPMENT_SLOT_MAINHAND";
-                case EQUIPMENT_SLOT_OFFHAND:   return "EQUIPMENT_SLOT_OFFHAND";
-                case EQUIPMENT_SLOT_RANGED:    return "EQUIPMENT_SLOT_RANGED";
-                default: return "Error";
+                case EQUIPMENT_SLOT_HEAD:      return "head";
+                case EQUIPMENT_SLOT_SHOULDERS: return "shoulders";
+                case EQUIPMENT_SLOT_CHEST:     return "chest";
+                case EQUIPMENT_SLOT_HANDS:     return "hands";
+                case EQUIPMENT_SLOT_LEGS:      return "legs";
+                case EQUIPMENT_SLOT_WRISTS:    return "wrists";
+                case EQUIPMENT_SLOT_WAIST:     return "waist";
+                case EQUIPMENT_SLOT_FEET:      return "feet";
+                case EQUIPMENT_SLOT_BACK:      return "back";
+                case EQUIPMENT_SLOT_FINGER1:   return "finger1";
+                case EQUIPMENT_SLOT_FINGER2:   return "finger2";
+                case EQUIPMENT_SLOT_MAINHAND:  return "main hand";
+                case EQUIPMENT_SLOT_OFFHAND:   return "off hand";
+                case EQUIPMENT_SLOT_RANGED:    return "ranged";
+                default:                       return "error";
             }
         }
-        std::string SkillToSkillString(SkillType skill)
+        std::string SkillToSkillString(uint16 skill)
         {
             switch (skill)
             {
-                case SKILL_ALCHEMY:        return "SKILL_ALCHEMY";
-                case SKILL_BLACKSMITHING:  return "SKILL_BLACKSMITHING";
-                case SKILL_ENCHANTING:     return "SKILL_ENCHANTING";
-                case SKILL_ENGINEERING:    return "SKILL_ENGINEERING";
-                case SKILL_HERBALISM:      return "SKILL_HERBALISM";
-                case SKILL_INSCRIPTION:    return "SKILL_INSCRIPTION";
-                case SKILL_JEWELCRAFTING:  return "SKILL_JEWELCRAFTING";
-                case SKILL_LEATHERWORKING: return "SKILL_LEATHERWORKING";
-                case SKILL_TAILORING:      return "SKILL_TAILORING";
-                default: return "Error";
+                case SKILL_ALCHEMY:        return "Alchemy";
+                case SKILL_BLACKSMITHING:  return "Blacksmithing";
+                case SKILL_ENCHANTING:     return "Enchanting";
+                case SKILL_ENGINEERING:    return "Engineering";
+                case SKILL_HERBALISM:      return "Herbalism";
+                case SKILL_INSCRIPTION:    return "Inscription";
+                case SKILL_JEWELCRAFTING:  return "Jewelcrafting";
+                case SKILL_LEATHERWORKING: return "Leatherworking";
+                case SKILL_TAILORING:      return "Tailoring";
+                default:                   return "Error";
             }
         }
         bool IsPhraseInString(std::string stringToSearch, std::string searchPhrase)

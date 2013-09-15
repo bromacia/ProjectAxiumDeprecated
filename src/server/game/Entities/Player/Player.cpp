@@ -73,6 +73,7 @@
 #include "InstanceScript.h"
 #include <cmath>
 #include "AccountMgr.h"
+#include "../../../scripts/Custom/MallMgr.h"
 #include "../../../scripts/Custom/TransmogMgr.h"
 #include "../../../scripts/Custom/npc_class_trainer.cpp"
 
@@ -20909,12 +20910,12 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
     }
 
     VendorItem const* crItem = vItems->GetItem(vendorslot);
-    // store diff item (cheating)
-    if (!crItem || crItem->item != item)
-    {
-        SendBuyError(BUY_ERR_CANT_FIND_ITEM, creature, item, 0);
-        return false;
-    }
+    if (!creature->IsMallNPC())
+        if (!crItem || crItem->item != item)
+        {
+            SendBuyError(BUY_ERR_CANT_FIND_ITEM, creature, item, 0);
+            return false;
+        }
 
     // check current item amount if it limited
     if (crItem->maxcount != 0)

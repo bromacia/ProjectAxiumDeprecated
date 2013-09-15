@@ -41,7 +41,7 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
                 case MALL_MENU_GEAR:                HandleGear(player, creature, MALL_MENU_GEAR);                  break;
                 case MALL_MENU_PROFESSIONS:         HandleProfessions(player, creature);                           break;
                 case MALL_MENU_ENCHANTS:            HandleEnchants(player, creature, MALL_MENU_ENCHANTS);          break;
-                case MALL_MENU_GEMS:                ShowInventory(player, creature, INVENTORY_LIST_GEMS);          break;
+                case MALL_MENU_GEMS:                HandleGems(player, creature, MALL_MENU_GEMS);                  break;
                 case MALL_MENU_MOUNTS:              ShowInventory(player, creature, INVENTORY_LIST_MOUNTS);        break;
                 case MALL_MENU_GLYPHS:              ShowInventory(player, creature, INVENTORY_LIST_GLYPHS);        break;
                 case MALL_MENU_RESET_TALENTS:       HandleResetTalents(player, creature);                          break;
@@ -65,7 +65,7 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
         }
         case MALL_MENU_PROFESSIONS:
         {
-            LearnSkill(player, creature, (SkillType)action);
+            LearnSkill(player, creature, action);
             break;
         }
         case MALL_MENU_ENCHANTS:
@@ -73,15 +73,22 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
             HandleEnchants(player, creature, action);
             break;
         }
+        case MALL_MENU_GEMS:
+        {
+            HandleGems(player, creature, action);
+            break;
+        }
         case MALL_GEAR_RELENTLESS_GLADIATOR:
         {
             switch (action)
             {
-                case GEAR_OPTION_MAINSET:     ShowInventory(player, creature, INVENTORY_LIST_RELENTLESS_GLADIATOR_MAINSET);     break;
-                case GEAR_OPTION_OFFSET:      ShowInventory(player, creature, INVENTORY_LIST_RELENTLESS_GLADIATOR_OFFSET);      break;
-                case GEAR_OPTION_ACCESSORIES: ShowInventory(player, creature, INVENTORY_LIST_RELENTLESS_GLADIATOR_ACCESSORIES); break;
-                case GEAR_OPTION_WEAPONS:     ShowInventory(player, creature, INVENTORY_LIST_RELENTLESS_GLADIATOR_WEAPONS);     break;
-                case GEAR_OPTION_TRINKETS:    ShowInventory(player, creature, INVENTORY_LIST_245_TRINKETS);                     break;
+                case GEAR_OPTION_MAINSET:     ShowInventory(player, creature, INVENTORY_LIST_RELENTLESS_GLADIATOR_MAINSETS);  break;
+                case GEAR_OPTION_OFFSET:      ShowInventory(player, creature, INVENTORY_LIST_RELENTLESS_GLADIATOR_OFFSETS);   break;
+                case GEAR_OPTION_NECKLACES:   ShowInventory(player, creature, INVENTORY_LIST_RELENTLESS_GLADIATOR_NECKLACES); break;
+                case GEAR_OPTION_CLOAKS:      ShowInventory(player, creature, INVENTORY_LIST_RELENTLESS_GLADIATOR_CLOAKS);    break;
+                case GEAR_OPTION_RINGS:       ShowInventory(player, creature, INVENTORY_LIST_RELENTLESS_GLADIATOR_RINGS);     break;
+                case GEAR_OPTION_WEAPONS:     ShowInventory(player, creature, INVENTORY_LIST_RELENTLESS_GLADIATOR_WEAPONS);   break;
+                case GEAR_OPTION_TRINKETS:    ShowInventory(player, creature, INVENTORY_LIST_245_TRINKETS);                   break;
             }
             break;
         }
@@ -89,11 +96,13 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
         {
             switch (action)
             {
-                case GEAR_OPTION_MAINSET:     ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSET);     break;
-                case GEAR_OPTION_OFFSET:      ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_OFFSET);      break;
-                case GEAR_OPTION_ACCESSORIES: ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_ACCESSORIES); break;
-                case GEAR_OPTION_WEAPONS:     ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_WEAPONS);     break;
-                case GEAR_OPTION_TRINKETS:    ShowInventory(player, creature, INVENTORY_LIST_245_TRINKETS);                      break;
+                case GEAR_OPTION_MAINSET:     ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS);  break;
+                case GEAR_OPTION_OFFSET:      ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_OFFSETS);   break;
+                case GEAR_OPTION_NECKLACES:   ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_NECKLACES); break;
+                case GEAR_OPTION_CLOAKS:      ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_CLOAKS);    break;
+                case GEAR_OPTION_RINGS:       ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_RINGS);     break;
+                case GEAR_OPTION_WEAPONS:     ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_WEAPONS);   break;
+                case GEAR_OPTION_TRINKETS:    ShowInventory(player, creature, INVENTORY_LIST_245_TRINKETS);                    break;
             }
             break;
         }
@@ -101,11 +110,13 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
         {
             switch (action)
             {
-                case GEAR_OPTION_MAINSET:     ShowInventory(player, creature, INVENTORY_LIST_WRATHFUL_GLADIATOR_MAINSET);     break;
-                case GEAR_OPTION_OFFSET:      ShowInventory(player, creature, INVENTORY_LIST_WRATHFUL_GLADIATOR_OFFSET);      break;
-                case GEAR_OPTION_ACCESSORIES: ShowInventory(player, creature, INVENTORY_LIST_WRATHFUL_GLADIATOR_ACCESSORIES); break;
-                case GEAR_OPTION_WEAPONS:     ShowInventory(player, creature, INVENTORY_LIST_WRATHFUL_GLADIATOR_WEAPONS);     break;
-                case GEAR_OPTION_TRINKETS:    ShowInventory(player, creature, INVENTORY_LIST_264_TRINKETS);                   break;
+                case GEAR_OPTION_MAINSET:     ShowInventory(player, creature, INVENTORY_LIST_WRATHFUL_GLADIATOR_MAINSETS);  break;
+                case GEAR_OPTION_OFFSET:      ShowInventory(player, creature, INVENTORY_LIST_WRATHFUL_GLADIATOR_OFFSETS);   break;
+                case GEAR_OPTION_NECKLACES:   ShowInventory(player, creature, INVENTORY_LIST_WRATHFUL_GLADIATOR_NECKLACES); break;
+                case GEAR_OPTION_CLOAKS:      ShowInventory(player, creature, INVENTORY_LIST_WRATHFUL_GLADIATOR_CLOAKS);    break;
+                case GEAR_OPTION_RINGS:       ShowInventory(player, creature, INVENTORY_LIST_WRATHFUL_GLADIATOR_RINGS);     break;
+                case GEAR_OPTION_WEAPONS:     ShowInventory(player, creature, INVENTORY_LIST_WRATHFUL_GLADIATOR_WEAPONS);   break;
+                case GEAR_OPTION_TRINKETS:    ShowInventory(player, creature, INVENTORY_LIST_264_TRINKETS);                 break;
             }
             break;
         }
@@ -113,11 +124,13 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
         {
             switch (action)
             {
-                case GEAR_OPTION_MAINSET:     ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_MAINSET);     break;
-                case GEAR_OPTION_OFFSET:      ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_OFFSET);      break;
-                case GEAR_OPTION_ACCESSORIES: ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_ACCESSORIES); break;
-                case GEAR_OPTION_WEAPONS:     ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_WEAPONS);     break;
-                case GEAR_OPTION_TRINKETS:    ShowInventory(player, creature, INVENTORY_LIST_264_TRINKETS);                 break;
+                case GEAR_OPTION_MAINSET:     ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS);  break;
+                case GEAR_OPTION_OFFSET:      ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_OFFSETS);   break;
+                case GEAR_OPTION_NECKLACES:   ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_NECKLACES); break;
+                case GEAR_OPTION_CLOAKS:      ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_CLOAKS);    break;
+                case GEAR_OPTION_RINGS:       ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_RINGS);     break;
+                case GEAR_OPTION_WEAPONS:     ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_WEAPONS);   break;
+                case GEAR_OPTION_TRINKETS:    ShowInventory(player, creature, INVENTORY_LIST_264_TRINKETS);               break;
             }
             break;
         }
@@ -136,7 +149,7 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
         case ENCHANT_OPTION_OFF_HAND:
         case ENCHANT_OPTION_RANGED:
         {
-            EnchantItem(player, creature, (EnchantId)action, (MallOptions)sender);
+            EnchantItem(player, creature, action, sender);
             break;
         }
     }
@@ -161,9 +174,11 @@ bool MallMgr::HandleGear(Player* player, Creature* creature, uint32 action)
         }
         case MALL_GEAR_RELENTLESS_GLADIATOR:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mainset", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_MAINSET);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Offset", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_OFFSET);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Accessories", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_ACCESSORIES);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mainsets", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_MAINSET);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Offsets", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_OFFSET);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Necklaces", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_NECKLACES);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Cloaks", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_CLOAKS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Rings", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_RINGS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Weapons", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_WEAPONS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Trinkets", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_TRINKETS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_GEAR);
@@ -172,9 +187,11 @@ bool MallMgr::HandleGear(Player* player, Creature* creature, uint32 action)
         }
         case MALL_GEAR_TRIAL_OF_THE_CRUSADER:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mainset", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_MAINSET);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Offset", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_OFFSET);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Accessories", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_ACCESSORIES);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mainsets", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_MAINSET);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Offsets", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_OFFSET);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Necklaces", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_NECKLACES);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Cloaks", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_CLOAKS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Rings", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_RINGS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Weapons", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_WEAPONS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Trinkets", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_TRINKETS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_GEAR);
@@ -183,9 +200,11 @@ bool MallMgr::HandleGear(Player* player, Creature* creature, uint32 action)
         }
         case MALL_GEAR_WRATHFUL_GLADIATOR:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mainset", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_MAINSET);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Offset", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_OFFSET);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Accessories", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_ACCESSORIES);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mainsets", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_MAINSET);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Offsets", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_OFFSET);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Necklaces", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_NECKLACES);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Cloaks", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_CLOAKS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Rings", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_RINGS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Weapons", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_WEAPONS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Trinkets", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_TRINKETS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_GEAR);
@@ -194,9 +213,11 @@ bool MallMgr::HandleGear(Player* player, Creature* creature, uint32 action)
         }
         case MALL_GEAR_ICECROWN_CITADEL:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mainset", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_MAINSET);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Offset", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_OFFSET);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Accessories", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_ACCESSORIES);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mainsets", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_MAINSET);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Offsets", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_OFFSET);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Necklaces", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_NECKLACES);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Cloaks", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_CLOAKS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Rings", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_RINGS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Weapons", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_WEAPONS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Trinkets", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_TRINKETS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_GEAR);
@@ -265,7 +286,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_HEAD");
+                handler->PSendSysMessage("You have no item equipped in your head slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -285,7 +306,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_SHOULDERS);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_SHOULDERS");
+                handler->PSendSysMessage("You have no item equipped in your shoulder slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -312,7 +333,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_CHEST);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_CHEST");
+                handler->PSendSysMessage("You have no item equipped in your chest slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -329,7 +350,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HANDS);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_HANDS");
+                handler->PSendSysMessage("You have no item equipped in your hands slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -357,7 +378,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_LEGS);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_LEGS");
+                handler->PSendSysMessage("You have no item equipped in your legs slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -376,7 +397,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_WRISTS);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_WRISTS");
+                handler->PSendSysMessage("You have no item equipped in your wrists slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -407,16 +428,12 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_WAIST);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_WAIST");
+                handler->PSendSysMessage("You have no item equipped in your waist slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
 
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Eternal Belt Buckle", ENCHANT_OPTION_BELT, ENCHANT_BELT_ETERNAL_BELT_BUCKLE);
-
-            if (player->GetSkillValue(SKILL_ENGINEERING) == 450)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Frag Belt", ENCHANT_OPTION_BELT, ENCHANT_BELT_FRAG_BELT);
-
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_ENCHANTS);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
@@ -426,7 +443,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FEET);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_FEET");
+                handler->PSendSysMessage("You have no item equipped in your feet slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -448,7 +465,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_BACK);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_BACK");
+                handler->PSendSysMessage("You have no item equipped in your back slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -480,7 +497,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FINGER2);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_FINGER1");
+                handler->PSendSysMessage("You have no item equipped in your finger1 slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -500,7 +517,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FINGER2);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_FINGER2");
+                handler->PSendSysMessage("You have no item equipped in your finger2 slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -520,7 +537,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_MAINHAND");
+                handler->PSendSysMessage("You have no item equipped in your main hand slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -528,7 +545,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             const ItemTemplate* pItemTemplate = pItem->GetTemplate();
             if (!pItemTemplate)
             {
-                handler->PSendSysMessage("Unable to get item template for item in slot: EQUIPMENT_SLOT_MAINHAND");
+                handler->PSendSysMessage("Unable to get template data for the item in your main hand slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -577,7 +594,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_OFFHAND");
+                handler->PSendSysMessage("You have no item equipped in your off hand slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -585,7 +602,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             const ItemTemplate* pItemTemplate = pItem->GetTemplate();
             if (!pItemTemplate)
             {
-                handler->PSendSysMessage("Unable to get item template for item in slot: EQUIPMENT_SLOT_OFFHAND");
+                handler->PSendSysMessage("Unable to get template data for the item in your off hand slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -641,7 +658,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
             if (!pItem)
             {
-                handler->PSendSysMessage("Unable to get data for item in slot: EQUIPMENT_SLOT_RANGED");
+                handler->PSendSysMessage("You have no item equipped in your ranged slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -654,6 +671,39 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             break;
         }
     }
+    return true;
+}
+
+bool MallMgr::HandleGems(Player* player, Creature* creature, uint32 action)
+{
+    switch (action)
+    {
+        case MALL_MENU_GEMS:
+        {
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Meta Gems", MALL_MENU_GEMS, GEM_OPTION_META);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Colored Gems", MALL_MENU_GEMS, GEM_OPTION_COLORED);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Dragon's Eye Gems", MALL_MENU_GEMS, GEM_OPTION_DRAGONS_EYE);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
+            player->SEND_GOSSIP_MENU(1, creature->GetGUID());
+            break;
+        }
+        case GEM_OPTION_META:
+        {
+            ShowInventory(player, creature, INVENTORY_LIST_META_GEMS);
+            break;
+        }
+        case GEM_OPTION_COLORED:
+        {
+            ShowInventory(player, creature, INVENTORY_LIST_COLORED_GEMS);
+            break;
+        }
+        case GEM_OPTION_DRAGONS_EYE:
+        {
+            ShowInventory(player, creature, INVENTORY_LIST_DRAGONS_EYE_GEMS);
+            break;
+        }
+    }
+
     return true;
 }
 
@@ -704,7 +754,7 @@ bool MallMgr::HandleFinishShadowDanceBar(Player* player, Creature* creature)
     return true;
 }
 
-bool MallMgr::ShowInventory(Player* player, Creature* creature, InventoryListOption option)
+bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 action)
 {
     ChatHandler* handler = new ChatHandler(player);
     const VendorItemData* items = creature->GetVendorItems();
@@ -731,7 +781,7 @@ bool MallMgr::ShowInventory(Player* player, Creature* creature, InventoryListOpt
         {
             if (const ItemTemplate* vItemTemplate = sObjectMgr->GetItemTemplate(vItem->item))
             {
-                if (!CheckVendorItem(player, vItemTemplate, option))
+                if (!CheckVendorItem(player, vItemTemplate, action))
                     continue;
 
                 ++count;
@@ -759,13 +809,13 @@ bool MallMgr::ShowInventory(Player* player, Creature* creature, InventoryListOpt
     return true;
 }
 
-bool MallMgr::EnchantItem(Player* player, Creature* creature, EnchantId enchantId, MallOptions enchantOption)
+bool MallMgr::EnchantItem(Player* player, Creature* creature, uint16 enchantId, uint8 enchantOption)
 {
     ChatHandler* handler = new ChatHandler(player);
     uint8 slot = GetItemSlotByEnchantOption(enchantOption);
     if (slot > EQUIPMENT_SLOT_RANGED)
     {
-        handler->PSendSysMessage("Unable to find item slot based on enchant option: %u", (uint8)enchantOption);
+        handler->PSendSysMessage("Unable to find item slot based on enchant option: %u", enchantOption);
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
@@ -773,7 +823,7 @@ bool MallMgr::EnchantItem(Player* player, Creature* creature, EnchantId enchantI
     Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
     if (!pItem)
     {
-        handler->PSendSysMessage("Unable to get data for item in slot: %s", SlotToSlotString(slot));
+        handler->PSendSysMessage("You have no item equipped in your %s slot", SlotToSlotString(slot));
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
@@ -781,7 +831,7 @@ bool MallMgr::EnchantItem(Player* player, Creature* creature, EnchantId enchantI
     const ItemTemplate* pItemTemplate = pItem->GetTemplate();
     if (!pItemTemplate)
     {
-        handler->PSendSysMessage("Unable to get item template for item in slot: %s", SlotToSlotString(slot));
+        handler->PSendSysMessage("Unable to get template data for the item in your %s slot", SlotToSlotString(slot));
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
@@ -818,7 +868,7 @@ bool MallMgr::EnchantItem(Player* player, Creature* creature, EnchantId enchantI
             if (!addSocket)
             {
                 handler->PSendSysMessage("Unable to add socket to %s because enchant: %u doesn't have enchant entry type: ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET",
-                pItemTemplate->Name1.c_str(), (uint8)enchantId);
+                pItemTemplate->Name1.c_str(), enchantId);
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -840,11 +890,12 @@ bool MallMgr::EnchantItem(Player* player, Creature* creature, EnchantId enchantI
     }
 
     player->CastSpell(player, 61335); // Disenchant Visual
-    player->CLOSE_GOSSIP_MENU();
+    player->PlayerTalkClass->ClearMenus();
+    HandleEnchants(player, creature, MALL_MENU_ENCHANTS);
     return true;
 }
 
-bool MallMgr::LearnSkill(Player* player, Creature* creature, SkillType skill)
+bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
 {
     ChatHandler* handler = new ChatHandler(player);
 
@@ -896,18 +947,22 @@ bool MallMgr::LearnSkill(Player* player, Creature* creature, SkillType skill)
     return true;
 }
 
-bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate, InventoryListOption option)
+bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate, uint32 action)
 {
     // Faction specific items
     if ((vItemTemplate->Flags2 == ITEM_FLAGS_EXTRA_ALLIANCE_ONLY && player->GetTeam() == HORDE) ||
         (vItemTemplate->Flags2 == ITEM_FLAGS_EXTRA_HORDE_ONLY && player->GetTeam() == ALLIANCE))
         return false;
 
+    // Race specific items
+    if (!(vItemTemplate->AllowableRace & player->getRaceMask()))
+        return false;
+
     // Class specific items
     if (!(vItemTemplate->AllowableClass & player->getClassMask()))
         return false;
 
-    switch (option)
+    switch (action)
     {
         case INVENTORY_LIST_GENERAL_GOODS:
         {
@@ -920,18 +975,60 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
                 vItemTemplate->Class != ITEM_CLASS_MISC)
                 return false;
 
-            break;
-        }
-        case INVENTORY_LIST_GEMS:
-        {
-            if (vItemTemplate->Class != ITEM_CLASS_GEM)
+            if (vItemTemplate->Class == ITEM_CLASS_MISC && vItemTemplate->SubClass == ITEM_SUBCLASS_JUNK_MOUNT)
                 return false;
 
             break;
         }
+        case INVENTORY_LIST_META_GEMS:
+        {
+            if (vItemTemplate->Class != ITEM_CLASS_GEM)
+                return false;
+
+            if (vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_META)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_COLORED_GEMS:
+        {
+            if (vItemTemplate->Class != ITEM_CLASS_GEM)
+                return false;
+
+            if (IsPhraseInString(vItemTemplate->Name1, "Dragon's Eye"))
+                return false;
+
+            if (vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_RED &&
+                vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_YELLOW &&
+                vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_BLUE &&
+                vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_ORANGE &&
+                vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_GREEN &&
+                vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_PURPLE &&
+                vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_PRISMATIC)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_DRAGONS_EYE_GEMS:
+        {
+            if (player->GetSkillValue(SKILL_JEWELCRAFTING) != 450)
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_GEM)
+                return false;
+
+            if (!IsPhraseInString(vItemTemplate->Name1, "Dragon's Eye"))
+                return false;
+
+            break;
+        }
+
         case INVENTORY_LIST_MOUNTS:
         {
-            if (vItemTemplate->Class == ITEM_CLASS_MISC && vItemTemplate->SubClass != ITEM_SUBCLASS_JUNK_MOUNT)
+            if (vItemTemplate->Class != ITEM_CLASS_MISC)
+                return false;
+
+            if (vItemTemplate->SubClass != ITEM_SUBCLASS_JUNK_MOUNT)
                 return false;
 
             break;
@@ -943,9 +1040,15 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_RELENTLESS_GLADIATOR_MAINSET:
+        case INVENTORY_LIST_RELENTLESS_GLADIATOR_MAINSETS:
         {
-            if (!IsPhraseInString(vItemTemplate->Name1, "Relentless"))
+            if (!IsPhraseInString(vItemTemplate->Name1, "Relentless") && !IsPhraseInString(vItemTemplate->Name1, "Titan-Forged"))
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != GetUsableArmorProficiencyByClass(player->getClass()))
                 return false;
 
             if (vItemTemplate->InventoryType != INVTYPE_HEAD &&
@@ -957,9 +1060,15 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_RELENTLESS_GLADIATOR_OFFSET:
+        case INVENTORY_LIST_RELENTLESS_GLADIATOR_OFFSETS:
         {
             if (!IsPhraseInString(vItemTemplate->Name1, "Relentless"))
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != GetUsableArmorProficiencyByClass(player->getClass()))
                 return false;
 
             if (vItemTemplate->InventoryType != INVTYPE_WRISTS &&
@@ -969,14 +1078,32 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_RELENTLESS_GLADIATOR_ACCESSORIES:
+        case INVENTORY_LIST_RELENTLESS_GLADIATOR_NECKLACES:
+        {
+            if (!IsPhraseInString(vItemTemplate->Name1, "Relentless") && !IsPhraseInString(vItemTemplate->Name1, "Titan-Forged"))
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_NECK)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_RELENTLESS_GLADIATOR_CLOAKS:
+        {
+            if (!IsPhraseInString(vItemTemplate->Name1, "Relentless") && !IsPhraseInString(vItemTemplate->Name1, "Titan-Forged"))
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_CLOAK)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_RELENTLESS_GLADIATOR_RINGS:
         {
             if (!IsPhraseInString(vItemTemplate->Name1, "Relentless"))
                 return false;
 
-            if (vItemTemplate->InventoryType != INVTYPE_NECK &&
-                vItemTemplate->InventoryType != INVTYPE_CLOAK &&
-                vItemTemplate->InventoryType != INVTYPE_CLOAK)
+            if (vItemTemplate->InventoryType != INVTYPE_FINGER)
                 return false;
 
             break;
@@ -1000,9 +1127,15 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSET:
+        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS:
         {
             if (IsPhraseInString(vItemTemplate->Name1, "Relentless") || vItemTemplate->ItemLevel != 245)
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != GetUsableArmorProficiencyByClass(player->getClass()))
                 return false;
 
             if (vItemTemplate->InventoryType != INVTYPE_HEAD &&
@@ -1014,9 +1147,15 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_OFFSET:
+        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_OFFSETS:
         {
             if (IsPhraseInString(vItemTemplate->Name1, "Relentless") || vItemTemplate->ItemLevel != 245)
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != GetUsableArmorProficiencyByClass(player->getClass()))
                 return false;
 
             if (vItemTemplate->InventoryType != INVTYPE_WRISTS &&
@@ -1026,17 +1165,35 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_ACCESSORIES:
+        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_NECKLACES:
+        {
+            if (IsPhraseInString(vItemTemplate->Name1, "Relentless") || IsPhraseInString(vItemTemplate->Name1, "Titan-Forged") || vItemTemplate->ItemLevel != 245)
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_NECK)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_CLOAKS:
+        {
+            if (IsPhraseInString(vItemTemplate->Name1, "Relentless") || IsPhraseInString(vItemTemplate->Name1, "Titan-Forged") || vItemTemplate->ItemLevel != 245)
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_CLOAK)
+                return false;
+
+            break;
+        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_RINGS:
         {
             if (IsPhraseInString(vItemTemplate->Name1, "Relentless") || vItemTemplate->ItemLevel != 245)
                 return false;
 
-            if (vItemTemplate->InventoryType != INVTYPE_NECK &&
-                vItemTemplate->InventoryType != INVTYPE_CLOAK &&
-                vItemTemplate->InventoryType != INVTYPE_CLOAK)
+            if (vItemTemplate->InventoryType != INVTYPE_FINGER)
                 return false;
 
             break;
+        }
         }
         case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_WEAPONS:
         {
@@ -1064,9 +1221,15 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_WRATHFUL_GLADIATOR_MAINSET:
+        case INVENTORY_LIST_WRATHFUL_GLADIATOR_MAINSETS:
         {
             if (!IsPhraseInString(vItemTemplate->Name1, "Wrathful"))
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != GetUsableArmorProficiencyByClass(player->getClass()))
                 return false;
 
             if (vItemTemplate->InventoryType != INVTYPE_HEAD &&
@@ -1078,9 +1241,15 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_WRATHFUL_GLADIATOR_OFFSET:
+        case INVENTORY_LIST_WRATHFUL_GLADIATOR_OFFSETS:
         {
             if (!IsPhraseInString(vItemTemplate->Name1, "Wrathful"))
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != GetUsableArmorProficiencyByClass(player->getClass()))
                 return false;
 
             if (vItemTemplate->InventoryType != INVTYPE_WRISTS &&
@@ -1090,14 +1259,32 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_WRATHFUL_GLADIATOR_ACCESSORIES:
+        case INVENTORY_LIST_WRATHFUL_GLADIATOR_NECKLACES:
         {
             if (!IsPhraseInString(vItemTemplate->Name1, "Wrathful"))
                 return false;
 
-            if (vItemTemplate->InventoryType != INVTYPE_NECK &&
-                vItemTemplate->InventoryType != INVTYPE_CLOAK &&
-                vItemTemplate->InventoryType != INVTYPE_CLOAK)
+            if (vItemTemplate->InventoryType != INVTYPE_NECK)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_WRATHFUL_GLADIATOR_CLOAKS:
+        {
+            if (!IsPhraseInString(vItemTemplate->Name1, "Wrathful"))
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_CLOAK)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_WRATHFUL_GLADIATOR_RINGS:
+        {
+            if (!IsPhraseInString(vItemTemplate->Name1, "Wrathful"))
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_FINGER)
                 return false;
 
             break;
@@ -1121,9 +1308,15 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_ICECROWN_CITADEL_MAINSET:
+        case INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS:
         {
             if (IsPhraseInString(vItemTemplate->Name1, "Wrathful") || vItemTemplate->ItemLevel != 264)
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != GetUsableArmorProficiencyByClass(player->getClass()))
                 return false;
 
             if (vItemTemplate->InventoryType != INVTYPE_HEAD &&
@@ -1135,9 +1328,15 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_ICECROWN_CITADEL_OFFSET:
+        case INVENTORY_LIST_ICECROWN_CITADEL_OFFSETS:
         {
             if (IsPhraseInString(vItemTemplate->Name1, "Wrathful") || vItemTemplate->ItemLevel != 264)
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != GetUsableArmorProficiencyByClass(player->getClass()))
                 return false;
 
             if (vItemTemplate->InventoryType != INVTYPE_WRISTS &&
@@ -1147,14 +1346,32 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_ICECROWN_CITADEL_ACCESSORIES:
+        case INVENTORY_LIST_ICECROWN_CITADEL_NECKLACES:
         {
             if (IsPhraseInString(vItemTemplate->Name1, "Wrathful") || vItemTemplate->ItemLevel != 264)
                 return false;
 
-            if (vItemTemplate->InventoryType != INVTYPE_NECK &&
-                vItemTemplate->InventoryType != INVTYPE_CLOAK &&
-                vItemTemplate->InventoryType != INVTYPE_CLOAK)
+            if (vItemTemplate->InventoryType != INVTYPE_NECK)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_ICECROWN_CITADEL_CLOAKS:
+        {
+            if (IsPhraseInString(vItemTemplate->Name1, "Wrathful") || vItemTemplate->ItemLevel != 264)
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_CLOAK)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_ICECROWN_CITADEL_RINGS:
+        {
+            if (IsPhraseInString(vItemTemplate->Name1, "Wrathful") || (vItemTemplate->ItemLevel != 264 && vItemTemplate->ItemLevel != 268))
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_FINGER)
                 return false;
 
             break;
@@ -1197,7 +1414,7 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
     return true;
 }
 
-bool MallMgr::CheckSkill(Player* player, SkillType skill)
+bool MallMgr::CheckSkill(Player* player, uint16 skill)
 {
     uint8 skillCount = 0;
 
@@ -1245,7 +1462,7 @@ bool MallMgr::CheckSkill(Player* player, SkillType skill)
     return true;
 }
 
-bool MallMgr::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate, EnchantId enchantId, uint8 slot)
+bool MallMgr::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate, uint16 enchantId, uint8 slot)
 {
     switch (slot)
     {
