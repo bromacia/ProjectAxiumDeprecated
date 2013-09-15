@@ -2005,7 +2005,6 @@ class Player : public Unit, public GridObject<Player>
         void SendMessageToSetInRange(WorldPacket* data, float dist, bool self, bool own_team_only);
         void SendMessageToSet(WorldPacket* data, Player const* skipped_rcvr);
 
-        void SendTeleportPacket(Position &oldPos);
         void SendTeleportAckPacket();
 
         Corpse* GetCorpse() const;
