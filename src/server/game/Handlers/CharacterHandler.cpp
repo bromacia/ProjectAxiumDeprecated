@@ -1662,7 +1662,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     {
         WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
         data << uint8(CHAR_NAME_RESERVED);
-        SendPacket (&data);
+        SendPacket(&data);
         return;
     }
 
@@ -1682,7 +1682,10 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     Player::Customize(guid, gender, skin, face, hairStyle, hairColor, facialHair);
     SQLTransaction trans = CharacterDatabase.BeginTransaction();
     trans->PAppend("UPDATE `characters` SET name='%s', race='%u', at_login=at_login & ~ %u WHERE guid='%u'", newname.c_str(), race, used_loginFlag, lowGuid);
-    trans->PAppend("DELETE FROM character_declinedname WHERE guid ='%u'", lowGuid);
+
+    if (sWorld->getBoolConfig(CONFIG_DECLINED_NAMES_USED))
+        trans->PAppend("DELETE FROM character_declinedname WHERE guid ='%u'", lowGuid);
+
     sWorld->UpdateCharacterNameData(GUID_LOPART(guid), newname, gender, race);
 
     BattlegroundTeamId team = BG_TEAM_ALLIANCE;
@@ -1711,18 +1714,18 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
         trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 98, 300, 300)", lowGuid);
         switch (race)
         {
-        case RACE_DWARF:
-            trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 111, 300, 300)", lowGuid);
-            break;
-        case RACE_DRAENEI:
-            trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 759, 300, 300)", lowGuid);
-            break;
-        case RACE_GNOME:
-            trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 313, 300, 300)", lowGuid);
-            break;
-        case RACE_NIGHTELF:
-            trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 113, 300, 300)", lowGuid);
-            break;
+            case RACE_DWARF:
+                trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 111, 300, 300)", lowGuid);
+                break;
+            case RACE_DRAENEI:
+                trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 759, 300, 300)", lowGuid);
+                break;
+            case RACE_GNOME:
+                trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 313, 300, 300)", lowGuid);
+                break;
+            case RACE_NIGHTELF:
+                trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 113, 300, 300)", lowGuid);
+                break;
         }
     }
     else if (team == BG_TEAM_HORDE)
@@ -1730,69 +1733,23 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
         trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 109, 300, 300)", lowGuid);
         switch (race)
         {
-        case RACE_UNDEAD_PLAYER:
-            trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 673, 300, 300)", lowGuid);
-            break;
-        case RACE_TAUREN:
-            trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 115, 300, 300)", lowGuid);
-            break;
-        case RACE_TROLL:
-            trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 315, 300, 300)", lowGuid);
-            break;
-        case RACE_BLOODELF:
-            trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 137, 300, 300)", lowGuid);
-            break;
+            case RACE_UNDEAD_PLAYER:
+                trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 673, 300, 300)", lowGuid);
+                break;
+            case RACE_TAUREN:
+                trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 115, 300, 300)", lowGuid);
+                break;
+            case RACE_TROLL:
+                trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 315, 300, 300)", lowGuid);
+                break;
+            case RACE_BLOODELF:
+                trans->PAppend("INSERT INTO `character_skills` (guid, skill, value, max) VALUES (%u, 137, 300, 300)", lowGuid);
+                break;
         }
     }
 
     if (recv_data.GetOpcode() == CMSG_CHAR_FACTION_CHANGE)
     {
-        // Delete all Flypaths
-        trans->PAppend("UPDATE `characters` SET taxi_path = '' WHERE guid ='%u'", lowGuid);
-
-        if (level > 7)
-        {
-            // Update Taxi path
-            // this doesn't seem to be 100% blizzlike... but it can't really be helped.
-            std::ostringstream taximaskstream;
-            uint32 numFullTaximasks = level / 7;
-            if (numFullTaximasks > 11)
-                numFullTaximasks = 11;
-            if (team == BG_TEAM_ALLIANCE)
-            {
-                if (playerClass != CLASS_DEATH_KNIGHT)
-                {
-                    for (uint8 i = 0; i < numFullTaximasks; ++i)
-                        taximaskstream << uint32(sAllianceTaxiNodesMask[i]) << ' ';
-                }
-                else
-                {
-                    for (uint8 i = 0; i < numFullTaximasks; ++i)
-                        taximaskstream << uint32(sAllianceTaxiNodesMask[i] | sDeathKnightTaxiNodesMask[i]) << ' ';
-                }
-            }
-            else
-            {
-                if (playerClass != CLASS_DEATH_KNIGHT)
-                {
-                    for (uint8 i = 0; i < numFullTaximasks; ++i)
-                        taximaskstream << uint32(sHordeTaxiNodesMask[i]) << ' ';
-                }
-                else
-                {
-                    for (uint8 i = 0; i < numFullTaximasks; ++i)
-                        taximaskstream << uint32(sHordeTaxiNodesMask[i] | sDeathKnightTaxiNodesMask[i]) << ' ';
-                }
-            }
-
-            uint32 numEmptyTaximasks = 11 - numFullTaximasks;
-            for (uint8 i = 0; i < numEmptyTaximasks; ++i)
-                taximaskstream << "0 ";
-            taximaskstream << '0';
-            std::string taximask = taximaskstream.str();
-            trans->PAppend("UPDATE `characters` SET `taximask`= '%s' WHERE `guid` = '%u'", taximask.c_str(), lowGuid);
-        }
-
         // Delete all current quests
         trans->PAppend("DELETE FROM `character_queststatus` WHERE guid ='%u'", GUID_LOPART(guid));
 
@@ -1843,7 +1800,6 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
             trans->PAppend("DELETE FROM `character_social` WHERE `guid`= '%u'", lowGuid);
             trans->PAppend("DELETE FROM `character_social` WHERE `friend`= '%u'", lowGuid);
         }
-
 
         // Reset homebind and position
         PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_PLAYER_HOMEBIND);
