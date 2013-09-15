@@ -1011,7 +1011,7 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
         }
         case INVENTORY_LIST_DRAGONS_EYE_GEMS:
         {
-            if (player->GetSkillValue(SKILL_JEWELCRAFTING) != 450)
+            if (player->GetSkillValue(SKILL_JEWELCRAFTING) < 450)
                 return false;
 
             if (vItemTemplate->Class != ITEM_CLASS_GEM)
@@ -1197,7 +1197,9 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
         }
         case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_WEAPONS:
         {
-            if (IsPhraseInString(vItemTemplate->Name1, "Relentless") || (vItemTemplate->ItemLevel != 245 && vItemTemplate->ItemLevel != 258))
+            if (IsPhraseInString(vItemTemplate->Name1, "Relentless") ||
+                (vItemTemplate->ItemLevel != 226 && vItemTemplate->ItemLevel != 232 &&
+                vItemTemplate->ItemLevel != 245 && vItemTemplate->ItemLevel != 258))
                 return false;
 
             if (vItemTemplate->InventoryType != INVTYPE_WEAPON &&
@@ -1464,6 +1466,330 @@ bool MallMgr::CheckSkill(Player* player, uint16 skill)
 
 bool MallMgr::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate, uint16 enchantId, uint8 slot)
 {
+    switch (enchantId)
+    {
+        case ENCHANT_HEAD_ARCANUM_OF_TRIUMPH:
+        case ENCHANT_HEAD_ARCANUM_OF_DOMINANCE:
+        case ENCHANT_HEAD_ARCANUM_OF_TORMENT:
+        case ENCHANT_HEAD_ARCANUM_OF_BURNING_MYSTERIES:
+        case ENCHANT_HEAD_ARCANUM_OF_BLISSFUL_MENDING:
+        case ENCHANT_HEAD_ARCANUM_OF_THE_STALWART_PROTECTOR:
+        case ENCHANT_HEAD_MIND_AMPLIFICATION_DISH:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_CLOTH &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_MAIL &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_HEAD)
+                return false;
+
+            break;
+        }
+        case ENCHANT_SHOULDER_INSCRIPTION_OF_TRIUMPH:
+        case ENCHANT_SHOULDER_INSCRIPTION_OF_DOMINANCE:
+        case ENCHANT_SHOULDER_GREATER_INSCRIPTION_OF_THE_AXE:
+        case ENCHANT_SHOULDER_GREATER_INSCRIPTION_OF_THE_STORM:
+        case ENCHANT_SHOULDER_GREATER_INSCRIPTION_OF_THE_CRAG:
+        case ENCHANT_SHOULDER_GREATER_INSCRIPTION_OF_THE_PINNACLE:
+        case ENCHANT_SHOULDERS_MASTERS_INSCRIPTION_OF_THE_AXE:
+        case ENCHANT_SHOULDERS_MASTERS_INSCRIPTION_OF_THE_STORM:
+        case ENCHANT_SHOULDERS_MASTERS_INSCRIPTION_OF_THE_CRAG:
+        case ENCHANT_SHOULDERS_MASTERS_INSCRIPTION_OF_THE_PINNACLE:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_CLOTH &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_MAIL &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_SHOULDERS)
+                return false;
+
+            break;
+        }
+        case ENCHANT_CHEST_EXCEPTIONAL_RESILIENCE:
+        case ENCHANT_CHEST_POWERFUL_STATS:
+        case ENCHANT_CHEST_SUPER_HEALTH:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_CLOTH &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_MAIL &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_CHEST)
+                return false;
+
+            break;
+        }
+        case ENCHANT_GLOVES_CRUSHER:
+        case ENCHANT_GLOVES_EXCEPTIONAL_SPELLPOWER:
+        case ENCHANT_GLOVES_MAJOR_AGILITY:
+        case ENCHANT_GLOVES_PERCISION:
+        case ENCHANT_GLOVES_SOCKET:
+        case ENCHANT_GLOVES_HAND_MOUNTED_PRYO_ROCKET:
+        case ENCHANT_GLOVES_HYPERSPEED_ACCELERATORS:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_CLOTH &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_MAIL &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_HANDS)
+                return false;
+
+            break;
+        }
+        case ENCHANT_LEGS_ICESCALE_LEG_ARMOR:
+        case ENCHANT_LEGS_SAPPHIRE_SPELLTHREAD:
+        case ENCHANT_LEGS_BRILLIANT_SPELLTHREAD:
+        case ENCHANT_LEGS_FROSTHIDE_LEG_ARMOR:
+        case ENCHANT_LEGS_EARTHEN_LEG_ARMOR:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_CLOTH &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_MAIL &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_LEGS)
+                return false;
+
+            break;
+        }
+        case ENCHANT_BRACERS_GREATER_ASSAULT:
+        case ENCHANT_BRACERS_SUPERIOR_SPELLPOWER:
+        case ENCHANT_BRACERS_EXCEPTIONAL_INTELLECT:
+        case ENCHANT_BRACERS_MAJOR_SPIRIT:
+        case ENCHANT_BRACERS_MAJOR_STAMINA:
+        case ENCHANT_BRACER_SOCKET:
+        case ENCHANT_BRACER_FUR_LINING_ATTACKPOWER:
+        case ENCHANT_BRACER_FUR_LINING_SPELLPOWER:
+        case ENCHANT_BRACER_FUR_LINING_AGILITY:
+        case ENCHANT_BRACER_FUR_LINING_STAMINA:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_CLOTH &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_MAIL &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_WRISTS)
+                return false;
+
+            break;
+        }
+        case ENCHANT_BELT_ETERNAL_BELT_BUCKLE:
+        case ENCHANT_BELT_FRAG_BELT:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_CLOTH &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_MAIL &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_WAIST)
+                return false;
+
+            break;
+        }
+        case ENCHANT_BOOTS_GREATER_ASSULT:
+        case ENCHANT_BOOTS_SUPERIOR_AGILITY:
+        case ENCHANT_BOOTS_ICEWALKER:
+        case ENCHANT_BOOTS_TUSKARR_VITALITY:
+        case ENCHANT_BOOTS_NITRO_BOOSTS:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_CLOTH &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_MAIL &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_FEET)
+                return false;
+
+            break;
+        }
+        case ENCHANT_CLOAK_SPELL_PIERCING:
+        case ENCHANT_CLOAK_MAJOR_AGILITY:
+        case ENCHANT_CLOAK_GREATER_SPEED:
+        case ENCHANT_CLOAK_SHADOW_ARMOR:
+        case ENCHANT_CLOAK_FLEXWEAVE_UNDERLAY:
+        case ENCHANT_CLOAK_SPRINGY_ARACHNOWEAVE:
+        case ENCHANT_CLOAK_SWORDGUARD_EMBROIDERY:
+        case ENCHANT_CLOAK_LIGHTWEAVE_EMBROIDERY:
+        case ENCHANT_CLOAK_DARKGLOW_EMBROIDERY:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_CLOTH)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_CLOAK)
+                return false;
+
+            break;
+        }
+        case ENCHANT_2H_WEAPON_MASSACRE:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_WEAPON)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_AXE2 &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_MACE2 &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_SWORD2 &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_POLEARM &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_STAFF &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_AXE2 &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_AXE2 &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_AXE2 &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_AXE2)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_2HWEAPON)
+                return false;
+
+            break;
+        }
+        case ENCHANT_STAFF_GREATER_SPELLPOWER:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_WEAPON)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_STAFF)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_2HWEAPON)
+                return false;
+
+            break;
+        }
+        case ENCHANT_WEAPON_BERSERKING:
+        case ENCHANT_WEAPON_BLACK_MAGIC:
+        case ENCHANT_WEAPON_BLOOD_DRAINING:
+        case ENCHANT_WEAPON_BLADE_WARDING:
+        case ENCHANT_WEAPON_TITANIUM_WEAPON_CHAIN:
+        case ENCHANT_WEAPON_SUPERIOR_POTENCY:
+        case ENCHANT_WEAPON_MIGHTY_SPELLPOWER:
+        case ENCHANT_WEAPON_EXCEPTIONAL_AGILITY:
+        case ENCHANT_WEAPON_EXCEPTIONAL_SPIRIT:
+        case ENCHANT_WEAPON_TITANGUARD:
+        case ENCHANT_WEAPON_ACCURACY:
+        case ENCHANT_WEAPON_MONGOOSE:
+        case ENCHANT_WEAPON_EXECUTIONER:
+        case ENCHANT_WEAPON_DEATHFROST:
+        case ENCHANT_WEAPON_FALLEN_CRUSADER:
+        case ENCHANT_WEAPON_CINDERGLACIER:
+        case ENCHANT_WEAPON_RAZORICE:
+        case ENCHANT_WEAPON_LICHBANE:
+        case ENCHANT_WEAPON_SPELLBREAKING:
+        case ENCHANT_WEAPON_SPELLSHATTERING:
+        case ENCHANT_WEAPON_SWORDBREAKING:
+        case ENCHANT_WEAPON_SWORDSHATTERING:
+        case ENCHANT_WEAPON_NERUBIAN_CARAPACE:
+        case ENCHANT_WEAPON_STONESKIN_GARGOYLE:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_WEAPON)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_AXE &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_AXE2 &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_MACE &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_MACE2 &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_POLEARM &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_SWORD &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_SWORD2 &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_STAFF &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_FIST &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_DAGGER)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_2HWEAPON &&
+                pItemTemplate->InventoryType != INVTYPE_WEAPON &&
+                pItemTemplate->InventoryType != INVTYPE_WEAPONMAINHAND &&
+                pItemTemplate->InventoryType != INVTYPE_WEAPONOFFHAND)
+                return false;
+
+            break;
+        }
+        case ENCHANT_RANGED_HEARTSEEKER_SCOPE:
+        case ENCHANT_RANGED_SUN_SCOPE:
+        case ENCHANT_RANGED_DIAMOND_CUT_REFRACTOR_SCOPE:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_WEAPON)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_BOW &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_GUN &&
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_CROSSBOW)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_RANGED &&
+                pItemTemplate->InventoryType != INVTYPE_RANGEDRIGHT)
+                return false;
+
+            break;
+        }
+        case ENCHANT_SHIELD_TITANIUM_PLATING:
+        case ENCHANT_SHIELD_GREATER_INTELLECT:
+        case ENCHANT_SHIELD_RESILIENCE:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_SHIELD)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_SHIELD)
+                return false;
+
+            break;
+        }
+        case ENCHANT_RING_ASSAULT:
+        case ENCHANT_RING_GREATER_SPELLPOWER:
+        case ENCHANT_RING_STAMINA:
+        {
+            if (pItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (pItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_MISC)
+                return false;
+
+            if (pItemTemplate->InventoryType != INVTYPE_FINGER)
+                return false;
+
+            break;
+        }
+    }
+
     switch (slot)
     {
         case EQUIPMENT_SLOT_HEAD:
@@ -1656,7 +1982,7 @@ bool MallMgr::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate
         case ENCHANT_GLOVES_SOCKET:
         case ENCHANT_BRACER_SOCKET:
         {
-            if (player->GetSkillValue(SKILL_BLACKSMITHING) != 450)
+            if (player->GetSkillValue(SKILL_BLACKSMITHING) < 450)
                 return false;
 
             break;
@@ -1665,7 +1991,7 @@ bool MallMgr::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate
         case ENCHANT_RING_GREATER_SPELLPOWER:
         case ENCHANT_RING_STAMINA:
         {
-            if (player->GetSkillValue(SKILL_ENCHANTING) != 450)
+            if (player->GetSkillValue(SKILL_ENCHANTING) < 450)
                 return false;
 
             break;
@@ -1678,7 +2004,7 @@ bool MallMgr::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate
         case ENCHANT_CLOAK_FLEXWEAVE_UNDERLAY:
         case ENCHANT_CLOAK_SPRINGY_ARACHNOWEAVE:
         {
-            if (player->GetSkillValue(SKILL_ENGINEERING) != 450)
+            if (player->GetSkillValue(SKILL_ENGINEERING) < 450)
                 return false;
 
             for (uint8 i = 0; i < MAX_ITEM_SPELLS; ++i)
@@ -1692,7 +2018,7 @@ bool MallMgr::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate
         case ENCHANT_SHOULDERS_MASTERS_INSCRIPTION_OF_THE_CRAG:
         case ENCHANT_SHOULDERS_MASTERS_INSCRIPTION_OF_THE_PINNACLE:
         {
-            if (player->GetSkillValue(SKILL_INSCRIPTION) != 450)
+            if (player->GetSkillValue(SKILL_INSCRIPTION) < 450)
                 return false;
 
             break;
@@ -1702,7 +2028,7 @@ bool MallMgr::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate
         case ENCHANT_BRACER_FUR_LINING_AGILITY:
         case ENCHANT_BRACER_FUR_LINING_STAMINA:
         {
-            if (player->GetSkillValue(SKILL_LEATHERWORKING) != 450)
+            if (player->GetSkillValue(SKILL_LEATHERWORKING) < 450)
                 return false;
 
             break;
@@ -1711,7 +2037,7 @@ bool MallMgr::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate
         case ENCHANT_CLOAK_LIGHTWEAVE_EMBROIDERY: 
         case ENCHANT_CLOAK_DARKGLOW_EMBROIDERY:
         {
-            if (player->GetSkillValue(SKILL_TAILORING) != 450)
+            if (player->GetSkillValue(SKILL_TAILORING) < 450)
                 return false;
 
             break;
