@@ -4301,8 +4301,6 @@ void Player::_LoadSpellCooldowns(PreparedQueryResult result)
 
 void Player::_SaveSpellCooldowns(SQLTransaction& trans)
 {
-    trans->PAppend("DELETE FROM character_spell_cooldown WHERE guid = '%u'", GetGUIDLow());
-
     time_t curTime = time(NULL);
     time_t infTime = curTime + infinityCooldownDelayCheck;
 
@@ -4318,6 +4316,7 @@ void Player::_SaveSpellCooldowns(SQLTransaction& trans)
         {
             if (first_round)
             {
+                trans->PAppend("DELETE FROM character_spell_cooldown WHERE guid = '%u'", GetGUIDLow());
                 ss << "INSERT INTO character_spell_cooldown (guid, spell, item, time) VALUES ";
                 first_round = false;
             }
