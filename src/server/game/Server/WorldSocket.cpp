@@ -710,7 +710,7 @@ int WorldSocket::ProcessIncoming (WorldPacket* new_pct)
     if (m_Session)
     {
         time_t now = time(NULL);
-        if (now - m_Session->m_lastPacketCountCheck >= 1) // Check every 5 seconds
+        if (now - m_Session->m_lastPacketCountCheck >= 1) // Check every second
         {
             if (m_Session->m_lastPacketCount >= 2000)
             {
@@ -742,6 +742,15 @@ int WorldSocket::ProcessIncoming (WorldPacket* new_pct)
                 sLog->outStaticDebug ("CMSG_KEEP_ALIVE, size: " UI64FMTD, uint64(new_pct->size()));
                 sScriptMgr->OnPacketReceive(this, WorldPacket(*new_pct));
                 return 0;
+			case CMSG_MESSAGECHAT:
+				if (m_Session)
+                {
+                    m_Session->ResetTimeOutTime();
+					m_Session->HandleMessagechatOpcode(WorldPacket(*new_pct));
+
+					sScriptMgr->OnPacketReceive(this, WorldPacket(*new_pct));
+				}
+				return 0;
             case MSG_MOVE_START_FORWARD:
             case MSG_MOVE_START_BACKWARD:
             case MSG_MOVE_STOP:
