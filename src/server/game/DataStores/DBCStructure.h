@@ -534,9 +534,21 @@ struct AreaTableEntry
     {
         if (mapid == 609)
             return true;
-        if (ID == 85 || ID == 3565 || ID == 3766)
+
+        // Tirisfal Glades, Boha'mu Ruins
+        if (ID == 85 || ID == 3668)
             return true;
+
         return (flags & AREA_FLAG_SANCTUARY);
+    }
+
+    bool IsNoFlyZone() const
+    {
+        // Zangarmarsh
+        if (mapid == 3521)
+            return true;
+
+        return (flags & AREA_FLAG_NO_FLY_ZONE);
     }
 };
 

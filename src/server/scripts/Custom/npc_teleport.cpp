@@ -27,10 +27,7 @@ class npc_teleport : public CreatureScript
             switch (action)
             {
                 case TELEPORT_MALL:
-                    if (player->GetTeam() == ALLIANCE)
-                        player->TeleportTo(530, -213.4f, 5489.9f, 21.9f, 4.5f);
-                    else
-                        player->TeleportTo(530, 1007.7f, 7375.2f, 36.3f, 2.0f);
+                    player->TeleportTo(530, -389.221f, 7257.6f, 54.774f, 3.0f);
                     break;
                 case TELEPORT_DUEL:
                     player->TeleportTo(0, 1976.650024f, 2546.169922f, 131.251999f, 4.738480f);

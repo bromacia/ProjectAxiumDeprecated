@@ -4717,7 +4717,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                     unitTarget->GetPosition(x, y, z);
                     uint32 areaFlag = unitTarget->GetBaseMap()->GetAreaFlag(x, y, z);
                     AreaTableEntry const* pArea = sAreaStore.LookupEntry(areaFlag);
-                    if (!pArea || (canFly && (pArea->flags & AREA_FLAG_NO_FLY_ZONE)))
+                    if (!pArea || (canFly && pArea->IsNoFlyZone()))
                         canFly = false;
 
                     switch (unitTarget->ToPlayer()->GetBaseSkillValue(SKILL_RIDING))
@@ -4762,7 +4762,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                     unitTarget->GetPosition(x, y, z);
                     uint32 areaFlag = unitTarget->GetBaseMap()->GetAreaFlag(x, y, z);
                     AreaTableEntry const* pArea = sAreaStore.LookupEntry(areaFlag);
-                    if (!pArea || (canFly && (pArea->flags & AREA_FLAG_NO_FLY_ZONE)))
+                    if (!pArea || (canFly && pArea->IsNoFlyZone()))
                         canFly = false;
 
                     switch (unitTarget->ToPlayer()->GetBaseSkillValue(SKILL_RIDING))
@@ -5107,7 +5107,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                     unitTarget->GetPosition(x, y, z);
                     uint32 areaFlag = unitTarget->GetBaseMap()->GetAreaFlag(x, y, z);
                     AreaTableEntry const* pArea = sAreaStore.LookupEntry(areaFlag);
-                    if (!pArea || (canFly && (pArea->flags & AREA_FLAG_NO_FLY_ZONE)))
+                    if (!pArea || (canFly && pArea->IsNoFlyZone()))
                         canFly = false;
 
                     switch (unitTarget->ToPlayer()->GetBaseSkillValue(SKILL_RIDING))
@@ -5153,7 +5153,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                     unitTarget->GetPosition(x, y, z);
                     uint32 areaFlag = unitTarget->GetBaseMap()->GetAreaFlag(x, y, z);
                     AreaTableEntry const* pArea = sAreaStore.LookupEntry(areaFlag);
-                    if (!pArea || (canFly && (pArea->flags & AREA_FLAG_NO_FLY_ZONE)))
+                    if (!pArea || (canFly && pArea->IsNoFlyZone()))
                         canFly = false;
 
                     switch (unitTarget->ToPlayer()->GetBaseSkillValue(SKILL_RIDING))
@@ -5198,7 +5198,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                     unitTarget->GetPosition(x, y, z);
                     uint32 areaFlag = unitTarget->GetBaseMap()->GetAreaFlag(x, y, z);
                     AreaTableEntry const* pArea = sAreaStore.LookupEntry(areaFlag);
-                    if (!pArea || (canFly && (pArea->flags & AREA_FLAG_NO_FLY_ZONE)))
+                    if (!pArea || (canFly && pArea->IsNoFlyZone()))
                         canFly = false;
 
                     switch (unitTarget->ToPlayer()->GetBaseSkillValue(SKILL_RIDING))
@@ -5243,7 +5243,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                     unitTarget->GetPosition(x, y, z);
                     uint32 areaFlag = unitTarget->GetBaseMap()->GetAreaFlag(x, y, z);
                     AreaTableEntry const* pArea = sAreaStore.LookupEntry(areaFlag);
-                    if (!pArea || (canFly && (pArea->flags & AREA_FLAG_NO_FLY_ZONE)))
+                    if (!pArea || (canFly && pArea->IsNoFlyZone()))
                         canFly = false;
 
                     switch (unitTarget->ToPlayer()->GetBaseSkillValue(SKILL_RIDING))
