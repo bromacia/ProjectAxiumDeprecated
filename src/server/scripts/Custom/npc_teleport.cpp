@@ -30,7 +30,7 @@ class npc_teleport : public CreatureScript
                     player->TeleportTo(530, -389.221f, 7257.6f, 54.774f, 3.0f);
                     break;
                 case TELEPORT_DUEL:
-                    player->TeleportTo(0, 1976.650024f, 2546.169922f, 131.251999f, 4.738480f);
+                    player->TeleportTo(603, 72.9814f, 47.8922f, 409.802f, 4.7f);
                     break;
             }
             return true;

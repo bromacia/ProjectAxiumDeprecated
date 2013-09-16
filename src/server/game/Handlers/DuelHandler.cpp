@@ -63,7 +63,7 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 
         bool reset = false;
 
-        if (players[0]->GetAreaId() == 85 || players[1]->GetAreaId() == 85)
+        if (players[0]->IsInDuelingZone() || players[1]->IsInDuelingZone())
             reset = true;
 
         if (reset)

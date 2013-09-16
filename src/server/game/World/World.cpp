@@ -1408,6 +1408,9 @@ void World::SetInitialWorldSettings()
     LoadDBCStores(m_dataPath);
     DetectDBCLang();
 
+    sLog->outString("Loading map and area dbc data corrections...");
+    sMapMgr->LoadDbcDataCorrections();
+
     sLog->outString("Loading spell dbc data corrections...");
     sSpellMgr->LoadDbcDataCorrections();
 

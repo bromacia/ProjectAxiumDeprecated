@@ -90,7 +90,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
         _player->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
         _player->ResurrectPlayer(1.0f);
         _player->SpawnCorpseBones();
-        _player->TeleportTo(0, 1976.65f, 2546.16f, 131.25f, 4.7f);
+        _player->TeleportTo(603, 72.9814f, 47.8922f, 409.802f, 4.7f);
         return;
     }
     else if (_player->InBattleground() || _player->InArena())

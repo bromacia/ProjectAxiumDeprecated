@@ -448,6 +448,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
             case 572: // Ruins of Lordaeron
                 UnderMapValueZ = 5.0f;
                 break;
+            case 603: // Ulduar (Dueling Zone)
+                UnderMapValueZ = 350.0f;
+                break;
             default:
                 UnderMapValueZ = -500.0f;
                 break;
@@ -455,9 +458,22 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
         if (movementInfo.pos.GetPositionZ() < UnderMapValueZ)
         {
-            if (!(plMover->InBattleground()
-                && plMover->GetBattleground()
-                && plMover->GetBattleground()->HandlePlayerUnderMap(_player)))
+            if (plMover->IsInWorldPvPZone())
+            {
+                plMover->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
+                plMover->ResurrectPlayer(1.0f);
+                plMover->SpawnCorpseBones();
+                plMover->CastSpell(plMover, 30231, true);
+                plMover->TeleportTo(530, -388.62f, 7257.59f, 54.77f, 6.2f);
+            }
+            else if (plMover->IsInDuelingZone())
+            {
+                plMover->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
+                plMover->ResurrectPlayer(1.0f);
+                plMover->SpawnCorpseBones();
+                plMover->TeleportTo(603, 72.9814f, 47.8922f, 409.802f, 4.7f);
+            }
+            else if (!(plMover->InBattleground() && plMover->GetBattleground() && plMover->GetBattleground()->HandlePlayerUnderMap(_player)))
             {
                 // NOTE: this is actually called many times while falling
                 // even after the player has been teleported away

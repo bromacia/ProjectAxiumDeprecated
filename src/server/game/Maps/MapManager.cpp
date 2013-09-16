@@ -441,3 +441,69 @@ void MapManager::FreeInstanceId(uint32 instanceId)
 
     _instanceIds[instanceId] = false;
 }
+
+void MapManager::LoadDbcDataCorrections()
+{
+    uint32 oldMSTime = getMSTime();
+
+    MapEntry* mapInfo = NULL;
+    for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
+    {
+        mapInfo = (MapEntry*)sMapStore.LookupEntry(i);
+        if (!mapInfo)
+            continue;
+
+        switch (mapInfo->MapID)
+        {
+            case 603: // Ulduar (Duel Zone)
+                mapInfo->map_type = MAP_COMMON;
+                break;
+            default:
+                break;
+        }
+    }
+
+    AreaTableEntry* areaInfo = NULL;
+    for (uint32 i = 0; i < sAreaStore.GetNumRows(); ++i)
+    {
+        areaInfo = (AreaTableEntry*)sAreaStore.LookupEntry(i);
+        if (!areaInfo)
+            continue;
+
+        switch (areaInfo->mapid)
+        {
+            case 603: // Ulduar (Duel Zone)
+                areaInfo->flags = (AREA_FLAG_ALLOW_DUELS | AREA_FLAG_SANCTUARY);
+                break;
+            case 609: // Ebon Hold
+                areaInfo->flags |= AREA_FLAG_SANCTUARY;
+                break;
+            default:
+                break;
+        }
+
+        switch (areaInfo->zone)
+        {
+            case 3521: // Zangarmarsh (World PvP Zone)
+                areaInfo->flags = (AREA_FLAG_OUTLAND | AREA_FLAG_OUTDOOR_PVP | AREA_FLAG_CONTESTED_AREA | AREA_FLAG_NO_FLY_ZONE);
+                break;
+            default:
+                break;
+        }
+
+        switch (areaInfo->ID)
+        {
+            case 3521: // Zangarmarsh (World PvP Zone)
+                areaInfo->flags = (AREA_FLAG_OUTLAND | AREA_FLAG_OUTDOOR_PVP | AREA_FLAG_CONTESTED_AREA | AREA_FLAG_NO_FLY_ZONE);
+                break;
+            case 3668: // Boha'mu Ruins (Mall)
+                areaInfo->flags = (AREA_FLAG_CAPITAL | AREA_FLAG_OUTLAND | AREA_FLAG_SANCTUARY | AREA_FLAG_NO_FLY_ZONE);
+                break;
+            default:
+                break;
+        }
+    }
+
+    sLog->outString(">> Loading map and area dbc data corrections in %u ms", GetMSTimeDiffToNow(oldMSTime));
+    sLog->outString();
+}
