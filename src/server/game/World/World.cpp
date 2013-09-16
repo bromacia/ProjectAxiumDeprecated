@@ -2008,7 +2008,7 @@ void World::Update(uint32 diff)
     }
 
     ///- Update the different timers
-    for (int i = 0; i < WUPDATE_COUNT; ++i)
+    for (uint8 i = 0; i < WUPDATE_COUNT; ++i)
     {
         if (m_timers[i].GetCurrent() >= 0)
             m_timers[i].Update(diff);
