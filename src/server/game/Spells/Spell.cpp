@@ -3183,16 +3183,6 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
     if (m_caster->GetTypeId() == TYPEID_PLAYER)
         m_caster->ToPlayer()->SetSpellModTakingSpell(this, false);
 
-    // Custom Cast Times
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
-    {
-        if ((m_spellInfo->Effects[i].Effect == SPELL_EFFECT_ENCHANT_ITEM || // Enchants
-            m_spellInfo->Effects[i].Effect == SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC || // Enhancements
-            m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH) || // Glyphs
-            m_caster->HasAura(32727) || m_caster->HasAura(44521)) // Arena Preparation & Preparation
-            m_casttime = 0;
-    }
-
     // don't allow channeled spells / spells with cast time to be casted while moving
     // (even if they are interrupted on moving, spells with almost immediate effect get to have their effect processed before movement interrupter kicks in)
     if ((m_spellInfo->IsChanneled() || m_casttime) && m_caster->GetTypeId() == TYPEID_PLAYER && m_caster->isMoving() && m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT)
