@@ -16847,7 +16847,7 @@ void Unit::RemoveCharmedBy(Unit* charmer)
         {
             creature->AIM_Initialize();
 
-            if (creature->AI() && charmer && charmer->isAlive())
+            if (creature->AI() && charmer && charmer->isAlive() && !creature->isPet())
                 creature->AI()->AttackStart(charmer);
         }
     }

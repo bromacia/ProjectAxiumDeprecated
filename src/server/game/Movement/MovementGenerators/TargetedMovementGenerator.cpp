@@ -148,6 +148,9 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
         return true;
     }
 
+    if (owner.HasUnitState(UNIT_STATE_POSSESSED))
+        return false;
+
     // prevent crash after creature killed pet
     if (static_cast<D*>(this)->_lostTarget(owner))
     {
