@@ -25,6 +25,7 @@ public:
             { "restoreviewpoint", SEC_GAMEMASTER,     false, &HandleRestoreViewpointCommand,          "", NULL },
             { "getspeedrate",     SEC_GAMEMASTER,     false, &HandleGetSpeedRateCommand,              "", NULL },
             { "getmoveflags",     SEC_GAMEMASTER,     false, &HandleGetMoveFlagsCommand,              "", NULL },
+            { "getunitstate",     SEC_GAMEMASTER,     false, &HandleGetUnitStateCommand,              "", NULL },
             { "itemid",           SEC_GAMEMASTER,     false, &HandleItemIdCommand,                    "", NULL },
             { "spellid",          SEC_GAMEMASTER,     false, &HandleSpellIdCommand,                   "", NULL },
             { "coeff",            SEC_GAMEMASTER,     false, &HandleCoeffCommand,                     "", NULL },
@@ -483,7 +484,7 @@ public:
             target = handler->GetSession()->GetPlayer();
         uint32 moveFlags = target->m_movementInfo.GetMovementFlags();
 
-        handler->PSendSysMessage("Target: %s has movementflags:", target->GetName());
+        handler->PSendSysMessage("Target: %s has movementflag(s):", target->GetName());
 
         if (!moveFlags)
         {
@@ -583,6 +584,122 @@ public:
 
         if (moveFlags & MOVEMENTFLAG_HOVER)
             handler->PSendSysMessage("MOVEMENTFLAG_HOVER");
+
+        return true;
+    }
+
+    static bool HandleGetUnitStateCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Unit* target = handler->getSelectedUnit();
+        if (!target)
+            target = handler->GetSession()->GetPlayer();
+
+        handler->PSendSysMessage("Target: %s has unit state(s):", target->GetName());
+
+        if (target->HasUnitState(UNIT_STATE_DIED))
+            handler->PSendSysMessage("UNIT_STATE_DIED");
+
+        if (target->HasUnitState(UNIT_STATE_MELEE_ATTACKING))
+            handler->PSendSysMessage("UNIT_STATE_MELEE_ATTACKING");
+
+        if (target->HasUnitState(UNIT_STATE_STUNNED))
+            handler->PSendSysMessage("UNIT_STATE_STUNNED");
+
+        if (target->HasUnitState(UNIT_STATE_ROAMING))
+            handler->PSendSysMessage("UNIT_STATE_ROAMING");
+
+        if (target->HasUnitState(UNIT_STATE_CHASE))
+            handler->PSendSysMessage("UNIT_STATE_CHASE");
+
+        if (target->HasUnitState(UNIT_STATE_FLEEING))
+            handler->PSendSysMessage("UNIT_STATE_FLEEING");
+
+        if (target->HasUnitState(UNIT_STATE_IN_FLIGHT))
+            handler->PSendSysMessage("UNIT_STATE_IN_FLIGHT");
+
+        if (target->HasUnitState(UNIT_STATE_FOLLOW))
+            handler->PSendSysMessage("UNIT_STATE_FOLLOW");
+
+        if (target->HasUnitState(UNIT_STATE_ROOT))
+            handler->PSendSysMessage("UNIT_STATE_ROOT");
+
+        if (target->HasUnitState(UNIT_STATE_CONFUSED))
+            handler->PSendSysMessage("UNIT_STATE_CONFUSED");
+
+        if (target->HasUnitState(UNIT_STATE_DISTRACTED))
+            handler->PSendSysMessage("UNIT_STATE_DISTRACTED");
+
+        if (target->HasUnitState(UNIT_STATE_ISOLATED))
+            handler->PSendSysMessage("UNIT_STATE_ISOLATED");
+
+        if (target->HasUnitState(UNIT_STATE_ATTACK_PLAYER))
+            handler->PSendSysMessage("UNIT_STATE_ATTACK_PLAYER");
+
+        if (target->HasUnitState(UNIT_STATE_CASTING))
+            handler->PSendSysMessage("UNIT_STATE_CASTING");
+
+        if (target->HasUnitState(UNIT_STATE_POSSESSED))
+            handler->PSendSysMessage("UNIT_STATE_POSSESSED");
+
+        if (target->HasUnitState(UNIT_STATE_CHARGING))
+            handler->PSendSysMessage("UNIT_STATE_CHARGING");
+
+        if (target->HasUnitState(UNIT_STATE_JUMPING))
+            handler->PSendSysMessage("UNIT_STATE_JUMPING");
+
+        if (target->HasUnitState(UNIT_STATE_ONVEHICLE))
+            handler->PSendSysMessage("UNIT_STATE_ONVEHICLE");
+
+        if (target->HasUnitState(UNIT_STATE_MOVE))
+            handler->PSendSysMessage("UNIT_STATE_MOVE");
+
+        if (target->HasUnitState(UNIT_STATE_ROTATING))
+            handler->PSendSysMessage("UNIT_STATE_ROTATING");
+
+        if (target->HasUnitState(UNIT_STATE_EVADE))
+            handler->PSendSysMessage("UNIT_STATE_EVADE");
+
+        if (target->HasUnitState(UNIT_STATE_ROAMING_MOVE))
+            handler->PSendSysMessage("UNIT_STATE_ROAMING_MOVE");
+
+        if (target->HasUnitState(UNIT_STATE_CONFUSED_MOVE))
+            handler->PSendSysMessage("UNIT_STATE_CONFUSED_MOVE");
+
+        if (target->HasUnitState(UNIT_STATE_FLEEING_MOVE))
+            handler->PSendSysMessage("UNIT_STATE_FLEEING_MOVE");
+
+        if (target->HasUnitState(UNIT_STATE_CHASE_MOVE))
+            handler->PSendSysMessage("UNIT_STATE_CHASE_MOVE");
+
+        if (target->HasUnitState(UNIT_STATE_FOLLOW_MOVE))
+            handler->PSendSysMessage("UNIT_STATE_FOLLOW_MOVE");
+
+        if (target->HasUnitState(UNIT_STATE_IGNORE_PATHFINDING))
+            handler->PSendSysMessage("UNIT_STATE_IGNORE_PATHFINDING");
+
+        if (target->HasUnitState(UNIT_STATE_UNATTACKABLE))
+            handler->PSendSysMessage("UNIT_STATE_UNATTACKABLE");
+
+        if (target->HasUnitState(UNIT_STATE_MOVING))
+            handler->PSendSysMessage("UNIT_STATE_MOVING");
+
+        if (target->HasUnitState(UNIT_STATE_CONTROLLED))
+            handler->PSendSysMessage("UNIT_STATE_CONTROLLED");
+
+        if (target->HasUnitState(UNIT_STATE_LOST_CONTROL))
+            handler->PSendSysMessage("UNIT_STATE_LOST_CONTROL");
+
+        if (target->HasUnitState(UNIT_STATE_SIGHTLESS))
+            handler->PSendSysMessage("UNIT_STATE_SIGHTLESS");
+
+        if (target->HasUnitState(UNIT_STATE_CANNOT_AUTOATTACK))
+            handler->PSendSysMessage("UNIT_STATE_CANNOT_AUTOATTACK");
+
+        if (target->HasUnitState(UNIT_STATE_CANNOT_TURN))
+            handler->PSendSysMessage("UNIT_STATE_CANNOT_TURN");
+
+        if (target->HasUnitState(UNIT_STATE_NOT_MOVE))
+            handler->PSendSysMessage("UNIT_STATE_NOT_MOVE");
 
         return true;
     }
