@@ -9992,9 +9992,7 @@ void Unit::SetMinion(Minion *minion, bool apply)
         }
 
         if (minion->m_Properties && minion->m_Properties->Type == SUMMON_TYPE_MINIPET)
-        {
             SetCritterGUID(minion->GetGUID());
-        }
 
         // PvP, FFAPvP
         minion->SetByteValue(UNIT_FIELD_BYTES_2, 1, GetByteValue(UNIT_FIELD_BYTES_2, 1));
@@ -10040,14 +10038,14 @@ void Unit::SetMinion(Minion *minion, bool apply)
         else if (minion->isTotem())
         {
             // All summoned by totem minions must disappear when it is removed.
-        if (SpellInfo const* spInfo = sSpellMgr->GetSpellInfo(minion->ToTotem()->GetSpell()))
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            {
-                if (spInfo->Effects[i].Effect != SPELL_EFFECT_SUMMON)
-                    continue;
+            if (SpellInfo const* spInfo = sSpellMgr->GetSpellInfo(minion->ToTotem()->GetSpell()))
+                for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                {
+                    if (spInfo->Effects[i].Effect != SPELL_EFFECT_SUMMON)
+                        continue;
 
-                RemoveAllMinionsByEntry(spInfo->Effects[i].MiscValue);
-            }
+                    RemoveAllMinionsByEntry(spInfo->Effects[i].MiscValue);
+                }
         }
 
         if (GetTypeId() == TYPEID_PLAYER)
@@ -10062,39 +10060,41 @@ void Unit::SetMinion(Minion *minion, bool apply)
         {
             if (RemoveUInt64Value(UNIT_FIELD_SUMMON, minion->GetGUID()))
             {
-                // Check if there is another minion
-                for (ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
+            }
+
+            // Check if there is another minion
+            for (ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
+            {
+                // do not use this check, creature do not have charm guid
+                //if (GetCharmGUID() == (*itr)->GetGUID())
+                if (GetGUID() == (*itr)->GetCharmerGUID())
+                    continue;
+
+                //ASSERT((*itr)->GetOwnerGUID() == GetGUID());
+                if ((*itr)->GetOwnerGUID() != GetGUID())
                 {
-                    // do not use this check, creature do not have charm guid
-                    //if (GetCharmGUID() == (*itr)->GetGUID())
-                    if (GetGUID() == (*itr)->GetCharmerGUID())
-                        continue;
-
-                    //ASSERT((*itr)->GetOwnerGUID() == GetGUID());
-                    if ((*itr)->GetOwnerGUID() != GetGUID())
-                    {
-                        OutDebugInfo();
-                        (*itr)->OutDebugInfo();
-                        ASSERT(false);
-                    }
-                    ASSERT((*itr)->GetTypeId() == TYPEID_UNIT);
-
-                    if (!(*itr)->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN))
-                        continue;
-
-                    if (AddUInt64Value(UNIT_FIELD_SUMMON, (*itr)->GetGUID()))
-                    {
-                        // show another pet bar if there is no charm bar
-                        if (GetTypeId() == TYPEID_PLAYER && !GetCharmGUID())
-                        {
-                            if ((*itr)->isPet())
-                                ToPlayer()->PetSpellInitialize();
-                            else
-                                ToPlayer()->CharmSpellInitialize();
-                        }
-                    }
-                    break;
+                    OutDebugInfo();
+                    (*itr)->OutDebugInfo();
+                    ASSERT(false);
                 }
+                ASSERT((*itr)->GetTypeId() == TYPEID_UNIT);
+
+                if (!(*itr)->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN))
+                    continue;
+
+                if (AddUInt64Value(UNIT_FIELD_SUMMON, (*itr)->GetGUID()))
+                {
+                }
+
+                // show another pet bar if there is no charm bar
+                if (GetTypeId() == TYPEID_PLAYER && !GetCharmGUID())
+                {
+                    if ((*itr)->isPet())
+                        ToPlayer()->PetSpellInitialize();
+                    else
+                        ToPlayer()->CharmSpellInitialize();
+                }
+                break;
             }
         }
     }
