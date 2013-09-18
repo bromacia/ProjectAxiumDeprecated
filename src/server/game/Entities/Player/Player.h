@@ -2656,6 +2656,8 @@ class Player : public Unit, public GridObject<Player>
         uint16 Get5v5GamesLifetime() { return m_5v5GamesLifetime; }
         void Set5v5GamesLifetime(uint16 games) { m_5v5GamesLifetime = games; }
 
+        bool HasDelayedOperation(uint32 operation) { return (m_DelayedOperations & operation); }
+
     protected:
         // Gamemaster whisper whitelist
         WhisperListContainer WhisperList;
@@ -2921,6 +2923,8 @@ class Player : public Unit, public GridObject<Player>
 
         uint8 m_grantableLevels;
 
+        uint32 m_DelayedOperations;
+
     private:
         // internal common parts for CanStore/StoreItem functions
         InventoryResult CanStoreItem_InSpecificSlot(uint8 bag, uint8 slot, ItemPosCountVec& dest, ItemTemplate const* pProto, uint32& count, bool swap, Item* pSrcItem) const;
@@ -2969,7 +2973,6 @@ class Player : public Unit, public GridObject<Player>
         bool mSemaphoreTeleport_Near;
         bool mSemaphoreTeleport_Far;
 
-        uint32 m_DelayedOperations;
         bool m_bCanDelayTeleport;
         bool m_bHasDelayedTeleport;
 

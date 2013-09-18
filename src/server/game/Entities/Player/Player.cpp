@@ -2324,7 +2324,7 @@ void Player::ProcessDelayedOperations()
     if (m_DelayedOperations == 0)
         return;
 
-    if (m_DelayedOperations & DELAYED_RESURRECT_PLAYER)
+    if (HasDelayedOperation(DELAYED_RESURRECT_PLAYER))
     {
         ResurrectPlayer(0.0f, false);
 
@@ -2344,13 +2344,13 @@ void Player::ProcessDelayedOperations()
         SpawnCorpseBones();
     }
 
-    if (m_DelayedOperations & DELAYED_SAVE_PLAYER)
+    if (HasDelayedOperation(DELAYED_SAVE_PLAYER))
         SaveToDB();
 
-    if (m_DelayedOperations & DELAYED_SPELL_CAST_DESERTER)
+    if (HasDelayedOperation(DELAYED_SPELL_CAST_DESERTER))
         CastSpell(this, 26013, true);               // Deserter
 
-    if (m_DelayedOperations & DELAYED_BG_MOUNT_RESTORE)
+    if (HasDelayedOperation(DELAYED_BG_MOUNT_RESTORE))
     {
         if (m_bgData.mountSpell)
         {
@@ -2359,7 +2359,7 @@ void Player::ProcessDelayedOperations()
         }
     }
 
-    if (m_DelayedOperations & DELAYED_BG_TAXI_RESTORE)
+    if (HasDelayedOperation(DELAYED_BG_TAXI_RESTORE))
     {
         if (m_bgData.HasTaxiPath())
         {
@@ -2371,7 +2371,7 @@ void Player::ProcessDelayedOperations()
         }
     }
 
-    if (m_DelayedOperations & DELAYED_BG_GROUP_RESTORE)
+    if (HasDelayedOperation(DELAYED_BG_GROUP_RESTORE))
     {
         if (Group *g = GetGroup())
             g->SendUpdateToPlayer(GetGUID());
