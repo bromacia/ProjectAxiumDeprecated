@@ -910,6 +910,8 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_5v5MMRLifetime = 0;
     m_5v5WinsLifetime = 0;
     m_5v5GamesLifetime = 0;
+
+    m_delayDuelFinish = false;
 }
 
 Player::~Player ()
@@ -1544,6 +1546,12 @@ void Player::Update(uint32 p_time)
     UpdateDuelFlag(now);
 
     CheckDuelDistance(now);
+
+    if (m_delayDuelFinish)
+    {
+        DuelComplete(DUEL_WON);
+        m_delayDuelFinish = false;
+    }
 
     UpdateAfkReport(now);
 
@@ -7526,11 +7534,17 @@ bool Player::IsOutdoorPvPActive()
     return isAlive() && !HasInvisibilityAura() && !HasStealthAura() && (IsPvP() || sWorld->IsPvPRealm())  && !HasUnitMovementFlag(MOVEMENTFLAG_FLYING) && !isInFlight();
 }
 
-void Player::DuelComplete(DuelCompleteType type)
+void Player::DuelComplete(DuelCompleteType type, bool delayed)
 {
     // duel not requested
     if (!duel)
         return;
+
+    if (delayed)
+    {
+        m_delayDuelFinish = true;
+        return;
+    }
 
     sLog->outDebug(LOG_FILTER_UNITS, "Duel Complete %s %s", GetName(), duel->opponent->GetName());
 

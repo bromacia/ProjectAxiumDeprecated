@@ -486,8 +486,6 @@ class Spell
 
         void SetSpellValue(SpellValueMod mod, int32 value);
 
-        bool DuelSpell;
-
         bool RedirectedSpell;
 
     protected:

@@ -565,8 +565,6 @@ m_spellValue(new SpellValue(m_spellInfo)), m_preGeneratedPath(new PathFinderMove
     CleanupTargetList();
     CleanupEffectExecuteData();
 
-    DuelSpell = false;
-
     RedirectedSpell = false;
 }
 
@@ -1269,10 +1267,6 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             m_caster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_IMMUNE);
             return;
         }
-
-    if (m_caster->GetTypeId() == TYPEID_PLAYER && unit->GetTypeId() == TYPEID_PLAYER)
-        if (!m_caster->ToPlayer()->duel && !unit->ToPlayer()->duel && DuelSpell && ((getMSTime() >= unit->m_lastDuelSpellTime) || unit->HasAura(7267))) // Duel Grovel
-            return;
 
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         if (unit->GetEntry() == 5925 && ((RedirectedSpell || m_spellInfo->IsNegativeAuraSpell() ||
@@ -3413,12 +3407,6 @@ void Spell::cast(bool skipCheck)
 
     if (Player* player = m_caster->ToPlayer())
     {
-        if (player->duel)
-        {
-            DuelSpell = true;
-            m_caster->m_lastDuelSpellTime = getMSTime();
-        }
-
         if (m_targets.GetUnitTarget())
         {
             if ((!player->IsFriendlyTo(m_targets.GetUnitTarget()) || m_spellInfo->HasAura(SPELL_AURA_MOD_POSSESS)) &&

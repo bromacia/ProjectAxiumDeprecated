@@ -259,7 +259,6 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
 
     m_lastSanctuaryTime = 0;
     m_lastBlinkTime = 0;
-    m_lastDuelSpellTime = 0;
 
     m_isDueling = false;
 
@@ -884,7 +883,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
             he->CombatStopWithPets(true);
 
             he->CastSpell(he, 7267, true);                  // beg
-            he->DuelComplete(DUEL_WON);
+            he->DuelComplete(DUEL_WON, true);
         }
     }
 

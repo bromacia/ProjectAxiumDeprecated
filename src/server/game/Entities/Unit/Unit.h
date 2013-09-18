@@ -1986,7 +1986,6 @@ class Unit : public WorldObject
 
         uint32 m_lastSanctuaryTime;
         uint32 m_lastBlinkTime;
-        uint32 m_lastDuelSpellTime;
 
         // Threat related methods
         bool CanHaveThreatList() const;

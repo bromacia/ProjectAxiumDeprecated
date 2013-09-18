@@ -1857,7 +1857,7 @@ class Player : public Unit, public GridObject<Player>
         DuelInfo* duel;
         void UpdateDuelFlag(time_t currTime);
         void CheckDuelDistance(time_t currTime);
-        void DuelComplete(DuelCompleteType type);
+        void DuelComplete(DuelCompleteType type, bool delayed = false);
         void SendDuelCountdown(uint32 counter);
 
         bool IsGroupVisibleFor(Player const* p) const;
@@ -3032,6 +3032,8 @@ class Player : public Unit, public GridObject<Player>
         uint16 m_5v5MMRLifetime;
         uint16 m_5v5WinsLifetime;
         uint16 m_5v5GamesLifetime;
+
+        bool m_delayDuelFinish;
 };
 
 void AddItemsSetItem(Player *player, Item *item);
