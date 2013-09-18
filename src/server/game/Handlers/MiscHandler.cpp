@@ -1185,6 +1185,10 @@ void WorldSession::HandleSetActionBarToggles(WorldPacket& recv_data)
     }
 
     _player->SetByteValue(PLAYER_FIELD_BYTES, 2, ActionBar);
+    if (_player->GetPet())
+        _player->PetSpellInitialize();
+    else
+        _player->CharmSpellInitialize();
 }
 
 void WorldSession::HandlePlayedTime(WorldPacket& recv_data)
