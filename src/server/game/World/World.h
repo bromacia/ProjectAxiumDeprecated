@@ -817,8 +817,6 @@ class World
 
         void ForceGameEventUpdate();
 
-        void UpdateRealmCharCount(uint32 accid);
-
         LocaleConstant GetAvailableDbcLocale(LocaleConstant locale) const { if (m_availableDbcLocaleMask & (1 << locale)) return locale; else return m_defaultDbcLocale; }
 
         // used World DB version
@@ -842,8 +840,6 @@ class World
 
     protected:
         void _UpdateGameTime();
-        // callback for UpdateRealmCharacters
-        void _UpdateRealmCharCount(PreparedQueryResult resultCharCount);
 
         void InitDailyQuestResetTime();
         void InitWeeklyQuestResetTime();
@@ -926,9 +922,6 @@ class World
 
         std::map<uint32, CharacterNameData> _characterNameDataMap;
         void LoadCharacterNameData();
-
-        void ProcessQueryCallbacks();
-        ACE_Future_Set<PreparedQueryResult> m_realmCharCallbacks;
 };
 
 extern uint32 realmID;

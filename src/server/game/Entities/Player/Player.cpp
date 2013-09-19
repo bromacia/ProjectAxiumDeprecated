@@ -5002,8 +5002,9 @@ void Player::DeleteFromDB(uint64 playerguid, uint32 accountId, bool updateRealmC
             sLog->outError("Player::DeleteFromDB: Unsupported delete method: %u.", charDelete_method);
     }
 
-    if (updateRealmChars)
-        sWorld->UpdateRealmCharCount(accountId);
+    if (updateRealmChars) //Do nothing
+    {
+    }
 }
 
 /**

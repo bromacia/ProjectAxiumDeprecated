@@ -2109,10 +2109,6 @@ void World::Update(uint32 diff)
         Player::DeleteOldCharacters();
     }
 
-    // execute callbacks from sql queries that were queued recently
-    ProcessQueryCallbacks();
-    RecordTimeDiff("ProcessQueryCallbacks");
-
     ///- Erase corpses once every 20 minutes
     if (m_timers[WUPDATE_CORPSES].Passed())
     {
@@ -2740,35 +2736,6 @@ void World::SendAutoBroadcast()
     sLog->outDetail("AutoBroadcast: '%s'", msg.c_str());
 }
 
-void World::UpdateRealmCharCount(uint32 accountId)
-{
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_COUNT);
-    stmt->setUInt32(0, accountId);
-    PreparedQueryResultFuture result = CharacterDatabase.AsyncQuery(stmt);
-    m_realmCharCallbacks.insert(result);
-}
-
-void World::_UpdateRealmCharCount(PreparedQueryResult resultCharCount)
-{
-    if (resultCharCount)
-    {
-        Field* fields = resultCharCount->Fetch();
-        uint32 accountId = fields[0].GetUInt32();
-        uint32 charCount = fields[1].GetUInt32();
-
-        PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_DEL_REALM_CHARACTERS);
-        stmt->setUInt32(0, accountId);
-        stmt->setUInt32(1, realmID);
-        LoginDatabase.Execute(stmt);
-
-        stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_REALM_CHARACTERS);
-        stmt->setUInt32(0, charCount);
-        stmt->setUInt32(1, accountId);
-        stmt->setUInt32(2, realmID);
-        LoginDatabase.Execute(stmt);
-    }
-}
-
 void World::InitWeeklyQuestResetTime()
 {
     time_t wstime = uint64(sWorld->getWorldState(WS_WEEKLY_QUEST_RESET_TIME));
@@ -2998,26 +2965,6 @@ uint64 World::getWorldState(uint32 index) const
 {
     WorldStatesMap::const_iterator it = m_worldstates.find(index);
     return it != m_worldstates.end() ? it->second : 0;
-}
-
-void World::ProcessQueryCallbacks()
-{
-    PreparedQueryResult result;
-
-    while (!m_realmCharCallbacks.is_empty())
-    {
-        ACE_Future<PreparedQueryResult> lResult;
-        ACE_Time_Value timeout = ACE_Time_Value::zero;
-        if (m_realmCharCallbacks.next_readable(lResult, &timeout) != 1)
-            break;
-
-        if (lResult.ready())
-        {
-            lResult.get(result);
-            _UpdateRealmCharCount(result);
-            lResult.cancel();
-        }
-    }
 }
 
 void World::LoadCharacterNameData()
