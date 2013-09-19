@@ -16,7 +16,6 @@ set(scripts_STAT_SRCS
   Custom/MallMgr.h
   Custom/reset_onduelend.cpp
   Custom/npc_teleport.cpp
-  Custom/npc_prof.cpp
   Custom/npc_beastmaster.cpp
   Custom/npc_class_trainer.cpp
   Custom/pvp_titles.cpp

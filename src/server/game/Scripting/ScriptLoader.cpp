@@ -219,7 +219,6 @@ void AddBattlegroundScripts()
 #ifdef SCRIPTS
     void AddSC_Reset_OnDuelEnd();
     void AddSC_npc_teleport();
-    void AddSC_npc_prof();
     void AddSC_npc_beastmaster();
     void AddSC_Transmogrification();
     void AddSC_npc_class_trainer();
@@ -233,7 +232,6 @@ void AddCustomScripts()
 #ifdef SCRIPTS
     AddSC_Reset_OnDuelEnd();
     AddSC_npc_teleport();
-    AddSC_npc_prof();
     AddSC_npc_beastmaster();
     AddSC_Transmogrification();
     AddSC_npc_class_trainer();
