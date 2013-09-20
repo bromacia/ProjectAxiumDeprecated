@@ -22,6 +22,7 @@
 #include "World.h"
 #include "Group.h"
 #include "ArenaTeamMgr.h"
+#include "PvPMgr.h"
 
 ArenaTeam::ArenaTeam()
     : TeamId(0), Type(0), TeamName(), CaptainGuid(0), BackgroundColor(0), EmblemStyle(0), EmblemColor(0),
@@ -870,53 +871,49 @@ void ArenaTeam::SaveToDB()
         stmt->setUInt16(2, itr->MatchMakerRating);
         trans->Append(stmt);
 
-
-        if (Player* player = ObjectAccessor::FindPlayer(itr->Guid))
+        switch (GetId())
         {
-            switch (GetId())
+            case 0: // 2v2
             {
-                case 0:
-                {
-                    player->Set2v2MMR(itr->MatchMakerRating);
+                sPvPMgr->Set2v2MMRByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
                     
-                    if (itr->PersonalRating > player->Get2v2RatingLifetime())
-                        player->Set2v2RatingLifetime(itr->PersonalRating);
+                if (itr->PersonalRating > sPvPMgr->GetLifetime2v2RatingByGUIDLow(GUID_LOPART(itr->Guid)))
+                    sPvPMgr->SetLifetime2v2RatingByGUIDLow(GUID_LOPART(itr->Guid), itr->PersonalRating);
 
-                    if (itr->MatchMakerRating > player->Get2v2RatingLifetime())
-                        player->Set2v2RatingLifetime(itr->MatchMakerRating);
+                if (itr->MatchMakerRating > sPvPMgr->GetLifetime2v2RatingByGUIDLow(GUID_LOPART(itr->Guid)))
+                    sPvPMgr->SetLifetime2v2RatingByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
 
-                    player->Set2v2WinsLifetime(player->Get2v2WinsLifetime() + itr->SeasonWins);
-                    player->Set2v2GamesLifetime(player->Get2v2GamesLifetime() + itr->SeasonGames);
-                    break;
-                }
-                case 1:
-                {
-                    player->Set3v3MMR(itr->MatchMakerRating);
+                sPvPMgr->SetLifetime2v2WinsByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime2v2WinsByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonWins);
+                sPvPMgr->SetLifetime2v2GamesByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime2v2GamesByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonGames);
+                break;
+            }
+            case 1: // 3v3
+            {
+                sPvPMgr->Set3v3MMRByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
                     
-                    if (itr->PersonalRating > player->Get3v3RatingLifetime())
-                        player->Set3v3RatingLifetime(itr->PersonalRating);
+                if (itr->PersonalRating > sPvPMgr->GetLifetime3v3RatingByGUIDLow(GUID_LOPART(itr->Guid)))
+                    sPvPMgr->SetLifetime3v3RatingByGUIDLow(GUID_LOPART(itr->Guid), itr->PersonalRating);
 
-                    if (itr->MatchMakerRating > player->Get3v3RatingLifetime())
-                        player->Set3v3RatingLifetime(itr->MatchMakerRating);
+                if (itr->MatchMakerRating > sPvPMgr->GetLifetime3v3RatingByGUIDLow(GUID_LOPART(itr->Guid)))
+                    sPvPMgr->SetLifetime3v3RatingByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
 
-                    player->Set3v3WinsLifetime(player->Get3v3WinsLifetime() + itr->SeasonWins);
-                    player->Set3v3GamesLifetime(player->Get3v3GamesLifetime() + itr->SeasonGames);
-                    break;
-                }
-                case 2:
-                {
-                    player->Set5v5MMR(itr->MatchMakerRating);
+                sPvPMgr->SetLifetime3v3WinsByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime3v3WinsByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonWins);
+                sPvPMgr->SetLifetime3v3GamesByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime3v3GamesByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonGames);
+                break;
+            }
+            case 2: // 5v5
+            {
+                sPvPMgr->Set5v5MMRByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
                     
-                    if (itr->PersonalRating > player->Get5v5RatingLifetime())
-                        player->Set5v5RatingLifetime(itr->PersonalRating);
+                if (itr->PersonalRating > sPvPMgr->GetLifetime5v5RatingByGUIDLow(GUID_LOPART(itr->Guid)))
+                    sPvPMgr->SetLifetime5v5RatingByGUIDLow(GUID_LOPART(itr->Guid), itr->PersonalRating);
 
-                    if (itr->MatchMakerRating > player->Get5v5RatingLifetime())
-                        player->Set5v5RatingLifetime(itr->MatchMakerRating);
+                if (itr->MatchMakerRating > sPvPMgr->GetLifetime5v5RatingByGUIDLow(GUID_LOPART(itr->Guid)))
+                    sPvPMgr->SetLifetime5v5RatingByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
 
-                    player->Set5v5WinsLifetime(player->Get5v5WinsLifetime() + itr->SeasonWins);
-                    player->Set5v5GamesLifetime(player->Get5v5GamesLifetime() + itr->SeasonGames);
-                    break;
-                }
+                sPvPMgr->SetLifetime5v5WinsByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime5v5WinsByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonWins);
+                sPvPMgr->SetLifetime5v5GamesByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime5v5GamesByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonGames);
+                break;
             }
         }
     }

@@ -1,5 +1,6 @@
 #include "Chat.h"
 #include "MapManager.h"
+#include "PvPMgr.h"
 
 class utility_commandscript : public CommandScript
 {
@@ -801,24 +802,22 @@ public:
         return true;
     }
 
-    static bool HandleMMRCommand(ChatHandler* handler, const char* /*args*/)
+    static bool HandleMMRCommand(ChatHandler* handler, const char* args)
     {
-        Player* player = handler->GetSession()->GetPlayer();
-        Unit* unitTarget = handler->getSelectedUnit();
+        uint64 targetGUID;
+        std::string targetName;
 
-        if (unitTarget->GetTypeId() != TYPEID_PLAYER)
-        {
-            handler->PSendSysMessage("Target is not a player.");
-            handler->SetSentErrorMessage(true);
+        uint32 parseGUID = MAKE_NEW_GUID(atol((char*)args), 0, HIGHGUID_PLAYER);
+
+        if (sObjectMgr->GetPlayerNameByGUID(parseGUID, targetName))
+            targetGUID = parseGUID;
+        else if (!handler->extractPlayerTarget((char*)args, 0, &targetGUID, &targetName))
             return false;
-        }
 
-        Player* target = unitTarget->ToPlayer();
-
-        handler->PSendSysMessage("Player: %s", target->GetName());
-        handler->PSendSysMessage("2v2 MMR: %u", target->Get2v2MMR());
-        handler->PSendSysMessage("3v3 MMR: %u", target->Get3v3MMR());
-        handler->PSendSysMessage("5v5 MMR: %u", target->Get5v5MMR());
+        handler->PSendSysMessage("Player: %s", targetName);
+        handler->PSendSysMessage("2v2 MMR: %u", sPvPMgr->Get2v2MMRByGUIDLow(GUID_LOPART(targetGUID)));
+        handler->PSendSysMessage("3v3 MMR: %u", sPvPMgr->Get3v3MMRByGUIDLow(GUID_LOPART(targetGUID)));
+        handler->PSendSysMessage("5v5 MMR: %u", sPvPMgr->Get5v5MMRByGUIDLow(GUID_LOPART(targetGUID)));
         return true;
     }
 };

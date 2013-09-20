@@ -55,6 +55,7 @@
 #include "SpellInfo.h"
 #include "MoveSplineInit.h"
 #include "MoveSpline.h"
+#include "PvPMgr.h"
 
 #include <math.h>
 
@@ -788,6 +789,15 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
                 killer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_SPECIAL_PVP_KILL, 1, 0, victim);
         }
 
+        if (GetTypeId() == TYPEID_PLAYER && victim->GetTypeId() == TYPEID_PLAYER)
+        {
+            // The victim was one shotted
+            if (damage >= victim->GetMaxHealth())
+                sPvPMgr->HandlePvPKill((Player*)victim, (Player*)this);
+
+            sPvPMgr->HandlePvPKill((Player*)victim);
+        }
+
         Kill(victim, durabilityLoss);
     }
     else
@@ -795,9 +805,14 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         sLog->outStaticDebug("DealDamageAlive");
 
         if (victim->GetTypeId() == TYPEID_PLAYER)
-            victim->ToPlayer()->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED, damage);
+        {
+            if (GetTypeId() == TYPEID_PLAYER)
+                sPvPMgr->HandleDealDamage((Player*)this, (Player*)victim, damage);
 
-        victim->ModifyHealth(- (int32)damage);
+            victim->ToPlayer()->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED, damage);
+        }
+
+        victim->ModifyHealth(-(int32)damage);
 
         if (damagetype == DIRECT_DAMAGE || damagetype == SPELL_DIRECT_DAMAGE)
             victim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DIRECT_DAMAGE, spellProto ? spellProto->Id : 0);

@@ -1114,6 +1114,15 @@ private:
     uint32 _xp;
 };
 
+struct PvPTargetDamageInformation
+{
+    uint32 AttackerGUIDLow;
+    uint32 DamageDoneToVictim;
+    uint32 LastDamageDeltTimer;
+
+    PvPTargetDamageInformation() : AttackerGUIDLow(0), DamageDoneToVictim(0), LastDamageDeltTimer(0) { }
+};
+
 class Player : public Unit, public GridObject<Player>
 {
     friend class WorldSession;
@@ -2617,6 +2626,8 @@ class Player : public Unit, public GridObject<Player>
         bool IsFrozen() { return m_isFrozen; }
         void SetIsFrozen(bool x) { m_isFrozen = x; }
 
+        std::list<PvPTargetDamageInformation> PvPTargetDamageInfo;
+
         uint16 Get2v2MMR() const { return m_2v2MMR; }
         void Set2v2MMR(uint16 mmr) { m_2v2MMR = mmr; }
         uint16 Get3v3MMR() const { return m_3v3MMR; }
@@ -2624,37 +2635,37 @@ class Player : public Unit, public GridObject<Player>
         uint16 Get5v5MMR() const { return m_5v5MMR; }
         void Set5v5MMR(uint16 mmr) { m_5v5MMR = mmr; }
 
-        uint16 GetPvPRating() { return m_PvPRating; }
+        uint16 GetPvPRating() const { return m_PvPRating; }
         void SetPvPRating(uint16 rating) { m_PvPRating = rating; }
-        uint16 GetPvPRatingLifetime() { return m_PvPRatingLifetime; }
-        void SetPvPRatingLifetime(uint16 rating) { m_PvPRatingLifetime = rating; }
+        uint16 GetLifetimePvPRating() const { return m_LifetimePvPRating; }
+        void SetLifetimePvPRating(uint16 rating) { m_LifetimePvPRating = rating; }
 
-        uint16 Get2v2RatingLifetime() { return m_2v2RatingLifetime; }
-        void Set2v2RatingLifetime(uint16 rating) { m_2v2RatingLifetime = rating; }
-        uint16 Get2v2MMRLifetime() { return m_2v2MMRLifetime; }
-        void Set2v2MMRLifetime(uint16 mmr) { m_2v2MMRLifetime = mmr; }
-        uint16 Get2v2WinsLifetime() { return m_2v2WinsLifetime; }
-        void Set2v2WinsLifetime(uint16 wins) { m_2v2WinsLifetime = wins; }
-        uint16 Get2v2GamesLifetime() { return m_2v2GamesLifetime; }
-        void Set2v2GamesLifetime(uint16 games) { m_2v2GamesLifetime = games; }
+        uint16 GetLifetime2v2Rating() const { return m_Lifetime2v2Rating; }
+        void SetLifetime2v2Rating(uint16 rating) { m_Lifetime2v2Rating = rating; }
+        uint16 GetLifetime2v2MMR() const { return m_Lifetime2v2MMR; }
+        void SetLifetime2v2MMR(uint16 mmr) { m_Lifetime2v2MMR = mmr; }
+        uint16 GetLifetime2v2Wins() const { return m_Lifetime2v2Wins; }
+        void SetLifetime2v2Wins(uint16 wins) { m_Lifetime2v2Wins = wins; }
+        uint16 GetLifetime2v2Games() const { return m_Lifetime2v2Games; }
+        void SetLifetime2v2Games(uint16 games) { m_Lifetime2v2Games = games; }
 
-        uint16 Get3v3RatingLifetime() { return m_3v3RatingLifetime; }
-        void Set3v3RatingLifetime(uint16 rating) { m_3v3RatingLifetime = rating; }
-        uint16 Get3v3MMRLifetime() { return m_3v3MMRLifetime; }
-        void Set3v3MMRLifetime(uint16 mmr) { m_3v3MMRLifetime = mmr; }
-        uint16 Get3v3WinsLifetime() { return m_3v3WinsLifetime; }
-        void Set3v3WinsLifetime(uint16 wins) { m_3v3WinsLifetime = wins; }
-        uint16 Get3v3GamesLifetime() { return m_3v3GamesLifetime; }
-        void Set3v3GamesLifetime(uint16 games) { m_3v3GamesLifetime = games; }
+        uint16 GetLifetime3v3Rating() const { return m_Lifetime3v3Rating; }
+        void SetLifetime3v3Rating(uint16 rating) { m_Lifetime3v3Rating = rating; }
+        uint16 GetLifetime3v3MMR() const { return m_Lifetime3v3MMR; }
+        void SetLifetime3v3MMR(uint16 mmr) { m_Lifetime3v3MMR = mmr; }
+        uint16 GetLifetime3v3Wins() const { return m_Lifetime3v3Wins; }
+        void SetLifetime3v3Wins(uint16 wins) { m_Lifetime3v3Wins = wins; }
+        uint16 GetLifetime3v3Games() const { return m_Lifetime3v3Games; }
+        void SetLifetime3v3Games(uint16 games) { m_Lifetime3v3Games = games; }
 
-        uint16 Get5v5RatingLifetime() { return m_5v5RatingLifetime; }
-        void Set5v5RatingLifetime(uint16 rating) { m_5v5RatingLifetime = rating; }
-        uint16 Get5v5MMRLifetime() { return m_5v5MMRLifetime; }
-        void Set5v5MMRLifetime(uint16 mmr) { m_5v5MMRLifetime = mmr; }
-        uint16 Get5v5WinsLifetime() { return m_5v5WinsLifetime; }
-        void Set5v5WinsLifetime(uint16 wins) { m_5v5WinsLifetime = wins; }
-        uint16 Get5v5GamesLifetime() { return m_5v5GamesLifetime; }
-        void Set5v5GamesLifetime(uint16 games) { m_5v5GamesLifetime = games; }
+        uint16 GetLifetime5v5Rating() const { return m_Lifetime5v5Rating; }
+        void SetLifetime5v5Rating(uint16 rating) { m_Lifetime5v5Rating = rating; }
+        uint16 GetLifetime5v5MMR() const { return m_Lifetime5v5MMR; }
+        void SetLifetime5v5MMR(uint16 mmr) { m_Lifetime5v5MMR = mmr; }
+        uint16 GetLifetime5v5Wins() const { return m_Lifetime5v5Wins; }
+        void SetLifetime5v5Wins(uint16 wins) { m_Lifetime5v5Wins = wins; }
+        uint16 GetLifetime5v5Games() const { return m_Lifetime5v5Games; }
+        void SetLifetime5v5Games(uint16 games) { m_Lifetime5v5Games = games; }
 
         bool HasDelayedOperation(uint32 operation) { return (m_DelayedOperations & operation); }
 
@@ -3019,22 +3030,22 @@ class Player : public Unit, public GridObject<Player>
         uint16 m_5v5MMR;
 
         uint16 m_PvPRating;
-        uint16 m_PvPRatingLifetime;
+        uint16 m_LifetimePvPRating;
 
-        uint16 m_2v2RatingLifetime;
-        uint16 m_2v2MMRLifetime;
-        uint16 m_2v2WinsLifetime;
-        uint16 m_2v2GamesLifetime;
+        uint16 m_Lifetime2v2Rating;
+        uint16 m_Lifetime2v2MMR;
+        uint16 m_Lifetime2v2Wins;
+        uint16 m_Lifetime2v2Games;
 
-        uint16 m_3v3RatingLifetime;
-        uint16 m_3v3MMRLifetime;
-        uint16 m_3v3WinsLifetime;
-        uint16 m_3v3GamesLifetime;
+        uint16 m_Lifetime3v3Rating;
+        uint16 m_Lifetime3v3MMR;
+        uint16 m_Lifetime3v3Wins;
+        uint16 m_Lifetime3v3Games;
 
-        uint16 m_5v5RatingLifetime;
-        uint16 m_5v5MMRLifetime;
-        uint16 m_5v5WinsLifetime;
-        uint16 m_5v5GamesLifetime;
+        uint16 m_Lifetime5v5Rating;
+        uint16 m_Lifetime5v5MMR;
+        uint16 m_Lifetime5v5Wins;
+        uint16 m_Lifetime5v5Games;
 
         bool m_delayDuelFinish;
 };
@@ -3087,4 +3098,5 @@ template <class T> T Player::ApplySpellMod(uint32 spellId, SpellModOp op, T &bas
     basevalue = T((float)basevalue + diff);
     return T(diff);
 }
+
 #endif

@@ -894,22 +894,22 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_5v5MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
 
     m_PvPRating = 0;
-    m_PvPRatingLifetime = 0;
+    m_LifetimePvPRating = 0;
 
-    m_2v2RatingLifetime = 0;
-    m_2v2MMRLifetime = 0;
-    m_2v2WinsLifetime = 0;
-    m_2v2GamesLifetime = 0;
+    m_Lifetime2v2Rating = 0;
+    m_Lifetime2v2MMR = 0;
+    m_Lifetime2v2Wins = 0;
+    m_Lifetime2v2Games = 0;
 
-    m_3v3RatingLifetime = 0;
-    m_3v3MMRLifetime = 0;
-    m_3v3WinsLifetime = 0;
-    m_3v3GamesLifetime = 0;
+    m_Lifetime3v3Rating = 0;
+    m_Lifetime3v3MMR = 0;
+    m_Lifetime3v3Wins = 0;
+    m_Lifetime3v3Games = 0;
 
-    m_5v5RatingLifetime = 0;
-    m_5v5MMRLifetime = 0;
-    m_5v5WinsLifetime = 0;
-    m_5v5GamesLifetime = 0;
+    m_Lifetime5v5Rating = 0;
+    m_Lifetime5v5MMR = 0;
+    m_Lifetime5v5Wins = 0;
+    m_Lifetime5v5Games = 0;
 
     m_delayDuelFinish = false;
 }
@@ -16445,14 +16445,14 @@ void Player::_LoadMatchMakerRating()
 
 void Player::_LoadPvPStats()
 {
-                                               //         0           1
-   QueryResult result = CharacterDatabase.PQuery("SELECT PvP_Rating, PvP_Rating_Lifetime, "
+                                               //        0           1
+   QueryResult result = CharacterDatabase.PQuery("SELECT PvPRating, LifetimePvPRating, "
                                                // 2                  3               4                5
-                                                 "2_Rating_Lifetime, 2_MMR_Lifetime, 2_Wins_Lifetime, 2_Games_Lifetime, "
+                                                 "Lifetime2v2Rating, Lifetime2v2MMR, Lifetime2v2Wins, Lifetime2v2Games, "
                                                // 6                  7               8                9
-                                                 "3_Rating_Lifetime, 3_MMR_Lifetime, 3_Wins_Lifetime, 3_Games_Lifetime, "
+                                                 "Lifetime3v3Rating, Lifetime3v3MMR, Lifetime3v3Wins, Lifetime3v3Games, "
                                                // 10                 11              12               13
-                                                 "5_Rating_Lifetime, 5_MMR_Lifetime, 5_Wins_Lifetime, 5_Games_Lifetime "
+                                                 "Lifetime5v5Rating, Lifetime5v5MMR, Lifetime5v5Wins, Lifetime5v5Games "
                                                  "FROM character_pvp_stats WHERE guid = %u", GetGUIDLow());
 
     if (!result)
@@ -16460,22 +16460,22 @@ void Player::_LoadPvPStats()
 
     Field* fields = result->Fetch();
     m_PvPRating = fields[0].GetUInt16();
-    m_PvPRatingLifetime = fields[1].GetUInt16();
+    m_LifetimePvPRating = fields[1].GetUInt16();
 
-    m_2v2RatingLifetime = fields[2].GetUInt16();
-    m_2v2MMRLifetime = fields[3].GetUInt16();
-    m_2v2WinsLifetime = fields[4].GetUInt16();
-    m_2v2GamesLifetime = fields[5].GetUInt16();
+    m_Lifetime2v2Rating = fields[2].GetUInt16();
+    m_Lifetime2v2MMR = fields[3].GetUInt16();
+    m_Lifetime2v2Wins = fields[4].GetUInt16();
+    m_Lifetime2v2Games = fields[5].GetUInt16();
 
-    m_3v3RatingLifetime = fields[6].GetUInt16();
-    m_3v3MMRLifetime = fields[7].GetUInt16();
-    m_3v3WinsLifetime = fields[8].GetUInt16();
-    m_3v3GamesLifetime = fields[9].GetUInt16();
+    m_Lifetime3v3Rating = fields[6].GetUInt16();
+    m_Lifetime3v3MMR = fields[7].GetUInt16();
+    m_Lifetime3v3Wins = fields[8].GetUInt16();
+    m_Lifetime3v3Games = fields[9].GetUInt16();
 
-    m_5v5RatingLifetime = fields[10].GetUInt16();
-    m_5v5MMRLifetime = fields[11].GetUInt16();
-    m_5v5WinsLifetime = fields[12].GetUInt16();
-    m_5v5GamesLifetime = fields[13].GetUInt16();
+    m_Lifetime5v5Rating = fields[10].GetUInt16();
+    m_Lifetime5v5MMR = fields[11].GetUInt16();
+    m_Lifetime5v5Wins = fields[12].GetUInt16();
+    m_Lifetime5v5Games = fields[13].GetUInt16();
                                                  
 }
 

@@ -217,26 +217,24 @@ void AddBattlegroundScripts()
 
 // Custom
 #ifdef SCRIPTS
+    void AddSC_Transmogrification();
+    void AddSC_MallMgr();
+    void AddSC_PrematureStart();
     void AddSC_Reset_OnDuelEnd();
     void AddSC_npc_teleport();
     void AddSC_npc_beastmaster();
-    void AddSC_Transmogrification();
     void AddSC_npc_class_trainer();
-    void AddSC_pvp_titles();
-    void AddSC_PrematureStart();
-    void AddSC_MallMgr();
 #endif
 
 void AddCustomScripts()
 {
 #ifdef SCRIPTS
+    AddSC_Transmogrification();
+    AddSC_MallMgr();
+    AddSC_PrematureStart();
     AddSC_Reset_OnDuelEnd();
     AddSC_npc_teleport();
     AddSC_npc_beastmaster();
-    AddSC_Transmogrification();
     AddSC_npc_class_trainer();
-    AddSC_pvp_titles();
-    AddSC_PrematureStart();
-    AddSC_MallMgr();
 #endif
 }
