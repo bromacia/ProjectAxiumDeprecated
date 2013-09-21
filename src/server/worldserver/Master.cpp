@@ -427,6 +427,31 @@ bool Master::_StartDB()
         return false;
     }
 
+    ///- Get log database info from configuration file
+    dbstring = ConfigMgr::GetStringDefault("LogDatabaseInfo", "");
+    if (dbstring.empty())
+    {
+        sLog->outError("Log database not specified in configuration file");
+        return false;
+    }
+
+    async_threads = ConfigMgr::GetIntDefault("LogDatabase.WorkerThread", 1);
+    if (async_threads < 1 || async_threads > 32)
+    {
+        sLog->outError("Log database: invalid number of worker threads specified. "
+            "Please pick a value between 1 and 32.");
+        return false;
+    }
+
+    ///- Log database needs NO synch
+    synch_threads = 0;
+
+    if (!LogDatabase.Open(dbstring, async_threads, synch_threads))
+    {
+        sLog->outError("Cannot connect to login database %s", dbstring.c_str());
+        return false;
+    }
+
     ///- Get the realm Id from the configuration file
     realmID = ConfigMgr::GetIntDefault("RealmID", 0);
     if (!realmID)
@@ -458,6 +483,7 @@ void Master::_StopDB()
     CharacterDatabase.Close();
     WorldDatabase.Close();
     LoginDatabase.Close();
+    LogDatabase.Close();
 
     MySQL::Library_End();
 }

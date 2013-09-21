@@ -223,7 +223,33 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             return;
 
         if (ChatHandler(this).ParseCommands(msg.c_str()))
+        {
+            if (sender->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
+            {
+                Unit* selection = ChatHandler(this).getSelectedUnit();
+                uint32 target_accid = 0;
+                uint32 target_guid = 0;
+                uint32 target_typeid = 0;
+                if (selection)
+                {
+                    if (selection->GetTypeId() == TYPEID_PLAYER) // Only players have account id's
+                        target_accid = selection->ToPlayer()->GetSession()->GetAccountId();
+
+                    target_guid = selection->GetGUIDLow();
+                    target_typeid = uint32(selection->GetTypeId());
+                }
+
+                PreparedStatement* stmt = LogDatabase.GetPreparedStatement(LOG_INS_COMMAND_LOG);
+                stmt->setUInt32(0, sender->GetSession()->GetAccountId());
+                stmt->setUInt32(1, sender->GetGUIDLow());
+                stmt->setUInt32(2, target_accid);
+                stmt->setUInt32(3, target_guid);
+                stmt->setUInt32(4, target_typeid);
+                stmt->setString(5, msg.c_str());
+                LogDatabase.Execute(stmt);
+            }
             return;
+        }
 
         if (lang != LANG_ADDON)
         {
