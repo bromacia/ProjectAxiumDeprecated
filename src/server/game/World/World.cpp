@@ -1331,6 +1331,9 @@ void World::LoadConfigSettings(bool reload)
     m_float_configs[CONFIG_HEAL_ADJ_WARLOCK_DEMO]        = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Warlock.Demo", 1.00f);
     m_float_configs[CONFIG_HEAL_ADJ_WARLOCK_DESTRO]      = ConfigMgr::GetFloatDefault("GlobalHealingAdjustment.Warlock.Destro", 1.00f);
 
+    m_bool_configs[CONFIG_DBCHATLOG_ENABLED]             = ConfigMgr::GetBoolDefault("DBChatLog.Enabled", false);
+    m_int_configs[CONFIG_DBCHATLOG_MINGMLEVEL]           = ConfigMgr::GetIntDefault("DBChatLog.MinGMLevel", 2);
+
     sScriptMgr->OnConfigLoad(reload);
 }
 

@@ -19872,6 +19872,43 @@ void Player::Whisper(const std::string& text, uint32 language, uint64 receiver)
         ChatHandler(GetSession()).PSendSysMessage(LANG_PLAYER_DND, rPlayer->GetName(), rPlayer->dndMsg.c_str());
 }
 
+void Player::LogChatMessageToDB(const std::string& text, uint32 type, uint32 language, Player* receiver)
+{
+    // Don't log if logging is not enabled
+    if (!sWorld->getBoolConfig(CONFIG_DBCHATLOG_ENABLED))
+        return;
+
+    // Don't log if player is not above or equal to minimum security level
+    if (sWorld->getIntConfig(CONFIG_DBCHATLOG_MINGMLEVEL) > uint8(GetSession()->GetSecurity()))
+        return;
+
+    // Don't log addon messages
+    if (language == LANG_ADDON)
+        return;
+
+    // Don't log empty messages
+    if (text.empty())
+        return;
+
+    uint32 receiver_accid = 0;
+    uint32 receiver_guid = 0;
+
+    if (receiver)
+    {
+        receiver_accid = receiver->GetSession()->GetAccountId();
+        receiver_guid = receiver->GetGUIDLow();
+    }
+
+    PreparedStatement* stmt = LogDatabase.GetPreparedStatement(LOG_INS_CHAT_LOG);
+    stmt->setUInt32(0, GetSession()->GetAccountId());
+    stmt->setUInt32(1, GetGUIDLow());
+    stmt->setString(2, text);
+    stmt->setUInt32(3, receiver_accid);
+    stmt->setUInt32(4, receiver_guid);
+    stmt->setUInt32(5, type);
+    LogDatabase.Execute(stmt);
+}
+
 void Player::PetSpellInitialize()
 {
     Pet* pet = GetPet();

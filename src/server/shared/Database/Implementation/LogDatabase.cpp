@@ -23,4 +23,5 @@ void LogDatabaseConnection::DoPrepareStatements()
         m_stmts.resize(MAX_LOGDATABASE_STATEMENTS);
 
     PREPARE_STATEMENT(LOG_INS_COMMAND_LOG, "INSERT INTO command_logs (sender_accid, sender_guid, target_accid, target_guid, target_typeid, command) VALUES (?, ?, ?, ?, ?, ?)", CONNECTION_ASYNC)
+    PREPARE_STATEMENT(LOG_INS_CHAT_LOG, "INSERT INTO chat_logs (sender_accid, sender_guid, text, receiver_accid, receiver_guid, type) VALUES (?, ?, ?, ?, ?, ?)", CONNECTION_ASYNC)
 }

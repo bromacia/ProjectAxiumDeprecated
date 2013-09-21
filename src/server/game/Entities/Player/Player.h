@@ -1258,6 +1258,7 @@ class Player : public Unit, public GridObject<Player>
         void TextEmote(const std::string& text);
         void Whisper(const std::string& text, const uint32 language, uint64 receiver);
         void BuildPlayerChat(WorldPacket* data, uint8 msgtype, const std::string& text, uint32 language) const;
+        void LogChatMessageToDB(const std::string& text, uint32 type, uint32 language, Player* receiver = NULL);
 
         /*********************************************************/
         /***                    STORAGE SYSTEM                 ***/

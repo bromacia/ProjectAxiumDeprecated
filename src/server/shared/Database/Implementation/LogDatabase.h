@@ -43,6 +43,7 @@ enum LogDatabaseStatements
     */
 
     LOG_INS_COMMAND_LOG,
+    LOG_INS_CHAT_LOG,
 
     MAX_LOGDATABASE_STATEMENTS,
 };
