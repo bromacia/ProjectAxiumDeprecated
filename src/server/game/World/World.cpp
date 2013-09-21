@@ -2679,7 +2679,6 @@ void World::UpdateSessions(uint32 diff)
             RemoveQueuedPlayer(pSession);
             m_sessions.erase(itr);
             delete pSession;
-
         }
     }
 }

@@ -419,39 +419,6 @@ void WorldSession::HandleCharCreateCallback(PreparedQueryResult result, Characte
 
             ASSERT(_charCreateCallback.GetParam() == createInfo);
 
-            PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_SUM_REALM_CHARACTERS);
-            stmt->setUInt32(0, GetAccountId());
-
-            _charCreateCallback.FreeResult();
-            _charCreateCallback.SetFutureResult(LoginDatabase.AsyncQuery(stmt));
-            _charCreateCallback.NextStage();
-        }
-        break;
-        case 1:
-        {
-            uint16 acctCharCount = 0;
-            if (result)
-            {
-                Field* fields = result->Fetch();
-                // SELECT SUM(x) is MYSQL_TYPE_NEWDECIMAL - needs to be read as string
-                const char* ch = fields[0].GetCString();
-                if (ch)
-                    acctCharCount = atoi(ch);
-            }
-
-            if (acctCharCount >= sWorld->getIntConfig(CONFIG_CHARACTERS_PER_ACCOUNT))
-            {
-                WorldPacket data(SMSG_CHAR_CREATE, 1);
-                data << uint8(CHAR_CREATE_ACCOUNT_LIMIT);
-                SendPacket(&data);
-                delete createInfo;
-                _charCreateCallback.Reset();
-                return;
-            }
-
-
-            ASSERT(_charCreateCallback.GetParam() == createInfo);
-
             PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_SUM_CHARS);
             stmt->setUInt32(0, GetAccountId());
 
@@ -460,7 +427,7 @@ void WorldSession::HandleCharCreateCallback(PreparedQueryResult result, Characte
             _charCreateCallback.NextStage();
         }
         break;
-        case 2:
+        case 1:
         {
             if (result)
             {
@@ -497,7 +464,7 @@ void WorldSession::HandleCharCreateCallback(PreparedQueryResult result, Characte
             HandleCharCreateCallback(PreparedQueryResult(NULL), createInfo);   // Will jump to case 3
         }
         break;
-        case 3:
+        case 2:
         {
             bool haveSameRace = false;
             uint32 heroicReqLevel = sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_MIN_LEVEL_FOR_HEROIC_CHARACTER);
@@ -639,22 +606,6 @@ void WorldSession::HandleCharCreateCallback(PreparedQueryResult result, Characte
 
             // Player created, save it now
             newChar.SaveToDB(true);
-            createInfo->CharCount += 1;
-
-            SQLTransaction trans = LoginDatabase.BeginTransaction();
-
-            PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_DEL_REALM_CHARACTERS);
-            stmt->setUInt32(0, GetAccountId());
-            stmt->setUInt32(1, realmID);
-            trans->Append(stmt);
-
-            stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_REALM_CHARACTERS);
-            stmt->setUInt32(0, createInfo->CharCount);
-            stmt->setUInt32(1, GetAccountId());
-            stmt->setUInt32(2, realmID);
-            trans->Append(stmt);
-
-            LoginDatabase.CommitTransaction(trans);
 
             newChar.CleanupsBeforeDelete();
 

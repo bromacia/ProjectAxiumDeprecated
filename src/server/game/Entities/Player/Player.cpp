@@ -1036,7 +1036,7 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
     SetUInt32Value(PLAYER_GUILDRANK, 0);
     SetUInt32Value(PLAYER_GUILD_TIMESTAMP, 0);
 
-    for (int i = 0; i < KNOWN_TITLES_SIZE; ++i)
+    for (uint8 i = 0; i < KNOWN_TITLES_SIZE; ++i)
         SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES + i, 0);  // 0=disabled
     SetUInt32Value(PLAYER_CHOSEN_TITLE, 0);
 
@@ -1068,7 +1068,7 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
     // start with every map explored
     if (sWorld->getBoolConfig(CONFIG_START_ALL_EXPLORED))
     {
-        for (uint8 i=0; i<PLAYER_EXPLORED_ZONES_SIZE; i++)
+        for (uint8 i = 0; i<PLAYER_EXPLORED_ZONES_SIZE; i++)
             SetFlag(PLAYER_EXPLORED_ZONES_1+i, 0xFFFFFFFF);
     }
 
@@ -1090,28 +1090,28 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
         // Factions depending on team, like cities and some more stuff
         switch (GetTeam())
         {
-        case ALLIANCE:
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(72), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(47), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(69), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(930), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(730), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(978), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(54), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(946), 42999);
-            break;
-        case HORDE:
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(76), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(68), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(81), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(911), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(729), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(941), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(530), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(947), 42999);
-            break;
-        default:
-            break;
+            case ALLIANCE:
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(72), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(47), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(69), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(930), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(730), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(978), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(54), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(946), 42999);
+                break;
+            case HORDE:
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(76), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(68), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(81), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(911), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(729), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(941), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(530), 42999);
+                GetReputationMgr().SetReputation(sFactionStore.LookupEntry(947), 42999);
+                break;
+            default:
+                break;
         }
     }
 
