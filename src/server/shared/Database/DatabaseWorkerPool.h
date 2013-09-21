@@ -203,6 +203,9 @@ class DatabaseWorkerPool
             T* t = GetFreeConnection();
             t->Execute(stmt);
             t->Unlock();
+
+            //! Delete proxy-class. Not needed anymore
+            delete stmt;
         }
 
         /**
