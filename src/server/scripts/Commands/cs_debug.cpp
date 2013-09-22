@@ -1166,12 +1166,21 @@ public:
         if (!*args)
             return false;
 
-        char* x = strtok((char*)args, " ");
-        char* y = strtok(NULL, " ");
-        char* z = strtok(NULL, " ");
+        char* tmpType = strtok((char*)args, " ");
+        char* tmpIndex = strtok(NULL, " ");
+        char* tmpOffset = strtok(NULL, " ");
+        char* tmpValue = strtok(NULL, " ");
 
-        if (!x || !y)
+        if (!tmpType || !tmpIndex)
             return false;
+
+        if (!tmpValue)
+            tmpValue = tmpOffset;
+
+        // Convert values
+        uint16 index = (uint16)atoi(tmpIndex);
+        uint8 offset = (uint8)atoi(tmpOffset);
+        std::string type = tmpType;
 
         WorldObject* target = handler->getSelectedObject();
         if (!target)
@@ -1181,30 +1190,45 @@ public:
             return false;
         }
 
-        uint64 guid = target->GetGUID();
-
-        uint32 opcode = (uint32)atoi(x);
-        if (opcode >= target->GetValuesCount())
+        if (type == "byte")
         {
-            handler->PSendSysMessage(LANG_TOO_BIG_INDEX, opcode, GUID_LOPART(guid), target->GetValuesCount());
-            return false;
+            uint8 value = (uint8)atoi(tmpValue);
+            target->SetByteValue(index, offset, value);
         }
-
-        bool isInt32 = true;
-        if (z)
-            isInt32 = (bool)atoi(z);
-
-        if (isInt32)
+        else if (type == "float")
         {
-            uint32 value = (uint32)atoi(y);
-            target->SetUInt32Value(opcode , value);
-            handler->PSendSysMessage(LANG_SET_UINT_FIELD, GUID_LOPART(guid), opcode, value);
+            float value = (float)atof(tmpValue);
+            target->SetFloatValue(index, value);
         }
-        else
+        else if (type == "uint32")
         {
-            float value = (float)atof(y);
-            target->SetFloatValue(opcode , value);
-            handler->PSendSysMessage(LANG_SET_FLOAT_FIELD, GUID_LOPART(guid), opcode, value);
+            uint32 value = (uint32)atoi(tmpValue);
+            target->SetUInt32Value(index, value);
+        }
+        else if (type == "uint16")
+        {
+            uint16 value = (uint16)atoi(tmpValue);
+            target->SetUInt16Value(index, offset, value);
+        }
+        else if (type == "uint64")
+        {
+            uint64 value = (uint64)atoi(tmpValue);
+            target->SetUInt64Value(index, value);
+        }
+        else if (type == "int32")
+        {
+            int32 value = (int32)atoi(tmpValue);
+            target->SetInt32Value(index, value);
+        }
+        else if (type == "int16")
+        {
+            int16 value = (int16)atoi(tmpValue);
+            target->SetInt16Value(index, offset, value);
+        }
+        else if (type == "statint32")
+        {
+            int32 value = (int32)atoi(tmpValue);
+            target->SetStatInt32Value(index, value);
         }
 
         return true;
