@@ -260,7 +260,6 @@ ChatCommand* ChatHandler::getCommandTable()
 
     static ChatCommand serverSetCommandTable[] =
     {
-        { "difftime",       SEC_CONSOLE,          true,  OldHandler<&ChatHandler::HandleServerSetDiffTimeCommand>,     "", NULL },
         { "loglevel",       SEC_CONSOLE,          true,  OldHandler<&ChatHandler::HandleServerSetLogLevelCommand>,     "", NULL },
         { "logfilelevel",   SEC_CONSOLE,          true,  OldHandler<&ChatHandler::HandleServerSetLogFileLevelCommand>, "", NULL },
         { "motd",           SEC_HEAD_GAMEMASTER,  true,  OldHandler<&ChatHandler::HandleServerSetMotdCommand>,         "", NULL },

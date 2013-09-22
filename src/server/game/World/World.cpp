@@ -109,9 +109,6 @@ World::World()
     m_defaultDbcLocale = LOCALE_enUS;
     m_availableDbcLocaleMask = 0;
 
-    m_updateTimeSum = 0;
-    m_updateTimeCount = 0;
-
     m_isClosed = false;
 
     m_CleaningFlags = 0;
@@ -1936,32 +1933,6 @@ void World::DetectDBCLang()
     sLog->outString();
 }
 
-void World::RecordTimeDiff(const char *text, ...)
-{
-    if (m_updateTimeCount != 1)
-        return;
-    if (!text)
-    {
-        m_currentTime = getMSTime();
-        return;
-    }
-
-    uint32 thisTime = getMSTime();
-    uint32 diff = getMSTimeDiff(m_currentTime, thisTime);
-
-    if (diff > m_int_configs[CONFIG_MIN_LOG_UPDATE])
-    {
-        va_list ap;
-        char str[256];
-        va_start(ap, text);
-        vsnprintf(str, 256, text, ap);
-        va_end(ap);
-        sLog->outError("Difftime %s: %u.", str, diff);
-    }
-
-    m_currentTime = thisTime;
-}
-
 void World::LoadAutobroadcasts()
 {
     uint32 oldMSTime = getMSTime();
@@ -1998,21 +1969,6 @@ void World::Update(uint32 diff)
 {
     m_updateTime = diff;
 
-    if (m_int_configs[CONFIG_INTERVAL_LOG_UPDATE] && diff > m_int_configs[CONFIG_MIN_LOG_UPDATE])
-    {
-        if (m_updateTimeSum > m_int_configs[CONFIG_INTERVAL_LOG_UPDATE])
-        {
-            sLog->outBasic("Update time diff: %u. Players online: %u.", m_updateTimeSum / m_updateTimeCount, GetActiveSessionCount());
-            m_updateTimeSum = m_updateTime;
-            m_updateTimeCount = 1;
-        }
-        else
-        {
-            m_updateTimeSum += m_updateTime;
-            ++m_updateTimeCount;
-        }
-    }
-
     ///- Update the different timers
     for (uint8 i = 0; i < WUPDATE_COUNT; ++i)
     {
@@ -2039,9 +1995,7 @@ void World::Update(uint32 diff)
         ResetRandomBG();
 
     /// <li> Handle session updates when the timer has passed
-    RecordTimeDiff(NULL);
     UpdateSessions(diff);
-    RecordTimeDiff("UpdateSessions");
 
     /// <li> Handle weather updates when the timer has passed
     if (m_timers[WUPDATE_WEATHERS].Passed())
@@ -2086,9 +2040,7 @@ void World::Update(uint32 diff)
 
     /// <li> Handle all other objects
     ///- Update objects when the timer has passed (maps, transport, creatures, ...)
-    RecordTimeDiff(NULL);
     sMapMgr->Update(diff);
-    RecordTimeDiff("UpdateMapMgr");
 
     if (sWorld->getBoolConfig(CONFIG_AUTOBROADCAST))
     {
@@ -2100,10 +2052,8 @@ void World::Update(uint32 diff)
     }
 
     sBattlegroundMgr->Update(diff);
-    RecordTimeDiff("UpdateBattlegroundMgr");
 
     sOutdoorPvPMgr->Update(diff);
-    RecordTimeDiff("UpdateOutdoorPvPMgr");
 
     ///- Delete all characters which have been deleted X days before
     if (m_timers[WUPDATE_DELETECHARS].Passed())

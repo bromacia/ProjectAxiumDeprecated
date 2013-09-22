@@ -240,7 +240,6 @@ class ChatHandler
         bool HandleServerToggleQueryLogging(const char* args);
 
         bool HandleServerSetLogFileLevelCommand(const char* args);
-        bool HandleServerSetDiffTimeCommand(const char* args);
 
         bool HandleUnBanAccountCommand(const char* args);
         bool HandleUnBanAccountByCharCommand(const char* args);
