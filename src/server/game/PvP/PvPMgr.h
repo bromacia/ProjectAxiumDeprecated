@@ -7,6 +7,8 @@ class Player;
 class Battleground;
 class ChatHandler;
 
+#define DAMAGE_RESET_TIME_MS 30000
+
 enum PvPTitle
 {
     TITLE_A_PRIVATE              = 1,
@@ -38,8 +40,6 @@ enum PvPTitle
     TITLE_H_WARLORD              = 27,
     TITLE_H_HIGH_WARLORD         = 28,
 };
-
-#define DAMAGE_RESET_TIME_MS 30000
 
 class PvPMgr
 {

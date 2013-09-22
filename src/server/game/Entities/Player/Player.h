@@ -1123,6 +1123,16 @@ struct PvPTargetDamageInformation
     PvPTargetDamageInformation() : AttackerGUIDLow(0), DamageDoneToVictim(0), LastDamageDeltTimer(0) { }
 };
 
+typedef std::list<PvPTargetDamageInformation> PvPTargetDamageInformationList;
+
+struct PlayerState
+{
+    uint32 Health;
+    uint32 Mana;
+    Unit::AuraApplicationMap Auras;
+    SpellCooldowns Cooldowns;
+};
+
 class Player : public Unit, public GridObject<Player>
 {
     friend class WorldSession;
@@ -1764,6 +1774,7 @@ class Player : public Unit, public GridObject<Player>
         PlayerSpellMap const& GetSpellMap() const { return m_spells; }
         PlayerSpellMap      & GetSpellMap()       { return m_spells; }
 
+        SpellCooldowns      & GetSpellCooldownMap()       { return m_spellCooldowns; }
         SpellCooldowns const& GetSpellCooldownMap() const { return m_spellCooldowns; }
 
         void AddSpellMod(SpellModifier* mod, bool apply);
@@ -1789,7 +1800,7 @@ class Player : public Unit, public GridObject<Player>
             return uint32(itr != m_spellCooldowns.end() && itr->second.end > t ? itr->second.end - t : 0);
         }
         void AddSpellAndCategoryCooldowns(SpellInfo const* spellInfo, uint32 itemId, Spell* spell = NULL, bool infinityCooldown = false);
-        void AddSpellCooldown(uint32 spell_id, uint32 itemid, time_t end_time, bool update = false);
+        void AddSpellCooldown(uint32 spellId, uint32 itemId, time_t endTime, bool update = false);
         void SendCooldownEvent(SpellInfo const* spellInfo, uint32 itemId = 0, Spell* spell = NULL, bool setCooldown = true);
         void ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs);
         void RemoveSpellCooldown(uint32 spell_id, bool update = false);
@@ -2627,7 +2638,8 @@ class Player : public Unit, public GridObject<Player>
         bool IsFrozen() { return m_isFrozen; }
         void SetIsFrozen(bool x) { m_isFrozen = x; }
 
-        std::list<PvPTargetDamageInformation> PvPTargetDamageInfo;
+        PvPTargetDamageInformationList PvPTargetDamageInfo;
+        PlayerState playerState;
 
         uint16 Get2v2MMR() const { return m_2v2MMR; }
         void Set2v2MMR(uint16 mmr) { m_2v2MMR = mmr; }

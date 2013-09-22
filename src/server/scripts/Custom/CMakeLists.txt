@@ -15,7 +15,6 @@ set(scripts_STAT_SRCS
   Custom/MallMgr.cpp
   Custom/MallMgr.h
   Custom/PrematureStart.cpp
-  Custom/reset_onduelend.cpp
   Custom/npc_teleport.cpp
   Custom/npc_beastmaster.cpp
   Custom/npc_class_trainer.cpp

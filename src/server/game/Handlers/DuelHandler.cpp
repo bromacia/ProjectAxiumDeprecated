@@ -23,6 +23,7 @@
 #include "Opcodes.h"
 #include "UpdateData.h"
 #include "Player.h"
+#include "DuelMgr.h"
 
 void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
 {
@@ -59,46 +60,9 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     {
         players[i]->duel->startTimer = now;
         players[i]->SendDuelCountdown(3000);
-        players[i]->SetIsDueling(true);
-
-        bool reset = false;
-
-        if (players[0]->IsInDuelingZone() || players[1]->IsInDuelingZone())
-            reset = true;
-
-        if (reset)
-        {
-            players[i]->RemoveAllNegativeAuras();
-            players[i]->SetHealth(players[i]->GetMaxHealth());
-            players[i]->SetPower(POWER_MANA, players[i]->GetMaxPower(POWER_MANA));
-            players[i]->SetPower(POWER_ENERGY, players[i]->GetMaxPower(POWER_ENERGY));
-            players[i]->SetPower(POWER_RAGE, 0);
-            players[i]->SetPower(POWER_RUNIC_POWER, 0);
-            players[i]->RemoveAllPlayerSpellCooldowns();
-            players[i]->ClearDiminishings();
-            players[i]->ClearComboPoints();
-            players[i]->ClearInCombat();
-            players[i]->getHostileRefManager().deleteReferences();
-            players[i]->RemoveAllTempSummons();
-
-            if (Pet* playerPet = players[i]->GetPet())
-            {
-                playerPet->SetIsDueling(true);
-
-                if (reset)
-                {
-                    playerPet->RemoveAllNegativeAuras();
-                    playerPet->SetHealth(playerPet->GetMaxHealth());
-                    playerPet->SetPower(POWER_MANA, playerPet->GetMaxPower(POWER_MANA));
-                    playerPet->SetPower(POWER_FOCUS, playerPet->GetMaxPower(POWER_FOCUS));
-                    playerPet->RemoveAllPetSpellCooldowns(players[i]);
-                    playerPet->ClearDiminishings();
-                    playerPet->ClearInCombat();
-                    playerPet->getHostileRefManager().deleteReferences();
-                }
-            }
-        }
     }
+
+    sDuelMgr->HandleDuelStart(players[0], players[1]);
 }
 
 void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recvPacket)

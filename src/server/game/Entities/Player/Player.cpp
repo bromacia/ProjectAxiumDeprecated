@@ -73,6 +73,7 @@
 #include "InstanceScript.h"
 #include <cmath>
 #include "AccountMgr.h"
+#include "DuelMgr.h"
 #include "../../../scripts/Custom/MallMgr.h"
 #include "../../../scripts/Custom/TransmogMgr.h"
 #include "../../../scripts/Custom/npc_class_trainer.cpp"
@@ -7565,6 +7566,7 @@ void Player::DuelComplete(DuelCompleteType type, bool delayed)
         SendMessageToSet(&data, true);
     }
 
+    sDuelMgr->HandleDuelEnd(duel->opponent, this, type);
     sScriptMgr->OnPlayerDuelEnd(duel->opponent, this, type);
 
     switch (type)
@@ -21271,19 +21273,20 @@ void Player::AddSpellAndCategoryCooldowns(SpellInfo const* spellInfo, uint32 ite
     }
 }
 
-void Player::AddSpellCooldown(uint32 spellid, uint32 itemid, time_t end_time, bool update)
+void Player::AddSpellCooldown(uint32 spellId, uint32 itemId, time_t endTime, bool update /*= false*/)
 {
-    SpellCooldown sc;
-    sc.end = end_time;
-    sc.itemid = itemid;
-    m_spellCooldowns[spellid] = sc;
+    SpellCooldown spellCooldown;
+    spellCooldown.end = endTime;
+    spellCooldown.itemid = itemId;
+    m_spellCooldowns[spellId] = spellCooldown;
+
     if (update)
     {
         WorldPacket data(SMSG_SPELL_COOLDOWN, 8 + 1 + 4 + 4);
         data << uint64(GetGUID());
         data << uint8(0);
-        data << uint32(spellid);
-        data << uint32((end_time - time(NULL)) * IN_MILLISECONDS);
+        data << uint32(spellId);
+        data << uint32((endTime - time(NULL)) * IN_MILLISECONDS);
         GetSession()->SendPacket(&data);
     }
 }

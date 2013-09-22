@@ -220,7 +220,6 @@ void AddBattlegroundScripts()
     void AddSC_Transmogrification();
     void AddSC_MallMgr();
     void AddSC_PrematureStart();
-    void AddSC_Reset_OnDuelEnd();
     void AddSC_npc_teleport();
     void AddSC_npc_beastmaster();
     void AddSC_npc_class_trainer();
@@ -232,7 +231,6 @@ void AddCustomScripts()
     AddSC_Transmogrification();
     AddSC_MallMgr();
     AddSC_PrematureStart();
-    AddSC_Reset_OnDuelEnd();
     AddSC_npc_teleport();
     AddSC_npc_beastmaster();
     AddSC_npc_class_trainer();
