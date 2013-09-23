@@ -108,8 +108,11 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
     }
     else
     {
-        player->SetHealth(player->playerState.Health);
-        player->SetPower(POWER_MANA, player->playerState.Mana);
+        if (player->playerState.Health)
+            player->SetHealth(player->playerState.Health);
+
+        if (player->playerState.Mana)
+            player->SetPower(POWER_MANA, player->playerState.Mana);
 
         Unit::AuraApplicationMap& auras = player->GetAppliedAuras();
         if (!auras.empty())
