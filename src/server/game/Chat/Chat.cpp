@@ -1067,6 +1067,9 @@ Player* ChatHandler::getSelectedPlayer()
     if (!m_session)
         return NULL;
 
+    if (!m_session->GetPlayer())
+        return NULL;
+
     uint64 guid  = m_session->GetPlayer()->GetSelection();
 
     if (guid == 0)
@@ -1078,6 +1081,9 @@ Player* ChatHandler::getSelectedPlayer()
 Unit* ChatHandler::getSelectedUnit()
 {
     if (!m_session)
+        return NULL;
+
+    if (!m_session->GetPlayer())
         return NULL;
 
     uint64 guid = m_session->GetPlayer()->GetSelection();
@@ -1093,6 +1099,9 @@ WorldObject* ChatHandler::getSelectedObject()
     if (!m_session)
         return NULL;
 
+    if (!m_session->GetPlayer())
+        return NULL;
+
     uint64 guid = m_session->GetPlayer()->GetSelection();
 
     if (guid == 0)
@@ -1104,6 +1113,9 @@ WorldObject* ChatHandler::getSelectedObject()
 Creature* ChatHandler::getSelectedCreature()
 {
     if (!m_session)
+        return NULL;
+
+    if (!m_session->GetPlayer())
         return NULL;
 
     return ObjectAccessor::GetCreatureOrPetOrVehicle(*m_session->GetPlayer(), m_session->GetPlayer()->GetSelection());
