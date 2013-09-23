@@ -2263,7 +2263,6 @@ class Unit : public WorldObject
         float m_positiveCastTimePrecent;
 
         bool IsInWorldPvPZone() const { return GetZoneId() == 3521; }
-        bool IsInDuelingZone() const { return GetMapId() == 603; }
 
         void SetIsDueling(bool x)
         {

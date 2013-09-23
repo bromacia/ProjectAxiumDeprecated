@@ -85,14 +85,6 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
         _player->TeleportTo(530, -388.62f, 7257.59f, 54.77f, 6.2f);
         return;
     }
-    else if (_player->IsInDuelingZone())
-    {
-        _player->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
-        _player->ResurrectPlayer(1.0f);
-        _player->SpawnCorpseBones();
-        _player->TeleportTo(603, 72.9814f, 47.8922f, 409.802f, 4.7f);
-        return;
-    }
     else if (_player->InBattleground() || _player->InArena())
     {
         _player->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
