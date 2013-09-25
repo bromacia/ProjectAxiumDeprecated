@@ -36,8 +36,6 @@
 #include "CliRunnable.h"
 #include "Log.h"
 #include "Master.h"
-#include "RARunnable.h"
-#include "TCSoap.h"
 #include "Timer.h"
 #include "Util.h"
 #include "AuthSocket.h"
@@ -186,8 +184,6 @@ int Master::Run()
         cliThread = new ACE_Based::Thread(new CliRunnable);
     }
 
-    ACE_Based::Thread rar_thread(new RARunnable);
-
     ///- Handle affinity for multiple processors and process priority on Windows
     #ifdef _WIN32
     {
@@ -231,15 +227,6 @@ int Master::Run()
         }
     }
     #endif
-    //Start soap serving thread
-    ACE_Based::Thread* soap_thread = NULL;
-
-    if (ConfigMgr::GetBoolDefault("SOAP.Enabled", false))
-    {
-        TCSoapRunnable* runnable = new TCSoapRunnable();
-        runnable->setListenArguments(ConfigMgr::GetStringDefault("SOAP.IP", "127.0.0.1"), ConfigMgr::GetIntDefault("SOAP.Port", 7878));
-        soap_thread = new ACE_Based::Thread(runnable);
-    }
 
     ///- Start up freeze catcher thread
     if (uint32 freeze_delay = ConfigMgr::GetIntDefault("MaxCoreStuckTime", 0))
@@ -266,20 +253,12 @@ int Master::Run()
 
     sWorldSocketMgr->Wait();
 
-    if (soap_thread)
-    {
-        soap_thread->wait();
-        soap_thread->destroy();
-        delete soap_thread;
-    }
-
     // set server offline
     LoginDatabase.DirectPExecute("UPDATE realmlist SET color = color | %u WHERE id = '%d'", REALM_FLAG_OFFLINE, realmID);
 
     // when the main thread closes the singletons get unloaded
     // since worldrunnable uses them, it will crash if unloaded after master
     world_thread.wait();
-    rar_thread.wait();
 
     ///- Clean database before leaving
     clearOnlineAccounts();

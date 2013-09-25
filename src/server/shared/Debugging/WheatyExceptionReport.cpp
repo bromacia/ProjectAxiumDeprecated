@@ -434,7 +434,6 @@ PEXCEPTION_POINTERS pExceptionInfo)
     GetLocalTime(&systime);
 
     // Start out with a banner
-    _tprintf(_T("Axium-Core"));
     _tprintf(_T("Date %u:%u:%u. Time %u:%u \r\n"), systime.wDay, systime.wMonth, systime.wYear, systime.wHour, systime.wMinute);
     PEXCEPTION_RECORD pExceptionRecord = pExceptionInfo->ExceptionRecord;
 
@@ -542,7 +541,7 @@ LPTSTR WheatyExceptionReport::GetExceptionString(DWORD dwCode)
 
     switch (dwCode)
     {
-        EXCEPTION(ACCESS_VIOLATION)
+            EXCEPTION(ACCESS_VIOLATION)
             EXCEPTION(DATATYPE_MISALIGNMENT)
             EXCEPTION(BREAKPOINT)
             EXCEPTION(SINGLE_STEP)

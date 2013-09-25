@@ -9,8 +9,6 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 file(GLOB_RECURSE sources_CommandLine CommandLine/*.cpp CommandLine/*.h)
-file(GLOB_RECURSE sources_RemoteAccess RemoteAccess/*.cpp RemoteAccess/*.h)
-file(GLOB_RECURSE sources_TCSoap TCSoap/*.cpp TCSoap/*.h)
 file(GLOB_RECURSE sources_WorldThread WorldThread/*.cpp WorldThread/*.h)
 file(GLOB sources_localdir *.cpp *.h)
 
@@ -28,8 +26,6 @@ endif()
 set(worldserver_SRCS
   ${worldserver_SRCS}
   ${sources_CommandLine}
-  ${sources_RemoteAccess}
-  ${sources_TCSoap}
   ${sources_WorldThread}
   ${sources_localdir}
 )
