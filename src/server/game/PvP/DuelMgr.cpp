@@ -135,6 +135,8 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
             }
         }
 
+        player->RemoveAllPlayerSpellCooldowns();
+
         if (!player->playerState.Cooldowns.empty())
         {
             for (SpellCooldowns::const_iterator itr = player->playerState.Cooldowns.begin(); itr != player->playerState.Cooldowns.end(); ++itr)
