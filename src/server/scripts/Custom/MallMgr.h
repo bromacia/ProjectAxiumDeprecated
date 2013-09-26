@@ -306,10 +306,4 @@ class MallMgr : public CreatureScript
                 default:                   return "Error";
             }
         }
-        bool IsPhraseInString(std::string stringToSearch, std::string searchPhrase)
-        {
-            if (stringToSearch.find(searchPhrase, 0) != std::string::npos)
-                return true;
-            return false;
-        }
 };
