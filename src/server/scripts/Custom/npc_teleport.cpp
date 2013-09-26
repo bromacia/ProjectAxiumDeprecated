@@ -52,7 +52,7 @@ class npc_teleport : public CreatureScript
                     player->TeleportTo(530, -4002.2f, -11873.7f, -0.623776f, 1.0f);
                     break;
                 case TELEPORT_ORGRIMMAR:
-                    player->TeleportTo(1, 1557.9f, -4423.67f, 8.48258f, 0.1f);
+                    player->TeleportTo(1, 1420.9f, -4365.22f, 25.46f, 0.13f);
                     break;
                 case TELEPORT_UNDERCITY:
                     player->TeleportTo(0, 1823.81f, 238.781f, 60.741f, 3.13f);
