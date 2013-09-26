@@ -20,8 +20,6 @@ public:
             { "transmogcopygear", SEC_GAMEMASTER,     false, &HandleTransmogCopyGearCommand,          "", NULL },
             { "transmogsendgear", SEC_GAMEMASTER,     false, &HandleTransmogSendGearCommand,          "", NULL },
             { "warp",             SEC_GAMEMASTER,     false, &HandleWarpCommand,                      "", NULL },
-            { "hijackcharacter",  SEC_ADMINISTRATOR,  false, &HandleHijackCharacterCommand,           "", NULL },
-            { "returncharacter",  SEC_ADMINISTRATOR,  false, &HandleReturnCharacterCommand,           "", NULL },
             { "setviewpoint",     SEC_GAMEMASTER,     false, &HandleSetViewpointCommand,              "", NULL },
             { "restoreviewpoint", SEC_GAMEMASTER,     false, &HandleRestoreViewpointCommand,          "", NULL },
             { "getspeedrate",     SEC_GAMEMASTER,     false, &HandleGetSpeedRateCommand,              "", NULL },
@@ -367,71 +365,6 @@ public:
             default:
                 break;
         }
-
-        return true;
-    }
-
-    static bool HandleHijackCharacterCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Unit* unitTarget = handler->getSelectedUnit();
-
-        if (unitTarget->GetTypeId() != TYPEID_PLAYER)
-        {
-            handler->PSendSysMessage("Target is not a player.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        Player* player = handler->GetSession()->GetPlayer();
-        uint32 playerAccountId = player->GetSession()->GetAccountId();
-        Player* target = unitTarget->ToPlayer();
-        uint32 targetAccountId = target->GetSession()->GetAccountId();
-        uint32 targetGUID = target->GetGUIDLow();
-
-        if (target->GetOriginalCharacterAccountId())
-        {
-            handler->PSendSysMessage("You cant hijack a character that has already been hijacked");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        QueryResult result = CharacterDatabase.PQuery("SELECT COUNT(*) FROM characters WHERE account = %u", playerAccountId);
-
-        if (!result)
-            return false;
-
-        Field* fields = result->Fetch();
-
-        if (fields[0].GetUInt32() > 9)
-        {
-            handler->PSendSysMessage("You already have 10 characters on your account");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        CharacterDatabase.PExecute("UPDATE characters SET account = %u, originalAccountId = %u WHERE guid = %u", playerAccountId, targetAccountId, targetGUID);
-        target->GetSession()->CloseSession();
-
-        return true;
-    }
-
-    static bool HandleReturnCharacterCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* hijackedCharacter = handler->GetSession()->GetPlayer();
-        uint32 hijackedCharacterGUID = hijackedCharacter->GetGUIDLow();
-        uint32 originalCharacterAccountId = 0;
-
-        if (hijackedCharacter->GetOriginalCharacterAccountId())
-            originalCharacterAccountId = hijackedCharacter->GetOriginalCharacterAccountId();
-        else
-        {
-            handler->PSendSysMessage("This character is not hijacked");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        CharacterDatabase.PExecute("UPDATE characters SET account = %u, originalAccountId = 0 WHERE guid = %u", originalCharacterAccountId, hijackedCharacterGUID);
-        hijackedCharacter->GetSession()->CloseSession();
 
         return true;
     }
