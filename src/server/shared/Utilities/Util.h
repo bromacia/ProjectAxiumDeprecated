@@ -380,42 +380,6 @@ uint32 CreatePIDFile(const std::string& filename);
 void hexEncodeByteArray(uint8* bytes, uint32 arrayLen, std::string& result);
 std::string ByteArrayToHexStr(uint8* bytes, uint32 length);
 
-inline void StringToUpper(std::string &str)
-{
-    if (str.length() > UINT16_MAX)
-        return;
-
-    std::string tempStr = str;
-    char* cStr = new char[tempStr.length() + 1];
-    strncpy(cStr, tempStr.c_str(), tempStr.length());
-
-    for (uint16 i = 0; i < strlen(cStr); ++i)
-        toupper(cStr[i]);
-
-    tempStr = cStr;
-
-    delete[] cStr;
-    str = tempStr;
-}
-
-inline void StringToLower(std::string &str)
-{
-    if (str.length() > UINT16_MAX)
-        return;
-
-    std::string tempStr = str;
-    char* cStr = new char[tempStr.length() + 1];
-    strncpy(cStr, tempStr.c_str(), tempStr.length());
-
-    for (uint16 i = 0; i < strlen(cStr); ++i)
-        tolower(cStr[i]);
-
-    tempStr = cStr;
-
-    delete[] cStr;
-    str = tempStr;
-}
-
 inline bool IsPhraseInString(std::string stringToSearch, std::string searchPhrase)
 {
     if (stringToSearch.find(searchPhrase, 0) != std::string::npos)
