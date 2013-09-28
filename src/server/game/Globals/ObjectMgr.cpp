@@ -1911,6 +1911,12 @@ bool ObjectMgr::GetPlayerNameByGUID(uint64 guid, std::string &name) const
         return true;
     }
 
+    if (const CharacterNameData* nameData = sWorld->GetCharacterNameData(GUID_LOPART(guid)))
+    {
+        name = nameData->m_name;
+        return true;
+    }
+
     QueryResult result = CharacterDatabase.PQuery("SELECT name FROM characters WHERE guid = '%u'", GUID_LOPART(guid));
 
     if (result)
@@ -1928,6 +1934,12 @@ bool ObjectMgr::GetPlayerNameByGUIDLow(uint32 GUIDLow, std::string &name) const
     if (Player* player = GetPlayerByLowGUID(GUIDLow))
     {
         name = player->GetName();
+        return true;
+    }
+
+    if (const CharacterNameData* nameData = sWorld->GetCharacterNameData(GUIDLow))
+    {
+        name = nameData->m_name;
         return true;
     }
 
