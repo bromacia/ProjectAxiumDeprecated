@@ -143,7 +143,7 @@ Battleground::Battleground()
     m_ArenaType         = 0;
     m_IsArena           = false;
     m_Winner            = 2;
-    m_StartTime         = 0;
+    m_Duration          = 0;
     m_ResetStatTimer    = 0;
     m_Events            = 0;
     m_IsRated           = false;
@@ -269,7 +269,7 @@ void Battleground::Update(uint32 diff)
             // after 20 minutes without one team losing, the arena closes with no winner and no rating change
             if (isArena())
             {
-                if (GetStartTime() >= ARENA_TIME_LIMIT)
+                if (m_Duration >= ARENA_TIME_LIMIT)
                 {
                     UpdateArenaWorldState();
                     CheckArenaAfterTimerConditions();
@@ -293,7 +293,7 @@ void Battleground::Update(uint32 diff)
     }
 
     // Update start time and reset stats timer
-    m_StartTime += diff;
+    m_Duration += diff;
     m_ResetStatTimer += diff;
 
     PostUpdateImpl(diff);
@@ -490,7 +490,7 @@ inline void Battleground::_ProcessJoin(uint32 diff)
                     WorldPacket status;
                     BattlegroundQueueTypeId bgQueueTypeId = sBattlegroundMgr->BGQueueTypeId(m_TypeID, GetArenaType());
                     uint32 queueSlot = player->GetBattlegroundQueueIndex(bgQueueTypeId);
-                    sBattlegroundMgr->BuildBattlegroundStatusPacket(&status, this, queueSlot, STATUS_IN_PROGRESS, 0, GetStartTime(), GetArenaType());
+                    sBattlegroundMgr->BuildBattlegroundStatusPacket(&status, this, queueSlot, STATUS_IN_PROGRESS, 0, m_Duration, GetArenaType());
                     player->GetSession()->SendPacket(&status);
 
                     player->RemoveAurasDueToSpell(SPELL_ARENA_PREPARATION);
@@ -751,7 +751,7 @@ void Battleground::EndBattleground(uint32 winner)
                 SetArenaTeamRatingChangeForTeam(GetOtherTeam(winner), loser_change);
                 sLog->outArena("Arena match Type: %u for Team1Id: %u - Team2Id: %u ended. WinnerTeamId: %u. Winner rating: +%d, Loser rating: %d", m_ArenaType, m_ArenaTeamIds[BG_TEAM_ALLIANCE], m_ArenaTeamIds[BG_TEAM_HORDE], winner_arena_team->GetId(), winner_change, loser_change);
                 if (sWorld->getBoolConfig(CONFIG_ARENA_LOG_EXTENDED_INFO))
-                    for (Battleground::BattlegroundScoreMap::const_iterator itr = GetPlayerScoresBegin(); itr != GetPlayerScoresEnd(); ++itr)
+                    for (Battleground::BattlegroundScoreMap::const_iterator itr = m_PlayerScores.begin(); itr != m_PlayerScores.end(); ++itr)
                         if (Player* player = ObjectAccessor::FindPlayer(itr->first))
                             sLog->outArena("Statistics for %s (GUID: " UI64FMTD ", Team: %d, IP: %s): %u damage, %u healing, %u killing blows", player->GetName(), itr->first, player->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3), player->GetSession()->GetRemoteAddress().c_str(), itr->second->DamageDone, itr->second->HealingDone, itr->second->KillingBlows);
             }
@@ -872,7 +872,7 @@ void Battleground::EndBattleground(uint32 winner)
         player->GetSession()->SendPacket(&data);
 
         BattlegroundQueueTypeId bgQueueTypeId = BattlegroundMgr::BGQueueTypeId(GetTypeID(), GetArenaType());
-        sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, TIME_TO_AUTOREMOVE, GetStartTime(), GetArenaType());
+        sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, TIME_TO_AUTOREMOVE, m_Duration, GetArenaType());
         player->GetSession()->SendPacket(&data);
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND, 1);
     }
@@ -1046,7 +1046,7 @@ void Battleground::Reset()
 {
     SetWinner(WINNER_NONE);
     SetStatus(STATUS_WAIT_QUEUE);
-    SetStartTime(0);
+    m_Duration = 0;
     SetEndTime(0);
     SetLastResurrectTime(0);
     SetArenaType(0);
@@ -1073,7 +1073,7 @@ void Battleground::Reset()
 
 void Battleground::StartBattleground()
 {
-    SetStartTime(0);
+    m_Duration = 0;
     SetLastResurrectTime(0);
     // add BG to free slot queue
     AddToBGFreeSlotQueue();
@@ -1114,7 +1114,7 @@ void Battleground::AddPlayer(Player* player)
     WorldPacket status;
     BattlegroundQueueTypeId bgQueueTypeId = sBattlegroundMgr->BGQueueTypeId(m_TypeID, GetArenaType());
     uint32 queueSlot = player->GetBattlegroundQueueIndex(bgQueueTypeId);
-    sBattlegroundMgr->BuildBattlegroundStatusPacket(&status, this, queueSlot, STATUS_IN_PROGRESS, 0, GetStartTime(), GetArenaType(), isArena() ? 0 : 1);
+    sBattlegroundMgr->BuildBattlegroundStatusPacket(&status, this, queueSlot, STATUS_IN_PROGRESS, 0, m_Duration, GetArenaType(), isArena() ? 0 : 1);
     player->GetSession()->SendPacket(&status);
 
     player->RemoveAurasByType(SPELL_AURA_MOUNTED);
@@ -1382,6 +1382,8 @@ void Battleground::UpdatePlayerScore(Player* Source, uint32 type, uint32 value, 
             break;
         case SCORE_HONORABLE_KILLS:                         // Honorable kills
             itr->second->HonorableKills += value;
+            if (Source->IsHealingSpec())
+                sPvPMgr->HandleBattlegroundHonorableKill(Source);
             break;
         case SCORE_BONUS_HONOR:                             // Honor bonus
             // do not add honor in arenas
@@ -1834,7 +1836,7 @@ void Battleground::PlayerAddedToBGCheckIfBGIsRunning(Player* player)
     sBattlegroundMgr->BuildPvpLogDataPacket(&data, this);
     player->GetSession()->SendPacket(&data);
 
-    sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, GetEndTime(), GetStartTime(), GetArenaType());
+    sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, GetEndTime(), m_Duration, GetArenaType());
     player->GetSession()->SendPacket(&data);
 }
 

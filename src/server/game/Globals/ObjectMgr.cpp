@@ -1922,6 +1922,26 @@ bool ObjectMgr::GetPlayerNameByGUID(uint64 guid, std::string &name) const
     return false;
 }
 
+bool ObjectMgr::GetPlayerNameByGUIDLow(uint32 GUIDLow, std::string &name) const
+{
+    // prevent DB access for online player
+    if (Player* player = GetPlayerByLowGUID(GUIDLow))
+    {
+        name = player->GetName();
+        return true;
+    }
+
+    QueryResult result = CharacterDatabase.PQuery("SELECT name FROM characters WHERE guid = '%u'", GUIDLow);
+
+    if (result)
+    {
+        name = (*result)[0].GetString();
+        return true;
+    }
+
+    return false;
+}
+
 uint32 ObjectMgr::GetPlayerTeamByGUID(uint64 guid) const
 {
     // prevent DB access for online player

@@ -48,6 +48,7 @@ void AddSC_learn_commandscript();
 void AddSC_misc_commandscript();
 void AddSC_modify_commandscript();
 void AddSC_npc_commandscript();
+void AddSC_pvp_commandscript();
 void AddSC_quest_commandscript();
 void AddSC_reload_commandscript();
 void AddSC_tele_commandscript();
@@ -140,6 +141,7 @@ void AddCommandScripts()
     AddSC_misc_commandscript();
     AddSC_modify_commandscript();
     AddSC_npc_commandscript();
+    AddSC_pvp_commandscript();
     AddSC_quest_commandscript();
     AddSC_reload_commandscript();
     AddSC_tele_commandscript();

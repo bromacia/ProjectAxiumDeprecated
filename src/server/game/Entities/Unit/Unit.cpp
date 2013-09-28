@@ -612,7 +612,7 @@ void Unit::DealDamageMods(Unit* victim, uint32 &damage, uint32* absorb)
         *absorb += (originalDamage - damage);
 }
 
-uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDamage, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellInfo const* spellProto, bool durabilityLoss)
+uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDamage, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellInfo const* spellProto, bool durabilityLoss, bool command)
 {
     if (victim->IsAIEnabled)
         victim->GetAI()->DamageTaken(this, damage);
@@ -789,14 +789,15 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
                 killer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_SPECIAL_PVP_KILL, 1, 0, victim);
         }
 
-        if (GetTypeId() == TYPEID_PLAYER && victim->GetTypeId() == TYPEID_PLAYER)
-        {
-            // The victim was one shotted
+        if (!command)
             if (damage >= victim->GetMaxHealth())
-                sPvPMgr->HandlePvPKill((Player*)victim, (Player*)this);
-
-            sPvPMgr->HandlePvPKill((Player*)victim);
-        }
+                if (Player* pAttacker = ToPlayer())
+                    if (Player* pVictim = victim->ToPlayer())
+                        if (pAttacker != pVictim)
+                            if (!pAttacker->IsHealingSpec())
+                                sPvPMgr->HandleOneShotPvPKill(pAttacker, pVictim);
+                            else
+                                sPvPMgr->HandleNormalPvPKill(pVictim);
 
         Kill(victim, durabilityLoss);
     }
@@ -804,12 +805,15 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
     {
         sLog->outStaticDebug("DealDamageAlive");
 
-        if (victim->GetTypeId() == TYPEID_PLAYER)
+        if (Player* pVictim = victim->ToPlayer())
         {
-            if (GetTypeId() == TYPEID_PLAYER)
-                sPvPMgr->HandleDealDamage((Player*)this, (Player*)victim, damage);
+            if (!command)
+                if (Player* pAttacker = ToPlayer())
+                    if (pAttacker != pVictim)
+                        if (!pAttacker->IsHealingSpec())
+                            sPvPMgr->HandleDealDamage(pAttacker, pVictim, damage);
 
-            victim->ToPlayer()->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED, damage);
+            pVictim->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED, damage);
         }
 
         victim->ModifyHealth(-(int32)damage);
@@ -11489,12 +11493,14 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, ui
 {
     if (Player* player = ToPlayer())
     {
-        if (player->IsInWorldPvPZone())
+        if (player->IsInWorldPvPZone() && !player->IsInWorldPvPZoneMall())
         {
-            if (player->IsHealingSpec())
+            if (victim != this)
                 return 0;
 
-            if (victim != this)
+            if (player->IsHealingSpec())
+                return 0;
+            else if (!player->IsDamageSpec() && !player->IsTankingSpec() && !player->IsHealingSpec())
                 return 0;
         }
     }
@@ -16432,6 +16438,10 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
         else if (GetTypeId() == TYPEID_PLAYER && victim != this)
             victim->ToPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER, 1, ToPlayer()->GetTeam());
     }
+
+    if (Player* pVictim = victim->ToPlayer())
+        if (pVictim->HasPvPTargetDamageInfo())
+            sPvPMgr->HandleNormalPvPKill(pVictim);
 
     // Hook for OnPVPKill Event
     if (Player* killerPlr = ToPlayer())

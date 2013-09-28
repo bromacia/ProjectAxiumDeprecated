@@ -351,7 +351,7 @@ class Battleground
         uint32 GetInstanceID() const        { return m_InstanceID; }
         BattlegroundStatus GetStatus() const { return m_Status; }
         uint32 GetClientInstanceID() const  { return m_ClientInstanceID; }
-        uint32 GetStartTime() const         { return m_StartTime; }
+        uint32 GetDuration() const          { return m_Duration; }
         uint32 GetEndTime() const           { return m_EndTime; }
         uint32 GetLastResurrectTime() const { return m_LastResurrectTime; }
         uint32 GetMaxPlayers() const        { return m_MaxPlayers; }
@@ -379,7 +379,7 @@ class Battleground
         void SetInstanceID(uint32 InstanceID) { m_InstanceID = InstanceID; }
         void SetStatus(BattlegroundStatus Status) { m_Status = Status; }
         void SetClientInstanceID(uint32 InstanceID) { m_ClientInstanceID = InstanceID; }
-        void SetStartTime(uint32 Time)      { m_StartTime = Time; }
+        void SetDuration(uint32 Time)       { m_Duration = Time; }
         void SetEndTime(uint32 Time)        { m_EndTime = Time; }
         void SetLastResurrectTime(uint32 Time) { m_LastResurrectTime = Time; }
         void SetMaxPlayers(uint32 MaxPlayers) { m_MaxPlayers = MaxPlayers; }
@@ -417,8 +417,7 @@ class Battleground
         uint32 GetPlayersSize() const { return m_Players.size(); }
 
         typedef std::map<uint64, BattlegroundScore*> BattlegroundScoreMap;
-        BattlegroundScoreMap::const_iterator GetPlayerScoresBegin() const { return m_PlayerScores.begin(); }
-        BattlegroundScoreMap::const_iterator GetPlayerScoresEnd() const { return m_PlayerScores.end(); }
+        BattlegroundScoreMap const& GetPlayerScores() const { return m_PlayerScores; }
         uint32 GetPlayerScoresSize() const { return m_PlayerScores.size(); }
 
         uint32 GetReviveQueueSize() const { return m_ReviveQueue.size(); }
@@ -634,7 +633,7 @@ class Battleground
         uint32 m_InstanceID;                                // Battleground Instance's GUID!
         BattlegroundStatus m_Status;
         uint32 m_ClientInstanceID;                          // the instance-id which is sent to the client and without any other internal use
-        uint32 m_StartTime;
+        uint32 m_Duration;
         uint32 m_ResetStatTimer;
         int32 m_EndTime;                                    // it is set to 120000 when bg is ending and it decreases itself
         uint32 m_LastResurrectTime;

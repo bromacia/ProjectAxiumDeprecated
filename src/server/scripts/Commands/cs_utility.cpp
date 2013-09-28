@@ -22,19 +22,18 @@ public:
             { "warp",             SEC_GAMEMASTER,     false, &HandleWarpCommand,                      "", NULL },
             { "setviewpoint",     SEC_GAMEMASTER,     false, &HandleSetViewpointCommand,              "", NULL },
             { "restoreviewpoint", SEC_GAMEMASTER,     false, &HandleRestoreViewpointCommand,          "", NULL },
-            { "getspeedrate",     SEC_GAMEMASTER,     false, &HandleGetSpeedRateCommand,              "", NULL },
-            { "getmoveflags",     SEC_GAMEMASTER,     false, &HandleGetMoveFlagsCommand,              "", NULL },
-            { "getunitstate",     SEC_GAMEMASTER,     false, &HandleGetUnitStateCommand,              "", NULL },
+            { "speed",            SEC_GAMEMASTER,     false, &HandleSpeedCommand,                     "", NULL },
+            { "movementflags",    SEC_GAMEMASTER,     false, &HandleMovementFlagsCommand,             "", NULL },
+            { "unitstate",        SEC_GAMEMASTER,     false, &HandleUnitStateCommand,                 "", NULL },
             { "itemid",           SEC_GAMEMASTER,     false, &HandleItemIdCommand,                    "", NULL },
             { "spellid",          SEC_GAMEMASTER,     false, &HandleSpellIdCommand,                   "", NULL },
             { "coeff",            SEC_GAMEMASTER,     false, &HandleCoeffCommand,                     "", NULL },
-            { "mmr",              SEC_PLAYER,         false, &HandleMMRCommand,                       "", NULL },
             { NULL,               0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
         {
-            { "utility",         SEC_PLAYER,         false, NULL,                     "", utilityCommandTable },
-            { NULL,              0,                  false, NULL,                                    "", NULL }
+            { "utility",          SEC_PLAYER,         false, NULL,                     "", utilityCommandTable },
+            { NULL,               0,                  false, NULL,                                    "", NULL }
         };
         return commandTable;
     }
@@ -100,12 +99,12 @@ public:
             player->ResurrectPlayer(1.0f);
             player->SpawnCorpseBones();
             player->SaveToDB();
-            player->RemoveAllPlayerSpellCooldowns();
             player->RemoveAllNegativeAuras();
             player->ClearDiminishings();
             player->ClearComboPoints();
             player->ClearInCombat();
             player->getHostileRefManager().deleteReferences();
+            player->RemoveAllPlayerSpellCooldowns();
             if (player->IsGMInvisible())
                 if (!player->HasAura(44816))
                     player->AddAura(44816, player);
@@ -369,7 +368,7 @@ public:
         return true;
     }
 
-    static bool HandleGetSpeedRateCommand(ChatHandler* handler, const char* args)
+    static bool HandleSpeedCommand(ChatHandler* handler, const char* args)
     {
         if (!*args)
             return false;
@@ -411,7 +410,7 @@ public:
         return true;
     }
 
-    static bool HandleGetMoveFlagsCommand(ChatHandler* handler, const char* /*args*/)
+    static bool HandleMovementFlagsCommand(ChatHandler* handler, const char* /*args*/)
     {
         Unit* target = handler->getSelectedUnit();
         if (!target)
@@ -522,7 +521,7 @@ public:
         return true;
     }
 
-    static bool HandleGetUnitStateCommand(ChatHandler* handler, const char* /*args*/)
+    static bool HandleUnitStateCommand(ChatHandler* handler, const char* /*args*/)
     {
         Unit* target = handler->getSelectedUnit();
         if (!target)
@@ -717,40 +716,20 @@ public:
         if (!spellId)
             return false;
 
-        SpellInfo const* spell = sSpellMgr->GetSpellInfo(spellId);
-
-        if (!spell)
+        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
+        if (!spellInfo)
             return false;
 
-        float spell_dotDamage = sSpellMgr->GetSpellDotBonus(spell);
-        float spell_directDamage = sSpellMgr->GetSpellDirectBonus(spell);
-        float spell_apDotBonus = sSpellMgr->GetAPDotBonus(spell);
-        float spell_apBonus = sSpellMgr->GetAPBonus(spell);
+        float spell_dotDamage = sSpellMgr->GetSpellDotBonus(spellInfo);
+        float spell_directDamage = sSpellMgr->GetSpellDirectBonus(spellInfo);
+        float spell_apDotBonus = sSpellMgr->GetAPDotBonus(spellInfo);
+        float spell_apBonus = sSpellMgr->GetAPBonus(spellInfo);
 
         handler->PSendSysMessage("Spell Id: %u", spellId);
         handler->PSendSysMessage("Spell Dot Bonus: %f", spell_dotDamage);
         handler->PSendSysMessage("Spell Direct Bonus: %f", spell_directDamage);
         handler->PSendSysMessage("AP Dot Bonus: %f", spell_apDotBonus);
         handler->PSendSysMessage("AP Bonus: %f", spell_apBonus);
-        return true;
-    }
-
-    static bool HandleMMRCommand(ChatHandler* handler, const char* args)
-    {
-        uint64 targetGUID;
-        std::string targetName;
-
-        uint32 parseGUID = MAKE_NEW_GUID(atol((char*)args), 0, HIGHGUID_PLAYER);
-
-        if (sObjectMgr->GetPlayerNameByGUID(parseGUID, targetName))
-            targetGUID = parseGUID;
-        else if (!handler->extractPlayerTarget((char*)args, 0, &targetGUID, &targetName))
-            return false;
-
-        handler->PSendSysMessage("Player: %s", targetName);
-        handler->PSendSysMessage("2v2 MMR: %u", sPvPMgr->Get2v2MMRByGUIDLow(GUID_LOPART(targetGUID)));
-        handler->PSendSysMessage("3v3 MMR: %u", sPvPMgr->Get3v3MMRByGUIDLow(GUID_LOPART(targetGUID)));
-        handler->PSendSysMessage("5v5 MMR: %u", sPvPMgr->Get5v5MMRByGUIDLow(GUID_LOPART(targetGUID)));
         return true;
     }
 };

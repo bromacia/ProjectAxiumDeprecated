@@ -1116,14 +1116,11 @@ private:
 
 struct PvPTargetDamageInformation
 {
-    uint32 AttackerGUIDLow;
+    PvPTargetDamageInformation() : DamageDoneToVictim(0), LastDamageDealtTimer(0) {}
+
     uint32 DamageDoneToVictim;
-    uint32 LastDamageDeltTimer;
-
-    PvPTargetDamageInformation() : AttackerGUIDLow(0), DamageDoneToVictim(0), LastDamageDeltTimer(0) { }
+    uint32 LastDamageDealtTimer;
 };
-
-typedef std::list<PvPTargetDamageInformation> PvPTargetDamageInformationList;
 
 struct PlayerState
 {
@@ -2601,16 +2598,16 @@ class Player : public Unit, public GridObject<Player>
         bool IsAdministrator() const { if (GetSession()->GetSecurity() == SEC_ADMINISTRATOR) return true; return false; }
         bool IsConsole() const { if (GetSession()->GetSecurity() == SEC_CONSOLE) return true; return false; }
 
-        void SetMovementBlocked(bool x) { blockedMovement = x; }
         bool IsMovementBlocked() const { return blockedMovement; }
+        void SetMovementBlocked(bool x) { blockedMovement = x; }
 
-        void SetMorphed(bool x) { m_isMorphed = x; }
         bool IsMorphed() const { return m_isMorphed; }
-        void SetNoggenfoggerMorphed(bool x) { m_isNoggenfoggerMorphed = x; }
+        void SetMorphed(bool x) { m_isMorphed = x; }
         bool IsNoggenfoggerMorphed() const { return m_isNoggenfoggerMorphed; }
+        void SetNoggenfoggerMorphed(bool x) { m_isNoggenfoggerMorphed = x; }
 
-        void SetSelectedTransmogItemSlot(uint8 slot) { m_selectedTransmogItemSlot = slot; }
         uint8 GetSelectedTransmogItemSlot() const { return m_selectedTransmogItemSlot; }
+        void SetSelectedTransmogItemSlot(uint8 slot) { m_selectedTransmogItemSlot = slot; }
 
         void SetWantsPrematureBattleGroundStart(bool x) { m_wantsPrematureBattleGroundStart = x; }
         bool WantsPrematureBattleGroundStart() const { return m_wantsPrematureBattleGroundStart; }
@@ -2630,13 +2627,18 @@ class Player : public Unit, public GridObject<Player>
         uint32 lastAppearTime;
         uint32 lastTeleportTime;
 
-        void SetIsJumping(bool x) { m_isJumping = x; }
         bool IsJumping() const { return m_isJumping; }
+        void SetIsJumping(bool x) { m_isJumping = x; }
 
-        bool IsFrozen() { return m_isFrozen; }
+        bool IsFrozen() const { return m_isFrozen; }
         void SetIsFrozen(bool x) { m_isFrozen = x; }
 
-        PvPTargetDamageInformationList PvPTargetDamageInfo;
+        typedef std::map<uint32, PvPTargetDamageInformation> PvPTargetDamageInformationMap;
+        PvPTargetDamageInformationMap PvPTargetDamageInfo;
+
+        bool HasPvPTargetDamageInfo() const { return m_HasPvPTargetDamageInfo; }
+        void SetPvPTargetDamageInfo(bool x) { m_HasPvPTargetDamageInfo = x; }
+
         PlayerState playerState;
 
         uint16 Get2v2MMR() const { return m_2v2MMR; }
@@ -2677,6 +2679,9 @@ class Player : public Unit, public GridObject<Player>
         void SetLifetime5v5Wins(uint16 wins) { m_Lifetime5v5Wins = wins; }
         uint16 GetLifetime5v5Games() const { return m_Lifetime5v5Games; }
         void SetLifetime5v5Games(uint16 games) { m_Lifetime5v5Games = games; }
+
+        bool HasPvPNotificationsEnabled() const { return m_PvPNotificationsEnabled; }
+        void SetPvPNotificationsEnabled(bool x) { m_PvPNotificationsEnabled = x; }
 
         bool HasDelayedOperation(uint32 operation) { return (m_DelayedOperations & operation); }
 
@@ -3055,6 +3060,9 @@ class Player : public Unit, public GridObject<Player>
         uint16 m_Lifetime5v5MMR;
         uint16 m_Lifetime5v5Wins;
         uint16 m_Lifetime5v5Games;
+
+        bool m_HasPvPTargetDamageInfo;
+        bool m_PvPNotificationsEnabled;
 
         bool m_delayDuelFinish;
 };

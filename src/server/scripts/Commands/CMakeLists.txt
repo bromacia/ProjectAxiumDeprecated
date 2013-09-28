@@ -26,6 +26,7 @@ set(scripts_STAT_SRCS
   Commands/cs_modify.cpp
   Commands/cs_morph.cpp
   Commands/cs_npc.cpp
+  Commands/cs_pvp.cpp
   Commands/cs_quest.cpp
   Commands/cs_reload.cpp
   Commands/cs_tele.cpp

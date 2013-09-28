@@ -912,6 +912,14 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_Lifetime5v5Wins = 0;
     m_Lifetime5v5Games = 0;
 
+    PvPTargetDamageInfo.clear();
+    m_HasPvPTargetDamageInfo = false;
+
+    playerState.Health = 0;
+    playerState.Mana = 0;
+    playerState.Auras.clear();
+    playerState.Cooldowns.clear();
+
     m_delayDuelFinish = false;
 }
 
@@ -16458,7 +16466,10 @@ void Player::_LoadPvPStats()
                                                  "FROM character_pvp_stats WHERE guid = %u", GetGUIDLow());
 
     if (!result)
+    {
+        CharacterDatabase.PExecute("INSERT INTO character_pvp_stats (guid) VALUES (%u)", GetGUIDLow());
         return;
+    }
 
     Field* fields = result->Fetch();
     m_PvPRating = fields[0].GetUInt16();
@@ -16602,8 +16613,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     //"arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk, "
     // 50      51      52      53      54      55      56      57      58           59         60          61             62              63      64           65
     //"health, power1, power2, power3, power4, power5, power6, power7, instance_id, speccount, activespec, exploredZones, equipmentCache, ammoId, knownTitles, actionBars, "
-    // 66               67                 68
-    //"grantableLevels, originalAccountId, isFrozen "
+    // 66               67        68
+    //"grantableLevels, isFrozen, pvpNotificationsEnabled "
     //"FROM characters WHERE guid = '%u'", guid);
     PreparedQueryResult result = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
@@ -17236,6 +17247,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     _LoadEquipmentSets(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS));
 
     m_isFrozen = fields[67].GetBool();
+
+    m_PvPNotificationsEnabled = fields[68].GetBool();
 
     m_playerSpec = GetTalentSpec();
 
@@ -18716,6 +18729,7 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setString(index++, ss.str());
         stmt->setUInt8(index++, GetByteValue(PLAYER_FIELD_BYTES, 2));
         stmt->setUInt32(index++, m_grantableLevels);
+        stmt->setBool(index++, m_PvPNotificationsEnabled);
     }
     else
     {
@@ -18829,6 +18843,9 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt32(index++, m_grantableLevels);
 
         stmt->setUInt8(index++, IsInWorld() ? 1 : 0);
+
+        stmt->setBool(index++, m_PvPNotificationsEnabled);
+
         // Index
         stmt->setUInt32(index++, GetGUIDLow());
     }

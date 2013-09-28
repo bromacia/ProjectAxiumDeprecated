@@ -275,8 +275,9 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket* data, Battleground* bg)
     uint32 scoreCount = 0;
     *data << uint32(scoreCount);                            // placeholder
 
-    Battleground::BattlegroundScoreMap::const_iterator itr2 = bg->GetPlayerScoresBegin();
-    for (Battleground::BattlegroundScoreMap::const_iterator itr = itr2; itr != bg->GetPlayerScoresEnd();)
+    Battleground::BattlegroundScoreMap m_PlayerScores = bg->GetPlayerScores();
+    Battleground::BattlegroundScoreMap::const_iterator itr2 = m_PlayerScores.begin();
+    for (Battleground::BattlegroundScoreMap::const_iterator itr = itr2; itr != m_PlayerScores.end();)
     {
         itr2 = itr++;
 
@@ -378,7 +379,7 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket* data, Battleground* bg)
                 break;
         }
         // should never happen
-        if (++scoreCount >= bg->GetMaxPlayers() && itr != bg->GetPlayerScoresEnd())
+        if (++scoreCount >= bg->GetMaxPlayers() && itr != m_PlayerScores.end())
         {
             sLog->outError("Battleground %u scoreboard has more entries (%u) than allowed players in this bg (%u)", bg->GetTypeID(true), bg->GetPlayerScoresSize(), bg->GetMaxPlayers());
             break;

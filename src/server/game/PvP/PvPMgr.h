@@ -8,6 +8,8 @@ class Battleground;
 class ChatHandler;
 
 #define DAMAGE_RESET_TIME_MS 30000
+#define BG_RATING_GAIN 50
+#define BG_RATING_LOSS 25
 
 enum PvPTitle
 {
@@ -51,9 +53,11 @@ class PvPMgr
 
     public:
         void HandleDealDamage(Player* attacker, Player* victim, uint32 damage);
-        void HandlePvPKill(Player* victim, Player* pwner = NULL);
+        void HandleNormalPvPKill(Player* victim);
+        void HandleOneShotPvPKill(Player* attacker, Player* victim);
+        void HandleBattlegroundHonorableKill(Player* healer);
         void HandleBattlegroundEnd(Battleground* bg);
-        void HandleTwinSpireCapture(Team faction);
+        void HandleTwinSpireCapture(TeamId team);
 
         uint16 Get2v2MMRByGUIDLow(uint32 GUIDLow) const;
         void Set2v2MMRByGUIDLow(uint32 GUIDLow, uint16 mmr);
@@ -95,6 +99,18 @@ class PvPMgr
         void SetLifetime5v5GamesByGUIDLow(uint32 GUIDLow, uint16 games);
 
     private:
+        void CalculatePvPRatingForKill(uint16 attackerPvPRating, uint16 victimPvPRating, uint8 ratingChange, bool gain);
+        void ApplyRatingMultipliers(uint16 pvpRating, uint8 &ratingChange, bool gain);
+        TeamId GetWinningTeamIdByBGWinner(uint8 bgWinner) const
+        {
+            switch (bgWinner)
+            {
+                case WINNER_ALLIANCE: return TEAM_ALLIANCE;
+                case WINNER_HORDE:    return TEAM_HORDE;
+                default:              return TEAM_NEUTRAL;
+            }
+        }
+
         ChatHandler* handler;
 };
 
