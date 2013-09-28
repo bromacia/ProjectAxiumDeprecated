@@ -99,7 +99,7 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
         SpellCooldowns& cooldowns = player->GetSpellCooldownMap();
         if (!cooldowns.empty())
         {
-            for (SpellCooldowns::const_iterator itr = cooldowns.begin(); itr != cooldowns.end(); ++itr)
+            for (SpellCooldowns::iterator itr = cooldowns.begin(); itr != cooldowns.end(); ++itr)
             {
                 player->playerState.Cooldowns[itr->first] = itr->second;
                 player->RemoveSpellCooldown(itr->first, true);
@@ -139,7 +139,7 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
 
         if (!player->playerState.Cooldowns.empty())
         {
-            for (SpellCooldowns::const_iterator itr = player->playerState.Cooldowns.begin(); itr != player->playerState.Cooldowns.end(); ++itr)
+            for (SpellCooldowns::iterator itr = player->playerState.Cooldowns.begin(); itr != player->playerState.Cooldowns.end(); ++itr)
             {
                 player->AddSpellCooldown(itr->first, itr->second.itemid, itr->second.end);
                 player->playerState.Cooldowns.erase(itr);
