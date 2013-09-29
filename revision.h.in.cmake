@@ -2,6 +2,7 @@
 #define __REVISION_H__
  #define _HASH                      "@rev_hash@"
  #define _DATE                      "@rev_date@"
+ #define _REV                       "@rev_count@"
  #define VER_COMPANYNAME_STR        "TrinityCore Developers"
  #define VER_LEGALCOPYRIGHT_STR     "(c)2008-2011 TrinityCore"
  #define VER_FILEVERSION            0,0,0

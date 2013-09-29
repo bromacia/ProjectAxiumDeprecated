@@ -41,6 +41,13 @@ if(_GIT_VERSION_OK)
     ERROR_QUIET
   )
   execute_process(
+    COMMAND "${_GIT_EXEC}" rev-list --count HEAD
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    OUTPUT_VARIABLE rev_count
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+  execute_process(
     COMMAND "${_GIT_EXEC}" show -s --format=%ci
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     OUTPUT_VARIABLE rev_date
@@ -61,10 +68,13 @@ if(NOT rev_info)
   message(STATUS "WARNING - Continuing anyway - note that the versionstring will be set to 0000-00-00 00:00:00 (Archived)")
   set(rev_date "0000-00-00 00:00:00 +0000")
   set(rev_hash "Archived")
+  set(rev_count "0")
 else()
   # Extract information required to build a proper versionstring
   string(REGEX REPLACE init-|[0-9]+-g "" rev_hash ${rev_info})
 endif()
+
+MATH(EXPR rev_count "${rev_count}-14823")
 
 # Its not set during initial run
 if(NOT BUILDDIR)
