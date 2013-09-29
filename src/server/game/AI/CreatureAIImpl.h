@@ -561,7 +561,12 @@ inline bool CreatureAI::UpdateVictim()
     if (!me->HasReactState(REACT_PASSIVE))
     {
         if (Unit* victim = me->SelectVictim())
-            AttackStart(victim);
+        {
+            if (me->GetScriptName() == "npc_mirror_image")
+                AttackStartCaster(victim, MELEE_RANGE);
+            else
+                AttackStart(victim);
+        }
         return me->getVictim();
     }
     else if (me->getThreatManager().isThreatListEmpty())

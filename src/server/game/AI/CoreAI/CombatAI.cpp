@@ -191,8 +191,7 @@ void CasterAI::UpdateAI(const uint32 diff)
     if (me->getVictim()->HasBreakableByDamageCrowdControlAura(me))
     {
         me->CombatStop(true);
-        me->AttackStop();
-        me->StopMoving();
+        me->CastStop();
         me->GetMotionMaster()->Clear();
         me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
         return;
@@ -203,12 +202,10 @@ void CasterAI::UpdateAI(const uint32 diff)
 
     if (target)
     {
-
         if (!me->IsWithinDist(target, m_attackDist))
         {
             me->CombatStop(true);
-            me->AttackStop();
-            me->StopMoving();
+            me->CastStop();
             me->GetMotionMaster()->Clear();
             me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
             return;
@@ -216,8 +213,7 @@ void CasterAI::UpdateAI(const uint32 diff)
 
         if (!me->IsWithinLOS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
         {
-            me->InterruptNonMeleeSpells(false);
-            me->StopMoving();
+            me->CastStop();
             me->GetMotionMaster()->Clear();
             me->GetMotionMaster()->MoveChase(target);
         }
