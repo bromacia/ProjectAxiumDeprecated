@@ -6224,9 +6224,16 @@ void Spell::EffectForceDeselect(SpellEffIndex /*effIndex*/)
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT)
         return;
 
-    WorldPacket data(SMSG_CLEAR_TARGET, 8);
-    data << uint64(m_caster->GetGUID());
-    m_caster->SendMessageToSet(&data, true);
+    Player* caster = m_caster->ToPlayer();
+    if (!caster)
+    {
+        WorldPacket data(SMSG_CLEAR_TARGET, 8);
+        data << uint64(m_caster->GetGUID());
+        m_caster->SendMessageToSet(&data, true);
+        return;
+    }
+
+    caster->SendClearTarget();
 }
 
 void Spell::EffectSelfResurrect(SpellEffIndex effIndex)
