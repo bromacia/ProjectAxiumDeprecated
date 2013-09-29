@@ -86,23 +86,26 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
         Unit::AuraApplicationMap& auras = player->GetAppliedAuras();
         if (!auras.empty())
         {
-            for (Unit::AuraApplicationMap::iterator itr = auras.begin(); itr != auras.end(); ++itr)
+            for (Unit::AuraApplicationMap::iterator itr = auras.begin(); itr != auras.end();)
             {
                 if (!CheckAura(sSpellMgr->GetSpellInfo(itr->first)))
+                {
+                    ++itr;
                     continue;
+                }
 
                 player->playerState.Auras.insert(Unit::AuraApplicationMap::value_type(itr->first, itr->second));
-                player->RemoveAura(itr->first);
+                player->RemoveAura((itr++)->first);
             }
         }
 
         SpellCooldowns& cooldowns = player->GetSpellCooldownMap();
         if (!cooldowns.empty())
         {
-            for (SpellCooldowns::iterator itr = cooldowns.begin(); itr != cooldowns.end(); ++itr)
+            for (SpellCooldowns::const_iterator itr = cooldowns.begin(); itr != cooldowns.end();)
             {
                 player->playerState.Cooldowns[itr->first] = itr->second;
-                player->RemoveSpellCooldown(itr->first, true);
+                player->RemoveSpellCooldown((itr++)->first, true);
             }
         }
     }
@@ -117,21 +120,24 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
         Unit::AuraApplicationMap& auras = player->GetAppliedAuras();
         if (!auras.empty())
         {
-            for (Unit::AuraApplicationMap::iterator itr = auras.begin(); itr != auras.end(); ++itr)
+            for (Unit::AuraApplicationMap::iterator itr = auras.begin(); itr != auras.end();)
             {
                 if (!CheckAura(sSpellMgr->GetSpellInfo(itr->first)))
+                {
+                    ++itr;
                     continue;
+                }
 
-                player->RemoveAura(itr->first);
+                player->RemoveAura((itr++)->first);
             }
         }
 
         if (!player->playerState.Auras.empty())
         {
-            for (Unit::AuraApplicationMap::iterator itr = player->playerState.Auras.begin(); itr != player->playerState.Auras.end(); ++itr)
+            for (Unit::AuraApplicationMap::iterator itr = player->playerState.Auras.begin(); itr != player->playerState.Auras.end();)
             {
                 player->AddAura(itr->first, player);
-                player->playerState.Auras.erase(itr);
+                player->playerState.Auras.erase((itr++));
             }
         }
 
@@ -139,10 +145,10 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
 
         if (!player->playerState.Cooldowns.empty())
         {
-            for (SpellCooldowns::iterator itr = player->playerState.Cooldowns.begin(); itr != player->playerState.Cooldowns.end(); ++itr)
+            for (SpellCooldowns::iterator itr = player->playerState.Cooldowns.begin(); itr != player->playerState.Cooldowns.end();)
             {
                 player->AddSpellCooldown(itr->first, itr->second.itemid, itr->second.end);
-                player->playerState.Cooldowns.erase(itr);
+                player->playerState.Cooldowns.erase((itr++));
             }
 
             player->SendInitialSpells();
