@@ -21,8 +21,11 @@
 #include "Configuration/Config.h"
 #include "Util.h"
 
-#include "Implementation/LoginDatabase.h" // For logging
+#include "Implementation/LoginDatabase.h" // For authserver logging
 extern LoginDatabaseWorkerPool LoginDatabase;
+
+#include "Implementation/LogDatabase.h" // For worldserver logging
+extern LogDatabaseWorkerPool LogDatabase;
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -374,19 +377,18 @@ std::string Log::GetTimestampStr()
 void Log::outDB(LogTypes type, const char * str)
 {
     if (!str || type >= MAX_LOG_TYPES)
-         return;
+        return;
 
     std::string logStr(str);
     if (logStr.empty())
         return;
 
-    PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_LOG);
+    PreparedStatement* stmt = LogDatabase.GetPreparedStatement(LOG_INS_ERROR_LOG);
 
-    stmt->setInt32(0, realm);
-    stmt->setInt32(1, type);
-    stmt->setString(2, logStr);
+    stmt->setUInt8(0, type);
+    stmt->setString(1, logStr);
 
-    LoginDatabase.Execute(stmt);
+    LogDatabase.Execute(stmt);
 }
 
 void Log::outString(const char * str, ...)
@@ -394,7 +396,7 @@ void Log::outString(const char * str, ...)
     if (!str)
         return;
 
-    if (m_enableLogDB)
+    if (m_enableLogDB && m_dbLogLevel > LOGL_NORMAL)
     {
         // we don't want empty strings in the DB
         std::string s(str);

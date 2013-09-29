@@ -43,6 +43,7 @@ void StopDB();
 bool stopEvent = false;                                     // Setting it to true stops the server
 
 LoginDatabaseWorkerPool LoginDatabase;                      // Accessor to the auth server database
+LogDatabaseWorkerPool LogDatabase;                          // Accessor to the log server database (UNUSED, Causes linker errors without because of shared project)
 
 // Handle authserver's termination signals
 class AuthServerSignalHandler : public Trinity::SignalHandler
