@@ -168,7 +168,7 @@ class OPvPCapturePointZM_Beacon : public OPvPCapturePoint
 
         void ChangeState();
 
-        void SendChangePhase();
+        void SendChangePhase(bool forced = false);
 
         void FillInitialWorldStates(WorldPacket & data);
 
@@ -182,6 +182,7 @@ class OPvPCapturePointZM_Beacon : public OPvPCapturePoint
 
         ZM_BeaconType m_TowerType;
         uint32 m_TowerState;
+        uint32 lastPhase;
 };
 
 enum ZM_GraveYardState

@@ -27,7 +27,7 @@
 #include "ScriptPCH.h"
 
 OPvPCapturePointZM_Beacon::OPvPCapturePointZM_Beacon(OutdoorPvP* pvp, ZM_BeaconType type)
-: OPvPCapturePoint(pvp), m_TowerType(type), m_TowerState(ZM_TOWERSTATE_N)
+: OPvPCapturePoint(pvp), m_TowerType(type), m_TowerState(ZM_TOWERSTATE_N), lastPhase(0)
 {
     SetCapturePointData(ZMCapturePoints[type].entry, ZMCapturePoints[type].map, ZMCapturePoints[type].x, ZMCapturePoints[type].y, ZMCapturePoints[type].z, ZMCapturePoints[type].o, ZMCapturePoints[type].rot0, ZMCapturePoints[type].rot1, ZMCapturePoints[type].rot2, ZMCapturePoints[type].rot3);
 }
@@ -54,15 +54,12 @@ void OPvPCapturePointZM_Beacon::UpdateTowerState()
 
 bool OPvPCapturePointZM_Beacon::HandlePlayerEnter(Player* player)
 {
-    if (OPvPCapturePoint::HandlePlayerEnter(player))
-    {
-        player->SendUpdateWorldState(ZMBeaconInfo[m_TowerType].slider_disp, 1);
-        uint32 phase = (uint32)ceil((m_value + m_maxValue) / (2 * m_maxValue) * 100.0f);
-        player->SendUpdateWorldState(ZMBeaconInfo[m_TowerType].slider_pos, phase);
-        player->SendUpdateWorldState(ZMBeaconInfo[m_TowerType].slider_n, m_neutralValuePct);
-        return true;
-    }
-    return false;
+    player->SendUpdateWorldState(ZMBeaconInfo[m_TowerType].slider_n, m_neutralValuePct);
+    uint32 phase = (uint32)ceil((m_value + m_maxValue) / (2 * m_maxValue) * 100.0f);
+    player->SendUpdateWorldState(ZMBeaconInfo[m_TowerType].slider_pos, phase);
+    player->SendUpdateWorldState(ZMBeaconInfo[m_TowerType].slider_disp, 1);
+    OPvPCapturePoint::HandlePlayerEnter(player);
+    return true;
 }
 
 void OPvPCapturePointZM_Beacon::HandlePlayerLeave(Player* player)
@@ -120,14 +117,14 @@ void OPvPCapturePointZM_Beacon::ChangeState()
     UpdateTowerState();
 }
 
-void OPvPCapturePointZM_Beacon::SendChangePhase()
+void OPvPCapturePointZM_Beacon::SendChangePhase(bool forced)
 {
-    // send this too, sometimes the slider disappears, dunno why :(
-    SendUpdateWorldState(ZMBeaconInfo[m_TowerType].slider_disp, 1);
-    // send these updates to only the ones in this objective
     uint32 phase = (uint32)ceil((m_value + m_maxValue) / (2 * m_maxValue) * 100.0f);
-    SendUpdateWorldState(ZMBeaconInfo[m_TowerType].slider_pos, phase);
-    SendUpdateWorldState(ZMBeaconInfo[m_TowerType].slider_n, m_neutralValuePct);
+    if (forced || phase != lastPhase)
+    {
+        SendUpdateWorldState(ZMBeaconInfo[m_TowerType].slider_pos, phase);
+        lastPhase = phase;
+    }
 }
 
 bool OutdoorPvPZM::Update(uint32 diff)
@@ -176,7 +173,6 @@ OutdoorPvPZM::OutdoorPvPZM()
     m_GraveYard = NULL;
     m_AllianceTowersControlled = 0;
     m_HordeTowersControlled = 0;
-
 }
 
 bool OutdoorPvPZM::SetupOutdoorPvP()
@@ -414,9 +410,7 @@ void OutdoorPvPZM::FillInitialWorldStates(WorldPacket &data)
 {
     data << ZM_WORLDSTATE_UNK_1 << uint32(1);
     for (OPvPCapturePointMap::iterator itr = m_capturePoints.begin(); itr != m_capturePoints.end(); ++itr)
-    {
         itr->second->FillInitialWorldStates(data);
-    }
 }
 
 void OutdoorPvPZM::SendRemoveWorldStates(Player* player)

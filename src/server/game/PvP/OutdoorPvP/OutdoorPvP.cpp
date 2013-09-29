@@ -38,33 +38,26 @@ m_State(OBJECTIVESTATE_NEUTRAL), m_neutralValuePct(0), m_PvP(pvp)
 
 bool OPvPCapturePoint::HandlePlayerEnter(Player* player)
 {
-    if (m_capturePoint)
-    {
-        player->SendUpdateWorldState(m_capturePoint->GetGOInfo()->capturePoint.worldState1, 1);
-        player->SendUpdateWorldState(m_capturePoint->GetGOInfo()->capturePoint.worldstate2, (uint32)ceil((m_value + m_maxValue) / (2 * m_maxValue) * 100.0f));
-        player->SendUpdateWorldState(m_capturePoint->GetGOInfo()->capturePoint.worldstate3, m_neutralValuePct);
-    }
     return m_activePlayers[player->GetTeamId()].insert(player).second;
 }
 
 void OPvPCapturePoint::HandlePlayerLeave(Player* player)
 {
-    if (m_capturePoint)
-        player->SendUpdateWorldState(m_capturePoint->GetGOInfo()->capturePoint.worldState1, 0);
     m_activePlayers[player->GetTeamId()].erase(player);
 }
 
-void OPvPCapturePoint::SendChangePhase()
+// We don't use forced in this
+void OPvPCapturePoint::SendChangePhase(bool forced)
 {
     if (!m_capturePoint)
         return;
 
-    // send this too, sometimes the slider disappears, dunno why :(
-    SendUpdateWorldState(m_capturePoint->GetGOInfo()->capturePoint.worldState1, 1);
-    // send these updates to only the ones in this objective
-    SendUpdateWorldState(m_capturePoint->GetGOInfo()->capturePoint.worldstate2, (uint32)ceil((m_value + m_maxValue) / (2 * m_maxValue) * 100.0f));
     // send this too, sometimes it resets :S
     SendUpdateWorldState(m_capturePoint->GetGOInfo()->capturePoint.worldstate3, m_neutralValuePct);
+    // send these updates to only the ones in this objective
+    SendUpdateWorldState(m_capturePoint->GetGOInfo()->capturePoint.worldstate2, (uint32)ceil((m_value + m_maxValue) / (2 * m_maxValue) * 100.0f));
+    // send this too, sometimes the slider disappears, dunno why :(
+    SendUpdateWorldState(m_capturePoint->GetGOInfo()->capturePoint.worldState1, 1);
 }
 
 void OPvPCapturePoint::AddGO(uint32 type, uint32 guid, uint32 entry)
@@ -375,6 +368,18 @@ bool OPvPCapturePoint::Update(uint32 diff)
         else if (Challenger == HORDE && (m_OldState == OBJECTIVESTATE_ALLIANCE || m_OldState == OBJECTIVESTATE_NEUTRAL_ALLIANCE_CHALLENGE))
             m_State = OBJECTIVESTATE_ALLIANCE_HORDE_CHALLENGE;
         m_team = TEAM_NEUTRAL;
+    }
+
+    // Send final phase changes (MUST be sent twice in order to reset arrow)
+    if (m_State == OBJECTIVESTATE_HORDE && m_value <= -m_maxValue)
+    {
+        SendChangePhase(true);
+        SendChangePhase(true);
+    }
+    else if (m_State == OBJECTIVESTATE_ALLIANCE && m_value >= m_maxValue)
+    {
+        SendChangePhase(true);
+        SendChangePhase(true);
     }
 
     if (m_value != oldValue)

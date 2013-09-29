@@ -121,7 +121,7 @@ class OPvPCapturePoint
 
         virtual void ChangeTeam(TeamId /*oldTeam*/) {}
 
-        virtual void SendChangePhase();
+        virtual void SendChangePhase(bool forced = false);
 
         virtual bool HandleGossipOption(Player* player, uint64 guid, uint32 gossipid);
 
