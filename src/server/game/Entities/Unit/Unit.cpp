@@ -3145,7 +3145,7 @@ void Unit::SetCurrentCastedSpell(Spell* pSpell)
     pSpell->m_selfContainer = &(m_currentSpells[pSpell->GetCurrentContainer()]);
 }
 
-void Unit::InterruptSpell(CurrentSpellTypes spellType, bool withDelayed, bool withInstant)
+void Unit::InterruptSpell(CurrentSpellTypes spellType, bool withDelayed, bool withInstant, bool forced)
 {
     ASSERT(spellType < CURRENT_MAX_SPELL);
 
@@ -3153,14 +3153,17 @@ void Unit::InterruptSpell(CurrentSpellTypes spellType, bool withDelayed, bool wi
     if (!spell)
         return;
 
-    if (!withDelayed && spell->getState() == SPELL_STATE_DELAYED)
-        return;
+    if (!forced) // Forced will ignore all checks
+    {
+        if (!withDelayed && spell->getState() == SPELL_STATE_DELAYED)
+            return;
 
-    if (!withInstant && !spell->GetCastTime())
-        return;
+        if (!withInstant && !spell->GetCastTime())
+            return;
 
-    if ((spellType == CURRENT_MELEE_SPELL || spellType == CURRENT_GENERIC_SPELL) && spell->GetCastTime() == 0)
-        return;
+        if ((spellType == CURRENT_MELEE_SPELL || spellType == CURRENT_GENERIC_SPELL) && spell->GetCastTime() == 0)
+            return;
+    }
 
     if (!spell->IsInterruptable())
         return;

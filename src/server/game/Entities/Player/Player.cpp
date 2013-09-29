@@ -2412,6 +2412,9 @@ void Player::RemoveFromWorld()
         StopCastingBindSight();
         UnsummonPetTemporaryIfAny();
         sOutdoorPvPMgr->HandlePlayerLeaveZone(this, m_zoneUpdateId);
+
+        for (uint8 i = 0; i < CURRENT_MAX_SPELL; ++i)
+            InterruptSpell(CurrentSpellTypes(i), true, true, true);
     }
 
     ///- Do not add/remove the player from the object storage
