@@ -52,10 +52,10 @@ class PvPMgr
         ~PvPMgr();
 
     public:
-        void HandleDealDamage(Player* attacker, Player* victim, uint32 damage);
+        void HandleDealDamage(Unit* attacker, Player* victim, uint32 damage);
         void HandleNormalPvPKill(Player* victim);
-        void HandleOneShotPvPKill(Player* attacker, Player* victim);
-        void HandleBattlegroundHonorableKill(Player* healer);
+        void HandleOneShotPvPKill(Unit* attacker, Player* victim);
+        void HandleBattlegroundHonorableKill(Player* player);
         void HandleBattlegroundEnd(Battleground* bg);
         void HandleTwinSpireCapture(TeamId team);
 

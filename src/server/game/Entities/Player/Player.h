@@ -2636,9 +2636,6 @@ class Player : public Unit, public GridObject<Player>
         typedef std::map<uint32, PvPTargetDamageInformation> PvPTargetDamageInformationMap;
         PvPTargetDamageInformationMap PvPTargetDamageInfo;
 
-        bool HasPvPTargetDamageInfo() const { return m_HasPvPTargetDamageInfo; }
-        void SetPvPTargetDamageInfo(bool x) { m_HasPvPTargetDamageInfo = x; }
-
         PlayerState playerState;
 
         uint16 Get2v2MMR() const { return m_2v2MMR; }
@@ -3061,7 +3058,6 @@ class Player : public Unit, public GridObject<Player>
         uint16 m_Lifetime5v5Wins;
         uint16 m_Lifetime5v5Games;
 
-        bool m_HasPvPTargetDamageInfo;
         bool m_PvPNotificationsEnabled;
 
         bool m_delayDuelFinish;
