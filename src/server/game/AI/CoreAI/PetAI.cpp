@@ -141,7 +141,7 @@ void PetAI::UpdateAI(const uint32 diff)
 
     if (me->getVictim() && me->getVictim()->isAlive())
     {
-        if (me->getVictim()->HasBreakableByDamageCrowdControlAura(me))
+        if (me->getVictim()->HasBreakableCrowdControlAura(me))
         {
             me->InterruptNonMeleeSpells(false);
             me->getHostileRefManager().deleteReferences();
@@ -425,19 +425,19 @@ Unit* PetAI::SelectNextTarget()
     Unit* target = me->getAttackerForHelper();
 
     // Check pet's attackers first to prevent dragging mobs back to owner
-    if (target && !target->HasBreakableByDamageCrowdControlAura())
+    if (target && !target->HasBreakableCrowdControlAura(me))
         return target;
 
     if (me->GetCharmerOrOwner())
     {
         // Check owner's attackers if pet didn't have any
         target = me->GetCharmerOrOwner()->getAttackerForHelper();
-        if (target && !target->HasBreakableByDamageCrowdControlAura())
+        if (target && !target->HasBreakableCrowdControlAura(me))
             return target;
 
         // 3.0.2 - Pets now start attacking their owners target in defensive mode as soon as the hunter does
         target = me->GetCharmerOrOwner()->getVictim();
-        if (target && !target->HasBreakableByDamageCrowdControlAura())
+        if (target && !target->HasBreakableCrowdControlAura(me))
             return target;
     }
 

@@ -100,7 +100,7 @@ void CombatAI::UpdateAI(const uint32 diff)
     events.Update(diff);
 
     Unit* owner = me->GetCharmerOrOwner();
-    if (me->getVictim()->HasBreakableByDamageCrowdControlAura(me))
+    if (me->getVictim()->HasBreakableCrowdControlAura(me))
     {
         me->InterruptNonMeleeSpells(false);
         return;
@@ -155,7 +155,7 @@ void CasterAI::EnterCombat(Unit* who)
                 if (Unit* ownerTarget = me->GetCharmerOrOwner()->ToPlayer()->GetSelectedUnit())
                     target = ownerTarget;
 
-                if (target->HasBreakableByDamageCrowdControlAura(me))
+                if (target->HasBreakableCrowdControlAura(me))
                     continue;
 
                 me->CastSpell(target, *itr, false);
@@ -188,7 +188,7 @@ void CasterAI::UpdateAI(const uint32 diff)
 
     Unit* owner = me->GetCharmerOrOwner();
 
-    if (me->getVictim()->HasBreakableByDamageCrowdControlAura(me))
+    if (me->getVictim()->HasBreakableCrowdControlAura(me))
     {
         me->CombatStop(true);
         me->CastStop();

@@ -556,28 +556,25 @@ bool Unit::HasAuraTypeWithFamilyFlags(AuraType auraType, uint32 familyName, uint
     return false;
 }
 
-bool Unit::HasBreakableByDamageAuraType(AuraType type, uint32 excludeAura) const
-{
-    AuraEffectList const& auras = GetAuraEffectsByType(type);
-    for (AuraEffectList::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
-        if ((!excludeAura || excludeAura != (*itr)->GetSpellInfo()->Id) &&
-            ((*itr)->GetSpellInfo()->Attributes & SPELL_ATTR0_BREAKABLE_BY_DAMAGE || (*itr)->GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_FLAG_TAKE_DAMAGE))
-            return true;
-    return false;
-}
-
-bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) const
+bool Unit::HasBreakableCrowdControlAura(Unit* caster) const
 {
     uint32 excludeAura = 0;
-    if (Spell* currentChanneledSpell = excludeCasterChannel ? excludeCasterChannel->GetCurrentSpell(CURRENT_CHANNELED_SPELL) : NULL)
-        excludeAura = currentChanneledSpell->GetSpellInfo()->Id; //Avoid self interrupt of channeled Crowd Control spells like Seduction
+    if (Spell* currentChanneledSpell = caster->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
+        if (const SpellInfo* spellInfo = currentChanneledSpell->GetSpellInfo())
+            if (spellInfo->HasEffect(SPELL_EFFECT_APPLY_AURA))
+                excludeAura = spellInfo->Id;
 
-    // Dragon's breath
-    if (HasAura(31661) || HasAura(33041) || HasAura(33042) || HasAura(33043) || HasAura(42949) || HasAura(42950))
-        return true;
+    for (AuraApplicationMap::const_iterator itr = m_appliedAuras.begin(); itr != m_appliedAuras.end(); ++itr)
+    {
+        const SpellInfo* spellInfo = itr->second->GetBase()->GetSpellInfo();
+        if ((spellInfo->Id != excludeAura && spellInfo->Attributes & SPELL_ATTR0_BREAKABLE_BY_DAMAGE) ||
+            (spellInfo->ProcFlags & (PROC_FLAG_TAKEN_MELEE_AUTO_ATTACK | PROC_FLAG_TAKEN_SPELL_MELEE_DMG_CLASS | PROC_FLAG_TAKEN_RANGED_AUTO_ATTACK |
+            PROC_FLAG_TAKEN_SPELL_RANGED_DMG_CLASS | PROC_FLAG_TAKEN_SPELL_NONE_DMG_CLASS_NEG | PROC_FLAG_TAKEN_SPELL_MAGIC_DMG_CLASS_NEG)) ||
+            (spellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_VICTIM))
+            return true;
+    }
 
-    return (   HasBreakableByDamageAuraType(SPELL_AURA_MOD_CONFUSE, excludeAura)
-            || HasBreakableByDamageAuraType(SPELL_AURA_MOD_STUN, excludeAura));
+    return false;
 }
 
 bool Unit::IsCrowdControlled() const
