@@ -2609,6 +2609,10 @@ class Player : public Unit, public GridObject<Player>
         uint8 GetSelectedTransmogItemSlot() const { return m_selectedTransmogItemSlot; }
         void SetSelectedTransmogItemSlot(uint8 slot) { m_selectedTransmogItemSlot = slot; }
 
+        typedef std::map<uint8, uint32> TransmogSetItemMap;
+        typedef std::map<uint8, TransmogSetItemMap> TransmogSets;
+        TransmogSets transmogSets;
+
         void SetWantsPrematureBattleGroundStart(bool x) { m_wantsPrematureBattleGroundStart = x; }
         bool WantsPrematureBattleGroundStart() const { return m_wantsPrematureBattleGroundStart; }
         void SetAddedToPrematureBattleGroundStartList(bool x) { m_addedToPrematureBattleGroundStartList = x; }
@@ -2754,6 +2758,7 @@ class Player : public Unit, public GridObject<Player>
         void _LoadGlyphs(PreparedQueryResult result);
         void _LoadTalents(PreparedQueryResult result);
         void _LoadInstanceTimeRestrictions(PreparedQueryResult result);
+        void _LoadTransmogSets();
 
         /*********************************************************/
         /***                   SAVE SYSTEM                     ***/
@@ -2775,6 +2780,7 @@ class Player : public Unit, public GridObject<Player>
         void _SaveTalents(SQLTransaction& trans);
         void _SaveStats(SQLTransaction& trans);
         void _SaveInstanceTimeRestrictions(SQLTransaction& trans);
+        void _SaveTransmogSets();
 
         void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
         void _SetUpdateBits(UpdateMask* updateMask, Player* target) const;
