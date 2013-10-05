@@ -472,6 +472,10 @@ bool Transmogrification::RemoveAllTransmog(Player* player)
             {
                 item->TransmogEntry = 0;
                 player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), item->GetEntry());
+                TransmogItemInformation tItemInfo;
+                tItemInfo.TransmogEntry = item->TransmogEntry;
+                tItemInfo.TransmogEnchant = item->TransmogEnchant;
+                player->transmogItemsSaveQueue[item->GetGUIDLow()] = tItemInfo;
             }
             if (slot == EQUIPMENT_SLOT_MAINHAND ||
                 slot == EQUIPMENT_SLOT_OFFHAND ||
