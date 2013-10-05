@@ -876,6 +876,8 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_isNoggenfoggerMorphed = false;
 
     m_selectedTransmogItemSlot = 0;
+    transmogItemsSaveQueue.clear();
+    transmogSets.clear();
 
     m_wantsPrematureBattleGroundStart = false;
     m_addedToPrematureBattleGroundStartList = false;
@@ -18885,6 +18887,7 @@ void Player::SaveToDB(bool create /*=false*/)
     if (m_session->isLogingOut() || !sWorld->getBoolConfig(CONFIG_STATS_SAVE_ONLY_ON_LOGOUT))
         _SaveStats(trans);
 
+    _SaveTransmogItems();
     _SaveTransmogSets();
 
     CharacterDatabase.CommitTransaction(trans);
@@ -25405,6 +25408,14 @@ bool Player::IsInWhisperWhiteList(uint64 guid)
             return true;
     }
     return false;
+}
+
+void Player::_SaveTransmogItems()
+{
+    for (TransmogItemsSaveQueue::iterator itr = transmogItemsSaveQueue.begin(); itr != transmogItemsSaveQueue.end(); ++itr)
+        CharacterDatabase.PQuery("UPDATE item_instance SET TransmogEntry = '%u', TransmogEnchant = '%u' WHERE guid = '%u'", itr->second.TransmogEntry, itr->second.TransmogEnchant, itr->first);
+
+    transmogItemsSaveQueue.clear();
 }
 
 void Player::_LoadTransmogSets()

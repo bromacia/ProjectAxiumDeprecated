@@ -294,6 +294,10 @@ bool Transmogrification::TransmogrifyIndividual(Player* player, Creature* creatu
 
         pItem->TransmogEntry = vItemTemplate->ItemId;
         player->SetUInt32Value(transmogSlot, vItemTemplate->ItemId);
+        TransmogItemInformation tItemInfo;
+        tItemInfo.TransmogEntry = pItem->TransmogEntry;
+        tItemInfo.TransmogEnchant = pItem->TransmogEnchant;
+        player->transmogItemsSaveQueue[pItem->GetGUIDLow()] = tItemInfo;
     }
 
     return true;
@@ -303,24 +307,34 @@ bool Transmogrification::TransmogrifyEnchant(Player* player, uint16 action)
 {
     if (action && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != 0)
     {
-        const ItemTemplate* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->GetTemplate();
-        if (inventoryItem->Class == ITEM_CLASS_WEAPON)
-        {
-            player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->TransmogEnchant = action;
-            player->SetUInt16Value(TRANSMOG_SLOT_MAINHAND_ENCHANT, 0, action);
-            player->SetUInt16Value(TRANSMOG_SLOT_MAINHAND_ENCHANT, 1, action);
-        }
+        if (Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
+            if (const ItemTemplate* pItemTemplate = pItem->GetTemplate())
+                if (pItemTemplate->Class == ITEM_CLASS_WEAPON)
+                {
+                    player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)->TransmogEnchant = action;
+                    player->SetUInt16Value(TRANSMOG_SLOT_MAINHAND_ENCHANT, 0, action);
+                    player->SetUInt16Value(TRANSMOG_SLOT_MAINHAND_ENCHANT, 1, action);
+                    TransmogItemInformation tItemInfo;
+                    tItemInfo.TransmogEntry = pItem->TransmogEntry;
+                    tItemInfo.TransmogEnchant = pItem->TransmogEnchant;
+                    player->transmogItemsSaveQueue[pItem->GetGUIDLow()] = tItemInfo;
+                }
     }
 
     if (action && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND) != 0)
     {
-        const ItemTemplate* inventoryItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->GetTemplate();
-        if (inventoryItem->Class == ITEM_CLASS_WEAPON)
-        {
-            player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->TransmogEnchant = action;
-            player->SetUInt16Value(TRANSMOG_SLOT_OFFHAND_ENCHANT, 0, action);
-            player->SetUInt16Value(TRANSMOG_SLOT_OFFHAND_ENCHANT, 1, action);
-        }
+        if (Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
+            if (const ItemTemplate* pItemTemplate = pItem->GetTemplate())
+                if (pItemTemplate->Class == ITEM_CLASS_WEAPON)
+                {
+                    player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND)->TransmogEnchant = action;
+                    player->SetUInt16Value(TRANSMOG_SLOT_OFFHAND_ENCHANT, 0, action);
+                    player->SetUInt16Value(TRANSMOG_SLOT_OFFHAND_ENCHANT, 1, action);
+                    TransmogItemInformation tItemInfo;
+                    tItemInfo.TransmogEntry = pItem->TransmogEntry;
+                    tItemInfo.TransmogEnchant = pItem->TransmogEnchant;
+                    player->transmogItemsSaveQueue[pItem->GetGUIDLow()] = tItemInfo;
+                }
     }
 
     player->CLOSE_GOSSIP_MENU();
@@ -334,6 +348,10 @@ bool Transmogrification::RemoveItemTransmog(Player* player, uint16 action)
     {
         item->TransmogEntry = 0;
         player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (itemSlot * 2), item->GetEntry());
+        TransmogItemInformation tItemInfo;
+        tItemInfo.TransmogEntry = item->TransmogEntry;
+        tItemInfo.TransmogEnchant = item->TransmogEnchant;
+        player->transmogItemsSaveQueue[item->GetGUIDLow()] = tItemInfo;
     }
     player->CLOSE_GOSSIP_MENU();
     return true;
@@ -347,6 +365,10 @@ bool Transmogrification::RemoveEnchantTransmog(Player* player, uint16 action)
         item->TransmogEnchant = 0;
         player->SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (itemSlot * 2), 0, item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
         player->SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (itemSlot * 2), 1, item->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT));
+        TransmogItemInformation tItemInfo;
+        tItemInfo.TransmogEntry = item->TransmogEntry;
+        tItemInfo.TransmogEnchant = item->TransmogEnchant;
+        player->transmogItemsSaveQueue[item->GetGUIDLow()] = tItemInfo;
     }
     player->CLOSE_GOSSIP_MENU();
     return true;
@@ -369,6 +391,10 @@ bool Transmogrification::RemoveAllArmorTransmog(Player* player)
             {
                 item->TransmogEntry = 0;
                 player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), item->GetEntry());
+                TransmogItemInformation tItemInfo;
+                tItemInfo.TransmogEntry = item->TransmogEntry;
+                tItemInfo.TransmogEnchant = item->TransmogEnchant;
+                player->transmogItemsSaveQueue[item->GetGUIDLow()] = tItemInfo;
             }
         }
     }
@@ -389,6 +415,10 @@ bool Transmogrification::RemoveAllWeaponTransmog(Player* player)
             {
                 item->TransmogEntry = 0;
                 player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), item->GetEntry());
+                TransmogItemInformation tItemInfo;
+                tItemInfo.TransmogEntry = item->TransmogEntry;
+                tItemInfo.TransmogEnchant = item->TransmogEnchant;
+                player->transmogItemsSaveQueue[item->GetGUIDLow()] = tItemInfo;
             }
         }
     }
@@ -410,6 +440,10 @@ bool Transmogrification::RemoveAllEnchantTransmog(Player* player)
                 item->TransmogEnchant = 0;
                 player->SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 0, item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
                 player->SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 1, item->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT));
+                TransmogItemInformation tItemInfo;
+                tItemInfo.TransmogEntry = item->TransmogEntry;
+                tItemInfo.TransmogEnchant = item->TransmogEnchant;
+                player->transmogItemsSaveQueue[item->GetGUIDLow()] = tItemInfo;
             }
         }
     }
@@ -446,6 +480,10 @@ bool Transmogrification::RemoveAllTransmog(Player* player)
                 item->TransmogEnchant = 0;
                 player->SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 0, item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
                 player->SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 1, item->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT));
+                TransmogItemInformation tItemInfo;
+                tItemInfo.TransmogEntry = item->TransmogEntry;
+                tItemInfo.TransmogEnchant = item->TransmogEnchant;
+                player->transmogItemsSaveQueue[item->GetGUIDLow()] = tItemInfo;
             }
         }
     }

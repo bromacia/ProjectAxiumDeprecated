@@ -1114,6 +1114,18 @@ private:
     uint32 _xp;
 };
 
+struct TransmogItemInformation
+{
+    TransmogItemInformation() : TransmogEntry(0), TransmogEnchant(0) {}
+
+    uint32 TransmogEntry;
+    uint16 TransmogEnchant;
+};
+
+typedef std::map<uint32, TransmogItemInformation> TransmogItemsSaveQueue;
+typedef std::map<uint8, uint32> TransmogSetItemMap;
+typedef std::map<uint8, TransmogSetItemMap> TransmogSets;
+
 struct PvPTargetDamageInformation
 {
     PvPTargetDamageInformation() : DamageDoneToVictim(0), LastDamageDealtTimer(0) {}
@@ -2609,8 +2621,7 @@ class Player : public Unit, public GridObject<Player>
         uint8 GetSelectedTransmogItemSlot() const { return m_selectedTransmogItemSlot; }
         void SetSelectedTransmogItemSlot(uint8 slot) { m_selectedTransmogItemSlot = slot; }
 
-        typedef std::map<uint8, uint32> TransmogSetItemMap;
-        typedef std::map<uint8, TransmogSetItemMap> TransmogSets;
+        TransmogItemsSaveQueue transmogItemsSaveQueue;
         TransmogSets transmogSets;
 
         void SetWantsPrematureBattleGroundStart(bool x) { m_wantsPrematureBattleGroundStart = x; }
@@ -2780,6 +2791,7 @@ class Player : public Unit, public GridObject<Player>
         void _SaveTalents(SQLTransaction& trans);
         void _SaveStats(SQLTransaction& trans);
         void _SaveInstanceTimeRestrictions(SQLTransaction& trans);
+        void _SaveTransmogItems();
         void _SaveTransmogSets();
 
         void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
