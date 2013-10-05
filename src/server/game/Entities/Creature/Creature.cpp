@@ -438,19 +438,16 @@ void Creature::Update(uint32 diff)
             m_vehicleKit->Reset();
     }
 
-    // The slime in Ruins of Lordaeron shouldnt trigger swimming
-    if (GetMapId() != 572)
+    // Only trigger pet swimming if the owner is swimming aswell
+    if (Unit* owner = GetCharmerOrOwner())
     {
-        if (IsInWater())
+        if (IsInWater() && owner->HasUnitMovementFlag(MOVEMENTFLAG_SWIMMING))
         {
             if (canSwim())
                 AddUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
         }
-        else
-        {
-            if (canWalk())
-                RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
-        }
+        else if (canWalk())
+            RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
     }
 
     switch (m_deathState)
