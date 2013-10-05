@@ -74,8 +74,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
     if (!&unit || !unit.isAlive())
         return false;
 
-    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_FLEEING | UNIT_STATE_ROAMING) || unit.IsFlying() ||
-        unit.GetMap()->IsInWater(unit.GetPositionX(), unit.GetPositionY(), unit.GetPositionZ()))
+    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_FLEEING | UNIT_STATE_ROAMING) || unit.IsFlying())
     {
         unit.ClearUnitState(UNIT_STATE_CONFUSED_MOVE);
         return true;
