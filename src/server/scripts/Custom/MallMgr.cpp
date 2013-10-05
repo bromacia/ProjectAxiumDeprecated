@@ -1212,7 +1212,7 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
         }
         case INVENTORY_LIST_ICECROWN_CITADEL_ACCESSORIES:
         {
-            if (IsPhraseInString(vItemTemplate->Name1, "Wrathful") || vItemTemplate->ItemLevel != 264)
+            if (IsPhraseInString(vItemTemplate->Name1, "Wrathful") || (vItemTemplate->ItemLevel != 264 && vItemTemplate->ItemLevel != 268))
                 return false;
 
             if (vItemTemplate->InventoryType != INVTYPE_NECK &&
