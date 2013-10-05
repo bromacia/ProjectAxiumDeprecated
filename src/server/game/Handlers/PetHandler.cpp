@@ -389,7 +389,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                 else
                     pet->SendPetAIReaction(guid1);
 
-                if (unit_target && pet->ToCreature()->canStartAttack(unit_target, false) && !pet->isPossessed() && !pet->IsVehicle())
+                if (unit_target && pet->IsValidAttackTarget(unit_target) && !pet->isPossessed() && !pet->IsVehicle())
                 {
                     // This is true if pet has no target or has target but targets differs.
                     if (pet->getVictim() != unit_target)
