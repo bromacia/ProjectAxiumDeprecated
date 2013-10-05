@@ -16888,7 +16888,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         // Not finish taxi flight path
         if (m_bgData.HasTaxiPath())
         {
-            for (int i = 0; i < 2; ++i)
+            for (uint8 i = 0; i < 2; ++i)
                 m_taxi.AddTaxiDestination(m_bgData.taxiPath[i]);
         }
         else if (!m_taxi.LoadTaxiDestinationsFromString(taxi_nodes, GetTeam()))
@@ -17430,7 +17430,7 @@ void Player::_LoadActions(PreparedQueryResult result)
                 ab->uState = ACTIONBUTTON_UNCHANGED;
             else
             {
-                sLog->outError("  ...at loading, and will deleted in DB also");
+                sLog->outDetail("  ...at loading, and will deleted in DB also");
 
                 // Will deleted in DB at next save (it can create data until save but marked as deleted)
                 m_actionButtons[button].uState = ACTIONBUTTON_DELETED;
