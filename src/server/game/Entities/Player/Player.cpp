@@ -7137,7 +7137,7 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, int32 honor, bool pvpt
 
     if (honor_f <= 0)
     {
-        if (!uVictim || uVictim == this || uVictim->HasAuraType(SPELL_AURA_NO_PVP_CREDIT))
+        if (!uVictim || uVictim == this || uVictim->HasAuraType(SPELL_AURA_NO_PVP_CREDIT) || uVictim->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
             return false;
 
         victim_guid = uVictim->GetGUID();
@@ -7238,7 +7238,7 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, int32 honor, bool pvpt
 
     if (sWorld->getBoolConfig(CONFIG_PVP_TOKEN_ENABLE) && pvptoken)
     {
-        if (!uVictim || uVictim == this || uVictim->HasAuraType(SPELL_AURA_NO_PVP_CREDIT))
+        if (!uVictim || uVictim == this || uVictim->HasAuraType(SPELL_AURA_NO_PVP_CREDIT) || uVictim->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
             return true;
 
         if (uVictim->GetTypeId() == TYPEID_PLAYER)
