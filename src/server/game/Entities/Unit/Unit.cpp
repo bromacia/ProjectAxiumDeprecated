@@ -567,11 +567,26 @@ bool Unit::HasBreakableCrowdControlAura(Unit* caster) const
     for (AuraApplicationMap::const_iterator itr = m_appliedAuras.begin(); itr != m_appliedAuras.end(); ++itr)
     {
         const SpellInfo* spellInfo = itr->second->GetBase()->GetSpellInfo();
-        if ((spellInfo->Id != excludeAura && spellInfo->Attributes & SPELL_ATTR0_BREAKABLE_BY_DAMAGE) ||
-            (spellInfo->ProcFlags & (PROC_FLAG_TAKEN_MELEE_AUTO_ATTACK | PROC_FLAG_TAKEN_SPELL_MELEE_DMG_CLASS | PROC_FLAG_TAKEN_RANGED_AUTO_ATTACK |
-            PROC_FLAG_TAKEN_SPELL_RANGED_DMG_CLASS | PROC_FLAG_TAKEN_SPELL_NONE_DMG_CLASS_NEG | PROC_FLAG_TAKEN_SPELL_MAGIC_DMG_CLASS_NEG)) ||
-            (spellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_VICTIM))
-            return true;
+        if (!spellInfo)
+            continue;
+
+        if (spellInfo->Id == excludeAura)
+            continue;
+
+        if (spellInfo->IsPositive())
+            continue;
+
+        if (!spellInfo->IsCrowdControlSpell())
+            continue;
+
+        if (!(spellInfo->Attributes & SPELL_ATTR0_BREAKABLE_BY_DAMAGE) &&
+            !(spellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_VICTIM) &&
+            !(spellInfo->ProcFlags & (PROC_FLAG_TAKEN_MELEE_AUTO_ATTACK | PROC_FLAG_TAKEN_SPELL_MELEE_DMG_CLASS |
+            PROC_FLAG_TAKEN_RANGED_AUTO_ATTACK | PROC_FLAG_TAKEN_SPELL_RANGED_DMG_CLASS |
+            PROC_FLAG_TAKEN_SPELL_NONE_DMG_CLASS_NEG | PROC_FLAG_TAKEN_SPELL_MAGIC_DMG_CLASS_NEG)))
+            continue;
+
+        return true;
     }
 
     return false;
@@ -9740,7 +9755,7 @@ void Unit::CombatStop(bool includingCast)
     if (GetTypeId() == TYPEID_PLAYER)
         ToPlayer()->SendAttackSwingCancelAttack();     // melee and ranged forced attack cancel
     ClearInCombat();
-    if (Player *player = ToPlayer())
+    if (Player* player = ToPlayer())
         player->lastCombatTime = getMSTime();
 }
 
