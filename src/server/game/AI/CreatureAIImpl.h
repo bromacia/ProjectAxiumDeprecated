@@ -563,7 +563,7 @@ inline bool CreatureAI::UpdateVictim()
         if (Unit* victim = me->SelectVictim())
         {
             if (me->GetScriptName() == "npc_mirror_image")
-                AttackStartCaster(victim, MELEE_RANGE);
+                AttackStartCaster(victim, 30.0f);
             else
                 AttackStart(victim);
         }

@@ -131,7 +131,7 @@ void CasterAI::InitializeAI()
 {
     CombatAI::InitializeAI();
 
-    m_attackDist = 40.0f;
+    m_attackDist = 30.0f;
     for (SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr)
         if (AISpellInfo[*itr].condition == AICOND_COMBAT && m_attackDist > GetAISpellInfo(*itr)->maxRange)
             m_attackDist = GetAISpellInfo(*itr)->maxRange;
@@ -190,32 +190,32 @@ void CasterAI::UpdateAI(const uint32 diff)
 
     if (me->getVictim()->HasBreakableCrowdControlAura(me))
     {
-        me->CombatStop(true);
+        me->CombatStop();
         me->CastStop();
         me->GetMotionMaster()->Clear();
         me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
         return;
     }
 
-    if (me->HasUnitState(UNIT_STATE_CASTING))
-        return;
-
     if (target)
     {
-        if (!me->IsWithinDist(target, m_attackDist))
-        {
-            me->CombatStop(true);
-            me->CastStop();
-            me->GetMotionMaster()->Clear();
-            me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
-            return;
-        }
-
         if (!me->IsWithinLOS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
         {
             me->CastStop();
             me->GetMotionMaster()->Clear();
             me->GetMotionMaster()->MoveChase(target);
+        }
+
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+
+        if (!me->IsWithinDist(target, m_attackDist))
+        {
+            me->CombatStop();
+            me->CastStop();
+            me->GetMotionMaster()->Clear();
+            me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
+            return;
         }
 
         if (me->GetEntry() == 31216) // Mirror Image
