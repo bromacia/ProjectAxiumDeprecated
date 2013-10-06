@@ -351,4 +351,3 @@ PlayerSocial *SocialMgr::LoadFromDB(PreparedQueryResult result, uint32 guid)
 
     return social;
 }
-
