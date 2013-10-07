@@ -98,7 +98,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
     PSendSysMessage(LANG_UPTIME, uptime.c_str());
     PSendSysMessage(LANG_UPDATE_DIFF, worldUpdateTime);
     PSendSysMessage("Revision: %s", _REV);
-    PSendSysMessage("Hash: %s Date: %s", _HASH, _DATE);
+    PSendSysMessage("Hash: %s", _HASH);
     //! Can't use sWorld->ShutdownMsg here in case of console command
     if (sWorld->IsShuttingDown())
         PSendSysMessage(LANG_SHUTDOWN_TIMELEFT, secsToTimeString(sWorld->GetShutDownTimeLeft()).c_str());
