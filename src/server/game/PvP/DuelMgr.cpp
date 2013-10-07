@@ -67,6 +67,8 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
     if (!player)
         return;
 
+    player->CombatStop();
+
     if (save)
     {
         player->playerState.Health = 0;
