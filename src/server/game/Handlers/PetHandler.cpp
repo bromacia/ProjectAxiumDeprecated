@@ -389,7 +389,8 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                 else
                     pet->SendPetAIReaction(guid1);
 
-                if (unit_target && pet->IsValidAttackTarget(unit_target) && !pet->isPossessed() && !pet->IsVehicle())
+                // @TODO: IsFriendlyTo will allow the pet to start attacking neutral targets on ability cast
+                if (unit_target && !GetPlayer()->IsFriendlyTo(unit_target) && !pet->isPossessed() && !pet->IsVehicle())
                 {
                     // This is true if pet has no target or has target but targets differs.
                     if (pet->getVictim() != unit_target)
