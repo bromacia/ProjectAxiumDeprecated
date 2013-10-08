@@ -160,6 +160,18 @@ void WorldSession::moveItems(Item* myItems[], Item* hisItems[])
                         trader->GetName(), trader->GetSession()->GetAccountId());
                 }
 
+                if (_player->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
+                {
+                    PreparedStatement* stmt = LogDatabase.GetPreparedStatement(LOG_INS_TRADE_LOG);
+                    stmt->setUInt32(0, _player->GetSession()->GetAccountId());
+                    stmt->setUInt32(1, _player->GetGUIDLow());
+                    stmt->setUInt32(2, myItems[i]->GetEntry());
+                    stmt->setUInt32(3, myItems[i]->GetCount());
+                    stmt->setUInt32(4, trader->GetSession()->GetAccountId());
+                    stmt->setUInt32(5, trader->GetGUIDLow());
+                    LogDatabase.Execute(stmt);
+                }
+
                 // adjust time (depends on /played)
                 if (myItems[i]->HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_BOP_TRADEABLE))
                     myItems[i]->SetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME, trader->GetTotalPlayedTime()-(_player->GetTotalPlayedTime()-myItems[i]->GetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME)));
@@ -176,6 +188,18 @@ void WorldSession::moveItems(Item* myItems[], Item* hisItems[])
                         trader->GetName(), trader->GetSession()->GetAccountId(),
                         hisItems[i]->GetTemplate()->Name1.c_str(), hisItems[i]->GetEntry(), hisItems[i]->GetCount(),
                         _player->GetName(), _player->GetSession()->GetAccountId());
+                }
+
+                if (trader->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
+                {
+                    PreparedStatement* stmt = LogDatabase.GetPreparedStatement(LOG_INS_TRADE_LOG);
+                    stmt->setUInt32(0, trader->GetSession()->GetAccountId());
+                    stmt->setUInt32(1, trader->GetGUIDLow());
+                    stmt->setUInt32(2, hisItems[i]->GetEntry());
+                    stmt->setUInt32(3, hisItems[i]->GetCount());
+                    stmt->setUInt32(4, _player->GetSession()->GetAccountId());
+                    stmt->setUInt32(5, _player->GetGUIDLow());
+                    LogDatabase.Execute(stmt);
                 }
 
                 // adjust time (depends on /played)
