@@ -177,13 +177,6 @@ class mmaps_commandscript : public CommandScript
             MMAP::MMapManager* manager = MMAP::MMapFactory::createOrGetMMapManager();
             handler->PSendSysMessage("%u maps loaded with %u tiles overall", manager->getLoadedMapsCount(), manager->getLoadedTilesCount());
 
-            dtNavMesh const* navmesh = manager->GetNavMesh(handler->GetSession()->GetPlayer()->GetMapId());
-            if (!navmesh)
-            {
-                handler->PSendSysMessage("NavMesh not loaded for current map.");
-                return true;
-            }
-
             uint32 tileCount = 0;
             uint32 nodeCount = 0;
             uint32 polyCount = 0;
@@ -191,19 +184,26 @@ class mmaps_commandscript : public CommandScript
             uint32 triCount = 0;
             uint32 triVertCount = 0;
             uint32 dataSize = 0;
-            for (int32 i = 0; i < navmesh->getMaxTiles(); ++i)
+            for (MMAP::MMapDataSet::iterator i = manager->loadedMMaps.begin(); i != manager->loadedMMaps.end(); ++i)
             {
-                dtMeshTile const* tile = navmesh->getTile(i);
-                if (!tile || !tile->header)
+                dtNavMesh const* navmesh = i->second->navMesh;
+                if (!navmesh)
                     continue;
 
-                tileCount++;
-                nodeCount += tile->header->bvNodeCount;
-                polyCount += tile->header->polyCount;
-                vertCount += tile->header->vertCount;
-                triCount += tile->header->detailTriCount;
-                triVertCount += tile->header->detailVertCount;
-                dataSize += tile->dataSize;
+                for (int32 i = 0; i < navmesh->getMaxTiles(); ++i)
+                {
+                    dtMeshTile const* tile = navmesh->getTile(i);
+                    if (!tile || !tile->header)
+                        continue;
+
+                    tileCount++;
+                    nodeCount += tile->header->bvNodeCount;
+                    polyCount += tile->header->polyCount;
+                    vertCount += tile->header->vertCount;
+                    triCount += tile->header->detailTriCount;
+                    triVertCount += tile->header->detailVertCount;
+                    dataSize += tile->dataSize;
+                }
             }
 
             handler->PSendSysMessage("Navmesh stats:");

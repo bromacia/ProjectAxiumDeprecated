@@ -74,11 +74,12 @@ namespace MMAP
 
             uint32 getLoadedTilesCount() const { return loadedTiles; }
             uint32 getLoadedMapsCount() const { return loadedMMaps.size(); }
+
+            MMapDataSet loadedMMaps;
         private:
             bool loadMapData(uint32 mapId);
             uint32 packTileID(int32 x, int32 y);
 
-            MMapDataSet loadedMMaps;
             uint32 loadedTiles;
             ACE_RW_Thread_Mutex i_tileLock;
     };
