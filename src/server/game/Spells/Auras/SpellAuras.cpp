@@ -372,9 +372,15 @@ Aura::~Aura()
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
          delete m_effects[i];
 
+    if (!m_applications.empty())
+    {
+        uint32 casterGuid = 0;
+        if (GetCaster())
+            casterGuid = GetCaster()->GetGUIDLow();
 
-    // Caused a crash? Seems like a poinless assert
-    ASSERT(m_applications.empty());
+        sLog->outCrash("CRASH: Aura::~Aura() m_applications not empty! AuraID: %u CasterGUID: %u", GetId(), casterGuid);
+        ASSERT(false);
+    }
     _DeleteRemovedApplications();
 }
 
