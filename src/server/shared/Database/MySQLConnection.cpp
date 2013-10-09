@@ -123,12 +123,6 @@ bool MySQLConnection::Open()
 
     if (m_Mysql)
     {
-        if (!m_reconnecting)
-        {
-            sLog->outSQLDriver("MySQL client library: %s", mysql_get_client_info());
-            sLog->outSQLDriver("MySQL server ver: %s ", mysql_get_server_info(m_Mysql));
-        }
-
         sLog->outDetail("Connected to MySQL database at %s", m_connectionInfo.host.c_str());
         mysql_autocommit(m_Mysql, 1);
 
