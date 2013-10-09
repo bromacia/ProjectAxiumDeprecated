@@ -35,7 +35,7 @@ void PvPMgr::HandleDealDamage(Unit* attacker, Player* victim, uint32 damage)
     if (pAttacker->IsHealingSpec())
         return;
 
-    if ((!pAttacker->InBattleground() || !victim->InBattleground()) && (!pAttacker->IsInWorldPvPZone() || !victim->IsInWorldPvPZone()))
+    if ((!pAttacker->InBattleground() || !victim->InBattleground() || pAttacker->InArena() || victim->InArena()) && (!pAttacker->IsInWorldPvPZone() || !victim->IsInWorldPvPZone()))
         return;
 
     if (pAttacker->IsDueling() || victim->IsDueling())
@@ -296,6 +296,9 @@ void PvPMgr::HandleBattlegroundHonorableKill(Player* player)
 void PvPMgr::HandleBattlegroundEnd(Battleground* bg)
 {
     if (!bg)
+        return;
+
+    if (bg->isArena())
         return;
 
     TeamId winningTeam = GetWinningTeamIdByBGWinner(bg->GetWinner());
