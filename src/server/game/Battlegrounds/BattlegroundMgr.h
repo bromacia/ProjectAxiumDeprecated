@@ -86,7 +86,7 @@ class BattlegroundMgr
 
         uint32 CreateBattleground(CreateBattlegroundData& data);
 
-        void AddBattleground(uint32 InstanceID, BattlegroundTypeId bgTypeId, Battleground* BG) { m_Battlegrounds[bgTypeId][InstanceID] = BG; };
+        void AddBattleground(uint32 InstanceID, BattlegroundTypeId bgTypeId, Battleground* BG) { m_Battlegrounds[bgTypeId][InstanceID] = BG; }
         void RemoveBattleground(uint32 instanceID, BattlegroundTypeId bgTypeId) { m_Battlegrounds[bgTypeId].erase(instanceID); }
         uint32 CreateClientVisibleInstanceId(BattlegroundTypeId bgTypeId, BattlegroundBracketId bracket_id);
 
@@ -107,7 +107,7 @@ class BattlegroundMgr
         uint32 GetPrematureFinishTime() const;
 
         void InitAutomaticArenaPointDistribution();
-        void ToggleArenaTesting();
+        void ToggleArenaTesting(uint32 BgID);
         void ToggleTesting();
 
         void SetHolidayWeekends(uint32 mask);
@@ -122,6 +122,8 @@ class BattlegroundMgr
 
         bool isArenaTesting() const { return m_ArenaTesting; }
         bool isTesting() const { return m_Testing; }
+
+        uint32 GetArenaTestingMap() { return m_ArenaTestingMap; }
 
         static bool IsArenaType(BattlegroundTypeId bgTypeId);
         static bool IsBattlegroundType(BattlegroundTypeId bgTypeId) { return !IsArenaType(bgTypeId); }
@@ -146,6 +148,7 @@ class BattlegroundMgr
         time_t m_NextAutoDistributionTime;
         uint32 m_AutoDistributionTimeChecker;
         bool   m_ArenaTesting;
+        uint32 m_ArenaTestingMap;
         bool   m_Testing;
 };
 

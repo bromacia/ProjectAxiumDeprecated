@@ -51,12 +51,12 @@
 /***            BATTLEGROUND MANAGER                   ***/
 /*********************************************************/
 
-BattlegroundMgr::BattlegroundMgr() : m_AutoDistributionTimeChecker(0), m_ArenaTesting(false)
+BattlegroundMgr::BattlegroundMgr() : m_AutoDistributionTimeChecker(0), m_ArenaTesting(false), m_ArenaTestingMap(0)
 {
     for (uint8 i = BATTLEGROUND_TYPE_NONE; i < MAX_BATTLEGROUND_TYPE_ID; i++)
         m_Battlegrounds[i].clear();
     m_NextRatingDiscardUpdate = sWorld->getIntConfig(CONFIG_ARENA_RATING_DISCARD_TIMER);
-    m_Testing=false;
+    m_Testing = false;
 }
 
 BattlegroundMgr::~BattlegroundMgr()
@@ -537,6 +537,10 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId
                 break;
             }
         }
+
+        if (isArenaTesting() && GetArenaTestingMap())
+            bgTypeId = (BattlegroundTypeId)GetArenaTestingMap();
+
         bg_template = GetBattlegroundTemplate(bgTypeId);
         if (!bg_template)
         {
@@ -1016,11 +1020,16 @@ void BattlegroundMgr::ToggleTesting()
         sWorld->SendWorldText(LANG_DEBUG_BG_OFF);
 }
 
-void BattlegroundMgr::ToggleArenaTesting()
+void BattlegroundMgr::ToggleArenaTesting(uint32 BgID)
 {
     m_ArenaTesting = !m_ArenaTesting;
+    m_ArenaTestingMap = BgID;
     if (m_ArenaTesting)
+    {
         sWorld->SendWorldText(LANG_DEBUG_ARENA_ON);
+        if (BgID)
+            sWorld->SendWorldText(LANG_DEBUG_ARENA_ON_MAP, BgID);
+    }
     else
         sWorld->SendWorldText(LANG_DEBUG_ARENA_OFF);
 }
