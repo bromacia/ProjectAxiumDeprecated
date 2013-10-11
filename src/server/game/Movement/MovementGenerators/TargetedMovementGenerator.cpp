@@ -40,54 +40,48 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
 
     float x, y, z;
 
-    if (preciseLocation)
-        i_target->GetPosition(x, y, z);
-    else
+    if (updateDestination || !i_path)
     {
-        if (updateDestination || !i_path)
-        {
-            if (!i_offset)
-                i_target->GetContactPoint(&owner, x, y, z);
-            else
-            {
-                float dist;
-                float size;
-
-                // Pets need special handling.
-                // We need to subtract GetObjectSize() because it gets added back further down the chain
-                //  and that makes pets too far away. Subtracting it allows pets to properly
-                //  be (GetCombatReach() + i_offset) away.
-                // Only applies when i_target is pet's owner otherwise pets and mobs end up
-                //   doing a "dance" while fighting
-                if (owner.isPet() && i_target->GetTypeId() == TYPEID_PLAYER)
-                {
-                    dist = i_target->GetCombatReach();
-                    size = i_target->GetCombatReach() - i_target->GetObjectSize();
-                }
-                else
-                {
-                    dist = i_offset + 1.0f;
-                    size = owner.GetObjectSize();
-                }
-
-                if (i_target->IsWithinDistInMap(&owner, dist))
-                    return;
-
-                // to at i_offset distance from target and i_angle from target facing
-                i_target->GetClosePoint(x, y, z, size, i_offset, i_angle);
-            }
-        }
+        if (!i_offset)
+            i_target->GetContactPoint(&owner, x, y, z);
         else
         {
-            // the destination has not changed, we just need to refresh the path (usually speed change)
-            G3D::Vector3 end = i_path->GetEndPosition();
-            x = end.x;
-            y = end.y;
-            z = end.z;
-        }
+            float dist;
+            float size;
 
-        if (!owner.IsWithinLOS(x, y, z))
-            i_target->GetPosition(x, y, z);
+            // Pets need special handling.
+            // We need to subtract GetObjectSize() because it gets added back further down the chain
+            //  and that makes pets too far away. Subtracting it allows pets to properly
+            //  be (GetCombatReach() + i_offset) away.
+            // Only applies when i_target is pet's owner otherwise pets and mobs end up
+            //   doing a "dance" while fighting
+            if (owner.isPet() && i_target->GetTypeId() == TYPEID_PLAYER)
+            {
+                dist = i_target->GetCombatReach();
+                size = i_target->GetCombatReach() - i_target->GetObjectSize();
+            }
+            else
+            {
+                dist = i_offset + 1.0f;
+                size = owner.GetObjectSize();
+            }
+
+            if (i_target->IsWithinDistInMap(&owner, dist) && owner.IsWithinLOS(i_target->GetPositionX(), i_target->GetPositionY(), i_target->GetPositionZ()))
+                return;
+
+            if (!owner.IsWithinLOS(i_target->GetPositionX(), i_target->GetPositionY(), i_target->GetPositionZ()))
+                i_target->GetPosition(x, y, z);
+            else
+                i_target->GetClosePoint(x, y, z, size, i_offset, i_angle); // to at i_offset distance from target and i_angle from target facing
+        }
+    }
+    else
+    {
+        // the destination has not changed, we just need to refresh the path (usually speed change)
+        G3D::Vector3 end = i_path->GetEndPosition();
+        x = end.x;
+        y = end.y;
+        z = end.z;
     }
 
     owner.UpdateAllowedPositionZ(x, y, z, true);
@@ -158,41 +152,29 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
         return true;
     }
 
-    if (!preciseLocation && !owner.IsWithinLOS(i_target->GetPositionX(), i_target->GetPositionY(), i_target->GetPositionZ()))
+    bool targetMoved = false;
+    i_recheckDistance.Update(time_diff);
+    if (i_recheckDistance.Passed())
     {
-        preciseLocation = true;
-        _setTargetLocation(owner, true);
-    }
+        i_recheckDistance.Reset(100);
+        //More distance let have better performance, less distance let have more sensitive reaction at target move.
+        float allowed_dist = sWorld->getRate(RATE_TARGET_POS_RECALCULATION_RANGE);
+        G3D::Vector3 dest = owner.movespline->FinalDestination();
 
-    if (!preciseLocation)
-    {
-        bool targetMoved = false;
-        i_recheckDistance.Update(time_diff);
-        if (i_recheckDistance.Passed())
+        if (owner.GetTypeId() == TYPEID_UNIT)
         {
-            i_recheckDistance.Reset(100);
-            //More distance let have better performance, less distance let have more sensitive reaction at target move.
-            float allowed_dist = sWorld->getRate(RATE_TARGET_POS_RECALCULATION_RANGE);
-            G3D::Vector3 dest = owner.movespline->FinalDestination();
-
-            if (owner.GetTypeId() == TYPEID_UNIT)
-            {
-                if (owner.ToCreature()->canFly())
-                    targetMoved = !i_target->IsWithinDist3d(dest.x, dest.y, dest.z, allowed_dist);
-                else
-                    targetMoved = !i_target->IsWithinDist2d(dest.x, dest.y, allowed_dist);
-            }
+            if (owner.ToCreature()->canFly())
+                targetMoved = !i_target->IsWithinDist3d(dest.x, dest.y, dest.z, allowed_dist);
+            else
+                targetMoved = !i_target->IsWithinDist2d(dest.x, dest.y, 1.0f);
         }
-
-        if (i_recalculateTravel || targetMoved)
-            _setTargetLocation(owner, true);
     }
+
+    if (i_recalculateTravel || targetMoved || !owner.IsWithinLOS(i_target->GetPositionX(), i_target->GetPositionY(), i_target->GetPositionZ()))
+        _setTargetLocation(owner, true);
 
     if (owner.movespline->Finalized())
     {
-        if (preciseLocation)
-            preciseLocation = false;
-
         static_cast<D*>(this)->MovementInform(owner);
         if (i_angle == 0.0f && !owner.HasInArc(0.01f, i_target.getTarget()))
             owner.SetInFront(i_target.getTarget());
