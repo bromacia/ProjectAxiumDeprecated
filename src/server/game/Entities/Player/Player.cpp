@@ -18852,6 +18852,8 @@ void Player::SaveToDB(bool create /*=false*/)
 
         stmt->setBool(index++, m_PvPNotificationsEnabled);
 
+        stmt->setUInt16(index++, m_playerSpec);
+
         // Index
         stmt->setUInt32(index++, GetGUIDLow());
     }

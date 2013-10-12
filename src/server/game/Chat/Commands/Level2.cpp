@@ -278,7 +278,6 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
     uint32 areaId;
     uint32 phase = 0;
 
-
     // get additional information from Player object
     if (target)
     {
@@ -304,8 +303,8 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         if (HasLowerSecurity(NULL, target_guid))
             return false;
 
-        //                                                    0          1        2     3      4    5
-        QueryResult result = CharacterDatabase.PQuery("SELECT totaltime, account, race, class, map, zone FROM characters "
+        //                                                    0          1        2     3      4    5     6
+        QueryResult result = CharacterDatabase.PQuery("SELECT totaltime, account, race, class, map, zone, spec FROM characters "
                                                       "WHERE guid = '%u'", GUID_LOPART(target_guid));
         if (!result)
             return false;
@@ -317,6 +316,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         Class = fields[3].GetUInt8();
         mapId = fields[4].GetUInt16();
         areaId = fields[5].GetUInt16();
+        spec = fields[6].GetUInt16();
     }
 
     std::string username = GetTrinityString(LANG_ERROR);
