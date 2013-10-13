@@ -67,12 +67,20 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
             }
 
             if (i_target->IsWithinDistInMap(&owner, dist) && owner.IsWithinLOS(i_target->GetPositionX(), i_target->GetPositionY(), i_target->GetPositionZ()))
+            {
+                i_recalculateTravel = false;
                 return;
+            }
 
             if (!owner.IsWithinLOS(i_target->GetPositionX(), i_target->GetPositionY(), i_target->GetPositionZ()))
                 i_target->GetPosition(x, y, z);
             else
+            {
                 i_target->GetClosePoint(x, y, z, size, i_offset, i_angle); // to at i_offset distance from target and i_angle from target facing
+                float ground = i_target->GetMap()->GetWaterOrGroundLevel(x, y, z);
+                if (fabs(z - ground) >= 5.0f)
+                    i_target->GetPosition(x, y, z);
+            }
         }
     }
     else
@@ -166,7 +174,7 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
             if (owner.ToCreature()->canFly())
                 targetMoved = !i_target->IsWithinDist3d(dest.x, dest.y, dest.z, allowed_dist);
             else
-                targetMoved = !i_target->IsWithinDist2d(dest.x, dest.y, 1.0f);
+                targetMoved = !i_target->IsWithinDist2d(dest.x, dest.y, i_target->GetCombatReach());
         }
     }
 

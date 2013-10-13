@@ -2537,6 +2537,7 @@ void WorldObject::GetNearPoint(WorldObject const* /*searcher*/, float &x, float 
 {
     GetNearPoint2D(x, y, distance2d+searcher_size, absAngle);
     z = GetPositionZ();
+
     if (updateZ)
         UpdateAllowedPositionZ(x, y, z, true);
 
