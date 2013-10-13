@@ -891,6 +891,7 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     lastTeleportTime = 0;
 
     m_isFrozen = false;
+    m_PvPNotificationsEnabled = true;
 
     m_2v2MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
     m_3v3MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
@@ -18852,7 +18853,7 @@ void Player::SaveToDB(bool create /*=false*/)
 
         stmt->setBool(index++, m_PvPNotificationsEnabled);
 
-        stmt->setUInt16(index++, m_playerSpec);
+        stmt->setUInt32(index++, m_playerSpec);
 
         // Index
         stmt->setUInt32(index++, GetGUIDLow());

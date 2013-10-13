@@ -271,7 +271,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
     uint32 latency = 0;
     uint8 race;
     uint8 Class;
-    uint16 spec = 0;
+    uint32 spec = 0;
     int64 muteTime = 0;
     int64 banTime = -1;
     uint32 mapId;
@@ -316,7 +316,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
         Class = fields[3].GetUInt8();
         mapId = fields[4].GetUInt16();
         areaId = fields[5].GetUInt16();
-        spec = fields[6].GetUInt16();
+        spec = fields[6].GetUInt32();
     }
 
     std::string username = GetTrinityString(LANG_ERROR);
