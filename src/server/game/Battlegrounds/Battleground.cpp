@@ -954,6 +954,8 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
 
         if (Pet* playerPet = player->GetPet())
             playerPet->ClearArenaTeamColor();
+
+        player->SetArenaSpectatorState(false);
     }
 
     RemovePlayer(player, guid, team);                           // BG subclass specific code

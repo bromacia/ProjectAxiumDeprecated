@@ -285,6 +285,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             if (sender->isDead())
                 return;
 
+            if (sender->IsArenaSpectator())
+                return;
+
             if (type == CHAT_MSG_SAY)
                 sender->Say(msg, lang);
             else if (type == CHAT_MSG_EMOTE)
@@ -549,13 +552,13 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleEmoteOpcode(WorldPacket & recv_data)
 {
-    if (!GetPlayer()->isAlive() || GetPlayer()->HasUnitState(UNIT_STATE_DIED))
+    if (!_player->isAlive() || _player->HasUnitState(UNIT_STATE_DIED))
         return;
 
     uint32 emote;
     recv_data >> emote;
     sScriptMgr->OnPlayerEmote(GetPlayer(), emote);
-    GetPlayer()->HandleEmoteCommand(emote);
+    _player->HandleEmoteCommand(emote);
 }
 
 namespace Trinity
@@ -592,10 +595,10 @@ namespace Trinity
 
 void WorldSession::HandleTextEmoteOpcode(WorldPacket & recv_data)
 {
-    if (!GetPlayer()->isAlive())
+    if (!_player->isAlive())
         return;
 
-    if (!GetPlayer()->CanSpeak())
+    if (!_player->CanSpeak())
     {
         std::string timeStr = secsToTimeString(m_muteTime - time(NULL));
         SendNotification(GetTrinityString(LANG_WAIT_BEFORE_SPEAKING), timeStr.c_str());
@@ -611,6 +614,9 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket & recv_data)
 
 
     if (_player->lastEmoteTime > getMSTime())
+        return;
+
+    if (_player->IsArenaSpectator())
         return;
 
     EmotesTextEntry const* em = sEmotesTextStore.LookupEntry(text_emote);

@@ -1690,10 +1690,14 @@ bool WorldObject::canSeeOrDetect(WorldObject const* obj, bool ignoreStealth, boo
             return false;
     }
 
+    if (const Player* pObj = obj->ToPlayer())
+        if (pObj->IsArenaSpectator())
+            if (!m_serverSideVisibilityDetect.GetValue(SERVERSIDE_VISIBILITY_GM))
+                return false;
+
     // GM visibility off or hidden NPC
     if (!obj->m_serverSideVisibility.GetValue(SERVERSIDE_VISIBILITY_GM))
     {
-        // Stop checking other things for GMs
         if (m_serverSideVisibilityDetect.GetValue(SERVERSIDE_VISIBILITY_GM))
             return true;
     }

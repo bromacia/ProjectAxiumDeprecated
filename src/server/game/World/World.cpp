@@ -1331,6 +1331,8 @@ void World::LoadConfigSettings(bool reload)
     m_bool_configs[CONFIG_DBCHATLOG_ENABLED]             = ConfigMgr::GetBoolDefault("DBChatLog.Enabled", false);
     m_int_configs[CONFIG_DBCHATLOG_MINGMLEVEL]           = ConfigMgr::GetIntDefault("DBChatLog.MinGMLevel", 2);
 
+    m_int_configs[CONFIG_ARENA_SPECTATOR_MIN_RATING]     = ConfigMgr::GetIntDefault("ArenaSpectator.MinRating", 1000);
+
     sScriptMgr->OnConfigLoad(reload);
 }
 

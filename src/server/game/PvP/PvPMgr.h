@@ -59,6 +59,22 @@ class PvPMgr
         void HandleBattlegroundEnd(Battleground* bg);
         void HandleTwinSpireCapture(TeamId team);
 
+    private:
+        void CalculatePvPRatingForKill(uint16 attackerPvPRating, uint16 victimPvPRating, uint8 ratingChange, bool gain);
+        void ApplyRatingMultipliers(uint16 pvpRating, uint8 &ratingChange, bool gain);
+        TeamId GetWinningTeamIdByBGWinner(uint8 bgWinner) const
+        {
+            switch (bgWinner)
+            {
+                case WINNER_ALLIANCE: return TEAM_ALLIANCE;
+                case WINNER_HORDE:    return TEAM_HORDE;
+                default:              return TEAM_NEUTRAL;
+            }
+        }
+
+        ChatHandler* handler;
+
+    public:
         uint16 Get2v2MMRByGUIDLow(uint32 GUIDLow) const;
         void Set2v2MMRByGUIDLow(uint32 GUIDLow, uint16 mmr);
         uint16 Get3v3MMRByGUIDLow(uint32 GUIDLow) const;
@@ -97,21 +113,6 @@ class PvPMgr
         void SetLifetime5v5WinsByGUIDLow(uint32 GUIDLow, uint16 wins);
         uint16 GetLifetime5v5GamesByGUIDLow(uint32 GUIDLow) const;
         void SetLifetime5v5GamesByGUIDLow(uint32 GUIDLow, uint16 games);
-
-    private:
-        void CalculatePvPRatingForKill(uint16 attackerPvPRating, uint16 victimPvPRating, uint8 ratingChange, bool gain);
-        void ApplyRatingMultipliers(uint16 pvpRating, uint8 &ratingChange, bool gain);
-        TeamId GetWinningTeamIdByBGWinner(uint8 bgWinner) const
-        {
-            switch (bgWinner)
-            {
-                case WINNER_ALLIANCE: return TEAM_ALLIANCE;
-                case WINNER_HORDE:    return TEAM_HORDE;
-                default:              return TEAM_NEUTRAL;
-            }
-        }
-
-        ChatHandler* handler;
 };
 
 #define sPvPMgr ACE_Singleton<PvPMgr, ACE_Null_Mutex>::instance()

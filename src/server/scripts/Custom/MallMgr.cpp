@@ -708,7 +708,7 @@ bool MallMgr::HandleSetupShadowDanceBar(Player* player, Creature* creature)
         player->InterruptMovement();
         player->GetMotionMaster()->MoveFall();
         player->SetControlled(true, UNIT_STATE_ROOT);
-        player->AddAura(2, player);
+        player->AddAura(SPELL_SERVERSIDE_SILENCE, player);
         if (!player->HasAura(51713))
             player->AddAura(51713, player);
         if (Aura* ShadowDance = player->GetAura(51713, player->GetGUID()))
@@ -724,7 +724,7 @@ bool MallMgr::HandleSetupShadowDanceBar(Player* player, Creature* creature)
 bool MallMgr::HandleFinishShadowDanceBar(Player* player, Creature* creature)
 {
     player->SetControlled(false, UNIT_STATE_ROOT);
-    player->RemoveAura(2);
+    player->RemoveAura(SPELL_SERVERSIDE_SILENCE);
     player->RemoveAura(51713);
     OnGossipHello(player, creature);
     return true;

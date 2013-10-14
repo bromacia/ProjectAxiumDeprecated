@@ -68,7 +68,7 @@ void BattlegroundMgr::DeleteAllBattlegrounds()
 {
     for (uint8 i = BATTLEGROUND_TYPE_NONE; i < MAX_BATTLEGROUND_TYPE_ID; ++i)
     {
-        for (BattlegroundSet::iterator itr = m_Battlegrounds[i].begin(); itr != m_Battlegrounds[i].end();)
+        for (BattlegroundsMap::iterator itr = m_Battlegrounds[i].begin(); itr != m_Battlegrounds[i].end();)
         {
             Battleground* bg = itr->second;
             m_Battlegrounds[i].erase(itr++);
@@ -90,7 +90,7 @@ void BattlegroundMgr::DeleteAllBattlegrounds()
 // used to update running battlegrounds, and delete finished ones
 void BattlegroundMgr::Update(uint32 diff)
 {
-    BattlegroundSet::iterator itr, next;
+    BattlegroundsMap::iterator itr, next;
     for (uint8 i = BATTLEGROUND_TYPE_NONE; i < MAX_BATTLEGROUND_TYPE_ID; ++i)
     {
         itr = m_Battlegrounds[i].begin();
@@ -433,7 +433,7 @@ Battleground* BattlegroundMgr::GetBattlegroundThroughClientInstance(uint32 insta
     if (bg->isArena())
         return GetBattleground(instanceId, bgTypeId);
 
-    for (BattlegroundSet::iterator itr = m_Battlegrounds[bgTypeId].begin(); itr != m_Battlegrounds[bgTypeId].end(); ++itr)
+    for (BattlegroundsMap::iterator itr = m_Battlegrounds[bgTypeId].begin(); itr != m_Battlegrounds[bgTypeId].end(); ++itr)
     {
         if (itr->second->GetClientInstanceID() == instanceId)
             return itr->second;
@@ -446,7 +446,7 @@ Battleground* BattlegroundMgr::GetBattleground(uint32 InstanceID, BattlegroundTy
     if (!InstanceID)
         return NULL;
     //search if needed
-    BattlegroundSet::iterator itr;
+    BattlegroundsMap::iterator itr;
     if (bgTypeId == BATTLEGROUND_TYPE_NONE)
     {
         for (uint8 i = BATTLEGROUND_AV; i < MAX_BATTLEGROUND_TYPE_ID; i++)
@@ -1152,7 +1152,7 @@ bool BattlegroundMgr::IsBGWeekend(BattlegroundTypeId bgTypeId)
     return IsHolidayActive(BGTypeToWeekendHolidayId(bgTypeId));
 }
 
-BattlegroundSet BattlegroundMgr::GetAllBattlegroundsWithTypeId(BattlegroundTypeId bgTypeId)
+BattlegroundsMap BattlegroundMgr::GetAllBattlegroundsWithTypeId(BattlegroundTypeId bgTypeId)
 {
     return m_Battlegrounds[bgTypeId];
 }

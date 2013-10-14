@@ -92,7 +92,7 @@ class npc_class_trainer : public CreatureScript
                     break;
                 case TRAINER_FINISH_SHADOW_DANCE:
                     player->SetControlled(false, UNIT_STATE_ROOT);
-                    player->RemoveAura(2);
+                    player->RemoveAura(SPELL_SERVERSIDE_SILENCE);
                     player->RemoveAura(51713);
                     OnGossipHello(player, creature);
                     break;

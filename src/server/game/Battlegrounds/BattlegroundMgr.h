@@ -25,7 +25,7 @@
 #include "BattlegroundQueue.h"
 #include <ace/Singleton.h>
 
-typedef std::map<uint32, Battleground*> BattlegroundSet;
+typedef std::map<uint32, Battleground*> BattlegroundsMap;
 
 typedef UNORDERED_MAP<uint32, BattlegroundTypeId> BattleMastersMap;
 
@@ -82,7 +82,7 @@ class BattlegroundMgr
         Battleground* GetBattlegroundTemplate(BattlegroundTypeId bgTypeId);
         Battleground* CreateNewBattleground(BattlegroundTypeId bgTypeId, PvPDifficultyEntry const* bracketEntry, uint8 arenaType, bool isRated);
 
-        BattlegroundSet GetAllBattlegroundsWithTypeId(BattlegroundTypeId bgTypeId);
+        BattlegroundsMap GetAllBattlegroundsWithTypeId(BattlegroundTypeId bgTypeId);
 
         uint32 CreateBattleground(CreateBattlegroundData& data);
 
@@ -139,7 +139,7 @@ class BattlegroundMgr
 
         typedef std::map<BattlegroundTypeId, uint8> BattlegroundSelectionWeightMap; // TypeId and its selectionWeight
         /* Battlegrounds */
-        BattlegroundSet m_Battlegrounds[MAX_BATTLEGROUND_TYPE_ID];
+        BattlegroundsMap m_Battlegrounds[MAX_BATTLEGROUND_TYPE_ID];
         BattlegroundSelectionWeightMap m_ArenaSelectionWeights;
         BattlegroundSelectionWeightMap m_BGSelectionWeights;
         std::vector<uint64> m_QueueUpdateScheduler;

@@ -2697,6 +2697,10 @@ class Player : public Unit, public GridObject<Player>
 
         bool HasDelayedOperation(uint32 operation) { return (m_DelayedOperations & operation); }
 
+        bool IsArenaSpectator() const { return m_arenaSpectator; }
+        void SetArenaSpectator(bool x) { m_arenaSpectator = x; }
+        void SetArenaSpectatorState(bool apply);
+
     protected:
         // Gamemaster whisper whitelist
         WhisperListContainer WhisperList;
@@ -3079,6 +3083,8 @@ class Player : public Unit, public GridObject<Player>
         bool m_PvPNotificationsEnabled;
 
         bool m_delayDuelFinish;
+
+        bool m_arenaSpectator;
 };
 
 void AddItemsSetItem(Player *player, Item *item);

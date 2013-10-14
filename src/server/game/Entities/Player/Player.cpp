@@ -923,6 +923,8 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     playerState.Cooldowns.clear();
 
     m_delayDuelFinish = false;
+
+    m_arenaSpectator = false;
 }
 
 Player::~Player ()
@@ -17334,8 +17336,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     }
 
     // Remove Silence (serverside)
-    if (HasAura(2))
-        RemoveAura(2);
+    if (HasAura(SPELL_SERVERSIDE_SILENCE))
+        RemoveAura(SPELL_SERVERSIDE_SILENCE);
 
     if (m_isFrozen)
     {
@@ -25639,4 +25641,34 @@ bool Player::CanTeleportTo(const GameTele* tele)
     }
 
     return true;
+}
+
+void Player::SetArenaSpectatorState(bool apply)
+{
+    if (apply)
+    {
+        m_arenaSpectator = true;
+        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
+        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
+        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+
+        if (!HasAura(SPELL_SERVERSIDE_SILENCE))
+            AddAura(SPELL_SERVERSIDE_SILENCE, this);
+
+        SetSpeed(MOVE_RUN, 3.0, true);
+        Dismount();
+        RemoveAllControlled();
+
+        if (GetGroup())
+            RemoveFromGroup();
+    }
+    else
+    {
+        m_arenaSpectator = false;
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        RemoveAura(SPELL_SERVERSIDE_SILENCE);
+        UpdateSpeed(MOVE_RUN, true);
+    }
 }

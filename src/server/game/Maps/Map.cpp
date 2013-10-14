@@ -2729,8 +2729,13 @@ void BattlegroundMap::RemoveAllPlayers()
     if (HavePlayers())
         for (MapRefManager::iterator itr = m_mapRefManager.begin(); itr != m_mapRefManager.end(); ++itr)
             if (Player* player = itr->getSource())
+            {
+                if (player->IsArenaSpectator())
+                    player->SetArenaSpectatorState(false);
+
                 if (!player->IsBeingTeleportedFar())
                     player->TeleportTo(player->GetBattlegroundEntryPoint());
+            }
 }
 
 Creature* Map::GetCreature(uint64 guid)

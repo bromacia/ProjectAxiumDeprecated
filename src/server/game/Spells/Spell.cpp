@@ -5773,7 +5773,7 @@ SpellCastResult Spell::CheckCast(bool strict)
     }
 
     // Silence (serverside spell)
-    if (m_caster->HasAura(2))
+    if (m_caster->HasAura(SPELL_SERVERSIDE_SILENCE))
         return SPELL_FAILED_SILENCED;
 
     // Spells that cant be used while rooted (Shadowstep, Charge, Intercept, Intervene, Feral Charge Cat/Bear)

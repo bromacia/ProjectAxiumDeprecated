@@ -404,7 +404,7 @@ void WorldSession::LogoutPlayer(bool Save)
     if (_player)
     {
         // Remove Silence (serverside)
-        _player->RemoveAura(2);
+        _player->RemoveAura(SPELL_SERVERSIDE_SILENCE);
 
         // Remove Shadow Dance
         if (_player->HasAura(51713))

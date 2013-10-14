@@ -91,7 +91,7 @@ bool ArenaTeam::AddMember(uint64 playerGuid)
     uint8 playerClass;
 
     // Check if arena team is full (Can't have more than type * 2 players)
-    if (GetMembersSize() >= GetType() * 2)
+    if (GetMembers().size() >= GetType() * 2)
         return false;
 
     // Get player name and class either from db or ObjectMgr
@@ -255,7 +255,7 @@ bool ArenaTeam::LoadMembersFromDB(QueryResult result)
     }
     while (result->NextRow());
 
-    if (Empty() || !captainPresentInTeam)
+    if (GetMembers().empty() || !captainPresentInTeam)
     {
         // Arena team is empty or captain is not in team, delete from db
         sLog->outErrorDb("ArenaTeam %u does not have any members or its captain is not in team, disbanding it...", TeamId);
@@ -362,7 +362,7 @@ void ArenaTeam::Roster(WorldSession* session)
     WorldPacket data(SMSG_ARENA_TEAM_ROSTER, 100);
     data << uint32(GetId());                                // team id
     data << uint8(unk308);                                  // 308 unknown value but affect packet structure
-    data << uint32(GetMembersSize());                       // members count
+    data << uint32(GetMembers().size());                    // members count
     data << uint32(GetType());                              // arena team type?
 
     for (MemberList::const_iterator itr = Members.begin(); itr != Members.end(); ++itr)

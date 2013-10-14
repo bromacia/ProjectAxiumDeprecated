@@ -72,15 +72,8 @@ enum eTradeskill
 
 // Defined fuctions to use with player.
 
-// This fuction add's a menu item,
-// a - Icon Id
-// b - Text
-// c - Sender(this is to identify the current Menu with this item)
-// d - Action (identifys this Menu Item)
-// e - Text to be displayed in pop up box
-// f - Money value in pop up box
-#define ADD_GOSSIP_ITEM(a, b, c, d)   PlayerTalkClass->GetGossipMenu().AddMenuItem(-1, a, b, c, d, "", 0)
-#define ADD_GOSSIP_ITEM_EXTENDED(a, b, c, d, e, f, g)   PlayerTalkClass->GetGossipMenu().AddMenuItem(-1, a, b, c, d, e, f, g)
+#define ADD_GOSSIP_ITEM(iconId, text, sender, action)   PlayerTalkClass->GetGossipMenu().AddMenuItem(-1, iconId, text, sender, action, "", false)
+#define ADD_GOSSIP_ITEM_EXTENDED(iconId, text, sender, action, popUpBoxText, popUpBoxMoney, coded)   PlayerTalkClass->GetGossipMenu().AddMenuItem(-1, iconId, text, sender, action, popUpBoxText, popUpBoxMoney, coded)
 
 // This fuction Sends the current menu to show to client, a - NPCTEXTID(uint32), b - npc guid(uint64)
 #define SEND_GOSSIP_MENU(a, b)      PlayerTalkClass->SendGossipMenu(a, b)

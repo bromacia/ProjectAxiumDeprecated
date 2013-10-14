@@ -134,7 +134,7 @@ void WorldSession::HandleArenaTeamInviteOpcode(WorldPacket & recvData)
         return;
     }
 
-    if (arenaTeam->GetMembersSize() >= arenaTeam->GetType() * 2)
+    if (arenaTeam->GetMembers().size() >= arenaTeam->GetType() * 2)
     {
         SendArenaTeamCommandResult(ERR_ARENA_TEAM_CREATE_S, arenaTeam->GetName(), "", ERR_ARENA_TEAM_TOO_MANY_MEMBERS_S);
         return;
@@ -212,7 +212,7 @@ void WorldSession::HandleArenaTeamLeaveOpcode(WorldPacket & recvData)
     }
 
     // Team captain can't leave the team if other members are still present
-    if (_player->GetGUID() == arenaTeam->GetCaptain() && arenaTeam->GetMembersSize() > 1)
+    if (_player->GetGUID() == arenaTeam->GetCaptain() && arenaTeam->GetMembers().size() > 1)
     {
         SendArenaTeamCommandResult(ERR_ARENA_TEAM_QUIT_S, "", "", ERR_ARENA_TEAM_LEADER_LEAVE_S);
         return;

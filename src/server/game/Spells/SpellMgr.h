@@ -606,6 +606,8 @@ DiminishingLevels GetDiminishingReturnsMaxLevel(DiminishingGroup group);
 int32 GetDiminishingReturnsLimitDuration(DiminishingGroup group, SpellInfo const* spellproto);
 bool IsDiminishingReturnsGroupDurationLimited(DiminishingGroup group);
 
+#define SPELL_SERVERSIDE_SILENCE 2
+
 class SpellMgr
 {
     friend class ACE_Singleton<SpellMgr, ACE_Null_Mutex>;

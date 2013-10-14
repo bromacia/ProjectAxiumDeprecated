@@ -27,6 +27,7 @@
 #include "MapManager.h"
 #include "Transport.h"
 #include "Battleground.h"
+#include "BattlegroundMgr.h"
 #include "WaypointMovementGenerator.h"
 #include "InstanceSaveMgr.h"
 #include "ObjectMgr.h"
@@ -116,6 +117,14 @@ void WorldSession::HandleMoveWorldportAckOpcode()
         {
             if (_player->IsInvitedForBattlegroundInstance(_player->GetBattlegroundId()))
                 bg->AddPlayer(_player);
+
+            if (bg->isArena())
+                if (_player->IsArenaSpectator())
+                {
+                    WorldPacket data;
+                    sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, 0, STATUS_IN_PROGRESS, 0, 0, 0);
+                    _player->GetSession()->SendPacket(&data);
+                }
         }
     }
 
