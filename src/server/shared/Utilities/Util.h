@@ -380,8 +380,17 @@ uint32 CreatePIDFile(const std::string& filename);
 void hexEncodeByteArray(uint8* bytes, uint32 arrayLen, std::string& result);
 std::string ByteArrayToHexStr(uint8* bytes, uint32 length);
 
-inline bool IsPhraseInString(std::string stringToSearch, std::string searchPhrase)
+inline bool IsPhraseInString(std::string _stringToSearch, std::string _searchPhrase, bool caseSensitive = false)
 {
+    std::string stringToSearch = _stringToSearch;
+    std::string searchPhrase = _searchPhrase;
+
+    if (!caseSensitive)
+    {
+        std::transform(stringToSearch.begin(), stringToSearch.end(), stringToSearch.begin(), ::tolower);
+        std::transform(searchPhrase.begin(), searchPhrase.end(), searchPhrase.begin(), ::tolower);
+    }
+
     if (stringToSearch.find(searchPhrase, 0) != std::string::npos)
         return true;
 
