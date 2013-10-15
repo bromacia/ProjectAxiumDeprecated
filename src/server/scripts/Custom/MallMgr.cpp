@@ -925,6 +925,10 @@ bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
 
 bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate, uint32 action)
 {
+    // Don't allow Nibelung to be purchased until the proc is fixed
+    if (IsPhraseInString(vItemTemplate->Name1, "Nibelung"))
+        return false;
+
     // Faction specific items
     if ((vItemTemplate->Flags2 == ITEM_FLAGS_EXTRA_ALLIANCE_ONLY && player->GetTeam() == HORDE) ||
         (vItemTemplate->Flags2 == ITEM_FLAGS_EXTRA_HORDE_ONLY && player->GetTeam() == ALLIANCE))
