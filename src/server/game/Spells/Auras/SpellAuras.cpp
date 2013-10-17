@@ -1836,6 +1836,13 @@ bool Aura::CanBeAppliedOn(Unit* target)
             return false;
         return true;
     }
+    else if (target->isTotem())
+    {
+        if (GetOwner()->GetGUID() != target->GetGUID())
+            return false;
+
+        return true;
+    }
     else
         return CheckAreaTarget(target);
 }
