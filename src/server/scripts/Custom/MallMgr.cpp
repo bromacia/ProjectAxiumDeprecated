@@ -899,15 +899,15 @@ bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
     uint32 professionSpellId = 0;
     switch (skill)
     {
-        case SKILL_ALCHEMY:        professionSpellId = 65281; break;
-        case SKILL_BLACKSMITHING:  professionSpellId = 65282; break;
-        case SKILL_ENCHANTING:     professionSpellId = 51312; break;
-        case SKILL_ENGINEERING:    professionSpellId = 61464; break;
-        case SKILL_HERBALISM:      professionSpellId = 65288; break;
-        case SKILL_INSCRIPTION:    professionSpellId = 65287; break;
-        case SKILL_JEWELCRAFTING:  professionSpellId = 65286; break;
-        case SKILL_LEATHERWORKING: professionSpellId = 65284; break;
-        case SKILL_TAILORING:      professionSpellId = 65283; break;
+        case SKILL_ALCHEMY:        professionSpellId = 51304; break;
+        case SKILL_BLACKSMITHING:  professionSpellId = 51300; break;
+        case SKILL_ENCHANTING:     professionSpellId = 51313; break;
+        case SKILL_ENGINEERING:    professionSpellId = 51306; break;
+        case SKILL_HERBALISM:      professionSpellId = 50300; break;
+        case SKILL_INSCRIPTION:    professionSpellId = 45363; break;
+        case SKILL_JEWELCRAFTING:  professionSpellId = 51311; break;
+        case SKILL_LEATHERWORKING: professionSpellId = 51302; break;
+        case SKILL_TAILORING:      professionSpellId = 51309; break;
     }
 
     if (!professionSpellId)
@@ -917,9 +917,10 @@ bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
         return false;
     }
 
-    player->SetSkill(skill, 6, 450, 450);
     player->learnSpell(professionSpellId, false);
-    player->CLOSE_GOSSIP_MENU();
+    player->SetSkill(skill, 6, 450, 450);
+    player->PlayerTalkClass->ClearMenus();
+    HandleProfessions(player, creature);
     return true;
 }
 
