@@ -12745,12 +12745,12 @@ void Unit::Dismount()
     }
 }
 
-void Unit::SetInCombatWith(Unit* enemy)
+void Unit::SetInCombatWith(Unit* target)
 {
-    Unit* eOwner = enemy->GetCharmerOrOwnerOrSelf();
+    Unit* eOwner = target->GetCharmerOrOwnerOrSelf();
     if (eOwner->IsPvP())
     {
-        SetInCombatState(true, enemy);
+        SetInCombatState(true, target);
         return;
     }
 
@@ -12760,11 +12760,11 @@ void Unit::SetInCombatWith(Unit* enemy)
         Unit const* myOwner = GetCharmerOrOwnerOrSelf();
         if (((Player const*)eOwner)->duel->opponent == myOwner)
         {
-            SetInCombatState(true, enemy);
+            SetInCombatState(true, target);
             return;
         }
     }
-    SetInCombatState(false, enemy);
+    SetInCombatState(false, target);
 }
 
 void Unit::CombatStart(Unit* target, bool initialAggro)
@@ -12800,7 +12800,7 @@ void Unit::CombatStart(Unit* target, bool initialAggro)
     }
 }
 
-void Unit::SetInCombatState(bool PvP, Unit* enemy)
+void Unit::SetInCombatState(bool PvP, Unit* target)
 {
     // only alive units can be in combat
     if (!isAlive())
@@ -12825,15 +12825,15 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
             GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
             creature->SetHomePosition(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
 
-        if (enemy)
+        if (target)
         {
             if (IsAIEnabled)
             {
-                creature->AI()->EnterCombat(enemy);
+                creature->AI()->EnterCombat(target);
                 RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC); // unit has engaged in combat, remove immunity so players can fight back
             }
             if (creature->GetFormation())
-                creature->GetFormation()->MemberAttackStart(creature, enemy);
+                creature->GetFormation()->MemberAttackStart(creature, target);
         }
 
         if (!(creature->GetCreatureInfo()->type_flags & CREATURE_TYPEFLAGS_MOUNTED_COMBAT))
@@ -12842,7 +12842,7 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
 
     for (Unit::ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
     {
-        (*itr)->SetInCombatState(PvP, enemy);
+        (*itr)->SetInCombatState(PvP, target);
         (*itr)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_IN_COMBAT);
     }
 }
