@@ -5559,7 +5559,7 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (!IsPhraseInString(target->GetName(), "Training Dummy"))
             {
                 // Target must be facing you
-                if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_REQ_TARGET_FACING_CASTER) && (!target->HasInArc(static_cast<float>(M_PI), m_caster)))
+                if ((m_spellInfo->AttributesCu & SPELL_ATTR0_CU_REQ_TARGET_FACING_CASTER) && !target->HasInArc(static_cast<float>(M_PI), m_caster))
                     return SPELL_FAILED_NOT_INFRONT;
 
                 // Must be behind the target
@@ -6194,7 +6194,8 @@ SpellCastResult Spell::CheckRange(bool strict)
         else if (min_range && m_caster->IsWithinCombatRange(target, min_range)) // skip this check if min_range = 0
             return !(_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_TOO_CLOSE : SPELL_FAILED_DONT_REPORT;
 
-        if (m_caster->GetTypeId() == TYPEID_PLAYER && (m_spellInfo->FacingCasterFlags & SPELL_FACING_FLAG_INFRONT) && !m_caster->HasInArc(static_cast<float>(M_PI), target))
+        if (m_caster->GetTypeId() == TYPEID_PLAYER && (m_spellInfo->FacingCasterFlags & SPELL_FACING_FLAG_INFRONT) &&
+            !m_caster->HasInArc(static_cast<float>(M_PI), target) && !m_caster->IsWithinExactDistance(target, target->GetObjectSize() + 1.0f))
             return !(_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_UNIT_NOT_INFRONT : SPELL_FAILED_DONT_REPORT;
     }
 

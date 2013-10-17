@@ -505,7 +505,7 @@ bool Unit::IsWithinObjectSizeDistance(const Unit* obj, float dist) const
     return distsq < maxdist * maxdist;
 }
 
-bool Unit::IsWithinRawDistance(const Unit* obj, float dist) const
+bool Unit::IsWithinExactDistance(const Unit* obj, float dist) const
 {
     if (!obj || !IsInMap(obj) || !InSamePhase(obj))
         return false;

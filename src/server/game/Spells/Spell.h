@@ -735,11 +735,11 @@ namespace Trinity
                 switch (i_push_type)
                 {
                     case PUSH_IN_FRONT:
-                        if (i_source->isInFront(target, i_radius, static_cast<float>(M_PI/2)) || target->IsWithinRawDistance(i_source, 1.5f))
+                        if (i_source->isInFront(target, i_radius, static_cast<float>(M_PI/2)) || i_source->IsWithinExactDistance(target, i_source->GetObjectSize() + 1.0f))
                             i_data->push_back(target);
                         break;
                     case PUSH_IN_BACK:
-                        if (i_source->isInBack(target, i_radius, static_cast<float>(M_PI/2)) || target->IsWithinRawDistance(i_source, 1.5f))
+                        if (i_source->isInBack(target, i_radius, static_cast<float>(M_PI/2)) || i_source->IsWithinExactDistance(target, i_source->GetObjectSize() + 1.0f))
                             i_data->push_back(target);
                         break;
                     case PUSH_IN_LINE:
