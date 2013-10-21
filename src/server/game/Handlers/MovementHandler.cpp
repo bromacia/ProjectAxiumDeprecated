@@ -457,9 +457,6 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
             case 572: // Ruins of Lordaeron
                 UnderMapValueZ = 5.0f;
                 break;
-            case 603: // Ulduar (Dueling Zone)
-                UnderMapValueZ = 350.0f;
-                break;
             default:
                 UnderMapValueZ = -500.0f;
                 break;

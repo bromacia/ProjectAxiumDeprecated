@@ -1398,7 +1398,7 @@ void World::SetInitialWorldSettings()
 
     uint32 realm_zone = getIntConfig(CONFIG_REALM_ZONE);
 
-    LoginDatabase.PExecute("UPDATE realmlist SET icon = %u, timezone = %u WHERE id = '%d'", server_type, realm_zone, realmID);      // One-time query
+    LoginDatabase.PExecute("UPDATE realmlist SET icon = %u, timezone = %u, revision = '%s' WHERE id = '%d'", server_type, realm_zone, _REV, realmID);      // One-time query
 
     ///- Remove the bones (they should not exist in DB though) and old corpses after a restart
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_OLD_CORPSES);
