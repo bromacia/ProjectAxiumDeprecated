@@ -1843,6 +1843,13 @@ bool Aura::CanBeAppliedOn(Unit* target)
 
         return true;
     }
+    else if (target->IsDueling())
+    {
+        if (GetOwner()->ToUnit() && GetOwner()->ToUnit()->isTotem())
+            return false;
+
+        return true;
+    }
     else
         return CheckAreaTarget(target);
 }
