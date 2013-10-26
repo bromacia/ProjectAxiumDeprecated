@@ -16613,9 +16613,9 @@ void Unit::SetRooted(bool apply)
 
         if (GetTypeId() == TYPEID_PLAYER)
         {
-            WorldPacket data(SMSG_FORCE_MOVE_ROOT, 10);
+            WorldPacket data(SMSG_FORCE_MOVE_ROOT, 8+4);
             data.append(GetPackGUID());
-            data << m_rootTimes;
+            data << uint32(0);
             SendMessageToSet(&data, true);
         }
         else
@@ -16632,9 +16632,9 @@ void Unit::SetRooted(bool apply)
         {
             if (GetTypeId() == TYPEID_PLAYER)
             {
-                WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 10);
+                WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 8+4);
                 data.append(GetPackGUID());
-                data << ++m_rootTimes;
+                data << uint32(0);
                 SendMessageToSet(&data, true);
             }
             else

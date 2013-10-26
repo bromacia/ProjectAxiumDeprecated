@@ -2278,6 +2278,8 @@ class Unit : public WorldObject
 
         Spell* m_currentSpells[CURRENT_MAX_SPELL];
 
+        void SetRooted(bool apply);
+
     protected:
         explicit Unit (bool isWorldObject);
 
@@ -2349,6 +2351,7 @@ class Unit : public WorldObject
         bool IsAlwaysDetectableFor(WorldObject const* seer) const;
 
         void DisableSpline();
+
     private:
         bool IsTriggeredAtSpellProcEvent(Unit* pVictim, Aura* aura, SpellInfo const* procSpell, uint32 procFlag, uint32 procExtra, WeaponAttackType attType, bool isVictim, bool active, SpellProcEventEntry const* & spellProcEvent);
         bool HandleDummyAuraProc(Unit* pVictim, uint32 damage, AuraEffect* triggeredByAura, SpellInfo const* procSpell, uint32 procFlag, uint32 procEx, uint32 cooldown);
@@ -2372,7 +2375,6 @@ class Unit : public WorldObject
         void SetFeared(bool apply, uint32 duration = 0);
         void SetConfused(bool apply, uint32 duration = 0);
         void SetStunned(bool apply);
-        void SetRooted(bool apply);
 
         uint32 m_rootTimes;
 

@@ -3114,6 +3114,11 @@ void AuraEffect::HandleModPossess(AuraApplication const* aurApp, uint8 mode, boo
         target->SetCharmedBy(caster, CHARM_TYPE_POSSESS, aurApp);
     else
         target->RemoveCharmedBy(caster);
+
+    // If target has roots, resend force root opcode on remove. We cannot add this
+    // check to SetClientControl because client control is never resent after root end
+    if (!apply && target->HasUnitState(UNIT_STATE_ROOT))
+        target->SetRooted(true);
 }
 
 // only one spell has this aura
