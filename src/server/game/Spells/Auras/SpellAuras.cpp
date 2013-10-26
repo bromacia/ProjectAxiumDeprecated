@@ -1845,7 +1845,7 @@ bool Aura::CanBeAppliedOn(Unit* target)
     }
     else if (target->IsDueling())
     {
-        if (GetOwner()->ToUnit() && GetOwner()->ToUnit()->isTotem())
+        if (GetOwner()->ToUnit() && GetOwner()->ToUnit()->isTotem() && GetCasterGUID() != target->GetGUID())
             return false;
 
         return true;
