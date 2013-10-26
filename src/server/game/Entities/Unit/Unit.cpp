@@ -13970,7 +13970,18 @@ void Unit::ModSpellCastTime(SpellInfo const* spellProto, int32 & castTime, Spell
             spellProto->Effects[i].Effect == SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC || // Enhancements
             spellProto->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH) || // Glyphs
             HasAura(32727) || HasAura(44521)) // Arena Preparation & Preparation
+        {
+            if (Player* player = ToPlayer())
+            {
+                if (Battleground* bg = player->GetBattleground())
+                {
+                    if (bg->GetStartDelayTime() <= 5000) // Full cast time with 5 seconds left until gate opens
+                        continue;
+                }
+            }
+
             castTime = 0;
+        }
     }
 }
 
