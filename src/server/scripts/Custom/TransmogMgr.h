@@ -1,7 +1,13 @@
 #include "ScriptMgr.h"
-#include "ScriptPCH.h"
+#include "Chat.h"
+#include "Creature.h"
+#include "Player.h"
+#include "Item.h"
+#include "ItemPrototype.h"
+#include "ObjectMgr.h"
+#include "PvPMgr.h"
 
-enum TransmogSlots
+enum TransmogSlot
 {
     TRANSMOG_SLOT_HEAD             = PLAYER_VISIBLE_ITEM_1_ENTRYID,
     TRANSMOG_SLOT_SHOULDERS        = PLAYER_VISIBLE_ITEM_3_ENTRYID,
@@ -22,7 +28,7 @@ enum TransmogSlots
     TRANSMOG_SLOT_RANGED_ENCHANT   = PLAYER_VISIBLE_ITEM_18_ENCHANTMENT,
 };
 
-enum TransmogOptions
+enum TransmogOption
 {
     TRANSMOG_ACTION_SHOW_INDIVIDUAL = 2,
     TRANSMOG_ACTION_SHOW_ENCHANTS,
@@ -59,7 +65,7 @@ enum TransmogOptions
     TRANSMOG_ACTION_SELECT_REMOVE_EVERYTHING,
 };
 
-enum TransmogEnchantIds
+enum TransmogEnchantId
 {
     TRANSMOG_ENCHANT_MONGOOSE       = 2673,
     TRANSMOG_ENCHANT_EXECUTIONER    = 3225,
@@ -85,27 +91,23 @@ enum TransmogEnchantIds
 class Transmogrification : public CreatureScript
 {
     public:
-        Transmogrification() : CreatureScript("Transmogrifier") {}
+        Transmogrification();
         bool OnGossipHello(Player* player, Creature* creature);
         bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action);
-        static bool ShowIndividualTransmogOptions(Player* player, Creature* creature);
-        static bool ShowTransmogEnchants(Player* player, Creature* creature);
-        static bool ShowRemoveTransmogItemOptions(Player* player, Creature* creature);
-        static bool ShowRemoveTransmogEnchantOptions(Player* player, Creature* creature);
-        static bool SelectIndividualTransmog(Player* player, Creature* creature, uint16 action);
-        static bool TransmogrifyIndividual(Player* player, Creature* creature, uint32 item);
-        static bool TransmogrifyEnchant(Player* player, uint16 action);
-        static bool RemoveItemTransmog(Player* player, uint16 action);
-        static bool RemoveEnchantTransmog(Player* player, uint16 action);
-        static bool RemoveAllArmorTransmog(Player* player);
-        static bool RemoveAllWeaponTransmog(Player* player);
-        static bool RemoveAllEnchantTransmog(Player* player);
-        static bool RemoveAllTransmog(Player* player);
+        void ShowIndividualTransmogOptions(Player* player, Creature* creature);
+        void ShowTransmogEnchants(Player* player, Creature* creature);
+        void ShowRemoveTransmogItemOptions(Player* player, Creature* creature);
+        void ShowRemoveTransmogEnchantOptions(Player* player, Creature* creature);
+        void SelectIndividualTransmog(Player* player, Creature* creature, uint16 action);
+        void TransmogrifyEnchant(Player* player, uint16 action);
+        void RemoveItemTransmog(Player* player, uint16 action);
+        void RemoveEnchantTransmog(Player* player, uint16 action);
+        void RemoveAllArmorTransmog(Player* player);
+        void RemoveAllWeaponTransmog(Player* player);
+        void RemoveAllEnchantTransmog(Player* player);
+        void RemoveAllTransmog(Player* player);
     private:
-        static bool IsArmor(const ItemTemplate* itemTemplate) { return itemTemplate->Class == ITEM_CLASS_ARMOR; }
-        static bool IsWeapon(const ItemTemplate* itemTemplate) { return itemTemplate->Class == ITEM_CLASS_WEAPON; }
-        static bool CheckItem(Player* player, const ItemTemplate* vItemTemplate, const ItemTemplate* pItemTemplate);
-        static uint16 GetTeamById(uint8 Id)
+        uint16 GetTeamById(uint8 Id)
         {
             switch (Id)
             {
@@ -114,7 +116,7 @@ class Transmogrification : public CreatureScript
                 default: return 0;
             }
         }
-        static uint8 GetItemSlotByAction(uint16 action)
+        uint8 GetItemSlotByAction(uint16 action)
         {
             switch (action)
             {
@@ -157,22 +159,6 @@ class Transmogrification : public CreatureScript
                     return 0;
             }
         }
-        static uint16 GetTransmogSlotByEquipSlot(uint8 slot)
-        {
-            switch (slot)
-            {
-                case EQUIPMENT_SLOT_HEAD:      return PLAYER_VISIBLE_ITEM_1_ENTRYID;
-                case EQUIPMENT_SLOT_SHOULDERS: return PLAYER_VISIBLE_ITEM_3_ENTRYID;
-                case EQUIPMENT_SLOT_CHEST:     return PLAYER_VISIBLE_ITEM_5_ENTRYID;
-                case EQUIPMENT_SLOT_HANDS:     return PLAYER_VISIBLE_ITEM_10_ENTRYID;
-                case EQUIPMENT_SLOT_LEGS:      return PLAYER_VISIBLE_ITEM_7_ENTRYID;
-                case EQUIPMENT_SLOT_WRISTS:    return PLAYER_VISIBLE_ITEM_9_ENTRYID;
-                case EQUIPMENT_SLOT_WAIST:     return PLAYER_VISIBLE_ITEM_6_ENTRYID;
-                case EQUIPMENT_SLOT_FEET:      return PLAYER_VISIBLE_ITEM_8_ENTRYID;
-                case EQUIPMENT_SLOT_MAINHAND:  return PLAYER_VISIBLE_ITEM_16_ENTRYID;
-                case EQUIPMENT_SLOT_OFFHAND:   return PLAYER_VISIBLE_ITEM_17_ENTRYID;
-                case EQUIPMENT_SLOT_RANGED:    return PLAYER_VISIBLE_ITEM_18_ENTRYID;
-                default: return 0;
-            }
-        }
+
+        ChatHandler* handler;
 };

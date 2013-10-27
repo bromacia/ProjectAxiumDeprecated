@@ -1,4 +1,5 @@
 #include "Chat.h"
+#include "Player.h"
 #include "PvPMgr.h"
 
 class pvp_commandscript : public CommandScript
@@ -39,7 +40,7 @@ public:
             handler->PSendSysMessage("Notifications from actions in PvP are now enabled.");
             return true;
         }
-        
+
         return true;
     }
 

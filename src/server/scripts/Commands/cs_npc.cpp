@@ -205,7 +205,7 @@ public:
             return false;
         }
 
-        sObjectMgr->AddVendorItem(vendor_entry, itemId, maxcount, incrtime, extendedcost);
+        sObjectMgr->AddVendorItem(vendor_entry, itemId, maxcount, incrtime, extendedcost, 0);
 
         ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
 

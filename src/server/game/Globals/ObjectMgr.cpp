@@ -8103,7 +8103,7 @@ void ObjectMgr::LoadTrainerSpell()
 int ObjectMgr::LoadReferenceVendor(int32 vendor, int32 item, std::set<uint32> *skip_vendors)
 {
     // find all items from the reference vendor
-    QueryResult result = WorldDatabase.PQuery("SELECT item, maxcount, incrtime, ExtendedCost FROM npc_vendor WHERE entry='%d' ORDER BY slot ASC", item);
+    QueryResult result = WorldDatabase.PQuery("SELECT item, maxcount, incrtime, ExtendedCost, ExtendedCost2 FROM npc_vendor WHERE entry='%d' ORDER BY slot ASC", item);
     if (!result)
         return 0;
 
@@ -8119,16 +8119,17 @@ int ObjectMgr::LoadReferenceVendor(int32 vendor, int32 item, std::set<uint32> *s
             count += LoadReferenceVendor(vendor, -item_id, skip_vendors);
         else
         {
-            int32  maxcount     = fields[1].GetInt32();
-            uint32 incrtime     = fields[2].GetUInt32();
-            uint32 ExtendedCost = fields[3].GetUInt32();
+            int32  maxcount      = fields[1].GetInt32();
+            uint32 incrtime      = fields[2].GetUInt32();
+            uint32 ExtendedCost  = fields[3].GetUInt32();
+            uint32 ExtendedCost2 = fields[4].GetUInt32();
 
             if (!IsVendorItemValid(vendor, item_id, maxcount, incrtime, ExtendedCost, NULL, skip_vendors))
                 continue;
 
             VendorItemData& vList = m_mCacheVendorItemMap[vendor];
 
-            vList.AddItem(item_id, maxcount, incrtime, ExtendedCost);
+            vList.AddItem(item_id, maxcount, incrtime, ExtendedCost, ExtendedCost2);
             ++count;
         }
 
@@ -8149,7 +8150,7 @@ void ObjectMgr::LoadVendors()
 
     std::set<uint32> skip_vendors;
 
-    QueryResult result = WorldDatabase.Query("SELECT entry, item, maxcount, incrtime, ExtendedCost FROM npc_vendor ORDER BY entry, slot ASC");
+    QueryResult result = WorldDatabase.Query("SELECT entry, item, maxcount, incrtime, ExtendedCost, ExtendedCost2 FROM npc_vendor ORDER BY entry, slot ASC");
     if (!result)
     {
         sLog->outString();
@@ -8171,16 +8172,17 @@ void ObjectMgr::LoadVendors()
             count += LoadReferenceVendor(entry, -item_id, &skip_vendors);
         else
         {
-            int32  maxcount     = fields[2].GetInt32();
-            uint32 incrtime     = fields[3].GetUInt32();
-            uint32 ExtendedCost = fields[4].GetUInt32();
+            int32  maxcount      = fields[2].GetInt32();
+            uint32 incrtime      = fields[3].GetUInt32();
+            uint32 ExtendedCost  = fields[4].GetUInt32();
+            uint32 ExtendedCost2 = fields[5].GetUInt32();
 
             if (!IsVendorItemValid(entry, item_id, maxcount, incrtime, ExtendedCost, NULL, &skip_vendors))
                 continue;
 
             VendorItemData& vList = m_mCacheVendorItemMap[entry];
 
-            vList.AddItem(item_id, maxcount, incrtime, ExtendedCost);
+            vList.AddItem(item_id, maxcount, incrtime, ExtendedCost, ExtendedCost2);
             ++count;
         }
     }
@@ -8294,10 +8296,10 @@ void ObjectMgr::LoadGossipMenuItems()
     sLog->outString();
 }
 
-void ObjectMgr::AddVendorItem(uint32 entry, uint32 item, int32 maxcount, uint32 incrtime, uint32 extendedCost, bool persist /*= true*/)
+void ObjectMgr::AddVendorItem(uint32 entry, uint32 item, int32 maxcount, uint32 incrtime, uint32 extendedCost, uint32 extendedCost2, bool persist /*= true*/)
 {
     VendorItemData& vList = m_mCacheVendorItemMap[entry];
-    vList.AddItem(item, maxcount, incrtime, extendedCost);
+    vList.AddItem(item, maxcount, incrtime, extendedCost, extendedCost2);
 
     if (persist)
     {
@@ -8308,6 +8310,7 @@ void ObjectMgr::AddVendorItem(uint32 entry, uint32 item, int32 maxcount, uint32 
         stmt->setUInt8(2, maxcount);
         stmt->setUInt32(3, incrtime);
         stmt->setUInt32(4, extendedCost);
+        stmt->setUInt32(5, extendedCost2);
 
         WorldDatabase.Execute(stmt);
     }
@@ -8878,4 +8881,35 @@ VehicleAccessoryList const* ObjectMgr::GetVehicleAccessoryList(Vehicle* veh) con
     if (itr != m_VehicleTemplateAccessoryMap.end())
         return &itr->second;
     return NULL;
+}
+
+void ObjectMgr::LoadExtendedCost2()
+{
+    QueryResult result = WorldDatabase.Query("SELECT Id, required_pvp_rating, required_2v2_rating, required_3v3_rating, required_5v5_rating, required_title FROM extended_cost_2");
+    if (!result)
+    {
+        sLog->outErrorDb(">> Failed to load ExtendedCost2. DB table `extended_cost_2` is empty!");
+        sLog->outString();
+        return;
+    }
+
+    uint32 oldMSTime = getMSTime();
+
+    do
+    {
+        Field* fields = result->Fetch();
+        ExtendedCost2 extendedCost2;
+
+        extendedCost2.Required_PvP_Rating = fields[1].GetUInt16();
+        extendedCost2.Required_2v2_Rating = fields[2].GetUInt16();
+        extendedCost2.Required_3v3_Rating = fields[3].GetUInt16();
+        extendedCost2.Required_5v5_Rating = fields[4].GetUInt16();
+        extendedCost2.Required_Title      = fields[5].GetUInt8();
+
+        extendedCost2Map[fields[0].GetUInt32()] = extendedCost2;
+    }
+    while (result->NextRow());
+
+    sLog->outString(">> Loaded ExtendedCost2 in %u ms", GetMSTimeDiffToNow(oldMSTime));
+    sLog->outString();
 }

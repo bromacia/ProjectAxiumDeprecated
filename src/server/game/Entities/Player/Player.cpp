@@ -882,7 +882,7 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_wantsPrematureBattleGroundStart = false;
     m_addedToPrematureBattleGroundStartList = false;
 
-    currentViewpoint = NULL;
+    currentViewpoint = this;
 
     lastEmoteTime = 0;
 
@@ -20960,12 +20960,6 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
         return false;
     }
 
-    if (creature->IsTransmogrifier())
-    {
-        Transmogrification::TransmogrifyIndividual(this, creature, item);
-        return false;
-    }
-
     if (creature->IsClassTrainer())
     {
         npc_class_trainer::BuyGlyph(this, creature, item);
@@ -20979,6 +20973,11 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
         return false;
     }
 
+    if (creature->IsTransmogrifier())
+    {
+        TransmogrifyItem(item, vItems->GetItem(vendorslot));
+        return false;
+    }
 
     if (vendorslot >= vItems->GetItemCount())
     {
@@ -25415,6 +25414,16 @@ bool Player::IsInWhisperWhiteList(uint64 guid)
     return false;
 }
 
+void Player::InterruptMovement()
+{
+    WorldPacket data(MSG_MOVE_STOP, 8 + 4 + 4);
+    m_movementInfo.guid = GetGUID();
+    m_movementInfo.flags &= ~uint32(MOVEMENTFLAG_MASK_MOVING);
+    m_movementInfo.time = getMSTime();
+    GetSession()->WriteMovementInfo(&data, &m_movementInfo);
+    SendMessageToSet(&data, true);
+}
+
 void Player::_SaveTransmogItems()
 {
     for (TransmogItemsSaveQueue::iterator itr = transmogItemsSaveQueue.begin(); itr != transmogItemsSaveQueue.end(); ++itr)
@@ -25457,14 +25466,185 @@ void Player::_SaveTransmogSets()
             CharacterDatabase.PQuery("REPLACE INTO character_transmog_sets (guid, setId, sort, itemId) VALUES ('%u', '%u', '%u', '%u')", GetGUIDLow(), itr->first, itr2->first, itr2->second);
 }
 
-void Player::InterruptMovement()
+void Player::TransmogrifyItem(uint32 item, const VendorItem* vItem)
 {
-    WorldPacket data(MSG_MOVE_STOP, 8 + 4 + 4);
-    m_movementInfo.guid = GetGUID();
-    m_movementInfo.flags &= ~uint32(MOVEMENTFLAG_MASK_MOVING);
-    m_movementInfo.time = getMSTime();
-    GetSession()->WriteMovementInfo(&data, &m_movementInfo);
-    SendMessageToSet(&data, true);
+    const ItemTemplate* vItemTemplate = sObjectMgr->GetItemTemplate(item);
+    uint8 itemSlot = GetSelectedTransmogItemSlot();
+    uint16 transmogSlot = 0;
+
+    switch (itemSlot)
+    {
+        case EQUIPMENT_SLOT_HEAD:      transmogSlot = PLAYER_VISIBLE_ITEM_1_ENTRYID;  break;
+        case EQUIPMENT_SLOT_SHOULDERS: transmogSlot = PLAYER_VISIBLE_ITEM_3_ENTRYID;  break;
+        case EQUIPMENT_SLOT_CHEST:     transmogSlot = PLAYER_VISIBLE_ITEM_5_ENTRYID;  break;
+        case EQUIPMENT_SLOT_HANDS:     transmogSlot = PLAYER_VISIBLE_ITEM_10_ENTRYID; break;
+        case EQUIPMENT_SLOT_LEGS:      transmogSlot = PLAYER_VISIBLE_ITEM_7_ENTRYID;  break;
+        case EQUIPMENT_SLOT_WRISTS:    transmogSlot = PLAYER_VISIBLE_ITEM_9_ENTRYID;  break;
+        case EQUIPMENT_SLOT_WAIST:     transmogSlot = PLAYER_VISIBLE_ITEM_6_ENTRYID;  break;
+        case EQUIPMENT_SLOT_FEET:      transmogSlot = PLAYER_VISIBLE_ITEM_8_ENTRYID;  break;
+        case EQUIPMENT_SLOT_MAINHAND:  transmogSlot = PLAYER_VISIBLE_ITEM_16_ENTRYID; break;
+        case EQUIPMENT_SLOT_OFFHAND:   transmogSlot = PLAYER_VISIBLE_ITEM_17_ENTRYID; break;
+        case EQUIPMENT_SLOT_RANGED:    transmogSlot = PLAYER_VISIBLE_ITEM_18_ENTRYID; break;
+    }
+
+    Item* pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot);
+    if (!pItem)
+        return;
+
+    const ItemTemplate* pItemTemplate = GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot)->GetTemplate();
+    if (!pItemTemplate)
+        return;
+
+    if (!CheckItem(vItemTemplate, pItemTemplate))
+        return;
+
+    if (!CheckExtendedCost2(vItem))
+    {
+        ChatHandler(this).PSendSysMessage("%s requires %s.", vItemTemplate->Name1.c_str(), CreateExtendedCost2ErrorMessage(vItem->ExtendedCost2).c_str());
+        return;
+    }
+
+    pItem->TransmogEntry = vItemTemplate->ItemId;
+    SetUInt32Value(transmogSlot, vItemTemplate->ItemId);
+    TransmogItemInformation tItemInfo;
+    tItemInfo.TransmogEntry = pItem->TransmogEntry;
+    tItemInfo.TransmogEnchant = pItem->TransmogEnchant;
+    transmogItemsSaveQueue[pItem->GetGUIDLow()] = tItemInfo;
+}
+
+bool Player::CheckItem(const ItemTemplate* vItemTemplate, const ItemTemplate* pItemTemplate)
+{
+    // Faction specific items
+    if ((vItemTemplate->Flags2 == ITEM_FLAGS_EXTRA_ALLIANCE_ONLY && GetTeam() == HORDE) ||
+        (vItemTemplate->Flags2 == ITEM_FLAGS_EXTRA_HORDE_ONLY && GetTeam() == ALLIANCE))
+        return false;
+
+    // Class specific items
+    if (!(vItemTemplate->AllowableClass & getClassMask()))
+        return false;
+
+    if (vItemTemplate->Class == ITEM_CLASS_ARMOR)
+        if (vItemTemplate->Class != pItemTemplate->Class || vItemTemplate->SubClass != pItemTemplate->SubClass || vItemTemplate->InventoryType != pItemTemplate->InventoryType)
+            return false;
+
+    if (vItemTemplate->Class == ITEM_CLASS_WEAPON)
+    {
+        if (vItemTemplate->Class != pItemTemplate->Class || vItemTemplate->SubClass != pItemTemplate->SubClass)
+            return false;
+
+        // Special case for Fist Weapons because the models for the right hand and left hand are different
+        if (vItemTemplate->SubClass == ITEM_SUBCLASS_WEAPON_FIST && vItemTemplate->InventoryType != pItemTemplate->InventoryType)
+            return false;
+    }
+
+    return true;
+}
+
+bool Player::CheckExtendedCost2(const VendorItem* vItem)
+{
+    ExtendedCost2 extendedCost2 = sObjectMgr->GetExtendedCost2Map()[vItem->ExtendedCost2];
+
+    if (extendedCost2.Required_PvP_Rating)
+        if (sPvPMgr->GetLifetimePvPRatingByGUIDLow(GetGUIDLow()) < extendedCost2.Required_PvP_Rating)
+            return false;
+
+    if (extendedCost2.Required_2v2_Rating)
+        if (sPvPMgr->GetLifetime2v2RatingByGUIDLow(GetGUIDLow()) < extendedCost2.Required_2v2_Rating)
+            return false;
+
+    if (extendedCost2.Required_3v3_Rating)
+        if (sPvPMgr->GetLifetime3v3RatingByGUIDLow(GetGUIDLow()) < extendedCost2.Required_3v3_Rating)
+            return false;
+
+    if (extendedCost2.Required_5v5_Rating)
+        if (sPvPMgr->GetLifetime5v5RatingByGUIDLow(GetGUIDLow()) < extendedCost2.Required_5v5_Rating)
+            return false;
+
+    if (extendedCost2.Required_Title)
+    {
+        const CharTitlesEntry* titleInfo = sCharTitlesStore.LookupEntry(extendedCost2.Required_Title);
+        if (!titleInfo)
+        {
+            ChatHandler(this).PSendSysMessage("Unable to find title info for title Id: %u, ExtendedCost2: %u", extendedCost2.Required_Title, vItem->ExtendedCost2);
+            return false;
+        }
+
+        if (!HasTitle(titleInfo))
+            return false;
+    }
+
+    return true;
+}
+
+std::string Player::CreateExtendedCost2ErrorMessage(uint32 extendedCost2Id)
+{
+    ExtendedCost2 extendedCost2 = sObjectMgr->GetExtendedCost2Map()[extendedCost2Id];
+    std::stringstream message;
+    bool firstMessageAdded = false;
+
+    if (extendedCost2.Required_PvP_Rating)
+    {
+        message << "PvP Rating: " << extendedCost2.Required_PvP_Rating;
+        firstMessageAdded = true;
+    }
+
+    if (extendedCost2.Required_2v2_Rating)
+    {
+        if (firstMessageAdded)
+            message << ", ";
+
+        message << "2v2 Rating: " << extendedCost2.Required_2v2_Rating;
+
+        if (!firstMessageAdded)
+            firstMessageAdded = true;
+    }
+
+    if (extendedCost2.Required_3v3_Rating)
+    {
+        if (firstMessageAdded)
+            message << ", ";
+
+        message << "3v3 Rating: " << extendedCost2.Required_3v3_Rating;
+
+        if (!firstMessageAdded)
+            firstMessageAdded = true;
+    }
+
+    if (extendedCost2.Required_5v5_Rating)
+    {
+        if (firstMessageAdded)
+            message << ", ";
+
+        message << "5v5 Rating: " << extendedCost2.Required_5v5_Rating;
+
+        if (!firstMessageAdded)
+            firstMessageAdded = true;
+    }
+
+    if (extendedCost2.Required_Title)
+    {
+        std::string titleName = "";
+        const CharTitlesEntry* titleInfo = sCharTitlesStore.LookupEntry(extendedCost2.Required_Title);
+        if (titleInfo)
+        {
+            titleName = titleInfo->name[GetSession()->GetSessionDbcLocale()];
+
+            std::size_t found = titleName.find(" %s");
+            if (found != std::string::npos)
+                titleName.replace(found, 3, "");
+
+            found = titleName.find("%s ");
+            if (found != std::string::npos)
+                titleName.replace(found, 3, "");
+
+            if (firstMessageAdded)
+                message << ", ";
+
+            message << "Title: " << titleName;
+        }
+    }
+
+    return message.str();
 }
 
 bool Player::IsDamageSpec() const

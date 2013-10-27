@@ -584,6 +584,19 @@ struct DungeonEncounter
 typedef std::list<DungeonEncounter const*> DungeonEncounterList;
 typedef UNORDERED_MAP<uint32, DungeonEncounterList> DungeonEncounterMap;
 
+struct ExtendedCost2
+{
+    ExtendedCost2() : Required_PvP_Rating(0), Required_2v2_Rating(0), Required_3v3_Rating(0), Required_5v5_Rating(0), Required_Title(0) {}
+
+    uint16 Required_PvP_Rating;
+    uint16 Required_2v2_Rating;
+    uint16 Required_3v3_Rating;
+    uint16 Required_5v5_Rating;
+    uint8  Required_Title;
+};
+
+typedef std::map<uint32, ExtendedCost2> ExtendedCost2Map;
+
 class PlayerDumpReader;
 
 class ObjectMgr
@@ -1107,7 +1120,7 @@ class ObjectMgr
 
             return &iter->second;
         }
-        void AddVendorItem(uint32 entry, uint32 item, int32 maxcount, uint32 incrtime, uint32 extendedCost, bool persist = true); // for event
+        void AddVendorItem(uint32 entry, uint32 item, int32 maxcount, uint32 incrtime, uint32 extendedCost, uint32 extendedCost2, bool persist = true); // for event
         bool RemoveVendorItem(uint32 entry, uint32 item, bool persist = true); // for event
         bool IsVendorItemValid(uint32 vendor_entry, uint32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost, Player* player = NULL, std::set<uint32>* skip_vendors = NULL, uint32 ORnpcflag = 0) const;
 
@@ -1164,6 +1177,10 @@ class ObjectMgr
         
         void LoadMailQueue();
 
+        void LoadExtendedCost2();
+
+        ExtendedCost2Map GetExtendedCost2Map() const { return extendedCost2Map; }
+
     private:
         // first free id for selected id type
         uint64 m_equipmentSetGuid;
@@ -1182,7 +1199,7 @@ class ObjectMgr
         uint32 m_hiCorpseGuid;
         uint32 m_hiMoTransGuid;
 
-        QuestMap            mQuestTemplates;
+        QuestMap mQuestTemplates;
 
         typedef UNORDERED_MAP<uint32, GossipText> GossipTextMap;
         typedef UNORDERED_MAP<uint32, uint32> QuestAreaTriggerMap;
@@ -1192,21 +1209,21 @@ class ObjectMgr
         QuestAreaTriggerMap mQuestAreaTriggerMap;
         TavernAreaTriggerSet mTavernAreaTriggerSet;
         GameObjectForQuestSet mGameObjectForQuestSet;
-        GossipTextMap       mGossipText;
-        AreaTriggerMap      mAreaTriggers;
-        AreaTriggerScriptMap  mAreaTriggerScripts;
-        AccessRequirementMap  mAccessRequirements;
+        GossipTextMap mGossipText;
+        AreaTriggerMap mAreaTriggers;
+        AreaTriggerScriptMap mAreaTriggerScripts;
+        AccessRequirementMap mAccessRequirements;
         DungeonEncounterMap mDungeonEncounters;
 
-        RepRewardRateMap    m_RepRewardRateMap;
-        RepOnKillMap        mRepOnKill;
+        RepRewardRateMap m_RepRewardRateMap;
+        RepOnKillMap mRepOnKill;
         RepSpilloverTemplateMap m_RepSpilloverTemplateMap;
 
-        GossipMenusMap      m_mGossipMenusMap;
-        GossipMenuItemsMap  m_mGossipMenuItemsMap;
-        PointOfInterestMap  mPointsOfInterest;
+        GossipMenusMap m_mGossipMenusMap;
+        GossipMenuItemsMap m_mGossipMenuItemsMap;
+        PointOfInterestMap mPointsOfInterest;
 
-        QuestPOIMap         mQuestPOIMap;
+        QuestPOIMap mQuestPOIMap;
 
         QuestRelations mGOQuestRelations;
         QuestRelations mGOQuestInvolvedRelations;
@@ -1215,30 +1232,32 @@ class ObjectMgr
 
         //character reserved names
         typedef std::set<std::wstring> ReservedNamesMap;
-        ReservedNamesMap    m_ReservedNames;
+        ReservedNamesMap m_ReservedNames;
 
-//        GraveYardMap        mGraveYardMap;
+//        GraveYardMap mGraveYardMap;
 
-        GameTeleMap         m_GameTeleMap;
+        GameTeleMap m_GameTeleMap;
 
-        ScriptNameMap       m_scriptNames;
+        ScriptNameMap m_scriptNames;
 
-        SpellClickInfoMap   mSpellClickInfoMap;
+        SpellClickInfoMap mSpellClickInfoMap;
 
-        SpellScriptsMap     mSpellScripts;
+        SpellScriptsMap mSpellScripts;
 
         ItemRequiredTargetMap m_ItemRequiredTarget;
 
         VehicleAccessoryMap m_VehicleTemplateAccessoryMap;
         VehicleAccessoryMap m_VehicleAccessoryMap;
 
-        typedef             std::vector<LocaleConstant> LocalForIndex;
-        LocalForIndex        m_LocalForIndex;
+        typedef std::vector<LocaleConstant> LocalForIndex;
+        LocalForIndex m_LocalForIndex;
 
         LocaleConstant DBCLocaleIndex;
 
         PageTextContainer PageTextStore;
         InstanceTemplateContainer InstanceTemplateStore;
+
+        ExtendedCost2Map extendedCost2Map;
 
     private:
         void LoadScripts(ScriptsType type);

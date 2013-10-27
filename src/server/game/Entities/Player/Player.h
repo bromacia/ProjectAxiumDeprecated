@@ -40,8 +40,8 @@
 // for template
 #include "SpellMgr.h"
 
-#include<string>
-#include<vector>
+#include <string>
+#include <vector>
 
 struct Mail;
 class Channel;
@@ -2620,6 +2620,10 @@ class Player : public Unit, public GridObject<Player>
 
         uint8 GetSelectedTransmogItemSlot() const { return m_selectedTransmogItemSlot; }
         void SetSelectedTransmogItemSlot(uint8 slot) { m_selectedTransmogItemSlot = slot; }
+        void TransmogrifyItem(uint32 item, const VendorItem* vItem);
+        bool CheckItem(const ItemTemplate* vItemTemplate, const ItemTemplate* pItemTemplate);
+        bool CheckExtendedCost2(const VendorItem* vItem);
+        std::string CreateExtendedCost2ErrorMessage(uint32 extendedCost2Id);
 
         TransmogItemsSaveQueue transmogItemsSaveQueue;
         TransmogSets transmogSets;
