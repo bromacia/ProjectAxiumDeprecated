@@ -7298,9 +7298,9 @@ void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 coun
             case TARGET_DEST_CASTER_FRONT: // Feral spirit
                 {
                     if (count == 0) // First wolf
-                        m_caster->GetFirstCollisionPosition(pos, 3, (float)0.66 * static_cast<float>(2*M_PI), true);
+                        m_caster->GetFirstCollisionPosition(pos, 3.0f, 0.66f * static_cast<float>(2*M_PI), true);
                     else            // Second wolf
-                        m_caster->GetFirstCollisionPosition(pos, 3, (float)0.33 * static_cast<float>(2*M_PI), true);
+                        m_caster->GetFirstCollisionPosition(pos, 3.0f, 0.33f * static_cast<float>(2*M_PI), true);
                 }
                 break;
             case TARGET_DEST_CASTER_SUMMON:

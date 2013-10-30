@@ -42,9 +42,12 @@ void FleeingMovementGenerator<T>::_setTargetLocation(T &owner)
 
     owner.AddUnitState(UNIT_STATE_FLEEING_MOVE);
 
+    float speed = unit.GetSpeed(MOVE_RUN);
+
     if (owner.GetMap()->IsInWater(x, y, z))
     {
         Movement::MoveSplineInit init(owner);
+        init.SetVelocity(speed);
         init.MoveTo(x, y, z);
         init.Launch();
     }
@@ -59,6 +62,7 @@ void FleeingMovementGenerator<T>::_setTargetLocation(T &owner)
         }
 
         Movement::MoveSplineInit init(owner);
+        init.SetVelocity(speed);
         init.MovebyPath(path.GetPath());
         init.Launch();
     }

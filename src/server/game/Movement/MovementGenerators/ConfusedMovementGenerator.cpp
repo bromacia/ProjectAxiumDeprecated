@@ -84,6 +84,8 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         if (player->IsBeingTeleported())
             return true;
 
+    float speed = unit.GetSpeed(MOVE_RUN);
+
     if (init)
     {
         float x = unit.GetPositionX();
@@ -111,6 +113,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         if (unit.GetMap()->IsInWater(x, y, z))
         {
             Movement::MoveSplineInit init(unit);
+            init.SetVelocity(speed);
             init.MoveTo(x, y, z);
             init.Launch();
         }
@@ -126,6 +129,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
             }
 
             Movement::MoveSplineInit init(unit);
+            init.SetVelocity(speed);
             init.MovebyPath(path.GetPath());
             init.Launch();
         }
@@ -164,6 +168,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
             if (unit.GetMap()->IsInWater(x, y, z))
             {
                 Movement::MoveSplineInit init(unit);
+                init.SetVelocity(speed);
                 init.MoveTo(x, y, z);
                 init.Launch();
             }
@@ -178,6 +183,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
                 }
 
                 Movement::MoveSplineInit init(unit);
+                init.SetVelocity(speed);
                 init.MovebyPath(path.GetPath());
                 init.Launch();
             }
