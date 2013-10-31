@@ -79,25 +79,10 @@ bool PathFinderMovementGenerator::Calculate(float destX, float destY, float dest
 
     _updateFilter();
 
-    // check if destination moved - if not we can optimize something here
-    // we are following old, precalculated path?
-    float dist = _sourceUnit->GetObjectSize();
-    if (_inRange(oldDest, dest, dist, dist) && _pathPoints.size() > 2)
-    {
-        // our target is not moving - we just coming closer
-        // we are moving on precalculated path - enjoy the ride
-        sLog->outDebug(LOG_FILTER_MAPS, "++ PathFinderMovementGenerator::calculate:: precalculated path\n");
-
-        _pathPoints.erase(_pathPoints.begin());
-        return false;
-    }
-    else
-    {
-        // target moved, so we need to update the poly path
-        TRINITY_GUARD(ACE_Thread_Mutex, _lock);
-        _buildPolyPath(start, dest);
-        return true;
-    }
+    // target moved, so we need to update the poly path
+    TRINITY_GUARD(ACE_Thread_Mutex, _lock);
+    _buildPolyPath(start, dest);
+    return true;
 }
 
 dtPolyRef PathFinderMovementGenerator::_getPathPolyByPosition(const dtPolyRef *polyPath, uint32 polyPathSize, const float* point, float *distance) const
@@ -123,7 +108,7 @@ dtPolyRef PathFinderMovementGenerator::_getPathPolyByPosition(const dtPolyRef *p
             minDist3d = dtVdistSqr(point, closestPoint);
         }
 
-        if(minDist2d < 1.0f) // shortcut out - close enough for us
+        if (minDist2d < 1.0f) // shortcut out - close enough for us
             break;
     }
 

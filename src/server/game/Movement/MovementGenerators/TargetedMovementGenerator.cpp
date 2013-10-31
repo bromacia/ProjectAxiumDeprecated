@@ -166,19 +166,18 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
     {
         i_recheckDistance.Reset(100);
         //More distance let have better performance, less distance let have more sensitive reaction at target move.
-        float allowed_dist = sWorld->getRate(RATE_TARGET_POS_RECALCULATION_RANGE);
+        float allowed_dist = 0.0f;
+
+        if (owner.HasUnitState(UNIT_STATE_FOLLOW))
+            allowed_dist = sWorld->getRate(RATE_TARGET_POS_RECALCULATION_RANGE);
+
         G3D::Vector3 dest = owner.movespline->FinalDestination();
 
         if (owner.GetTypeId() == TYPEID_UNIT)
-        {
-            if (owner.ToCreature()->canFly())
-                targetMoved = !i_target->IsWithinDist3d(dest.x, dest.y, dest.z, allowed_dist);
-            else
-                targetMoved = !i_target->IsWithinDist2d(dest.x, dest.y, i_target->GetCombatReach());
-        }
+            targetMoved = !i_target->IsWithinDist3d(dest.x, dest.y, dest.z, allowed_dist);
     }
 
-    if (i_recalculateTravel || targetMoved || !owner.IsWithinLOS(i_target->GetPositionX(), i_target->GetPositionY(), i_target->GetPositionZ()))
+    if (i_recalculateTravel || targetMoved)
         _setTargetLocation(owner, true);
 
     if (owner.movespline->Finalized())
@@ -192,6 +191,9 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
             i_targetReached = true;
             static_cast<D*>(this)->_reachTarget(owner);
         }
+
+        if (i_path)
+            i_path->Clear();
     }
 
     return true;

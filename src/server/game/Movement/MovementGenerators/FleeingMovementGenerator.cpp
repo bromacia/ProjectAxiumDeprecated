@@ -42,7 +42,7 @@ void FleeingMovementGenerator<T>::_setTargetLocation(T &owner)
 
     owner.AddUnitState(UNIT_STATE_FLEEING_MOVE);
 
-    float speed = unit.GetSpeed(MOVE_RUN);
+    float speed = owner.GetSpeed(MOVE_RUN);
 
     if (owner.GetMap()->IsInWater(x, y, z))
     {
