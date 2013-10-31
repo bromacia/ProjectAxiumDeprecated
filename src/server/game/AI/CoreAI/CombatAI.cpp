@@ -144,36 +144,50 @@ void CasterAI::EnterCombat(Unit* who)
 
     Unit* owner = me->GetCharmerOrOwner();
     target = who;
-    uint32 spell = rand()%spells.size();
+
+    if (!me->IsWithinDist(target, m_attackDist))
+    {
+        if (!me->HasUnitState(UNIT_STATE_FOLLOW))
+        {
+            me->CombatStop();
+            me->CastStop();
+            me->GetMotionMaster()->Clear();
+            me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
+            return;
+        }
+    }
+
+    uint32 spell = rand() % spells.size();
     uint32 count = 0;
     if (target)
     {
+        me->setVictim(target);
+
+        if (Player* pOwner = owner->ToPlayer())
+            if (Unit* ownerSelection = pOwner->GetSelectedUnit())
+            {
+                target = ownerSelection;
+                me->setVictim(ownerSelection);
+            }
+
         for (SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr, ++count)
         {
-            if (me->GetEntry() == 31216) // Mirror Image
-            {
-                if (Unit* ownerTarget = me->GetCharmerOrOwner()->ToPlayer()->GetSelectedUnit())
-                    target = ownerTarget;
+            if (target->HasBreakableCrowdControlAura(me))
+                continue;
 
-                if (target->HasBreakableCrowdControlAura(me))
-                    continue;
+            AttackStartCaster(target, 30.0f);
 
+            if (AISpellInfo[*itr].condition == AICOND_AGGRO)
                 me->CastSpell(target, *itr, false);
-            }
-            else
+            else if (AISpellInfo[*itr].condition == AICOND_COMBAT)
             {
-                if (AISpellInfo[*itr].condition == AICOND_AGGRO)
-                    me->CastSpell(target, *itr, false);
-                else if (AISpellInfo[*itr].condition == AICOND_COMBAT)
+                uint32 cooldown = GetAISpellInfo(*itr)->realCooldown;
+                if (count == spell)
                 {
-                    uint32 cooldown = GetAISpellInfo(*itr)->realCooldown;
-                    if (count == spell)
-                    {
-                        DoCast(spells[spell]);
-                        cooldown += me->GetCurrentSpellCastTime(*itr);
-                    }
-                    events.ScheduleEvent(*itr, cooldown);
+                    DoCast(spells[spell]);
+                    cooldown += me->GetCurrentSpellCastTime(*itr);
                 }
+                events.ScheduleEvent(*itr, cooldown);
             }
         }
     }
@@ -190,26 +204,7 @@ void CasterAI::UpdateAI(const uint32 diff)
 
     if (me->getVictim()->HasBreakableCrowdControlAura(me))
     {
-        me->CombatStop();
-        me->CastStop();
-        me->GetMotionMaster()->Clear();
-        me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
-        return;
-    }
-
-    if (target)
-    {
-        if (!me->IsWithinLOS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
-        {
-            me->CastStop();
-            me->GetMotionMaster()->Clear();
-            me->GetMotionMaster()->MoveChase(target);
-        }
-
-        if (me->HasUnitState(UNIT_STATE_CASTING))
-            return;
-
-        if (!me->IsWithinDist(target, m_attackDist))
+        if (!me->HasUnitState(UNIT_STATE_FOLLOW))
         {
             me->CombatStop();
             me->CastStop();
@@ -217,20 +212,40 @@ void CasterAI::UpdateAI(const uint32 diff)
             me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
             return;
         }
+    }
 
-        if (me->GetEntry() == 31216) // Mirror Image
+    if (target)
+    {
+        if (!me->IsWithinLOS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
         {
-            for (SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr)
-                me->CastSpell(target, *itr, false);
-        }
-        else
-        {
-            if (uint32 spellId = events.ExecuteEvent())
+            if (!me->HasUnitState(UNIT_STATE_CHASE))
             {
-                DoCast(spellId);
-                uint32 casttime = me->GetCurrentSpellCastTime(spellId);
-                events.ScheduleEvent(spellId, (casttime ? casttime : 500) + GetAISpellInfo(spellId)->realCooldown);
+                me->CastStop();
+                me->GetMotionMaster()->Clear();
+                me->GetMotionMaster()->MoveChase(target);
             }
+        }
+
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+
+        if (!me->IsWithinDist(target, m_attackDist))
+        {
+            if (!me->HasUnitState(UNIT_STATE_FOLLOW))
+            {
+                me->CombatStop();
+                me->CastStop();
+                me->GetMotionMaster()->Clear();
+                me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
+                return;
+            }
+        }
+
+        if (uint32 spellId = events.ExecuteEvent())
+        {
+            DoCast(spellId);
+            uint32 cooldown = me->GetCurrentSpellCastTime(spellId) + GetAISpellInfo(spellId)->realCooldown;
+            events.ScheduleEvent(spellId, cooldown);
         }
     }
 }

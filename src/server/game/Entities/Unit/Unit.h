@@ -1306,6 +1306,7 @@ class Unit : public WorldObject
         void RemoveAllAttackers();
         AttackerSet const& getAttackers() const { return m_attackers; }
         bool isAttackingPlayer() const;
+        void setVictim(Unit* _victim) { m_attacking = _victim; }
         Unit* getVictim() const { return m_attacking; }
 
         void CombatStop(bool includingCast = false);
