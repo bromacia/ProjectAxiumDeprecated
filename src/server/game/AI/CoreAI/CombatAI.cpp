@@ -76,33 +76,65 @@ void CombatAI::Reset()
 
 void CombatAI::JustDied(Unit* killer)
 {
-    for (SpellVct::iterator i = spells.begin(); i != spells.end(); ++i)
-        if (AISpellInfo[*i].condition == AICOND_DIE)
-            me->CastSpell(killer, *i, true);
+    for (SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr)
+        if (AISpellInfo[*itr].condition == AICOND_DIE)
+            me->CastSpell(killer, *itr, true);
 }
 
 void CombatAI::EnterCombat(Unit* who)
 {
-    for (SpellVct::iterator i = spells.begin(); i != spells.end(); ++i)
+    Unit* owner = me->GetCharmerOrOwner();
+    target = who;
+
+    if (Player* pOwner = owner->ToPlayer())
+        if (Unit* ownerSelection = pOwner->GetSelectedUnit())
+            target = ownerSelection;
+
+    if (target)
     {
-        if (AISpellInfo[*i].condition == AICOND_AGGRO)
-            me->CastSpell(who, *i, false);
-        else if (AISpellInfo[*i].condition == AICOND_COMBAT)
-            events.ScheduleEvent(*i, AISpellInfo[*i].cooldown + rand()%AISpellInfo[*i].cooldown);
+        me->setVictim(target);
+
+        for (SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr)
+        {
+            if (target->HasBreakableCrowdControlAura(me) || me->IsCrowdControlled())
+            {
+                events.ScheduleEvent(*itr, AISpellInfo[*itr].cooldown + rand() % AISpellInfo[*itr].cooldown);
+                continue;
+            }
+
+            if (AISpellInfo[*itr].condition == AICOND_AGGRO)
+                me->CastSpell(who, *itr, false);
+            else if (AISpellInfo[*itr].condition == AICOND_COMBAT)
+                events.ScheduleEvent(*itr, AISpellInfo[*itr].cooldown + rand() % AISpellInfo[*itr].cooldown);
+        }
+
+        AttackStart(target);
     }
 }
 
 void CombatAI::UpdateAI(const uint32 diff)
 {
+    events.Update(diff);
+
     if (!UpdateVictim())
         return;
 
-    events.Update(diff);
+    if (me->IsCrowdControlled())
+        return;
 
     Unit* owner = me->GetCharmerOrOwner();
+
     if (me->getVictim()->HasBreakableCrowdControlAura(me))
     {
-        me->InterruptNonMeleeSpells(false);
+        me->CombatStop();
+        me->CastStop();
+
+        if (!me->HasUnitState(UNIT_STATE_FOLLOW))
+        {
+            me->GetMotionMaster()->Clear();
+            me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
+        }
+
         return;
     }
 
@@ -147,35 +179,36 @@ void CasterAI::EnterCombat(Unit* who)
 
     if (!me->IsWithinDist(target, m_attackDist))
     {
+        me->CombatStop();
+        me->CastStop();
+
         if (!me->HasUnitState(UNIT_STATE_FOLLOW))
         {
-            me->CombatStop();
-            me->CastStop();
             me->GetMotionMaster()->Clear();
             me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
-            return;
         }
+
+        return;
     }
 
-    uint32 spell = rand() % spells.size();
-    uint32 count = 0;
+    if (Player* pOwner = owner->ToPlayer())
+        if (Unit* ownerSelection = pOwner->GetSelectedUnit())
+            target = ownerSelection;
+
     if (target)
     {
         me->setVictim(target);
 
-        if (Player* pOwner = owner->ToPlayer())
-            if (Unit* ownerSelection = pOwner->GetSelectedUnit())
-            {
-                target = ownerSelection;
-                me->setVictim(ownerSelection);
-            }
+        uint32 spell = rand() % spells.size();
+        uint32 count = 0;
 
         for (SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr, ++count)
         {
-            if (target->HasBreakableCrowdControlAura(me))
+            if (target->HasBreakableCrowdControlAura(me) || me->IsCrowdControlled())
+            {
+                events.ScheduleEvent(*itr, GetAISpellInfo(*itr)->realCooldown);
                 continue;
-
-            AttackStartCaster(target, 30.0f);
+            }
 
             if (AISpellInfo[*itr].condition == AICOND_AGGRO)
                 me->CastSpell(target, *itr, false);
@@ -190,40 +223,50 @@ void CasterAI::EnterCombat(Unit* who)
                 events.ScheduleEvent(*itr, cooldown);
             }
         }
+
+        AttackStartCaster(target, m_attackDist);
     }
 }
 
 void CasterAI::UpdateAI(const uint32 diff)
 {
+    events.Update(diff);
+
     if (!UpdateVictim())
         return;
 
-    events.Update(diff);
+    if (me->IsCrowdControlled())
+        return;
 
     Unit* owner = me->GetCharmerOrOwner();
 
     if (me->getVictim()->HasBreakableCrowdControlAura(me))
     {
+        me->CombatStop();
+        me->CastStop();
+
         if (!me->HasUnitState(UNIT_STATE_FOLLOW))
         {
-            me->CombatStop();
-            me->CastStop();
             me->GetMotionMaster()->Clear();
             me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
-            return;
         }
+
+        return;
     }
 
     if (target)
     {
         if (!me->IsWithinLOS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
         {
+            me->CastStop();
+
             if (!me->HasUnitState(UNIT_STATE_CHASE))
             {
-                me->CastStop();
                 me->GetMotionMaster()->Clear();
                 me->GetMotionMaster()->MoveChase(target);
             }
+
+            return;
         }
 
         if (me->HasUnitState(UNIT_STATE_CASTING))
@@ -231,14 +274,16 @@ void CasterAI::UpdateAI(const uint32 diff)
 
         if (!me->IsWithinDist(target, m_attackDist))
         {
+            me->CombatStop();
+            me->CastStop();
+
             if (!me->HasUnitState(UNIT_STATE_FOLLOW))
             {
-                me->CombatStop();
-                me->CastStop();
                 me->GetMotionMaster()->Clear();
                 me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
-                return;
             }
+
+            return;
         }
 
         if (uint32 spellId = events.ExecuteEvent())
