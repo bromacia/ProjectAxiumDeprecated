@@ -1333,6 +1333,9 @@ void World::LoadConfigSettings(bool reload)
 
     m_int_configs[CONFIG_ARENA_SPECTATOR_MIN_RATING]     = ConfigMgr::GetIntDefault("ArenaSpectator.MinRating", 1000);
 
+    m_int_configs[CONFIG_CONFUSED_MOVEMENT_GENERATOR_RESET_TIME] = ConfigMgr::GetIntDefault("ConfusedMovementGeneratorResetTime", 100);
+    m_int_configs[CONFIG_FLEEING_MOVEMENT_GENERATOR_RESET_TIME]  = ConfigMgr::GetIntDefault("FleeingMovementGeneratorResetTime", 1000);
+
     sScriptMgr->OnConfigLoad(reload);
 }
 

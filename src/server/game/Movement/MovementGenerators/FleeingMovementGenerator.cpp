@@ -57,7 +57,7 @@ void FleeingMovementGenerator<T>::_setTargetLocation(T &owner)
 
         if (!path.Calculate(x, y, z) || path.GetPathType() & PATHFIND_NOPATH)
         {
-            i_nextCheckTime.Reset(urand(500, 1500));
+            i_nextCheckTime.Reset(sWorld->getIntConfig(CONFIG_FLEEING_MOVEMENT_GENERATOR_RESET_TIME));
             return;
         }
 
@@ -184,7 +184,7 @@ bool FleeingMovementGenerator<T>::_getPoint(T &owner, float &x, float &y, float 
         }
     }
     i_to_distance_from_caster = 0.0f;
-    i_nextCheckTime.Reset(urand(500,1000));
+    i_nextCheckTime.Reset(sWorld->getIntConfig(CONFIG_FLEEING_MOVEMENT_GENERATOR_RESET_TIME));
     return false;
 }
 

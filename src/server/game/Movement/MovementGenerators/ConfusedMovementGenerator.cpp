@@ -123,7 +123,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 
             if (!unit.IsWithinLOS(x, y, z) || !path.Calculate(x, y, z) || path.GetPathType() & PATHFIND_NOPATH)
             {
-                i_nextMoveTime.Reset(50);
+                i_nextMoveTime.Reset(sWorld->getIntConfig(CONFIG_CONFUSED_MOVEMENT_GENERATOR_RESET_TIME));
                 init = false;
                 return true;
             }
@@ -146,7 +146,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         if (unit.movespline->Finalized())
         {
             i_nextMove = urand(1, MAX_CONF_WAYPOINTS);
-            i_nextMoveTime.Reset(50);
+            i_nextMoveTime.Reset(sWorld->getIntConfig(CONFIG_CONFUSED_MOVEMENT_GENERATOR_RESET_TIME));
         }
     }
     else
@@ -178,7 +178,7 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
 
                 if (!unit.IsWithinLOS(x, y, z) || !path.Calculate(x, y, z) || path.GetPathType() & PATHFIND_NOPATH)
                 {
-                    i_nextMoveTime.Reset(50);
+                    i_nextMoveTime.Reset(sWorld->getIntConfig(CONFIG_CONFUSED_MOVEMENT_GENERATOR_RESET_TIME));
                     return true;
                 }
 
