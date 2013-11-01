@@ -14108,19 +14108,36 @@ void Unit::ApplyDiminishingAura(DiminishingGroup group, bool apply)
 
 float Unit::GetSpellMaxRangeForTarget(Unit const* target, SpellInfo const* spellInfo) const
 {
+    float range = 0.0f;
     if (!spellInfo->RangeEntry)
-        return 0;
+        return range;
+
     if (spellInfo->RangeEntry->maxRangeFriend == spellInfo->RangeEntry->maxRangeHostile)
-        return spellInfo->GetMaxRange();
-    return spellInfo->GetMaxRange(!IsHostileTo(target));
+    {
+        range = spellInfo->GetMaxRange();
+
+        if (Player* modOwner = GetSpellModOwner())
+            modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_RANGE, range);
+
+        return range;
+    }
+
+    range = spellInfo->GetMaxRange(!IsHostileTo(target));
+
+    if (Player* modOwner = GetSpellModOwner())
+        modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_RANGE, range);
+
+    return range;
 }
 
 float Unit::GetSpellMinRangeForTarget(Unit const* target, SpellInfo const* spellInfo) const
 {
     if (!spellInfo->RangeEntry)
         return 0;
+
     if (spellInfo->RangeEntry->minRangeFriend == spellInfo->RangeEntry->minRangeHostile)
         return spellInfo->GetMinRange();
+
     return spellInfo->GetMinRange(!IsHostileTo(target));
 }
 
