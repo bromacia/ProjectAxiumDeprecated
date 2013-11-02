@@ -3265,10 +3265,8 @@ void Spell::cancel()
                     if (Unit* unit = m_caster->GetGUID() == ihit->targetGUID ? m_caster : ObjectAccessor::GetUnit(*m_caster, ihit->targetGUID))
                         unit->RemoveOwnedAura(m_spellInfo->Id, m_originalCasterGUID, 0, AURA_REMOVE_BY_CANCEL);
 
-            CancelGlobalCooldown();
             SendChannelUpdate(0);
             SendInterrupted(0);
-            SendCastResult(SPELL_FAILED_INTERRUPTED);
 
             // spell is canceled-take mods and clear list
             if (m_caster->GetTypeId() == TYPEID_PLAYER)
@@ -7783,7 +7781,7 @@ void Spell::CancelGlobalCooldown()
         return;
 
     // Cancel global cooldown when interrupting current cast
-    if (this->GetCurrentContainer() != CURRENT_GENERIC_SPELL && this->GetCurrentContainer() != CURRENT_CHANNELED_SPELL)
+    if (m_caster->GetCurrentSpell(CURRENT_GENERIC_SPELL) != this)
         return;
 
     // Only players or controlled units have global cooldown
