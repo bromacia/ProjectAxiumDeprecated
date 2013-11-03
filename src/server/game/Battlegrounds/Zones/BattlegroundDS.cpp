@@ -27,6 +27,7 @@
 BattlegroundDS::BattlegroundDS()
 {
     m_BgObjects.resize(BG_DS_OBJECT_MAX);
+    m_BgCreatures.resize(BG_DS_NPC_MAX);
 
     m_StartDelayTimes[BG_STARTING_EVENT_FIRST]  = BG_START_DELAY_1M;
     m_StartDelayTimes[BG_STARTING_EVENT_SECOND] = BG_START_DELAY_30S;
@@ -46,6 +47,20 @@ BattlegroundDS::~BattlegroundDS()
 
 void BattlegroundDS::PostUpdateImpl(uint32 diff)
 {
+    if (getPipeKnockBackCount() < BG_DS_PIPE_KNOCKBACK_TOTAL_COUNT)
+    {
+        if (getPipeKnockBackTimer() < diff)
+        {
+            for (uint32 i = BG_DS_NPC_PIPE_KNOCKBACK_1; i <= BG_DS_NPC_PIPE_KNOCKBACK_2; ++i)
+                if (Creature* waterSpout = GetBgMap()->GetCreature(m_BgCreatures[i]))
+                    waterSpout->CastSpell(waterSpout, BG_DS_SPELL_FLUSH, true);
+
+            setPipeKnockBackCount(getPipeKnockBackCount() + 1);
+            setPipeKnockBackTimer(BG_DS_PIPE_KNOCKBACK_DELAY);
+        }
+        else
+            setPipeKnockBackTimer(getPipeKnockBackTimer() - diff);
+    }
 }
 
 void BattlegroundDS::StartingEventCloseDoors()
@@ -61,6 +76,15 @@ void BattlegroundDS::StartingEventOpenDoors()
 
     for (uint8 i = BG_DS_OBJECT_BUFF_1; i <= BG_DS_OBJECT_BUFF_2; ++i)
         SpawnBGObject(i, 60);
+
+    setPipeKnockBackTimer(BG_DS_PIPE_KNOCKBACK_FIRST_DELAY);
+    setPipeKnockBackCount(0);
+
+    // Remove effects of Demonic Circle Summon
+    for (BattlegroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
+        if (Player* player = ObjectAccessor::FindPlayer(itr->first))
+            if (player->HasAura(48018))
+                player->RemoveAurasDueToSpell(48018);
 }
 
 void BattlegroundDS::AddPlayer(Player* player)
@@ -109,6 +133,14 @@ void BattlegroundDS::HandleAreaTrigger(Player* Source, uint32 Trigger)
     {
         case 5347:
         case 5348:
+            // Remove effects of Demonic Circle Summon
+            if (Source->HasAura(48018))
+                Source->RemoveAurasDueToSpell(48018);
+
+            // Someone has get back into the pipes and the knockback has already been performed,
+            // so we reset the knockback count for kicking the player again into the arena.
+            if (getPipeKnockBackCount() >= BG_DS_PIPE_KNOCKBACK_TOTAL_COUNT)
+                setPipeKnockBackCount(0);
             break;
         default:
             sLog->outError("WARNING: Unhandled AreaTrigger in BattlegroundDS: %u", Trigger);
@@ -145,7 +177,10 @@ bool BattlegroundDS::SetupBattleground()
         !AddObject(BG_DS_OBJECT_BUFF_2, BG_DS_OBJECT_TYPE_BUFF_2, 1254.318237f, 816.529175f, 3.158578f, 0, 0, 0, 0.700409f, 0.713742f, 120) ||
     // Ready Markers
         !AddObject(BG_DS_OBJECT_READY_MARKER_A, BG_OBJECTID_READY_MARKER, 1230.58f, 760.11f, 17.06f, 3.11f, 0, 0, 0, 0, RESPAWN_IMMEDIATELY) ||
-        !AddObject(BG_DS_OBJECT_READY_MARKER_B, BG_OBJECTID_READY_MARKER, 1352.74f, 822.0f, 17.17f, 6.26f, 0, 0, 0, 0, RESPAWN_IMMEDIATELY))
+        !AddObject(BG_DS_OBJECT_READY_MARKER_B, BG_OBJECTID_READY_MARKER, 1352.74f, 822.0f, 17.17f, 6.26f, 0, 0, 0, 0, RESPAWN_IMMEDIATELY) ||
+    // Pipe knockbacks
+        !AddCreature(BG_DS_NPC_TYPE_WATER_SPOUT, BG_DS_NPC_PIPE_KNOCKBACK_1, 0, 1369.977f, 817.2882f, 16.08718f, 3.106686f, RESPAWN_IMMEDIATELY) ||
+        !AddCreature(BG_DS_NPC_TYPE_WATER_SPOUT, BG_DS_NPC_PIPE_KNOCKBACK_2, 0, 1212.833f, 765.3871f, 16.09484f, 0.0f, RESPAWN_IMMEDIATELY))
     {
         sLog->outErrorDb("BatteGroundDS: Failed to spawn some object!");
         return false;
