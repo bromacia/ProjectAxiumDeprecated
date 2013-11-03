@@ -92,8 +92,6 @@ void CombatAI::EnterCombat(Unit* who)
 
     if (target)
     {
-        me->setVictim(target);
-
         for (SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr)
         {
             if (target->HasBreakableCrowdControlAura(me) || me->IsCrowdControlled())
@@ -197,8 +195,6 @@ void CasterAI::EnterCombat(Unit* who)
 
     if (target)
     {
-        me->setVictim(target);
-
         uint32 spell = rand() % spells.size();
         uint32 count = 0;
 
