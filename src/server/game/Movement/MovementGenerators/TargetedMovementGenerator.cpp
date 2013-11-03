@@ -117,8 +117,15 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
         bool result = i_path->Calculate(x, y, z);
         if (!result || (i_path->GetPathType() & PATHFIND_NOPATH))
         {
-            // Cant reach target
-            i_recalculateTravel = true;
+            if (owner.HasUnitState(UNIT_STATE_FOLLOW))
+            {
+                Movement::MoveSplineInit init(owner);
+                init.MoveTo(x, y, z, false, true);
+                init.Launch();
+            }
+            else
+                i_recalculateTravel = true;
+
             return;
         }
 
