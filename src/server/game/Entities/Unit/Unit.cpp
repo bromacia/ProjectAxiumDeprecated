@@ -11509,20 +11509,6 @@ uint32 Unit::SpellCriticalHealingBonus(SpellInfo const* spellProto, uint32 damag
 
 uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, uint32 healamount, DamageEffectType damagetype, uint32 stack)
 {
-    if (Player* player = ToPlayer())
-    {
-        if (player->IsInWorldPvPZone() && !player->IsInWorldPvPZoneMall())
-        {
-            if (victim != this)
-                return 0;
-
-            if (player->IsHealingSpec())
-                return 0;
-            else if (!player->IsDamageSpec() && !player->IsTankingSpec() && !player->IsHealingSpec())
-                return 0;
-        }
-    }
-
     // For totems get healing bonus from owner (statue isn't totem in fact)
     if (GetTypeId() == TYPEID_UNIT && isTotem())
         if (Unit* owner = GetOwner())
@@ -11669,6 +11655,18 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, ui
     // apply spellmod to Done amount
     if (Player* modOwner = GetSpellModOwner())
         modOwner->ApplySpellMod(spellProto->Id, damagetype == DOT ? SPELLMOD_DOT : SPELLMOD_DAMAGE, heal);
+
+    if (Player* player = ToPlayer())
+    {
+        if (player->IsInWorldPvPZone() && !player->IsInWorldPvPZoneMall())
+        {
+            if (victim != this)
+                return 0;
+
+            if (player->IsHealingSpec())
+                heal *= 0.50;
+        }
+    }
 
     if (GetTypeId() == TYPEID_PLAYER)
     {
