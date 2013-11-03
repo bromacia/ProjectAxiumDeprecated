@@ -28,7 +28,7 @@
 ////////////////// PathFinderMovementGenerator //////////////////
 PathFinderMovementGenerator::PathFinderMovementGenerator(Unit* const owner) : _polyLength(0), _type(PATHFIND_BLANK),
 _useStraightPath(false), _forceDestination(false), _pointPathLimit(MAX_POINT_PATH_LENGTH),
-_sourceUnit(owner), _navMesh(NULL), _navMeshQuery(NULL)
+_sourceUnit(owner), _navMesh(NULL), _navMeshQuery(NULL), _usingOffMesh(false)
 {
     sLog->outDebug(LOG_FILTER_MAPS, "++ PathFinderMovementGenerator::PathFinderMovementGenerator for %u \n", _sourceUnit->GetGUIDLow());
 
@@ -732,6 +732,8 @@ dtStatus PathFinderMovementGenerator::_findSmoothPath(const float* startPos, con
         }
         else if (offMeshConnection && _inRangeYZX(iterPos, steerPos, SMOOTH_PATH_SLOP, 1.0f))
         {
+            _usingOffMesh = true;
+
             // Advance the path up to and over the off-mesh connection.
             dtPolyRef prevRef = INVALID_POLYREF;
             dtPolyRef polyRef = polys[0];

@@ -76,6 +76,8 @@ class PathFinderMovementGenerator
         PointsArray& GetPath() { return _pathPoints; }
         PathType GetPathType() const { return _type; }
 
+        bool UsingOffMesh() { return _usingOffMesh; }
+
         void Clear() { _clear(); };
 
     private:
@@ -85,6 +87,8 @@ class PathFinderMovementGenerator
 
         PointsArray    _pathPoints;       // our actual (x,y,z) path to the target
         PathType       _type;             // tells what kind of path this is
+
+        bool           _usingOffMesh;
 
         bool           _useStraightPath;  // type of path will be generated
         bool           _forceDestination; // when set, we will always arrive at given point
@@ -106,7 +110,7 @@ class PathFinderMovementGenerator
 
         void NormalizePath();
 
-        void _clear() { _polyLength = 0; _pathPoints.clear(); }
+        void _clear() { _polyLength = 0; _pathPoints.clear(); _usingOffMesh = false; }
 
         bool _inRange(const Vector3 &p1, const Vector3 &p2, float r, float h) const;
         float _dist3DSqr(const Vector3 &p1, const Vector3 &p2) const;

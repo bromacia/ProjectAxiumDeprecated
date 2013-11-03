@@ -78,7 +78,7 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
             {
                 i_target->GetClosePoint(x, y, z, size, i_offset, i_angle); // to at i_offset distance from target and i_angle from target facing
                 float ground = i_target->GetMap()->GetWaterOrGroundLevel(x, y, z);
-                if (fabs(z - ground) >= 5.0f)
+                if (fabs(z - ground) >= 3.0f)
                     i_target->GetPosition(x, y, z);
             }
         }
@@ -90,6 +90,14 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
         x = end.x;
         y = end.y;
         z = end.z;
+    }
+
+    // Custom temp fix for blades edge
+    if (i_target->GetMapId() == 562)
+    {
+        float ground = i_target->GetMap()->GetWaterOrGroundLevel(x, y, z);
+        if (fabs(z - ground) >= 8.0f)
+            return;
     }
 
     owner.UpdateAllowedPositionZ(x, y, z, true);
@@ -105,12 +113,24 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
         if (!i_path)
             i_path = new PathFinderMovementGenerator(&owner);
 
+        bool lastPathOffMesh = i_path->UsingOffMesh();
         bool result = i_path->Calculate(x, y, z);
         if (!result || (i_path->GetPathType() & PATHFIND_NOPATH))
         {
             // Cant reach target
             i_recalculateTravel = true;
             return;
+        }
+
+        bool newPathOffMesh = i_path->UsingOffMesh();
+        if (lastPathOffMesh && newPathOffMesh)
+        {
+            G3D::Vector3 dest = owner.movespline->FinalDestination();
+            if (i_target->IsWithinDist3d(dest.x, dest.y, dest.z, 4.0f))
+            {
+                i_recalculateTravel = true;
+                return;
+            }
         }
 
         Movement::MoveSplineInit init(owner);
@@ -169,7 +189,7 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
         float allowed_dist = 0.0f;
 
         if (owner.HasUnitState(UNIT_STATE_FOLLOW))
-            allowed_dist = sWorld->getRate(RATE_TARGET_POS_RECALCULATION_RANGE);
+            allowed_dist = i_target->GetCombatReach();
 
         G3D::Vector3 dest = owner.movespline->FinalDestination();
 
