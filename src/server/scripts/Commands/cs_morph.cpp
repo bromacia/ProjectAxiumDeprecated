@@ -265,12 +265,13 @@ public:
 
     static bool HandleMorphTestCommand(ChatHandler* handler, const char* /*args*/)
     {
+        // 45204 Clone Me!
         Player* player = handler->GetSession()->GetPlayer();
         WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
         data << uint64(player->GetGUID());
         data << uint32(player->GetDisplayId());
-        data << uint8(5);
-        data << uint8(0);
+        data << uint8(player->getRace());
+        data << uint8(player->getGender());
         data << uint8(player->getClass());
         data << uint8(player->GetByteValue(PLAYER_BYTES, 0));   // skin
         data << uint8(player->GetByteValue(PLAYER_BYTES, 1));   // face
@@ -313,7 +314,7 @@ public:
                 data << uint32(0);
         }
 
-        player->SendMessageToSet(&data, (Player*)NULL);
+        handler->GetSession()->SendPacket(&data);
         return true;
     }
 };
