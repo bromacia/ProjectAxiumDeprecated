@@ -49,6 +49,7 @@ public:
             { "gof",        SEC_VIP,            false, &HandleMorphGoblinFemaleCommand,     "", NULL },
             { "none",       SEC_VIP,            false, &HandleMorphNoneCommand,             "", NULL },
             { "help",       SEC_PLAYER,         false, &HandleMorphHelpCommand,             "", NULL },
+            { "test",       SEC_ADMINISTRATOR,  false, &HandleMorphTestCommand,             "", NULL },
             { NULL,         0,                  false, NULL,                                "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -259,6 +260,60 @@ public:
                                      "and a staff member will assist you when he/she is available.");
         }
 
+        return true;
+    }
+
+    static bool HandleMorphTestCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Player* player = handler->GetSession()->GetPlayer();
+        WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
+        data << uint64(player->GetGUID());
+        data << uint32(player->GetDisplayId());
+        data << uint8(5);
+        data << uint8(0);
+        data << uint8(player->getClass());
+        data << uint8(player->GetByteValue(PLAYER_BYTES, 0));   // skin
+        data << uint8(player->GetByteValue(PLAYER_BYTES, 1));   // face
+        data << uint8(player->GetByteValue(PLAYER_BYTES, 2));   // hair
+        data << uint8(player->GetByteValue(PLAYER_BYTES, 3));   // haircolor
+        data << uint8(player->GetByteValue(PLAYER_BYTES_2, 0)); // facialhair
+        data << uint32(player->GetGuildId());                   // unk
+
+        static EquipmentSlots const itemSlots[] =
+        {
+            EQUIPMENT_SLOT_HEAD,
+            EQUIPMENT_SLOT_SHOULDERS,
+            EQUIPMENT_SLOT_SHIRT,
+            EQUIPMENT_SLOT_CHEST,
+            EQUIPMENT_SLOT_WAIST,
+            EQUIPMENT_SLOT_LEGS,
+            EQUIPMENT_SLOT_FEET,
+            EQUIPMENT_SLOT_WRISTS,
+            EQUIPMENT_SLOT_HANDS,
+            EQUIPMENT_SLOT_BACK,
+            EQUIPMENT_SLOT_TABARD,
+            EQUIPMENT_SLOT_END
+        };
+
+        // Display items in visible slots
+        for (EquipmentSlots const* itr = &itemSlots[0]; *itr != EQUIPMENT_SLOT_END; ++itr)
+        {
+            if (*itr == EQUIPMENT_SLOT_HEAD && player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_HIDE_HELM))
+                data << uint32(0);
+            else if (*itr == EQUIPMENT_SLOT_BACK && player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_HIDE_CLOAK))
+                data << uint32(0);
+            else if (Item const* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, *itr))
+            {
+                if (ItemTemplate const* transmogItem = sObjectMgr->GetItemTemplate(item->TransmogEntry))
+                    data << uint32(transmogItem->DisplayInfoID);
+                else
+                    data << uint32(item->GetTemplate()->DisplayInfoID);
+            }
+            else
+                data << uint32(0);
+        }
+
+        player->SendMessageToSet(&data, (Player*)NULL);
         return true;
     }
 };
