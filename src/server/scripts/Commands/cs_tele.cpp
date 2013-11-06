@@ -301,6 +301,9 @@ public:
             return false;
         }
 
+        if (IsPhraseInString(tele->name, "axium_") && handler->GetSession()->GetSecurity() < SEC_GAMEMASTER)
+            return false;
+
         if (player->CanTeleportTo(tele))
         {
             if (player->isInFlight())
