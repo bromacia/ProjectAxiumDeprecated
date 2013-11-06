@@ -118,19 +118,7 @@ void PvPMgr::HandleNormalPvPKill(Player* victim)
     uint16 attackerPvPRating = GetPvPRatingByGUIDLow(attackerGUIDLow);
     uint16 victimPvPRating = GetPvPRatingByGUIDLow(victimGUIDLow);
 
-    if (victimPvPRating)
-        ratingGain = victimPvPRating / 100;
-    else
-        ratingGain = 10;
-
-    if (ratingGain < 10)
-        ratingGain = 10;
-
-    if (attackerPvPRating > 2000)
-        ApplyRatingMultipliers(attackerPvPRating, ratingGain, true);
-
-    if (ratingGain > 100)
-        ratingGain = 100;
+    ratingGain = CalculatePvPRating(attackerPvPRating, victimPvPRating, true);
 
     if (ratingGain)
     {
@@ -144,37 +132,18 @@ void PvPMgr::HandleNormalPvPKill(Player* victim)
             }
     }
 
-    if (victimPvPRating > 1000)
+    ratingLoss = CalculatePvPRating(attackerPvPRating, victimPvPRating, false);
+
+    if (ratingLoss)
     {
-        if (attackerPvPRating)
+        SetPvPRatingByGUIDLow(victimGUIDLow, victimPvPRating - ratingLoss);
+
+        if (victim->HasPvPNotificationsEnabled())
         {
-            float fRatingLoss = attackerPvPRating - victimPvPRating;
-            fRatingLoss = fabs(fRatingLoss);
-            fRatingLoss /= 100;
-            ratingLoss = fRatingLoss;
-        }
-        else
-            ratingLoss = 5;
-
-        if (ratingLoss < 5)
-            ratingLoss = 5;
-
-        ApplyRatingMultipliers(victimPvPRating, ratingLoss, false);
-
-        if (ratingLoss > 100)
-            ratingLoss = 100;
-
-        if (ratingLoss)
-        {
-            SetPvPRatingByGUIDLow(victimGUIDLow, victimPvPRating - ratingLoss);
-
-            if (victim->HasPvPNotificationsEnabled())
-            {
-                std::string attackerName = "";
-                sObjectMgr->GetPlayerNameByGUIDLow(attackerGUIDLow, attackerName);
-                handler = new ChatHandler(victim);
-                handler->PSendSysMessage("You have been deducted %u PvP rating for being killed by %s.", ratingLoss, attackerName);
-            }
+            std::string attackerName = "";
+            sObjectMgr->GetPlayerNameByGUIDLow(attackerGUIDLow, attackerName);
+            handler = new ChatHandler(victim);
+            handler->PSendSysMessage("You have been deducted %u PvP rating for being killed by %s.", ratingLoss, attackerName);
         }
     }
 }
@@ -216,19 +185,7 @@ void PvPMgr::HandleOneShotPvPKill(Unit* attacker, Player* victim)
     uint16 attackerPvPRating = GetPvPRatingByGUIDLow(attackerGUIDLow);
     uint16 victimPvPRating = GetPvPRatingByGUIDLow(victimGUIDLow);
 
-    if (victimPvPRating)
-        ratingGain = victimPvPRating / 100;
-    else
-        ratingGain = 10;
-
-    if (ratingGain < 10)
-        ratingGain = 10;
-
-    if (attackerPvPRating > 2000)
-        ApplyRatingMultipliers(attackerPvPRating, ratingGain, true);
-
-    if (ratingGain > 100)
-        ratingGain = 100;
+    ratingGain = CalculatePvPRating(attackerPvPRating, victimPvPRating, true);
 
     if (ratingGain)
     {
@@ -241,37 +198,16 @@ void PvPMgr::HandleOneShotPvPKill(Unit* attacker, Player* victim)
         }
     }
 
-    if (victimPvPRating > 1000)
+    ratingLoss = CalculatePvPRating(attackerPvPRating, victimPvPRating, false);
+
+    if (ratingLoss)
     {
-        if (attackerPvPRating)
+        SetPvPRatingByGUIDLow(victimGUIDLow, victimPvPRating - ratingLoss);
+
+        if (victim->HasPvPNotificationsEnabled())
         {
-            float fRatingLoss = attackerPvPRating - victimPvPRating;
-            fRatingLoss = fabs(fRatingLoss);
-            fRatingLoss /= 100;
-            ratingLoss = fRatingLoss;
-        }
-        else
-            ratingLoss = 5;
-
-        if (ratingLoss < 5)
-            ratingLoss = 5;
-
-        ApplyRatingMultipliers(victimPvPRating, ratingLoss, false);
-
-        if (ratingLoss > 100)
-            ratingLoss = 100;
-
-        if (ratingLoss)
-        {
-            SetPvPRatingByGUIDLow(victimGUIDLow, victimPvPRating - ratingLoss);
-
-            if (victim->HasPvPNotificationsEnabled())
-            {
-                std::string attackerName = "";
-                sObjectMgr->GetPlayerNameByGUIDLow(attackerGUIDLow, attackerName);
-                handler = new ChatHandler(victim);
-                handler->PSendSysMessage("You have been deducted %u PvP rating for being killed by %s.", ratingLoss, attackerName);
-            }
+            handler = new ChatHandler(victim);
+            handler->PSendSysMessage("You have been deducted %u PvP rating for being killed by %s.", ratingLoss, attacker->GetName());
         }
     }
 }
@@ -281,8 +217,8 @@ void PvPMgr::HandleBattlegroundHonorableKill(Player* player)
     if (!player->IsHealingSpec())
         return;
 
-    uint16 pvpRating = player->GetPvPRating();
-    SetPvPRatingByGUIDLow(player->GetGUIDLow(), ++pvpRating);
+    uint16 ratingGain = player->GetPvPRating() + 1;
+    SetPvPRatingByGUIDLow(player->GetGUIDLow(), ratingGain);
 
     if (player->HasPvPNotificationsEnabled())
     {
@@ -314,7 +250,7 @@ void PvPMgr::HandleBattlegroundEnd(Battleground* bg)
             {
                 uint8 ratingGain = BG_RATING_GAIN;
                 if (pvpRating > 2000)
-                    ApplyRatingMultipliers(pvpRating, ratingGain, true);
+                    ratingGain = ApplyPvPRatingMultipliers((float)pvpRating, ratingGain, true);
                 SetPvPRatingByGUIDLow(player->GetGUIDLow(), pvpRating + ratingGain);
 
                 if (player->HasPvPNotificationsEnabled())
@@ -326,7 +262,7 @@ void PvPMgr::HandleBattlegroundEnd(Battleground* bg)
             else if (pvpRating > 1000)
             {
                 uint8 ratingLoss = BG_RATING_LOSS;
-                ApplyRatingMultipliers(pvpRating, ratingLoss, false);
+                ratingLoss = ApplyPvPRatingMultipliers((float)pvpRating, ratingLoss, false);
                 SetPvPRatingByGUIDLow(player->GetGUIDLow(), pvpRating - ratingLoss);
 
                 if (player->HasPvPNotificationsEnabled())
@@ -343,33 +279,64 @@ void PvPMgr::HandleTwinSpireCapture(TeamId team)
 {
 }
 
-void PvPMgr::ApplyRatingMultipliers(uint16 pvpRating, uint8 &ratingChange, bool gain)
+uint8 PvPMgr::CalculatePvPRating(uint16 attackerRating, uint16 victimRating, bool gain)
 {
-    uint8 uChange = ratingChange;
-    float fChange = 0;
+    uint8 ratingChange = 0;
 
     if (gain)
     {
-        if (pvpRating >= 10000)
-        {
-            ratingChange = 0;
-            return;
-        }
+        if (victimRating)
+            ratingChange = victimRating / 100;
+        else
+            ratingChange = 10;
 
-        fChange = pvpRating;
-        fChange /= 100;
-        fChange -= 100;
-        fChange = fabs(fChange);
-        fChange /= 100;
-        fChange *= uChange;
-        ratingChange = fChange;
+        if (ratingChange < 10)
+            ratingChange = 10;
+
+        if (attackerRating > 2000)
+            ratingChange = ApplyPvPRatingMultipliers((float)attackerRating, ratingChange, true);
     }
     else
     {
-        fChange = pvpRating;
-        fChange /= 10000;
-        fChange *= uChange;
-        ratingChange = fChange;
+        if (victimRating <= 1000)
+            return 0;
+
+        if (attackerRating)
+        {
+            float ratingDifference = attackerRating - victimRating;
+            ratingChange = fabs(ratingDifference) / 100;
+        }
+        else
+            ratingChange = 5;
+
+        if (ratingChange < 5)
+            ratingChange = 5;
+
+        ratingChange = ApplyPvPRatingMultipliers((float)victimRating, ratingChange, false);
+    }
+
+    if (ratingChange > 100)
+        ratingChange = 100;
+
+    return ratingChange;
+}
+
+uint8 PvPMgr::ApplyPvPRatingMultipliers(float rating, uint8 ratingChange, bool gain)
+{
+    float ratingMod = 0;
+
+    if (gain)
+    {
+        if (rating >= 10000)
+            return 0;
+
+        ratingMod = ((100 - (rating / 100)) / 100);
+        return ratingChange *= ratingMod;
+    }
+    else
+    {
+        ratingMod = rating / 10000;
+        return ratingChange *= ratingMod;
     }
 }
 

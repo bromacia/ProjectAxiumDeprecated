@@ -60,8 +60,8 @@ class PvPMgr
         void HandleTwinSpireCapture(TeamId team);
 
     private:
-        void CalculatePvPRatingForKill(uint16 attackerPvPRating, uint16 victimPvPRating, uint8 ratingChange, bool gain);
-        void ApplyRatingMultipliers(uint16 pvpRating, uint8 &ratingChange, bool gain);
+        uint8 CalculatePvPRating(uint16 attackerRating, uint16 victimRating, bool gain);
+        uint8 ApplyPvPRatingMultipliers(float rating, uint8 ratingChange, bool gain);
         TeamId GetWinningTeamIdByBGWinner(uint8 bgWinner) const
         {
             switch (bgWinner)
