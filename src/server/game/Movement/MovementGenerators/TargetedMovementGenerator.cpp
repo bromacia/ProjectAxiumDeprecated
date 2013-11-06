@@ -217,6 +217,7 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
         {
             i_targetReached = true;
             static_cast<D*>(this)->_reachTarget(owner);
+            owner.SetFacingTo(i_target->GetOrientation());
         }
 
         if (i_path)
