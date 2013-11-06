@@ -35,7 +35,8 @@ void PvPMgr::HandleDealDamage(Unit* attacker, Player* victim, uint32 damage)
     if (pAttacker->IsHealingSpec())
         return;
 
-    if ((!pAttacker->InBattleground() || !victim->InBattleground() || pAttacker->InArena() || victim->InArena()) || (!pAttacker->IsInWorldPvPZone() || !victim->IsInWorldPvPZone()))
+    // If the attack and victim aren't in the World PvP Zone nor in a Battleground
+    if (!(pAttacker->IsInWorldPvPZone() && victim->IsInWorldPvPZone()) && !((pAttacker->InBattleground() && !pAttacker->InArena()) && (victim->InBattleground() && !victim->InArena())))
         return;
 
     uint32 LastDamageDealtCountdownTime = getMSTime() + DAMAGE_RESET_TIME_MS;
