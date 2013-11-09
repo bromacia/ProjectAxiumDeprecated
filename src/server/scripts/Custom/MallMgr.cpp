@@ -1516,11 +1516,7 @@ bool MallMgr::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate
                 pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_MACE2 &&
                 pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_SWORD2 &&
                 pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_POLEARM &&
-                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_STAFF &&
-                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_AXE2 &&
-                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_AXE2 &&
-                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_AXE2 &&
-                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_AXE2)
+                pItemTemplate->SubClass != ITEM_SUBCLASS_WEAPON_STAFF)
                 return false;
 
             if (pItemTemplate->InventoryType != INVTYPE_2HWEAPON)
