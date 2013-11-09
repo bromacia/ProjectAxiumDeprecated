@@ -1,6 +1,7 @@
 #include "Chat.h"
 #include "MapManager.h"
 #include "PvPMgr.h"
+#include "MoveSpline.h"
 
 class utility_commandscript : public CommandScript
 {
@@ -25,6 +26,7 @@ public:
             { "speed",            SEC_GAMEMASTER,     false, &HandleSpeedCommand,                     "", NULL },
             { "movementflags",    SEC_GAMEMASTER,     false, &HandleMovementFlagsCommand,             "", NULL },
             { "unitstate",        SEC_GAMEMASTER,     false, &HandleUnitStateCommand,                 "", NULL },
+            { "splineinfo",       SEC_GAMEMASTER,     false, &HandleSplineInfoCommand,                "", NULL },
             { "itemid",           SEC_GAMEMASTER,     false, &HandleItemIdCommand,                    "", NULL },
             { "spellid",          SEC_GAMEMASTER,     false, &HandleSpellIdCommand,                   "", NULL },
             { "coeff",            SEC_GAMEMASTER,     false, &HandleCoeffCommand,                     "", NULL },
@@ -633,6 +635,21 @@ public:
 
         if (target->HasUnitState(UNIT_STATE_NOT_MOVE))
             handler->PSendSysMessage("UNIT_STATE_NOT_MOVE");
+
+        return true;
+    }
+
+    static bool HandleSplineInfoCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Unit* target = handler->getSelectedUnit();
+        if (!target)
+            target = handler->GetSession()->GetPlayer();
+
+        handler->PSendSysMessage("Target: %s spline dump:", target->GetName());
+        if (target->movespline && target->movespline->Initialized())
+            handler->PSendSysMessage(target->movespline->ToString().c_str());
+        else
+            handler->PSendSysMessage("Spline not initialized for this unit");
 
         return true;
     }
