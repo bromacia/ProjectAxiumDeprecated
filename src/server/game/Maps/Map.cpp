@@ -1654,10 +1654,16 @@ float Map::GetHeight(float x, float y, float z, bool checkVMap /*= true*/, float
 
             // we are already under the surface or vmap height above map heigt
             // or if the distance of the vmap height is less the land height distance
-            if (z < mapHeight || vmapHeight > mapHeight || fabs(mapHeight-z) > fabs(vmapHeight-z))
+            if (z + 2.0f < mapHeight)
                 return vmapHeight;
-            else
-                return mapHeight;                           // better use .map surface height
+            
+            if (vmapHeight > mapHeight)
+                return vmapHeight;
+
+            if (fabs(mapHeight-z) > fabs(vmapHeight-z))
+                return vmapHeight;
+
+            return mapHeight;                           // better use .map surface height
         }
         else
             return vmapHeight;                              // we have only vmapHeight (if have)
