@@ -79,7 +79,6 @@ BEGIN
             VALUE "FileDescription",    "AxiumCore World Server"
             VALUE "FileVersion",        VER_FILEVERSION_STR
             VALUE "InternalName",       "worldserver"
-            VALUE "LegalCopyright",     VER_LEGALCOPYRIGHT_STR
             VALUE "OriginalFilename",   "worldserver.exe"
             VALUE "ProductName",        "AxiumCore World Server"
             VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
