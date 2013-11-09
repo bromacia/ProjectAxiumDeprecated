@@ -1252,11 +1252,8 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         if (!m_spellInfo->Speed)
         {
             unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
-            unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
             unit->RemoveAura(200000); // Object Visibility Update Timer (Stealth, At Apply)
             unit->RemoveAura(200001); // Object Visibility Update Timer (Stealth, At Remove)
-            unit->RemoveAura(200002); // Object Visibility Update Timer (Invisibility, At Apply)
-            unit->RemoveAura(200003); // Object Visibility Update Timer (Invisibility, At Remove)
         }
         return;
     }
