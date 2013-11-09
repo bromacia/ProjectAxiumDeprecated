@@ -377,7 +377,6 @@ bool Unit::haveOffhandWeapon() const
         return m_canDualWield;
 }
 
-
 bool Unit::SetPosition(float x, float y, float z, float orientation, bool teleport)
 {
     // prevent crash when a bad coord is sent by the client
@@ -415,12 +414,11 @@ void Unit::MonsterMoveWithSpeed(float x, float y, float z, float speed, bool gen
 
 enum MovementIntervals
 {
-    POSITION_UPDATE_DELAY = 10,
+    POSITION_UPDATE_DELAY = 400,
 };
 
 void Unit::UpdateSplineMovement(uint32 t_diff)
 {
-
     if (movespline->Finalized())
         return;
 
