@@ -2705,6 +2705,11 @@ class Player : public Unit, public GridObject<Player>
         void SetArenaSpectator(bool x) { m_arenaSpectator = x; }
         void SetArenaSpectatorState(bool apply);
 
+        void HandleDealDamage(Unit* attacker, uint32 damage);
+        void HandleNormalPvPKill();
+        void HandleOneShotPvPKill(Unit* attacker);
+        void HandleBattlegroundHonorableKill();
+
     protected:
         // Gamemaster whisper whitelist
         WhisperListContainer WhisperList;

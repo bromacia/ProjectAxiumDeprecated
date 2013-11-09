@@ -34,6 +34,7 @@
 #include "SpellAuras.h"
 #include "SpellAuraEffects.h"
 #include "Util.h"
+#include "Chat.h"
 #include "PvPMgr.h"
 
 namespace Trinity
@@ -894,7 +895,7 @@ void Battleground::EndBattleground(uint32 winner)
     if (winmsg_id)
         SendMessageToAll(winmsg_id, CHAT_MSG_BG_SYSTEM_NEUTRAL);
 
-    sPvPMgr->HandleBattlegroundEnd(this);
+    HandleBattlegroundEnd();
 }
 
 uint32 Battleground::GetBonusHonorFromKill(uint32 kills) const
@@ -1385,7 +1386,7 @@ void Battleground::UpdatePlayerScore(Player* Source, uint32 type, uint32 value, 
         case SCORE_HONORABLE_KILLS:                         // Honorable kills
             itr->second->HonorableKills += value;
             if (isBattleground())
-                sPvPMgr->HandleBattlegroundHonorableKill(Source);
+                Source->HandleBattlegroundHonorableKill();
             break;
         case SCORE_BONUS_HONOR:                             // Honor bonus
             // do not add honor in arenas
@@ -2046,4 +2047,49 @@ void Battleground::RemoveReadyMarkers()
             go->Delete();
             ReadyMarkers.erase(itr++);
         }
+}
+
+void Battleground::HandleBattlegroundEnd()
+{
+    if (isArena())
+        return;
+
+    TeamId winningTeam = TEAM_NEUTRAL;
+
+    switch (GetWinner())
+    {
+        case WINNER_ALLIANCE: winningTeam = TEAM_ALLIANCE; break;
+        case WINNER_HORDE:    winningTeam = TEAM_HORDE;    break;
+    }
+
+    if (winningTeam == TEAM_NEUTRAL)
+        return;
+
+    for (Battleground::BattlegroundPlayerMap::iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
+    {
+        if (Player* player = ObjectAccessor::FindPlayer(itr->first))
+        {
+            uint16 pvpRating = player->GetPvPRating();
+
+            if (player->GetTeamId() == winningTeam)
+            {
+                uint8 ratingGain = BG_RATING_GAIN;
+                if (pvpRating > 2000)
+                    ratingGain = sPvPMgr->ApplyPvPRatingMultipliers((float)pvpRating, ratingGain, true);
+                sPvPMgr->SetPvPRatingByGUIDLow(player->GetGUIDLow(), pvpRating + ratingGain);
+
+                if (player->HasPvPNotificationsEnabled())
+                    ChatHandler(player).PSendSysMessage("You have been awarded %u PvP rating for winning the battleground.", ratingGain);
+            }
+            else if (pvpRating > 1000)
+            {
+                uint8 ratingLoss = BG_RATING_LOSS;
+                ratingLoss = sPvPMgr->ApplyPvPRatingMultipliers((float)pvpRating, ratingLoss, false);
+                sPvPMgr->SetPvPRatingByGUIDLow(player->GetGUIDLow(), pvpRating - ratingLoss);
+
+                if (player->HasPvPNotificationsEnabled())
+                    ChatHandler(player).PSendSysMessage("You have been deducted %u PvP rating for losing the battleground.", ratingLoss);
+            }
+        }
+    }
 }

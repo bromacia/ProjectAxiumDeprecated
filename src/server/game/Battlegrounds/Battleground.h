@@ -590,6 +590,8 @@ class Battleground
         void ClearWantsPrematureStart();
         void RemoveReadyMarkers();
 
+        void HandleBattlegroundEnd();
+
     protected:
         // this method is called, when BG cannot spawn its own spirit guide, or something is wrong, It correctly ends Battleground
         void EndNow();

@@ -52,29 +52,10 @@ class PvPMgr
         ~PvPMgr();
 
     public:
-        void HandleDealDamage(Unit* attacker, Player* victim, uint32 damage);
-        void HandleNormalPvPKill(Player* victim);
-        void HandleOneShotPvPKill(Unit* attacker, Player* victim);
-        void HandleBattlegroundHonorableKill(Player* player);
-        void HandleBattlegroundEnd(Battleground* bg);
         void HandleTwinSpireCapture(TeamId team);
-
-    private:
         uint8 CalculatePvPRating(uint16 attackerRating, uint16 victimRating, bool gain);
         uint8 ApplyPvPRatingMultipliers(float rating, uint8 ratingChange, bool gain);
-        TeamId GetWinningTeamIdByBGWinner(uint8 bgWinner) const
-        {
-            switch (bgWinner)
-            {
-                case WINNER_ALLIANCE: return TEAM_ALLIANCE;
-                case WINNER_HORDE:    return TEAM_HORDE;
-                default:              return TEAM_NEUTRAL;
-            }
-        }
 
-        ChatHandler* handler;
-
-    public:
         uint16 Get2v2MMRByGUIDLow(uint32 GUIDLow) const;
         void Set2v2MMRByGUIDLow(uint32 GUIDLow, uint16 mmr);
         uint16 Get3v3MMRByGUIDLow(uint32 GUIDLow) const;

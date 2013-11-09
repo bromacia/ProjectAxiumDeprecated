@@ -813,7 +813,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         if (!command)
             if (damage >= victim->GetMaxHealth())
                 if (Player* pVictim = victim->ToPlayer())
-                    sPvPMgr->HandleOneShotPvPKill(this, pVictim);
+                    pVictim->HandleOneShotPvPKill(this);
 
         Kill(victim, durabilityLoss);
     }
@@ -824,7 +824,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         if (Player* pVictim = victim->ToPlayer())
         {
             if (!command)
-                sPvPMgr->HandleDealDamage(this, pVictim, damage);
+                pVictim->HandleDealDamage(this, damage);
 
             pVictim->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED, damage);
         }
@@ -16482,7 +16482,7 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
     }
 
     if (Player* pVictim = victim->ToPlayer())
-        sPvPMgr->HandleNormalPvPKill(pVictim);
+        pVictim->HandleNormalPvPKill();
 
     // Hook for OnPVPKill Event
     if (Player* killerPlr = ToPlayer())
