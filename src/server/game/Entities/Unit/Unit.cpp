@@ -412,11 +412,6 @@ void Unit::MonsterMoveWithSpeed(float x, float y, float z, float speed, bool gen
     init.Launch();
 }
 
-enum MovementIntervals
-{
-    POSITION_UPDATE_DELAY = 400,
-};
-
 void Unit::UpdateSplineMovement(uint32 t_diff)
 {
     if (movespline->Finalized())
@@ -435,7 +430,7 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
 
 void Unit::UpdateSplinePosition()
 {
-    m_movesplineTimer.Reset(POSITION_UPDATE_DELAY);
+    m_movesplineTimer.Reset(WORLD_UPDATE_TIME);
     Movement::Location loc = movespline->ComputePosition();
 
     if (GetTransGUID())

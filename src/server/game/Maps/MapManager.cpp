@@ -39,7 +39,7 @@ extern GridState* si_GridStates[];                          // debugging code, s
 MapManager::MapManager()
 {
     i_gridCleanUpDelay = sWorld->getIntConfig(CONFIG_INTERVAL_GRIDCLEAN);
-    i_timer.SetInterval(sWorld->getIntConfig(CONFIG_INTERVAL_MAPUPDATE));
+    i_timer.SetInterval(WORLD_UPDATE_TIME);
 }
 
 MapManager::~MapManager()

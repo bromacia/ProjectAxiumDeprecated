@@ -30,8 +30,7 @@
 #include "MapManager.h"
 #include "Timer.h"
 #include "WorldRunnable.h"
-
-#define WORLD_SLEEP_CONST 25
+#include "SharedDefines.h"
 
 #ifdef _WIN32
 #include "ServiceWin32.h"
@@ -63,9 +62,9 @@ void WorldRunnable::run()
         // we want that next d1 + t1 == WORLD_SLEEP_CONST
         // we can't know next t1 and then can use (t0 + d1) == WORLD_SLEEP_CONST requirement
         // d1 = WORLD_SLEEP_CONST - t0 = WORLD_SLEEP_CONST - (D0 - d0) = WORLD_SLEEP_CONST + d0 - D0
-        if (diff <= WORLD_SLEEP_CONST + prevSleepTime)
+        if (diff <= WORLD_UPDATE_TIME + prevSleepTime)
         {
-            prevSleepTime = WORLD_SLEEP_CONST+prevSleepTime-diff;
+            prevSleepTime = WORLD_UPDATE_TIME + prevSleepTime-diff;
             ACE_Based::Thread::Sleep(prevSleepTime);
         }
         else
@@ -83,7 +82,7 @@ void WorldRunnable::run()
     sScriptMgr->OnShutdown();
 
     sWorld->KickAll();                                       // save and kick all players
-    sWorld->UpdateSessions( 1 );                             // real players unload required UpdateSessions call
+    sWorld->UpdateSessions(1);                               // real players unload required UpdateSessions call
 
     // unload battleground templates before different singletons destroyed
     sBattlegroundMgr->DeleteAllBattlegrounds();

@@ -23,6 +23,8 @@
 #include "Define.h"
 #include <cassert>
 
+#define WORLD_UPDATE_TIME 25
+
 enum SpellEffIndex
 {
     EFFECT_0 = 0,
