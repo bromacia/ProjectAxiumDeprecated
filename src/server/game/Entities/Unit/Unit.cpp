@@ -9681,10 +9681,6 @@ bool Unit::Attack(Unit* victim, bool meleeAttack)
 
     if (GetTypeId() == TYPEID_UNIT && !ToCreature()->isPet())
     {
-        // should not let player enter combat by right clicking target - doesn't helps
-        SetInCombatWith(victim);
-        if (victim->GetTypeId() == TYPEID_PLAYER)
-            victim->SetInCombatWith(this);
         AddThreat(victim, 0.0f);
 
         ToCreature()->SendAIReaction(AI_REACTION_HOSTILE);
