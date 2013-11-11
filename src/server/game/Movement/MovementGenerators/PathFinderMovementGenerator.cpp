@@ -192,50 +192,30 @@ void PathFinderMovementGenerator::_buildPolyPath(const Vector3 &startPos, const 
         return;
     }
 
+    // If either current position, or end position is under water, then build a shortcut path
+    ZLiquidStatus status = _sourceUnit->GetBaseMap()->getLiquidStatus(endPos.x, endPos.y, endPos.z, MAP_ALL_LIQUIDS, NULL);
+    if (_sourceUnit->GetBaseMap()->IsUnderWater(_sourceUnit->GetPositionX(), _sourceUnit->GetPositionY(), _sourceUnit->GetPositionZ()) || status == LIQUID_MAP_UNDER_WATER)
+    {
+        _buildShortcut();
+        _type = PathType(PATHFIND_NORMAL | PATHFIND_NOT_USING_PATH);
+        return;
+    }
+
     // we may need a better number here
     bool farFromPoly = (distToStartPoly > 7.0f || distToEndPoly > 7.0f);
     if (farFromPoly)
     {
         sLog->outDebug(LOG_FILTER_MAPS, "++ BuildPolyPath :: farFromPoly distToStartPoly=%.3f distToEndPoly=%.3f\n", distToStartPoly, distToEndPoly);
 
-        bool buildShotrcut = false;
-        if (_sourceUnit->GetTypeId() == TYPEID_UNIT)
+        float closestPoint[VERTEX_SIZE];
+        // we may want to use closestPointOnPolyBoundary instead
+        if (DT_SUCCESS == _navMeshQuery->closestPointOnPoly(endPoly, endPoint, closestPoint))
         {
-            Creature* owner = (Creature*)_sourceUnit;
-
-            Vector3 p = (distToStartPoly > 7.0f) ? startPos : endPos;
-            if (_sourceUnit->GetBaseMap()->IsUnderWater(p.x, p.y, p.z))
-            {
-                sLog->outDebug(LOG_FILTER_MAPS, "++ BuildPolyPath :: underWater case\n");
-                if (owner->canSwim())
-                    buildShotrcut = true;
-            }
-            else
-            {
-                sLog->outDebug(LOG_FILTER_MAPS, "++ BuildPolyPath :: flying case\n");
-                if (owner->canFly())
-                    buildShotrcut = true;
-            }
+            dtVcopy(endPoint, closestPoint);
+            _setActualEndPosition(Vector3(endPoint[2],endPoint[0],endPoint[1]));
         }
 
-        if (buildShotrcut)
-        {
-            _buildShortcut();
-            _type = PathType(PATHFIND_NORMAL | PATHFIND_NOT_USING_PATH);
-            return;
-        }
-        else
-        {
-            float closestPoint[VERTEX_SIZE];
-            // we may want to use closestPointOnPolyBoundary instead
-            if (DT_SUCCESS == _navMeshQuery->closestPointOnPoly(endPoly, endPoint, closestPoint))
-            {
-                dtVcopy(endPoint, closestPoint);
-                _setActualEndPosition(Vector3(endPoint[2],endPoint[0],endPoint[1]));
-            }
-
-            _type = PATHFIND_INCOMPLETE;
-        }
+        _type = PATHFIND_INCOMPLETE;
     }
 
     // *** poly path generating logic ***
