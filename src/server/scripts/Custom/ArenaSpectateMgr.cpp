@@ -229,7 +229,7 @@ void ArenaSpectateMgr::HandleSpectatePlayer(Player* player, const char* cPlayerN
 
     if (!arenasMap[arenaId])
     {
-        handler->PSendSysMessage("The arena match of the player you're trying to spectate no longer exists.");
+        handler->PSendSysMessage("The arena match of the player you're trying to spectate doesn't exist.");
         player->CLOSE_GOSSIP_MENU();
         return;
     }

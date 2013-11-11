@@ -29,6 +29,7 @@ set(scripts_STAT_SRCS
   Commands/cs_pvp.cpp
   Commands/cs_quest.cpp
   Commands/cs_reload.cpp
+  Commands/cs_spectate.cpp
   Commands/cs_tele.cpp
   Commands/cs_titles.cpp
   Commands/cs_utility.cpp
