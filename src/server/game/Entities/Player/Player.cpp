@@ -25875,17 +25875,11 @@ void Player::HandleDealDamage(Unit* attacker, uint32 damage)
     if (pAttacker->IsHealingSpec())
         return;
 
+    if (!IsInWorldPvPZone() && !InBattleground() || InArena())
+        return;
 
-    if (!(IsInWorldPvPZone() && pAttacker->IsInWorldPvPZone()))
-    {
-        if (Battleground* bg = GetBattleground())
-            if (bg->isArena())
-                return;
-
-        if (Battleground* bg = pAttacker->GetBattleground())
-            if (bg->isArena())
-                return;
-    }
+    if (!pAttacker->IsInWorldPvPZone() && !pAttacker->InBattleground() || pAttacker->InArena())
+        return;
 
     uint32 LastDamageDealtCountdownTime = getMSTime() + DAMAGE_RESET_TIME_MS;
 
@@ -25907,9 +25901,12 @@ void Player::HandleDealDamage(Unit* attacker, uint32 damage)
             }
         }
     }
+
+    if (damage >= GetHealth())
+        HandlePvPKill();
 }
 
-void Player::HandleNormalPvPKill()
+void Player::HandlePvPKill()
 {
     uint32 currentMSTime = getMSTime();
     uint32 attackerGUIDLow = 0;
@@ -25993,64 +25990,6 @@ void Player::HandleNormalPvPKill()
             sObjectMgr->GetPlayerNameByGUIDLow(attackerGUIDLow, attackerName);
             ChatHandler(m_session).PSendSysMessage("You have been deducted %u PvP rating for being killed by %s.", ratingLoss, attackerName);
         }
-    }
-}
-
-void Player::HandleOneShotPvPKill(Unit* attacker)
-{
-    if (!attacker)
-        return;
-
-    if (attacker->GetGUIDLow() == GetGUIDLow())
-    {
-        HandleNormalPvPKill();
-        return;
-    }
-
-    Player* pAttacker = NULL;
-
-    if (Player* player = attacker->ToPlayer())
-        pAttacker = player;
-    else if (Unit* owner = attacker->GetCharmerOrOwner())
-        if (Player* pOwner = owner->ToPlayer())
-            pAttacker = pOwner;
-
-    if (!pAttacker)
-        return;
-
-    if (pAttacker->IsHealingSpec())
-    {
-        HandleNormalPvPKill();
-        return;
-    }
-
-    PvPTargetDamageInfo.clear();
-
-    uint8 ratingGain = 0;
-    uint8 ratingLoss = 0;
-    uint32 attackerGUIDLow = pAttacker->GetGUIDLow();
-    uint32 victimGUIDLow = GetGUIDLow();
-    uint16 attackerPvPRating = sPvPMgr->GetPvPRatingByGUIDLow(attackerGUIDLow);
-    uint16 victimPvPRating = sPvPMgr->GetPvPRatingByGUIDLow(victimGUIDLow);
-
-    ratingGain = sPvPMgr->CalculatePvPRating(attackerPvPRating, victimPvPRating, true);
-
-    if (ratingGain)
-    {
-        sPvPMgr->SetPvPRatingByGUIDLow(attackerGUIDLow, attackerPvPRating + ratingGain);
-
-        if (pAttacker->HasPvPNotificationsEnabled())
-            ChatHandler(pAttacker->GetSession()).PSendSysMessage("You have been awarded %u PvP rating for killing %s.", ratingGain, GetName());
-    }
-
-    ratingLoss = sPvPMgr->CalculatePvPRating(attackerPvPRating, victimPvPRating, false);
-
-    if (ratingLoss)
-    {
-        sPvPMgr->SetPvPRatingByGUIDLow(victimGUIDLow, victimPvPRating - ratingLoss);
-
-        if (HasPvPNotificationsEnabled())
-            ChatHandler(m_session).PSendSysMessage("You have been deducted %u PvP rating for being killed by %s.", ratingLoss, attacker->GetName());
     }
 }
 

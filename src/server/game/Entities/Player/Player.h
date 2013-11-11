@@ -2706,8 +2706,7 @@ class Player : public Unit, public GridObject<Player>
         void SetArenaSpectatorState(bool apply);
 
         void HandleDealDamage(Unit* attacker, uint32 damage);
-        void HandleNormalPvPKill();
-        void HandleOneShotPvPKill(Unit* attacker);
+        void HandlePvPKill();
         void HandleBattlegroundHonorableKill();
 
     protected:

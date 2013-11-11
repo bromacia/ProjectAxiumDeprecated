@@ -792,6 +792,10 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
             victim->ToCreature()->LowerPlayerDamageReq(health < damage ?  health : damage);
     }
 
+    if (!command)
+        if (Player* pVictim = victim->ToPlayer())
+            pVictim->HandleDealDamage(this, damage);
+
     if (health <= damage)
     {
         sLog->outStaticDebug("DealDamage: victim just died");
@@ -805,24 +809,13 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
                 killer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_SPECIAL_PVP_KILL, 1, 0, victim);
         }
 
-        if (!command)
-            if (damage >= victim->GetMaxHealth())
-                if (Player* pVictim = victim->ToPlayer())
-                    pVictim->HandleOneShotPvPKill(this);
-
         Kill(victim, durabilityLoss);
     }
     else
     {
         sLog->outStaticDebug("DealDamageAlive");
 
-        if (Player* pVictim = victim->ToPlayer())
-        {
-            if (!command)
-                pVictim->HandleDealDamage(this, damage);
-
-            pVictim->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED, damage);
-        }
+        victim->ToPlayer()->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED, damage);
 
         victim->ModifyHealth(-(int32)damage);
 
@@ -16472,9 +16465,6 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
         else if (GetTypeId() == TYPEID_PLAYER && victim != this)
             victim->ToPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER, 1, ToPlayer()->GetTeam());
     }
-
-    if (Player* pVictim = victim->ToPlayer())
-        pVictim->HandleNormalPvPKill();
 
     // Hook for OnPVPKill Event
     if (Player* killerPlr = ToPlayer())
