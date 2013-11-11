@@ -2505,6 +2505,14 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
 
             Position pos;
             target->GetNearPosition(pos, dist, angle);
+
+            if (m_targets.GetUnitTarget())
+            {
+                float ground = m_targets.GetUnitTarget()->GetMap()->GetWaterOrGroundLevel(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+                if (fabs(ground - m_caster->GetPositionZ()) > 2.0f)
+                    m_targets.GetUnitTarget()->GetPosition(&pos);
+            }
+
             m_targets.SetDst(*target);
             m_targets.ModDst(pos);
             break;
@@ -2547,6 +2555,14 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
             // must has dst, no need to set flag
             Position pos = *m_targets.GetDst();
             m_caster->MovePosition(pos, dist, angle);
+
+            if (m_targets.GetUnitTarget())
+            {
+                float ground = m_targets.GetUnitTarget()->GetMap()->GetWaterOrGroundLevel(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+                if (fabs(ground - m_caster->GetPositionZ()) > 2.0f)
+                    m_targets.GetUnitTarget()->GetPosition(&pos);
+            }
+
             m_targets.ModDst(pos);
             break;
         }
