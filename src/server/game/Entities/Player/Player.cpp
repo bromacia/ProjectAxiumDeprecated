@@ -1011,6 +1011,14 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
 
     SetMap(sMapMgr->CreateMap(info->mapId, this));
 
+    // World PvP Zone Entrance
+    WorldLocation loc;
+    loc.m_mapId = 530;
+    loc.m_positionX = -389.221f;
+    loc.m_positionY = 7257.6f;
+    loc.m_positionZ = 54.774f;
+    SetHomebind(loc, 3668);
+
     uint8 powertype = cEntry->powerType;
 
     SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, DEFAULT_WORLD_OBJECT_SIZE);
@@ -18594,11 +18602,11 @@ bool Player::_LoadHomeBind(PreparedQueryResult result)
 
     if (!ok)
     {
-        m_homebindMapId = info->mapId;
-        m_homebindAreaId = info->areaId;
-        m_homebindX = info->positionX;
-        m_homebindY = info->positionY;
-        m_homebindZ = info->positionZ;
+        m_homebindMapId = 530;
+        m_homebindAreaId = 3668;
+        m_homebindX = -389.221f;
+        m_homebindY = 7257.6f;
+        m_homebindZ = 54.774f;
 
         PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_PLAYER_HOMEBIND);
         stmt->setUInt32(0, GetGUIDLow());
