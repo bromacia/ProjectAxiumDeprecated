@@ -1215,6 +1215,9 @@ namespace Trinity
             AnyPlayerInObjectRangeCheck(WorldObject const* obj, float range, bool reqAlive = true) : _obj(obj), _range(range), _reqAlive(reqAlive) {}
             bool operator()(Player* u)
             {
+                if (u->IsArenaSpectator())
+                    return false;
+
                 if (_reqAlive && !u->isAlive())
                     return false;
 

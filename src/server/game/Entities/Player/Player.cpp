@@ -925,9 +925,11 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_delayDuelFinish = false;
 
     m_arenaSpectator = false;
+
+    m_gossipPage = 1;
 }
 
-Player::~Player ()
+Player::~Player()
 {
     // Note: buy back item already deleted from DB when player was saved
     for (uint8 i = 0; i < PLAYER_SLOTS_COUNT; ++i)
@@ -25831,11 +25833,8 @@ void Player::SetArenaSpectatorState(bool apply)
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-
-        if (!HasAura(SPELL_SERVERSIDE_SILENCE))
-            AddAura(SPELL_SERVERSIDE_SILENCE, this);
-
-        SetSpeed(MOVE_RUN, 3.0, true);
+        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
         Dismount();
         RemoveAllControlled();
 
@@ -25848,7 +25847,8 @@ void Player::SetArenaSpectatorState(bool apply)
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-        RemoveAura(SPELL_SERVERSIDE_SILENCE);
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
         UpdateSpeed(MOVE_RUN, true);
     }
 }

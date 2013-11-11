@@ -3,13 +3,11 @@
 ArenaSpectateMgr::ArenaSpectateMgr() : CreatureScript("ArenaSpectateNPC")
 {
     handler = NULL;
-    page = 0;
 }
 
 bool ArenaSpectateMgr::OnGossipHello(Player* player, Creature* creature)
 {
     handler = new ChatHandler(player);
-    page = 1;
 
     CreateArenasMap();
 
@@ -108,25 +106,37 @@ void ArenaSpectateMgr::HandleShowMatches(Player* player, Creature* creature, uin
 
         switch (action)
         {
-            case ARENA_SPECTATE_MENU_PAGE_NEXT:     ++page;
-            case ARENA_SPECTATE_MENU_PAGE_PREVIOUS: --page;
+            case ARENA_SPECTATE_MENU_PAGE_NEXT:     player->IncrementGossipPage();
+            case ARENA_SPECTATE_MENU_PAGE_PREVIOUS: player->DecrementGossipPage();
             default:
             {
-                if (page < 1)
+                uint8 gossipPage = player->GetGossipPage();
+                if (gossipPage < 1)
                 {
+                    sLog->outError("ArenaSpectateMgr:: Gossip Page below 1 for player: [%u]%s", player->GetGUIDLow(), player->GetName());
                     handler->PSendSysMessage("Something went wrong, try again.");
                     player->CLOSE_GOSSIP_MENU();
                     return;
                 }
-
-                uint16 increment = page * roomLeft;
-                for (uint16 i = 0; i < increment; ++i)
+                else if (gossipPage > 1)
                 {
-                    ++itr;
-                    if (itr == arenasMap.end())
-                        break;
+                    uint16 increment = (--gossipPage) * roomLeft;
+                    if (increment < 50)
+                    {
+                        sLog->outError("ArenaSpectateMgr:: Gossip Page below 1 for player: [%u]%s", player->GetGUIDLow(), player->GetName());
+                        handler->PSendSysMessage("Something went wrong, try again.");
+                        player->CLOSE_GOSSIP_MENU();
+                        return;
+                    }
+
+                    for (uint16 i = 0; i < increment; ++i)
+                    {
+                        ++itr;
+                        if (itr == arenasMap.end())
+                            break;
+                    }
+                    break;
                 }
-                break;
             }
         }
 

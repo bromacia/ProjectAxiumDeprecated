@@ -151,7 +151,7 @@ void BattlegroundDS::HandleAreaTrigger(Player* Source, uint32 Trigger)
 
 bool BattlegroundDS::HandlePlayerUnderMap(Player* player)
 {
-    player->TeleportTo(GetMapId(), 1299.046f, 784.825f, 9.338f, 2.422f, false);
+    player->TeleportTo(GetMapId(), 1291.724f, 791.0f, 7.12f, 1.53f, false);
     return true;
 }
 
