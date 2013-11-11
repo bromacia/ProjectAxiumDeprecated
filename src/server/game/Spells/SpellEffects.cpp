@@ -6303,7 +6303,7 @@ void Spell::EffectCharge(SpellEffIndex /*effIndex*/)
             Position pos;
             unitTarget->GetContactPoint(m_caster, pos.m_positionX, pos.m_positionY, pos.m_positionZ);
             unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), unitTarget->GetRelativeAngle(m_caster));
-            m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ, false);
+            m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
         }
         else
             m_caster->GetMotionMaster()->MoveCharge(0, 0, 0, SPEED_CHARGE, EVENT_CHARGE, false, m_preGeneratedPath);
