@@ -41,7 +41,7 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
                 case MALL_MENU_GEAR:                HandleGear(player, creature, MALL_MENU_GEAR);                  break;
                 case MALL_MENU_PROFESSIONS:         HandleProfessions(player, creature);                           break;
                 case MALL_MENU_ENCHANTS:            HandleEnchants(player, creature, MALL_MENU_ENCHANTS);          break;
-                case MALL_MENU_GEMS:                HandleGems(player, creature, MALL_MENU_GEMS);                  break;
+                case MALL_MENU_GEMS:                ShowInventory(player, creature, INVENTORY_LIST_GEMS);          break;
                 case MALL_MENU_MOUNTS:              ShowInventory(player, creature, INVENTORY_LIST_MOUNTS);        break;
                 case MALL_MENU_GLYPHS:              ShowInventory(player, creature, INVENTORY_LIST_GLYPHS);        break;
                 case MALL_MENU_RESET_TALENTS:       HandleResetTalents(player, creature);                          break;
@@ -71,11 +71,6 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
         case MALL_MENU_ENCHANTS:
         {
             HandleEnchants(player, creature, action);
-            break;
-        }
-        case MALL_MENU_GEMS:
-        {
-            HandleGems(player, creature, action);
             break;
         }
         case MALL_GEAR_RELENTLESS_GLADIATOR:
@@ -650,39 +645,6 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
     return true;
 }
 
-bool MallMgr::HandleGems(Player* player, Creature* creature, uint32 action)
-{
-    switch (action)
-    {
-        case MALL_MENU_GEMS:
-        {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Meta Gems", MALL_MENU_GEMS, GEM_OPTION_META);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Colored Gems", MALL_MENU_GEMS, GEM_OPTION_COLORED);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Dragon's Eye Gems", MALL_MENU_GEMS, GEM_OPTION_DRAGONS_EYE);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
-            player->SEND_GOSSIP_MENU(1, creature->GetGUID());
-            break;
-        }
-        case GEM_OPTION_META:
-        {
-            ShowInventory(player, creature, INVENTORY_LIST_META_GEMS);
-            break;
-        }
-        case GEM_OPTION_COLORED:
-        {
-            ShowInventory(player, creature, INVENTORY_LIST_COLORED_GEMS);
-            break;
-        }
-        case GEM_OPTION_DRAGONS_EYE:
-        {
-            ShowInventory(player, creature, INVENTORY_LIST_DRAGONS_EYE_GEMS);
-            break;
-        }
-    }
-
-    return true;
-}
-
 bool MallMgr::HandleResetTalents(Player* player, Creature* creature)
 {
     player->SendTalentWipeConfirm(creature->GetGUID());
@@ -961,25 +923,17 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_META_GEMS:
-        {
-            if (vItemTemplate->Class != ITEM_CLASS_GEM)
-                return false;
-
-            if (vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_META)
-                return false;
-
-            break;
-        }
-        case INVENTORY_LIST_COLORED_GEMS:
+        case INVENTORY_LIST_GEMS:
         {
             if (vItemTemplate->Class != ITEM_CLASS_GEM)
                 return false;
 
             if (IsPhraseInString(vItemTemplate->Name1, "Dragon's Eye"))
-                return false;
+                if (player->GetSkillValue(SKILL_JEWELCRAFTING) < 450)
+                    return false;
 
-            if (vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_RED &&
+            if (vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_META &&
+                vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_RED &&
                 vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_YELLOW &&
                 vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_BLUE &&
                 vItemTemplate->SubClass != ITEM_SUBCLASS_GEM_ORANGE &&
@@ -990,20 +944,6 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_DRAGONS_EYE_GEMS:
-        {
-            if (player->GetSkillValue(SKILL_JEWELCRAFTING) < 450)
-                return false;
-
-            if (vItemTemplate->Class != ITEM_CLASS_GEM)
-                return false;
-
-            if (!IsPhraseInString(vItemTemplate->Name1, "Dragon's Eye"))
-                return false;
-
-            break;
-        }
-
         case INVENTORY_LIST_MOUNTS:
         {
             if (vItemTemplate->Class != ITEM_CLASS_MISC)

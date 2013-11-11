@@ -41,18 +41,12 @@ enum MallOptions
     ENCHANT_OPTION_MAIN_HAND,
     ENCHANT_OPTION_OFF_HAND,
     ENCHANT_OPTION_RANGED,
-
-    GEM_OPTION_META,
-    GEM_OPTION_COLORED,
-    GEM_OPTION_DRAGONS_EYE,
 };
 
 enum InventoryListOption
 {
     INVENTORY_LIST_GENERAL_GOODS = 1,
-    INVENTORY_LIST_META_GEMS,
-    INVENTORY_LIST_COLORED_GEMS,
-    INVENTORY_LIST_DRAGONS_EYE_GEMS,
+    INVENTORY_LIST_GEMS,
     INVENTORY_LIST_MOUNTS,
     INVENTORY_LIST_GLYPHS,
     INVENTORY_LIST_RELENTLESS_GLADIATOR_MAINSETS_AND_OFFSETS,
@@ -204,7 +198,6 @@ class MallMgr : public CreatureScript
         bool HandleGear(Player* player, Creature* creature, uint32 action);
         bool HandleProfessions(Player* player, Creature* creature);
         bool HandleEnchants(Player* player, Creature* creature, uint32 action);
-        bool HandleGems(Player* player, Creature* creature, uint32 action);
         bool HandleResetTalents(Player* player, Creature* creature);
         bool HandleLearnDualSpecialization(Player* player, Creature* creature);
         bool HandleSetupShadowDanceBar(Player* player, Creature* creature);
