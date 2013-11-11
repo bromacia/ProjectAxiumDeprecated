@@ -1961,7 +1961,6 @@ void Spell::EffectTeleportUnits(SpellEffIndex /*effIndex*/)
     if (!orientation && m_targets.GetUnitTarget())
         orientation = m_targets.GetUnitTarget()->GetOrientation();
     sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "Spell::EffectTeleportUnits - teleport unit to %u %f %f %f %f\n", mapid, x, y, z, orientation);
-    unitTarget->UpdateGroundOrWaterPositionZ(x, y, z);
 
     if (mapid == unitTarget->GetMapId())
         unitTarget->NearTeleportTo(x, y, z, orientation, unitTarget == m_caster);

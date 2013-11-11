@@ -2661,8 +2661,7 @@ void WorldObject::MovePosition(Position &pos, float dist, float angle)
         return;
     }
 
-    ground = GetMap()->GetHeight(GetPhaseMask(), destx, desty, MAX_HEIGHT, true);
-    floor = GetMap()->GetHeight(GetPhaseMask(), destx, desty, pos.m_positionZ, true);
+    floor = GetMap()->GetWaterOrGroundLevel(destx, desty, pos.m_positionZ, &ground, true);
     destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
 
     float step = dist/10.0f;
@@ -2674,8 +2673,7 @@ void WorldObject::MovePosition(Position &pos, float dist, float angle)
         {
             destx -= step * std::cos(angle);
             desty -= step * std::sin(angle);
-            ground = GetMap()->GetHeight(GetPhaseMask(), destx, desty, MAX_HEIGHT, true);
-            floor = GetMap()->GetHeight(GetPhaseMask(), destx, desty, pos.m_positionZ, true);
+            floor = GetMap()->GetWaterOrGroundLevel(destx, desty, pos.m_positionZ, &ground, true);
             destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
         }
         // we have correct destz now
@@ -2688,7 +2686,6 @@ void WorldObject::MovePosition(Position &pos, float dist, float angle)
 
     Trinity::NormalizeMapCoord(pos.m_positionX);
     Trinity::NormalizeMapCoord(pos.m_positionY);
-    UpdateGroundOrWaterPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
     pos.SetOrientation(GetOrientation());
 }
 
@@ -2700,8 +2697,7 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
     pos.m_positionZ += 2.0f;
     destx = pos.m_positionX + dist * cos(angle);
     desty = pos.m_positionY + dist * sin(angle);
-    ground = GetMap()->GetHeight(GetPhaseMask(), destx, desty, MAX_HEIGHT, true);
-    floor = GetMap()->GetHeight(GetPhaseMask(), destx, desty, pos.m_positionZ, true);
+    floor = GetMap()->GetWaterOrGroundLevel(destx, desty, pos.m_positionZ, &ground, true);
     destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
 
     bool col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), pos.m_positionX, pos.m_positionY, pos.m_positionZ+0.5f, destx, desty, destz+0.5f, destx, desty, destz, -0.5f);
@@ -2735,8 +2731,7 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
         {
             destx -= step * cos(angle);
             desty -= step * sin(angle);
-            ground = GetMap()->GetHeight(GetPhaseMask(), destx, desty, MAX_HEIGHT, true);
-            floor = GetMap()->GetHeight(GetPhaseMask(), destx, desty, pos.m_positionZ, true);
+            floor = GetMap()->GetWaterOrGroundLevel(destx, desty, pos.m_positionZ, &ground, true);
             destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
         }
         // we have correct destz now
