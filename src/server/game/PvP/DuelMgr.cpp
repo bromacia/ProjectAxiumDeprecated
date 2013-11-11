@@ -26,7 +26,6 @@ void DuelMgr::HandleDuelStart(Player* initiator, Player* opponent)
         players[i]->SetIsDueling(true);
         players[i]->ClearDiminishings();
         players[i]->ClearComboPoints();
-        players[i]->ClearInCombat();
         players[i]->getHostileRefManager().deleteReferences();
         players[i]->RemoveAllTempSummons();
 
@@ -142,6 +141,8 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
                 player->playerState.Auras.erase((itr++));
             }
         }
+
+        player->ClearInCombat();
 
         player->RemoveAllPlayerSpellCooldowns();
 
