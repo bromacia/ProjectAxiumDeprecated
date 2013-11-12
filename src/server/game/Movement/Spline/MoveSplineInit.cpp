@@ -135,7 +135,7 @@ namespace Movement
 
         Location loc = move_spline.ComputePosition();
         args.flags = MoveSplineFlag::Done;
-        unit.m_movementInfo.RemoveMovementFlag(MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_SPLINE_ENABLED);
+        unit.m_movementInfo.RemoveMovementFlag(MOVEMENTFLAG_FORWARD);
         move_spline.Initialize(args);
 
         WorldPacket data(SMSG_MONSTER_MOVE, 64);

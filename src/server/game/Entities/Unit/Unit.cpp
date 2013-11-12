@@ -15515,10 +15515,9 @@ void Unit::StopMoving()
     ClearUnitState(UNIT_STATE_MOVING);
 
     // not need send any packets if not in world
-    if (!IsInWorld() || movespline->Finalized())
+    if (!IsInWorld())
         return;
 
-    UpdateSplinePosition();
     Movement::MoveSplineInit init(*this);
     init.Stop();
 }
