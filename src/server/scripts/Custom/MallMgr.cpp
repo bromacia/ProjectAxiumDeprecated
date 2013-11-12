@@ -88,10 +88,14 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
         {
             switch (action)
             {
-                case GEAR_OPTION_MAINSETS_AND_OFFSETS: ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS_AND_OFFSETS); break;
-                case GEAR_OPTION_ACCESSORIES:          ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_ACCESSORIES);          break;
-                case GEAR_OPTION_WEAPONS:              ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_WEAPONS);              break;
-                case GEAR_OPTION_TRINKETS:             ShowInventory(player, creature, INVENTORY_LIST_245_TRINKETS);                               break;
+                case GEAR_OPTION_MAINSETS_AND_OFFSETS: SelectArmorType(player, creature, sender);                                                          break;
+                case GEAR_OPTION_CLOTH:                ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS_AND_OFFSETS_CLOTH);   break;
+                case GEAR_OPTION_LEATHER:              ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS_AND_OFFSETS_LEATHER); break;
+                case GEAR_OPTION_MAIL:                 ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS_AND_OFFSETS_MAIL);    break;
+                case GEAR_OPTION_PLATE:                ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS_AND_OFFSETS_PLATE);   break;
+                case GEAR_OPTION_ACCESSORIES:          ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_ACCESSORIES);                  break;
+                case GEAR_OPTION_WEAPONS:              ShowInventory(player, creature, INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_WEAPONS);                      break;
+                case GEAR_OPTION_TRINKETS:             ShowInventory(player, creature, INVENTORY_LIST_245_TRINKETS);                                       break;
             }
             break;
         }
@@ -110,10 +114,14 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
         {
             switch (action)
             {
-                case GEAR_OPTION_MAINSETS_AND_OFFSETS: ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS_AND_OFFSETS); break;
-                case GEAR_OPTION_ACCESSORIES:          ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_ACCESSORIES);          break;
-                case GEAR_OPTION_WEAPONS:              ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_WEAPONS);              break;
-                case GEAR_OPTION_TRINKETS:             ShowInventory(player, creature, INVENTORY_LIST_264_TRINKETS);                          break;
+                case GEAR_OPTION_MAINSETS_AND_OFFSETS: SelectArmorType(player, creature, sender);                                                     break;
+                case GEAR_OPTION_CLOTH:                ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS_AND_OFFSETS_CLOTH);   break;
+                case GEAR_OPTION_LEATHER:              ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS_AND_OFFSETS_LEATHER); break;
+                case GEAR_OPTION_MAIL:                 ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS_AND_OFFSETS_MAIL);    break;
+                case GEAR_OPTION_PLATE:                ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS_AND_OFFSETS_PLATE);   break;
+                case GEAR_OPTION_ACCESSORIES:          ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_ACCESSORIES);                  break;
+                case GEAR_OPTION_WEAPONS:              ShowInventory(player, creature, INVENTORY_LIST_ICECROWN_CITADEL_WEAPONS);                      break;
+                case GEAR_OPTION_TRINKETS:             ShowInventory(player, creature, INVENTORY_LIST_264_TRINKETS);                                  break;
             }
             break;
         }
@@ -202,6 +210,25 @@ bool MallMgr::HandleGear(Player* player, Creature* creature, uint32 action)
         }
     }
 
+    return true;
+}
+
+bool MallMgr::SelectArmorType(Player* player, Creature* creature, uint32 sender)
+{
+    if (player->HasSpell(9078))
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Cloth", sender, GEAR_OPTION_CLOTH);
+
+    if (player->HasSpell(9077))
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Leather", sender, GEAR_OPTION_LEATHER);
+
+    if (player->HasSpell(8737))
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mail", sender, GEAR_OPTION_MAIL);
+
+    if (player->HasSpell(750))
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Plate", sender, GEAR_OPTION_PLATE);
+
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", MALL_MENU_GEAR, sender);
+    player->SEND_GOSSIP_MENU(1, creature->GetGUID());
     return true;
 }
 
@@ -1015,7 +1042,7 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS_AND_OFFSETS:
+        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS_AND_OFFSETS_CLOTH:
         {
             if (IsPhraseInString(vItemTemplate->Name1, "Relentless") || vItemTemplate->ItemLevel != 245)
                 return false;
@@ -1023,7 +1050,76 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
             if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
                 return false;
 
-            if (vItemTemplate->SubClass != GetUsableArmorProficiencyByClass(player->getClass()))
+            if (vItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_CLOTH)
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_HEAD &&
+                vItemTemplate->InventoryType != INVTYPE_SHOULDERS &&
+                vItemTemplate->InventoryType != INVTYPE_CHEST &&
+                vItemTemplate->InventoryType != INVTYPE_HANDS &&
+                vItemTemplate->InventoryType != INVTYPE_LEGS &&
+                vItemTemplate->InventoryType != INVTYPE_WRISTS &&
+                vItemTemplate->InventoryType != INVTYPE_WAIST &&
+                vItemTemplate->InventoryType != INVTYPE_FEET)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS_AND_OFFSETS_LEATHER:
+        {
+            if (IsPhraseInString(vItemTemplate->Name1, "Relentless") || vItemTemplate->ItemLevel != 245)
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER)
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_HEAD &&
+                vItemTemplate->InventoryType != INVTYPE_SHOULDERS &&
+                vItemTemplate->InventoryType != INVTYPE_CHEST &&
+                vItemTemplate->InventoryType != INVTYPE_HANDS &&
+                vItemTemplate->InventoryType != INVTYPE_LEGS &&
+                vItemTemplate->InventoryType != INVTYPE_WRISTS &&
+                vItemTemplate->InventoryType != INVTYPE_WAIST &&
+                vItemTemplate->InventoryType != INVTYPE_FEET)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS_AND_OFFSETS_MAIL:
+        {
+            if (IsPhraseInString(vItemTemplate->Name1, "Relentless") || vItemTemplate->ItemLevel != 245)
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_MAIL)
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_HEAD &&
+                vItemTemplate->InventoryType != INVTYPE_SHOULDERS &&
+                vItemTemplate->InventoryType != INVTYPE_CHEST &&
+                vItemTemplate->InventoryType != INVTYPE_HANDS &&
+                vItemTemplate->InventoryType != INVTYPE_LEGS &&
+                vItemTemplate->InventoryType != INVTYPE_WRISTS &&
+                vItemTemplate->InventoryType != INVTYPE_WAIST &&
+                vItemTemplate->InventoryType != INVTYPE_FEET)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_TRIAL_OF_THE_CRUSADER_MAINSETS_AND_OFFSETS_PLATE:
+        {
+            if (IsPhraseInString(vItemTemplate->Name1, "Relentless") || vItemTemplate->ItemLevel != 245)
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
                 return false;
 
             if (vItemTemplate->InventoryType != INVTYPE_HEAD &&
@@ -1132,7 +1228,7 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
 
             break;
         }
-        case INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS_AND_OFFSETS:
+        case INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS_AND_OFFSETS_CLOTH:
         {
             if (IsPhraseInString(vItemTemplate->Name1, "Wrathful") || vItemTemplate->ItemLevel != 264)
                 return false;
@@ -1140,7 +1236,76 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
             if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
                 return false;
 
-            if (vItemTemplate->SubClass != GetUsableArmorProficiencyByClass(player->getClass()))
+            if (vItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_CLOTH)
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_HEAD &&
+                vItemTemplate->InventoryType != INVTYPE_SHOULDERS &&
+                vItemTemplate->InventoryType != INVTYPE_CHEST &&
+                vItemTemplate->InventoryType != INVTYPE_HANDS &&
+                vItemTemplate->InventoryType != INVTYPE_LEGS &&
+                vItemTemplate->InventoryType != INVTYPE_WRISTS &&
+                vItemTemplate->InventoryType != INVTYPE_WAIST &&
+                vItemTemplate->InventoryType != INVTYPE_FEET)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS_AND_OFFSETS_LEATHER:
+        {
+            if (IsPhraseInString(vItemTemplate->Name1, "Wrathful") || vItemTemplate->ItemLevel != 264)
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER)
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_HEAD &&
+                vItemTemplate->InventoryType != INVTYPE_SHOULDERS &&
+                vItemTemplate->InventoryType != INVTYPE_CHEST &&
+                vItemTemplate->InventoryType != INVTYPE_HANDS &&
+                vItemTemplate->InventoryType != INVTYPE_LEGS &&
+                vItemTemplate->InventoryType != INVTYPE_WRISTS &&
+                vItemTemplate->InventoryType != INVTYPE_WAIST &&
+                vItemTemplate->InventoryType != INVTYPE_FEET)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS_AND_OFFSETS_MAIL:
+        {
+            if (IsPhraseInString(vItemTemplate->Name1, "Wrathful") || vItemTemplate->ItemLevel != 264)
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_MAIL)
+                return false;
+
+            if (vItemTemplate->InventoryType != INVTYPE_HEAD &&
+                vItemTemplate->InventoryType != INVTYPE_SHOULDERS &&
+                vItemTemplate->InventoryType != INVTYPE_CHEST &&
+                vItemTemplate->InventoryType != INVTYPE_HANDS &&
+                vItemTemplate->InventoryType != INVTYPE_LEGS &&
+                vItemTemplate->InventoryType != INVTYPE_WRISTS &&
+                vItemTemplate->InventoryType != INVTYPE_WAIST &&
+                vItemTemplate->InventoryType != INVTYPE_FEET)
+                return false;
+
+            break;
+        }
+        case INVENTORY_LIST_ICECROWN_CITADEL_MAINSETS_AND_OFFSETS_PLATE:
+        {
+            if (IsPhraseInString(vItemTemplate->Name1, "Wrathful") || vItemTemplate->ItemLevel != 264)
+                return false;
+
+            if (vItemTemplate->Class != ITEM_CLASS_ARMOR)
+                return false;
+
+            if (vItemTemplate->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
                 return false;
 
             if (vItemTemplate->InventoryType != INVTYPE_HEAD &&
