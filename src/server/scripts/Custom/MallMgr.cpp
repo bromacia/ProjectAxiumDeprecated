@@ -294,7 +294,6 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+50 Attack Power & +20 Critical Strike", ENCHANT_OPTION_HEAD, ENCHANT_HEAD_ARCANUM_OF_TORMENT);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "30 Spell Power & +20 Critical Strike", ENCHANT_OPTION_HEAD, ENCHANT_HEAD_ARCANUM_OF_BURNING_MYSTERIES);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "30 Spell Power & +10 MP5", ENCHANT_OPTION_HEAD, ENCHANT_HEAD_ARCANUM_OF_BLISSFUL_MENDING);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+37 Stamina & +20 Resilience", ENCHANT_OPTION_HEAD, ENCHANT_HEAD_ARCANUM_OF_THE_STALWART_PROTECTOR);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_ENCHANTS);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
