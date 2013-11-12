@@ -2448,10 +2448,7 @@ void Player::RemoveFromWorld()
     if (m_uint32Values)
     {
         if (WorldObject* viewpoint = GetViewpoint())
-        {
-            sLog->outCrash("Player %s has viewpoint %u %u when removed from world", GetName(), viewpoint->GetEntry(), viewpoint->GetTypeId());
             SetViewpoint(viewpoint, false);
-        }
     }
 }
 

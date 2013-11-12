@@ -14558,6 +14558,12 @@ void Unit::RemoveFromWorld()
 
         RemoveAreaAurasDueToLeaveWorld();
 
+        for (SharedVisionList::const_iterator itr = GetSharedVisionList().begin(), next; itr != GetSharedVisionList().end(); itr = next)
+        {
+            next = itr; ++next;
+            (*itr)->SetViewpoint(this, false);
+        }
+
         if (GetCharmerGUID())
         {
             sLog->outCrash("Unit %u has charmer guid when removed from world", GetEntry());
