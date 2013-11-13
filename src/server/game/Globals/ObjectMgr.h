@@ -1178,6 +1178,7 @@ class ObjectMgr
         void LoadMailQueue();
 
         void LoadExtendedCost2();
+        void UpdateExtendedCost2(uint32 npcEntry, uint32 itemId, uint32 extendedCost2Id);
 
         ExtendedCost2Map GetExtendedCost2Map() const { return extendedCost2Map; }
 

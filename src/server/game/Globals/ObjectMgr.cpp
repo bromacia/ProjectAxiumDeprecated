@@ -8913,3 +8913,9 @@ void ObjectMgr::LoadExtendedCost2()
     sLog->outString(">> Loaded ExtendedCost2 in %u ms", GetMSTimeDiffToNow(oldMSTime));
     sLog->outString();
 }
+
+void ObjectMgr::UpdateExtendedCost2(uint32 npcEntry, uint32 itemId, uint32 extendedCost2Id)
+{
+    m_mCacheVendorItemMap[npcEntry].UpdateExtendedCost2(itemId, extendedCost2Id);
+    WorldDatabase.PExecute("UPDATE npc_vendor SET ExtendedCost2 = '%u' WHERE entry = '%u' AND item = '%u'", extendedCost2Id, npcEntry, itemId);
+}

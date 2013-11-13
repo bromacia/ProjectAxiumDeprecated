@@ -344,12 +344,10 @@ struct VendorItemData
     }
     bool Empty() const { return m_items.empty(); }
     uint16 GetItemCount() const { return m_items.size(); }
-    void AddItem(uint32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost, uint32 ExtendedCost2)
-    {
-        m_items.push_back(new VendorItem(item, maxcount, ptime, ExtendedCost, ExtendedCost2));
-    }
-    bool RemoveItem(uint32 item_id);
-    VendorItem const* FindItemCostPair(uint32 item_id, uint32 extendedCost) const;
+    void AddItem(uint32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost, uint32 ExtendedCost2);
+    void UpdateExtendedCost2(uint32 item, uint32 ExtendedCost2);
+    bool RemoveItem(uint32 item);
+    VendorItem const* FindItemCostPair(uint32 item, uint32 extendedCost) const;
     void Clear()
     {
         for (VendorItemList::const_iterator itr = m_items.begin(); itr != m_items.end(); ++itr)

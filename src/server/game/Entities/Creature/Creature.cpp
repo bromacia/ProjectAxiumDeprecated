@@ -61,27 +61,46 @@ TrainerSpell const* TrainerSpellData::Find(uint32 spell_id) const
     return NULL;
 }
 
-bool VendorItemData::RemoveItem(uint32 item_id)
+void VendorItemData::AddItem(uint32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost, uint32 ExtendedCost2)
+{
+    m_items.push_back(new VendorItem(item, maxcount, ptime, ExtendedCost, ExtendedCost2));
+}
+
+void VendorItemData::UpdateExtendedCost2(uint32 item, uint32 ExtendedCost2)
+{
+    for (VendorItemList::iterator itr = m_items.begin(); itr != m_items.end(); ++itr)
+    {
+        if ((*itr)->item == item)
+        {
+            if (ExtendedCost2)
+                (*itr)->ExtendedCost2 = ExtendedCost2;
+
+            return;
+        }
+    }
+}
+
+bool VendorItemData::RemoveItem(uint32 item)
 {
     bool found = false;
-    for (VendorItemList::iterator i = m_items.begin(); i != m_items.end();)
+    for (VendorItemList::iterator itr = m_items.begin(); itr != m_items.end();)
     {
-        if ((*i)->item == item_id)
+        if ((*itr)->item == item)
         {
-            i = m_items.erase(i++);
+            itr = m_items.erase(itr++);
             found = true;
         }
         else
-            ++i;
+            ++itr;
     }
     return found;
 }
 
-VendorItem const* VendorItemData::FindItemCostPair(uint32 item_id, uint32 extendedCost) const
+VendorItem const* VendorItemData::FindItemCostPair(uint32 item, uint32 extendedCost) const
 {
-    for (VendorItemList::const_iterator i = m_items.begin(); i != m_items.end(); ++i)
-        if ((*i)->item == item_id && (*i)->ExtendedCost == extendedCost)
-            return *i;
+    for (VendorItemList::const_iterator itr = m_items.begin(); itr != m_items.end(); ++itr)
+        if ((*itr)->item == item && (*itr)->ExtendedCost == extendedCost)
+            return *itr;
     return NULL;
 }
 

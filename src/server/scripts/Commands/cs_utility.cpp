@@ -30,6 +30,7 @@ public:
             { "itemid",           SEC_GAMEMASTER,     false, &HandleItemIdCommand,                    "", NULL },
             { "spellid",          SEC_GAMEMASTER,     false, &HandleSpellIdCommand,                   "", NULL },
             { "coeff",            SEC_GAMEMASTER,     false, &HandleCoeffCommand,                     "", NULL },
+            { "extendedcost2",    SEC_GAMEMASTER,     false, &HandleExtendedCost2Command,             "", NULL },
             { NULL,               0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -747,6 +748,55 @@ public:
         handler->PSendSysMessage("Spell Direct Bonus: %f", spell_directDamage);
         handler->PSendSysMessage("AP Dot Bonus: %f", spell_apDotBonus);
         handler->PSendSysMessage("AP Bonus: %f", spell_apBonus);
+        return true;
+    }
+
+    static bool HandleExtendedCost2Command(ChatHandler* handler, const char* args)
+    {
+        if (!*args)
+            return false;
+
+        char* itemArg  = handler->extractKeyFromLink((char*)args, "Hitem");
+        if (!itemArg)
+        {
+            handler->PSendSysMessage("You didn't type anything in lol");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        uint32 itemId = atol(itemArg);
+        if (!itemId)
+        {
+            handler->PSendSysMessage("Appearently you didn't even type in a correct item id");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        char* extendedCostArg = strtok(NULL, " ");
+        if (!extendedCostArg)
+        {
+            handler->PSendSysMessage("You need to type in an extended cost 2 id, thats the whole point of this command you fucking boon");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        uint32 extendedCost2Id = atol(extendedCostArg);
+        if (!extendedCost2Id)
+        {
+            handler->PSendSysMessage("The extended cost id you type in either doesn't exist or you typed some shit you shouldn't be typing nigga");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        Creature* vendor = handler->getSelectedCreature();
+        if (!vendor)
+        {
+            handler->PSendSysMessage("Select a creature otherwise nothing is gonna work breh");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        sObjectMgr->UpdateExtendedCost2(vendor->GetEntry(), itemId, extendedCost2Id);
         return true;
     }
 };
