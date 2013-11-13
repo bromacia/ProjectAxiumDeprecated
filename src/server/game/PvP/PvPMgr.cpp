@@ -39,10 +39,7 @@ uint8 PvPMgr::CalculatePvPRating(uint16 attackerRating, uint16 victimRating, boo
             return 0;
 
         if (attackerRating)
-        {
-            float ratingDifference = attackerRating - victimRating;
-            ratingChange = fabs(ratingDifference) / 100;
-        }
+            ratingChange = attackerRating / 100;
         else
             ratingChange = 5;
 
