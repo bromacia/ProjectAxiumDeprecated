@@ -25605,7 +25605,7 @@ std::string Player::CreateExtendedCost2ErrorMessage(uint32 extendedCost2Id)
     if (extendedCost2.Required_2v2_Rating)
     {
         if (firstMessageAdded)
-            message << ", ";
+            message << " & ";
 
         message << "2v2 Rating: " << extendedCost2.Required_2v2_Rating;
 
@@ -25616,7 +25616,7 @@ std::string Player::CreateExtendedCost2ErrorMessage(uint32 extendedCost2Id)
     if (extendedCost2.Required_3v3_Rating)
     {
         if (firstMessageAdded)
-            message << ", ";
+            message << " & ";
 
         message << "3v3 Rating: " << extendedCost2.Required_3v3_Rating;
 
@@ -25627,7 +25627,7 @@ std::string Player::CreateExtendedCost2ErrorMessage(uint32 extendedCost2Id)
     if (extendedCost2.Required_5v5_Rating)
     {
         if (firstMessageAdded)
-            message << ", ";
+            message << " & ";
 
         message << "5v5 Rating: " << extendedCost2.Required_5v5_Rating;
 
@@ -25652,7 +25652,7 @@ std::string Player::CreateExtendedCost2ErrorMessage(uint32 extendedCost2Id)
                 titleName.replace(found, 3, "");
 
             if (firstMessageAdded)
-                message << ", ";
+                message << " & ";
 
             message << "Title: " << titleName;
         }
