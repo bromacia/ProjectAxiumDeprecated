@@ -3329,9 +3329,11 @@ void Spell::cast(bool skipCheck)
         if (this->GetSpellInfo()->DmgClass != SPELL_DAMAGE_CLASS_NONE)
             if (Pet* playerPet = playerCaster->GetPet())
                 if (playerPet->isAlive() && playerPet->isControlled() && (m_targets.GetTargetMask() & TARGET_FLAG_UNIT))
-                    if (playerPet->IsAIEnabled)
-                        if (Unit* unitTarget = m_targets.GetObjectTarget()->ToUnit())
-                            playerPet->AI()->OwnerAttacked(unitTarget);
+                    if (CreatureAI* AI = playerPet->AI())
+                        if (WorldObject* target = m_targets.GetObjectTarget())
+                            if (Unit* unitTarget = target->ToUnit())
+                                if (target->GetGUID() != m_caster->GetGUID())
+                                    AI->OwnerAttacked(unitTarget);
 
     }
     SetExecutedCurrently(true);
