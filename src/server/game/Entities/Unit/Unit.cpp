@@ -13318,6 +13318,10 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
         if (ToCreature()->HasSearchedAssistance())
             speed *= 0.66f;                                 // best guessed value, so this will be 33% reduction. Based off initial speed, mob can then "run", "walk fast" or "walk".
     }
+    
+    // Apply a minor speed increase to pets to compensate for client <--> server delay
+    if (GetTypeId() == TYPEID_UNIT)
+        speed *= 1.10f;
 
     // Apply strongest slow aura mod to speed
     int32 slow = GetMaxNegativeAuraModifier(SPELL_AURA_MOD_DECREASE_SPEED);
