@@ -742,6 +742,25 @@ struct ItemTemplate
             ItemId == 50737 ||       // Havoc's Call, Blade of Lordaeron Kings
             ItemId == 50738;         // Mithrios, Bronzebeard's Legacy
     }
+    bool IsWorldPvPConsumable() const
+    {
+        return ItemId == 40771 ||   // Cobalt Frag Bomb
+            ItemId == 42641 ||      // Global Thermal Sapper Charge
+            ItemId == 16040 ||      // Arcane Bomb
+            ItemId == 32413 ||      // Frost Grenade
+            ItemId == 2820 ||       // Nifty Stopwatch
+            ItemId == 23835 ||      // Gnomish Lag Machine
+            ItemId == 23824 ||      // Rocket Boots Xtreme
+            ItemId == 10830 ||      // M73 Frag Grenade
+            ItemId == 4397 ||       // Gnomish Cloaking Device
+            ItemId == 18634 ||      // Gyrofreeze Ice Reflector
+            ItemId == 18638 ||      // Hyper-Radiant Flame Reflector
+            ItemId == 18639 ||      // Ultra-Flash Shadow Reflector
+            ItemId == 10720 ||      // Gnomish Net-o-Matic Projector
+            ItemId == 1404 ||       // Tidal Charm
+            ItemId == 10588 ||      // Goblin Rocket Helmet
+            ItemId == 23825;        // Nigh Invulnerability Belt
+    }
 };
 
 // Benchmarked: Faster than std::map (insert/find)

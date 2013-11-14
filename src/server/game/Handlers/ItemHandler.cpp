@@ -26,6 +26,7 @@
 #include "Item.h"
 #include "UpdateData.h"
 #include "ObjectAccessor.h"
+#include "Spell.h"
 #include "SpellInfo.h"
 
 void WorldSession::HandleSplitItemOpcode(WorldPacket & recv_data)
@@ -151,6 +152,23 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket & recv_data)
     Item* pSrcItem  = _player->GetItemByPos(srcbag, srcslot);
     if (!pSrcItem)
         return;                                             // only at cheat
+
+    if (const ItemTemplate* itemTempalte = pSrcItem->GetTemplate())
+        if (itemTempalte->IsWorldPvPConsumable())
+        {
+            const SpellInfo* spellInfo = sSpellMgr->GetSpellInfo(itemTempalte->Spells[0].SpellId);
+            if (spellInfo)
+            {
+                SpellCastTargets target;
+                target.SetTargetMask(TARGET_FLAG_UNIT | TARGET_FLAG_UNIT_ENEMY);
+                target.SetSrc(*_player);
+                target.SetItemTarget(pSrcItem);
+                target.SetSpeed(spellInfo->Speed);
+                _player->CastItemUseSpell(pSrcItem, target, 1, 0);
+                _player->SendEquipError(EQUIP_ERR_NONE, pSrcItem, NULL);
+                return;
+            }
+        }
 
     uint16 dest;
     InventoryResult msg = _player->CanEquipItem(NULL_SLOT, dest, pSrcItem, !pSrcItem->IsBag());

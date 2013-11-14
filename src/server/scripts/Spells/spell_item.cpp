@@ -365,58 +365,46 @@ public:
 
 // http://www.wowhead.com/item=10720 Gnomish Net-o-Matic Projector
 // 13120 Net-o-Matic
-enum eNetOMaticSpells
+/*enum eNetOMaticSpells
 {
     SPELL_NET_O_MATIC_TRIGGERED1 = 16566,
     SPELL_NET_O_MATIC_TRIGGERED2 = 13119,
     SPELL_NET_O_MATIC_TRIGGERED3 = 13099,
-};
+};*/
 
 class spell_item_net_o_matic : public SpellScriptLoader
 {
-public:
-    spell_item_net_o_matic() : SpellScriptLoader("spell_item_net_o_matic") { }
-
-    class spell_item_net_o_matic_SpellScript : public SpellScript
-    {
     public:
-        PrepareSpellScript(spell_item_net_o_matic_SpellScript)
-        bool Validate(SpellInfo const* /*spellEntry*/)
+        spell_item_net_o_matic() : SpellScriptLoader("spell_item_net_o_matic") { }
+
+        class spell_item_net_o_matic_SpellScript : public SpellScript
         {
-            if (!sSpellMgr->GetSpellInfo(SPELL_NET_O_MATIC_TRIGGERED1))
-                return false;
-            if (!sSpellMgr->GetSpellInfo(SPELL_NET_O_MATIC_TRIGGERED2))
-                return false;
-            if (!sSpellMgr->GetSpellInfo(SPELL_NET_O_MATIC_TRIGGERED3))
-                return false;
-            return true;
-        }
+            public:
+                PrepareSpellScript(spell_item_net_o_matic_SpellScript)
+                bool Validate(SpellInfo const* /*spellEntry*/)
+                {
+                    if (!sSpellMgr->GetSpellInfo(13099))
+                        return false;
 
-        void HandleDummy(SpellEffIndex /*effIndex*/)
+                    return true;
+                }
+
+                void HandleDummy(SpellEffIndex /*effIndex*/)
+                {
+                    if (Unit* target = GetHitUnit())
+                        GetCaster()->CastSpell(target, 13099, true, NULL);
+                }
+
+                void Register()
+                {
+                    OnEffectHitTarget += SpellEffectFn(spell_item_net_o_matic_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                }
+        };
+
+        SpellScript* GetSpellScript() const
         {
-            if (Unit* target = GetHitUnit())
-            {
-                uint32 spellId = SPELL_NET_O_MATIC_TRIGGERED3;
-                uint32 roll = urand(0, 99);
-                if (roll < 2)                            // 2% for 30 sec self root (off-like chance unknown)
-                    spellId = SPELL_NET_O_MATIC_TRIGGERED1;
-                else if (roll < 4)                       // 2% for 20 sec root, charge to target (off-like chance unknown)
-                    spellId = SPELL_NET_O_MATIC_TRIGGERED2;
-
-                GetCaster()->CastSpell(target, spellId, true, NULL);
-            }
+            return new spell_item_net_o_matic_SpellScript();
         }
-
-        void Register()
-        {
-            OnEffectHitTarget += SpellEffectFn(spell_item_net_o_matic_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-        }
-    };
-
-    SpellScript* GetSpellScript() const
-    {
-        return new spell_item_net_o_matic_SpellScript();
-    }
 };
 
 // http://www.wowhead.com/item=8529 Noggenfogger Elixir

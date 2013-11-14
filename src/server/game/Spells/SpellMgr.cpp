@@ -64,6 +64,12 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellInfo const* spellproto,
             return DIMINISHING_TAUNT;
     }
 
+    // Cobalt Frag Bomb, Arcane Bomb, Frost Grenade,
+    // M73 Frag Grenade, Gnomish Net-o-Matic, Tidal Charm & Goblin Rocket Helmet
+    if (spellproto->Id == 67769 || spellproto->Id == 19821 || spellproto->Id == 39965 ||
+        spellproto->Id == 13808 || spellproto->Id == 13099 || spellproto->Id == 835 || spellproto->Id == 13327)
+        return DIMINISHING_NONE;
+
     // Explicit Diminishing Groups
     switch (spellproto->SpellFamilyName)
     {
@@ -3414,6 +3420,11 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->CastingTimeIndex = 0;
                 spellInfo->StartRecoveryCategory = 0;
                 spellInfo->StartRecoveryTime = 0;
+                break;
+            case 4079:  // Cloaking - Gnomish Cloaking Device
+                spellInfo->Effect[2] = SPELL_EFFECT_SANCTUARY;
+                spellInfo->EffectBasePoints[2] = 0;
+                spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_CASTER;
                 break;
             default:
                 break;

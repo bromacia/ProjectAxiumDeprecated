@@ -4494,6 +4494,19 @@ void Spell::TakeCastItem()
     if (_triggeredCastFlags & TRIGGERED_IGNORE_CAST_ITEM)
         return;
 
+    if (m_CastItem->GetTemplate()->IsWorldPvPConsumable())
+    {
+        uint32 count = 1;
+        m_caster->ToPlayer()->DestroyItemCount(m_CastItem, count, true);
+
+        // prevent crash at access to deleted m_targets.GetItemTarget
+        if (m_CastItem == m_targets.GetItemTarget())
+            m_targets.SetItemTarget(NULL);
+
+        m_CastItem = NULL;
+        return;
+    }
+
     ItemTemplate const* proto = m_CastItem->GetTemplate();
 
     if (!proto)
