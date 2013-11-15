@@ -3426,6 +3426,9 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectBasePoints[2] = 0;
                 spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_CASTER;
                 break;
+            case 10855: // Lag - Gnomish Lag Machine
+                spellInfo->Attributes &= ~SPELL_ATTR0_NOT_SHAPESHIFT;
+                break;
             default:
                 break;
         }
