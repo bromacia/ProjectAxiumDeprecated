@@ -1247,7 +1247,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             break;
     }
 
-    if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= (unit->m_lastSanctuaryTime + 100))
+    if (getState() == SPELL_STATE_DELAYED && !m_spellInfo->IsPositive() && (getMSTime() - target->timeDelay) <= (unit->m_lastSanctuaryTime + 50))
     {
         if (!m_spellInfo->Speed)
         {
