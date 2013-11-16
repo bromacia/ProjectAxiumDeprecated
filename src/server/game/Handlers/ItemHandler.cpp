@@ -160,7 +160,6 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket & recv_data)
             if (spellInfo)
             {
                 SpellCastTargets target;
-                target.SetTargetMask(TARGET_FLAG_UNIT | TARGET_FLAG_UNIT_ENEMY);
                 target.SetSrc(*_player);
                 target.SetItemTarget(pSrcItem);
                 target.SetSpeed(spellInfo->Speed);
