@@ -108,6 +108,10 @@ public:
             player->ClearInCombat();
             player->getHostileRefManager().deleteReferences();
             player->RemoveAllPlayerSpellCooldowns();
+
+            if (Pet* pet = player->GetPet())
+                pet->RemoveAllPetSpellCooldowns(player);
+
             if (player->IsGMInvisible())
                 if (!player->HasAura(44816))
                     player->AddAura(44816, player);
@@ -115,8 +119,6 @@ public:
         else
             sObjectAccessor->ConvertCorpseForPlayer(target_guid);
 
-        if (Pet* pet = player->GetPet())
-            pet->RemoveAllPetSpellCooldowns(player);
         return true;
     }
 
