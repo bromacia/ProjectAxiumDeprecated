@@ -7396,7 +7396,7 @@ void Player::UpdateArea(uint32 newArea)
 {
     // FFA_PVP flags are area and not zone id dependent
     // so apply them accordingly
-    m_areaUpdateId    = newArea;
+    m_areaUpdateId = newArea;
 
     AreaTableEntry const* area = GetAreaEntryByAreaID(newArea);
     pvpInfo.inFFAPvPArea = area && (area->flags & AREA_FLAG_ARENA);
@@ -7423,6 +7423,11 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
         sOutdoorPvPMgr->HandlePlayerEnterZone(this, newZone);
         SendInitWorldStates(newZone, newArea);              // only if really enters to new zone, not just area change, works strange...
     }
+
+    // World PvP Zone
+    if (newZone == 3521)
+        if (GetGroup())
+            RemoveFromGroup();
 
     // group update
     if (GetGroup())

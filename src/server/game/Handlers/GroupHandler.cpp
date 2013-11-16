@@ -31,6 +31,7 @@
 #include "Util.h"
 #include "SpellAuras.h"
 #include "Vehicle.h"
+#include "Chat.h"
 
 class Aura;
 
@@ -60,6 +61,12 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket & recv_data)
 {
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Received CMSG_GROUP_INVITE");
 
+    if (_player->IsInWorldPvPZone())
+    {
+        ChatHandler(_player).PSendSysMessage("You can't create a groups in the World PvP Zone.");
+        return;
+    }
+
     std::string membername;
     recv_data >> membername;
     recv_data.read_skip<uint32>();
@@ -74,6 +81,12 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket & recv_data)
     }
 
     Player* player = sObjectAccessor->FindPlayerByName(membername.c_str());
+
+    if (player->IsInWorldPvPZone())
+    {
+        ChatHandler(player).PSendSysMessage("You can't create a groups in the World PvP Zone.");
+        return;
+    }
 
     // no player
     if (!player)
@@ -200,8 +213,8 @@ void WorldSession::HandleGroupAcceptOpcode(WorldPacket& recv_data)
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Received CMSG_GROUP_ACCEPT");
 
     recv_data.read_skip<uint32>();
-    Group* group = GetPlayer()->GetGroupInvite();
 
+    Group* group = GetPlayer()->GetGroupInvite();
     if (!group)
         return;
 
