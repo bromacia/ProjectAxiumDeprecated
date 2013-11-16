@@ -342,6 +342,7 @@ struct VendorItemData
         if (slot >= m_items.size()) return NULL;
         return m_items[slot];
     }
+    VendorItemList GetVendorItemList() const { return m_items; }
     bool Empty() const { return m_items.empty(); }
     uint16 GetItemCount() const { return m_items.size(); }
     void AddItem(uint32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost, uint32 ExtendedCost2);
