@@ -794,7 +794,13 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
 
     if (!command)
         if (Player* pVictim = victim->ToPlayer())
-            pVictim->HandleDealDamage(this, damage);
+            if (Unit* owner = GetCharmerOrOwner())
+            {
+                if (Player* pOwner = owner->ToPlayer())
+                    pVictim->HandleDealDamage(pOwner, damage);
+            }
+            else if (Player* player = ToPlayer())
+                pVictim->HandleDealDamage(player, damage);
 
     if (health <= damage)
     {

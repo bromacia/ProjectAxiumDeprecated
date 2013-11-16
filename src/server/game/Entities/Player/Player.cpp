@@ -5220,6 +5220,8 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
 
 void Player::KillPlayer()
 {
+    PvPTargetDamageInfo.clear();
+
     SetMovement(MOVE_ROOT);
 
     StopMirrorTimers();                                     //disable timers(bars)
@@ -5564,7 +5566,7 @@ void Player::RepopAtGraveyard()
 
 bool Player::CanJoinConstantChannelInZone(ChatChannelsEntry const* channel, AreaTableEntry const* zone)
 {
-    if (channel->flags & CHANNEL_DBC_FLAG_ZONE_DEP && zone->flags & AREA_FLAG_ARENA_INSTANCE)
+    if ((channel->flags & CHANNEL_DBC_FLAG_ZONE_DEP) && zone->IsFFA())
         return false;
 
     if ((channel->flags & CHANNEL_DBC_FLAG_CITY_ONLY) && (!(zone->flags & AREA_FLAG_SLAVE_CAPITAL)))
@@ -7399,7 +7401,7 @@ void Player::UpdateArea(uint32 newArea)
     m_areaUpdateId = newArea;
 
     AreaTableEntry const* area = GetAreaEntryByAreaID(newArea);
-    pvpInfo.inFFAPvPArea = area && (area->flags & AREA_FLAG_ARENA);
+    pvpInfo.inFFAPvPArea = area && area->IsFFA();
     UpdatePvPState(true);
 
     UpdateAreaDependentAuras(newArea);
@@ -25963,8 +25965,6 @@ void Player::HandlePvPKill()
             }
         }
     }
-
-    PvPTargetDamageInfo.clear();
 
     if (!attackerGUIDLow || !highestDamageDoneToVictim || !lastDamageDealtTime)
     {

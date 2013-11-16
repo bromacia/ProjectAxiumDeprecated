@@ -530,6 +530,7 @@ struct AreaTableEntry
     uint32  LiquidTypeOverride[4];                          // 29-32 liquid override by type
 
     // helpers
+    bool IsFFA() const { return (flags & AREA_FLAG_ARENA); }
     bool IsSanctuary() const { return (flags & AREA_FLAG_SANCTUARY); }
     bool IsNoFlyZone() const { return (flags & AREA_FLAG_NO_FLY_ZONE); }
 };
