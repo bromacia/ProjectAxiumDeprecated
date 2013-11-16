@@ -741,7 +741,7 @@ bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 action)
 
     for (uint16 slot = 0; slot < itemCount; ++slot)
     {
-        if (const VendorItem* vItem = items->GetItem(slot))
+        if (const VendorItem* vItem = items->GetItemByVendorSlot(slot))
         {
             if (const ItemTemplate* vItemTemplate = sObjectMgr->GetItemTemplate(vItem->item))
             {

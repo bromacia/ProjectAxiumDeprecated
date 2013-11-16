@@ -195,7 +195,7 @@ class npc_class_trainer : public CreatureScript
 
             for (uint16 slot = 0; slot < itemCount; ++slot)
             {
-                if (const VendorItem* vItem = items->GetItem(slot))
+                if (const VendorItem* vItem = items->GetItemByVendorSlot(slot))
                 {
                     if (const ItemTemplate* vItemTemplate = sObjectMgr->GetItemTemplate(vItem->item))
                     {

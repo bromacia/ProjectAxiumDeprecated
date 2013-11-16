@@ -777,7 +777,7 @@ void WorldSession::SendListInventory(uint64 vendorGuid)
 
     for (uint8 slot = 0; slot < itemCount; ++slot)
     {
-        if (VendorItem const* item = items->GetItem(slot))
+        if (VendorItem const* item = items->GetItemByVendorSlot(slot))
         {
             if (ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(item->item))
             {

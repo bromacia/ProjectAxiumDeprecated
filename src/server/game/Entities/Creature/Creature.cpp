@@ -61,6 +61,25 @@ TrainerSpell const* TrainerSpellData::Find(uint32 spell_id) const
     return NULL;
 }
 
+VendorItem* VendorItemData::GetItemByVendorSlot(uint32 slot) const
+{
+    if (slot >= m_items.size())
+        return NULL;
+
+    return m_items[slot];
+}
+
+VendorItem* VendorItemData::GetItemByItemId(uint32 itemId) const
+{
+    for (VendorItemList::const_iterator itr = m_items.begin(); itr != m_items.end(); ++itr)
+    {
+        if ((*itr)->item == itemId)
+            return (*itr);
+    }
+
+    return NULL;
+}
+
 void VendorItemData::AddItem(uint32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost, uint32 ExtendedCost2)
 {
     m_items.push_back(new VendorItem(item, maxcount, ptime, ExtendedCost, ExtendedCost2));

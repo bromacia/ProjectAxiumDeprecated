@@ -337,11 +337,8 @@ struct VendorItemData
 {
     VendorItemList m_items;
 
-    VendorItem* GetItem(uint32 slot) const
-    {
-        if (slot >= m_items.size()) return NULL;
-        return m_items[slot];
-    }
+    VendorItem* GetItemByVendorSlot(uint32 slot) const;
+    VendorItem* GetItemByItemId(uint32 itemId) const;
     VendorItemList GetVendorItemList() const { return m_items; }
     bool Empty() const { return m_items.empty(); }
     uint16 GetItemCount() const { return m_items.size(); }

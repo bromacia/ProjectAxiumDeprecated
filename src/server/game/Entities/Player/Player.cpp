@@ -20989,7 +20989,7 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
 
     if (creature->IsTransmogrifier())
     {
-        TransmogrifyItem(item, vItems->GetItem(vendorslot));
+        TransmogrifyItem(item, vItems->GetItemByVendorSlot(vendorslot));
         return false;
     }
 
@@ -20999,13 +20999,18 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
         return false;
     }
 
-    VendorItem const* crItem = vItems->GetItem(vendorslot);
-    if (!creature->IsMallNPC())
-        if (!crItem || crItem->item != item)
-        {
-            SendBuyError(BUY_ERR_CANT_FIND_ITEM, creature, item, 0);
-            return false;
-        }
+    VendorItem const* crItem = NULL;
+
+    if (creature->IsMallNPC())
+        crItem = vItems->GetItemByItemId(item);
+    else
+        crItem = vItems->GetItemByVendorSlot(vendorslot);
+
+    if (!crItem || crItem->item != item)
+    {
+        SendBuyError(BUY_ERR_CANT_FIND_ITEM, creature, item, 0);
+        return false;
+    }
 
     // check current item amount if it limited
     if (crItem->maxcount != 0)
