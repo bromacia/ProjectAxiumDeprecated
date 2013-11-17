@@ -493,7 +493,7 @@ void MapManager::LoadDbcDataCorrections()
                 areaInfo->flags = (AREA_FLAG_ALLOW_DUELS | AREA_FLAG_SANCTUARY);
                 break;
             case 3521: // Zangarmarsh (World PvP Zone)
-                areaInfo->flags = (AREA_FLAG_OUTLAND | AREA_FLAG_OUTDOOR_PVP | AREA_FLAG_CONTESTED_AREA | AREA_FLAG_NO_FLY_ZONE);
+                areaInfo->flags = (AREA_FLAG_ARENA | AREA_FLAG_OUTLAND | AREA_FLAG_OUTDOOR_PVP | AREA_FLAG_CONTESTED_AREA | AREA_FLAG_NO_FLY_ZONE);
                 break;
             default:
                 break;
@@ -522,7 +522,7 @@ void MapManager::LoadDbcDataCorrections()
                 areaInfo->flags = (AREA_FLAG_ALLOW_DUELS | AREA_FLAG_SANCTUARY);
                 break;
             case 3521: // Zangarmarsh (World PvP Zone)
-                areaInfo->flags = (AREA_FLAG_OUTLAND | AREA_FLAG_OUTDOOR_PVP | AREA_FLAG_CONTESTED_AREA | AREA_FLAG_NO_FLY_ZONE);
+                areaInfo->flags = (AREA_FLAG_ARENA | AREA_FLAG_OUTLAND | AREA_FLAG_OUTDOOR_PVP | AREA_FLAG_CONTESTED_AREA | AREA_FLAG_NO_FLY_ZONE);
                 break;
             case 3668: // Boha'mu Ruins (Mall)
                 areaInfo->flags = (AREA_FLAG_CAPITAL | AREA_FLAG_OUTLAND | AREA_FLAG_SANCTUARY | AREA_FLAG_NO_FLY_ZONE);
