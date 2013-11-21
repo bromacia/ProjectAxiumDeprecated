@@ -228,6 +228,7 @@ void AddBattlegroundScripts()
     void AddSC_npc_teleport();
     void AddSC_npc_beastmaster();
     void AddSC_npc_class_trainer();
+    void AddSC_npc_world_pvp();
 #endif
 
 void AddCustomScripts()
@@ -240,5 +241,6 @@ void AddCustomScripts()
     AddSC_npc_teleport();
     AddSC_npc_beastmaster();
     AddSC_npc_class_trainer();
+    AddSC_npc_world_pvp();
 #endif
 }

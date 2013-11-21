@@ -721,15 +721,15 @@ bool MallMgr::HandleFinishShadowDanceBar(Player* player, Creature* creature)
 bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 action)
 {
     ChatHandler* handler = new ChatHandler(player);
+
+    player->CLOSE_GOSSIP_MENU();
+
     const VendorItemData* items = creature->GetVendorItems();
     if (!items)
     {
         handler->PSendSysMessage("Unable to find item data");
-        player->CLOSE_GOSSIP_MENU();
         return false;
     }
-
-    player->CLOSE_GOSSIP_MENU();
 
     uint16 itemCount = items->GetItemCount();
     uint8 count = 0;
@@ -764,7 +764,6 @@ bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 action)
     if (!count)
     {
         handler->PSendSysMessage("Unable to find item data");
-        player->CLOSE_GOSSIP_MENU();
         return false;
     }
 

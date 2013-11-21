@@ -20,6 +20,7 @@ set(scripts_STAT_SRCS
   Custom/npc_teleport.cpp
   Custom/npc_beastmaster.cpp
   Custom/npc_class_trainer.cpp
+  Custom/npc_world_pvp.cpp
 )
 
 message("  -> Prepared: Custom")

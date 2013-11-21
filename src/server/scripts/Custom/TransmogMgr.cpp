@@ -200,12 +200,13 @@ void Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
     uint8 itemSlot = GetItemSlotByAction(action);
     player->SetSelectedTransmogItemSlot(itemSlot);
 
+    player->CLOSE_GOSSIP_MENU();
+
     const ItemTemplate* pItemTemplate = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot)->GetTemplate();
     if (!pItemTemplate)
     {
         handler->PSendSysMessage("Unable to find item data for slot %u.", itemSlot);
         player->SetSelectedTransmogItemSlot(0);
-        player->CLOSE_GOSSIP_MENU();
         return;
     }
 
@@ -214,11 +215,8 @@ void Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
     {
         handler->PSendSysMessage("This transmogrifier doesn't have any items.");
         player->SetSelectedTransmogItemSlot(0);
-        player->CLOSE_GOSSIP_MENU();
         return;
     }
-
-    player->CLOSE_GOSSIP_MENU();
 
     uint16 itemCount = items->GetItemCount();
     uint8 count = 0;
@@ -244,7 +242,7 @@ void Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
                     leftInStock = 0x0; // The item will appear greyed out
 
                 ++count;
-                data << uint32(slot + 1);                      // Client expects counting to start at 1
+                data << uint32(slot + 1);                       // Client expects counting to start at 1
                 data << uint32(vItem->item);                    // Entry
                 data << uint32(vItemTemplate->DisplayInfoID);   // DisplayId
                 data << int32(leftInStock);                     // Left in stock
@@ -261,7 +259,6 @@ void Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
     {
         handler->PSendSysMessage("No items found for that option.");
         player->SetSelectedTransmogItemSlot(0);
-        player->CLOSE_GOSSIP_MENU();
         return;
     }
 
