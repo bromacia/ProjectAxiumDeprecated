@@ -421,7 +421,12 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
     bool arrived = movespline->Finalized();
 
     if (arrived)
+    {
         DisableSpline();
+        UpdateSpeed(MOVE_RUN, false);
+        UpdateSpeed(MOVE_SWIM, false);
+        UpdateSpeed(MOVE_FLIGHT, false);
+    }
 
     m_movesplineTimer.Update(t_diff);
     if (m_movesplineTimer.Passed() || arrived)
