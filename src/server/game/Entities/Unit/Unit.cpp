@@ -11641,16 +11641,9 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, ui
         modOwner->ApplySpellMod(spellProto->Id, damagetype == DOT ? SPELLMOD_DOT : SPELLMOD_DAMAGE, heal);
 
     if (Player* player = ToPlayer())
-    {
         if (player->IsInWorldPvPZone() && !player->IsInWorldPvPZoneMall())
-        {
-            if (victim != this)
-                return 0;
-
             if (player->IsHealingSpec())
                 heal *= 0.50;
-        }
-    }
 
     if (GetTypeId() == TYPEID_PLAYER)
     {
