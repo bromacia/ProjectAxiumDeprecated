@@ -30,7 +30,7 @@ public:
             { "itemid",           SEC_GAMEMASTER,     false, &HandleItemIdCommand,                    "", NULL },
             { "spellid",          SEC_GAMEMASTER,     false, &HandleSpellIdCommand,                   "", NULL },
             { "coeff",            SEC_GAMEMASTER,     false, &HandleCoeffCommand,                     "", NULL },
-            { "extendedcost2",    SEC_GAMEMASTER,     false, &HandleExtendedCost2Command,             "", NULL },
+            { "extendedcost2",    SEC_ADMINISTRATOR,  false, &HandleExtendedCost2Command,             "", NULL },
             { NULL,               0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
