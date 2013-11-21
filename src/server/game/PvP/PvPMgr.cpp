@@ -38,8 +38,8 @@ uint8 PvPMgr::CalculatePvPRating(uint16 attackerRating, uint16 victimRating, boo
         if (victimRating <= 1000)
             return 0;
 
-        if (attackerRating)
-            ratingChange = attackerRating / 100;
+        if (victimRating)
+            ratingChange = victimRating / 100;
         else
             ratingChange = 5;
 
