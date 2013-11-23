@@ -75,19 +75,31 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         }
         else
         {
-            PathFinderMovementGenerator i_path(&unit);
-
-            if (!unit.IsWithinLOS(i_x, i_y, i_z) || !i_path.Calculate(i_x, i_y, i_z) || i_path.GetPathType() & PATHFIND_NOPATH)
+            if (m_generatePath)
             {
-                init = false;
-                return true;
+                PathFinderMovementGenerator i_path(&unit);
+
+                if (!unit.IsWithinLOS(i_x, i_y, i_z) || !i_path.Calculate(i_x, i_y, i_z) || i_path.GetPathType() & PATHFIND_NOPATH)
+                {
+                    init = false;
+                    return true;
+                }
+
+                Movement::MoveSplineInit init(unit);
+                init.MovebyPath(i_path.GetPath());
+                if (speed > 0.0f)
+                    init.SetVelocity(speed);
+                init.Launch();
+            }
+            else
+            {
+                Movement::MoveSplineInit init(unit);
+                init.MoveTo(i_x, i_y, i_z);
+                if (speed > 0.0f)
+                    init.SetVelocity(speed);
+                init.Launch();
             }
 
-            Movement::MoveSplineInit init(unit);
-            init.MovebyPath(i_path.GetPath());
-            if (speed > 0.0f)
-                init.SetVelocity(speed);
-            init.Launch();
         }
 
         unit.AddUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
@@ -107,16 +119,27 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         }
         else
         {
-            PathFinderMovementGenerator i_path(&unit);
+            if (m_generatePath)
+            {
+                PathFinderMovementGenerator i_path(&unit);
 
-            if (!unit.IsWithinLOS(i_x, i_y, i_z) || !i_path.Calculate(i_x, i_y, i_z) || i_path.GetPathType() & PATHFIND_NOPATH)
-                return true;
+                if (!unit.IsWithinLOS(i_x, i_y, i_z) || !i_path.Calculate(i_x, i_y, i_z) || i_path.GetPathType() & PATHFIND_NOPATH)
+                    return true;
 
-            Movement::MoveSplineInit init(unit);
-            init.MovebyPath(i_path.GetPath());
-            if (speed > 0.0f)
-                init.SetVelocity(speed);
-            init.Launch();
+                Movement::MoveSplineInit init(unit);
+                init.MovebyPath(i_path.GetPath());
+                if (speed > 0.0f)
+                    init.SetVelocity(speed);
+                init.Launch();
+            }
+            else
+            {
+                Movement::MoveSplineInit init(unit);
+                init.MoveTo(i_x, i_y, i_z);
+                if (speed > 0.0f)
+                    init.SetVelocity(speed);
+                init.Launch();
+            }
         }
     }
 
