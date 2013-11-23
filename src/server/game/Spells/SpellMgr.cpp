@@ -3429,6 +3429,10 @@ void SpellMgr::LoadDbcDataCorrections()
             case 10855: // Lag - Gnomish Lag Machine
                 spellInfo->Attributes &= ~SPELL_ATTR0_NOT_SHAPESHIFT;
                 break;
+            case 49206: // Summon Gargoyle
+                spellInfo->Effect[1] = 0;
+                spellInfo->Effect[2] = 0;
+                break;
             default:
                 break;
         }

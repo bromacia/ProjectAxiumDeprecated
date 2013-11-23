@@ -1890,154 +1890,114 @@ public:
 
 class npc_mirror_image : public CreatureScript
 {
-public:
-    npc_mirror_image() : CreatureScript("npc_mirror_image") { }
+    public:
+        npc_mirror_image() : CreatureScript("npc_mirror_image") { }
 
-    struct npc_mirror_imageAI : CasterAI
-    {
-        npc_mirror_imageAI(Creature* creature) : CasterAI(creature) {}
-
-        void InitializeAI()
+        struct npc_mirror_imageAI : CasterAI
         {
-            CasterAI::InitializeAI();
-            Unit* owner = me->GetOwner();
-            if (!owner)
-                return;
+            npc_mirror_imageAI(Creature* creature) : CasterAI(creature) {}
 
-            owner->CastSpell(me, 45204, false);
-        }
-
-        // Do not reload Creature templates on evade mode enter - prevent visual lost
-        void EnterEvadeMode()
-        {
-            if (me->IsInEvadeMode() || !me->isAlive())
-                return;
-
-            Unit* owner = me->GetCharmerOrOwner();
-
-            me->CombatStop(true);
-
-            if (owner && !me->HasUnitState(UNIT_STATE_FOLLOW))
+            void InitializeAI()
             {
-                me->GetMotionMaster()->Clear(false);
-                me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle(), MOTION_SLOT_ACTIVE);
-            }
-        }
-    };
+                CasterAI::InitializeAI();
+                Unit* owner = me->GetOwner();
+                if (!owner)
+                    return;
 
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_mirror_imageAI(creature);
-    }
+                owner->CastSpell(me, 45204, false);
+            }
+
+            void EnterEvadeMode()
+            {
+                if (me->IsInEvadeMode() || !me->isAlive())
+                    return;
+
+                Unit* owner = me->GetCharmerOrOwner();
+
+                me->CombatStop(true);
+
+                if (owner && !me->HasUnitState(UNIT_STATE_FOLLOW))
+                {
+                    me->GetMotionMaster()->Clear(false);
+                    me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle(), MOTION_SLOT_ACTIVE);
+                }
+            }
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+            return new npc_mirror_imageAI(creature);
+        }
 };
 
 class npc_ebon_gargoyle : public CreatureScript
 {
-public:
-    npc_ebon_gargoyle() : CreatureScript("npc_ebon_gargoyle") { }
+    public:
+        npc_ebon_gargoyle() : CreatureScript("npc_ebon_gargoyle") { }
 
-    struct npc_ebon_gargoyleAI : CasterAI
-    {
-        npc_ebon_gargoyleAI(Creature* creature) : CasterAI(creature) {}
-
-        uint32 despawnTimer;
-        Unit* owner;
-        Unit* target;
-
-        void InitializeAI()
+        struct npc_ebon_gargoyleAI : CasterAI
         {
-            CasterAI::InitializeAI();
-            uint64 ownerGuid = me->GetOwnerGUID();
-            if (!ownerGuid)
-                return;
+            npc_ebon_gargoyleAI(Creature* creature) : CasterAI(creature) {}
 
-            owner = me->GetOwner();
+            uint32 flyAwayTimer;
+            uint32 despawnTimer;
 
-            // Not needed to be despawned now
-            despawnTimer = 0;
-
-            target = NULL;
-        }
-
-        void JustDied(Unit* /*killer*/)
-        {
-            // Stop Feeding Gargoyle when it dies
-            if (Unit* owner = me->GetOwner())
-                owner->RemoveAurasDueToSpell(50514);
-        }
-
-        // Fly away when dismissed
-        void SpellHit(Unit* source, SpellInfo const* spell)
-        {
-            if (spell->Id != 50515 || !me->isAlive())
-                return;
-
-            Unit* owner = me->GetOwner();
-
-            if (!owner || owner != source)
-                return;
-
-            // Stop Fighting
-            me->ApplyModFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE, true);
-            // Sanctuary
-            me->CastSpell(me, 54661, true);
-            me->SetReactState(REACT_PASSIVE);
-
-            // Fly Away
-            me->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY|MOVEMENTFLAG_ASCENDING|MOVEMENTFLAG_FLYING);
-            me->SetSpeed(MOVE_FLIGHT, 0.75f, true);
-            me->SetSpeed(MOVE_RUN, 0.75f, true);
-            float x = me->GetPositionX() + 20 * cos(me->GetOrientation());
-            float y = me->GetPositionY() + 20 * sin(me->GetOrientation());
-            float z = me->GetPositionZ() + 40;
-            me->GetMotionMaster()->Clear(false);
-            me->GetMotionMaster()->MovePoint(0, x, y, z);
-
-            // Despawn as soon as possible
-            despawnTimer = 4 * IN_MILLISECONDS;
-        }
-
-        void UpdateAI(const uint32 diff)
-        {
-            if (despawnTimer > 0)
+            void InitializeAI()
             {
-                if (despawnTimer > diff)
-                    despawnTimer -= diff;
-                else
-                    me->DespawnOrUnsummon();
-                return;
+                CasterAI::InitializeAI();
+
+                flyAwayTimer = 30000;
+                despawnTimer = 0;
             }
 
-            if (!target)
+            void FlyAway()
             {
-                // Find victim of Summon Gargoyle spell
-                std::list<Unit*> targets;
-                Trinity::AnyUnfriendlyUnitInObjectRangeCheck u_check(me, me, 30);
-                Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(me, targets, u_check);
-                me->VisitNearbyObject(30, searcher);
-                for (std::list<Unit*>::const_iterator iter = targets.begin(); iter != targets.end(); ++iter)
+                despawnTimer = 4000;
+                me->CombatStop(true);
+                me->ApplyModFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE, true);
+                me->ApplyModFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED, true);
+                me->ApplyModFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED, true);
+                me->ApplyModFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE, true);
+                me->CastSpell(me, 54661, true);
+                me->SetReactState(REACT_PASSIVE);
+                me->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_ASCENDING | MOVEMENTFLAG_FLYING);
+                me->SetSpeed(MOVE_FLIGHT, 0.75f, true);
+                me->SetSpeed(MOVE_RUN, 0.75f, true);
+                float x = me->GetPositionX() + 20.0f * cos(me->GetOrientation());
+                float y = me->GetPositionY() + 20.0f * sin(me->GetOrientation());
+                float z = me->GetPositionZ() + 40.0f;
+                me->GetMotionMaster()->Clear();
+                me->GetMotionMaster()->MovePoint(0, x, y, z, false);
+            }
+
+            void UpdateAI(const uint32 diff)
+            {
+                if (despawnTimer)
                 {
-                    if ((*iter)->HasAura(49206, me->GetOwnerGUID()))
-                    {
-                        target = (*iter);
-                        AttackStart(target);
-                        break;
-                    }
+                    if (despawnTimer > diff)
+                        despawnTimer -= diff;
+                    else
+                        me->DespawnOrUnsummon();
+
+                    return;
                 }
-            }
-            else if (target && target->isAlive())
-            {
-                AttackStart(target);
-            }
 
-            CasterAI::UpdateAI(diff);
+                if (flyAwayTimer)
+                {
+                    if (flyAwayTimer > diff)
+                        flyAwayTimer -= diff;
+                    else
+                        FlyAway();
+                }
+
+                CasterAI::UpdateAI(diff);
+            }
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+            return new npc_ebon_gargoyleAI(creature);
         }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_ebon_gargoyleAI(creature);
-    }
 };
 
 class npc_lightwell : public CreatureScript
