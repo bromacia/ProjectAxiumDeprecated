@@ -226,17 +226,22 @@ void CasterAI::EnterCombat(Unit* who)
             continue;
         }
 
-        if (AISpellInfo[*itr].condition == AICOND_AGGRO)
-            me->CastSpell(target, *itr, false);
-        else if (AISpellInfo[*itr].condition == AICOND_COMBAT)
+        if (me->GetScriptName() == "npc_mirror_image")
+            me->CastSpell(target, 59638, false);
+        else
         {
-            uint32 cooldown = GetAISpellInfo(*itr)->realCooldown;
-            if (count == spell)
+            if (AISpellInfo[*itr].condition == AICOND_AGGRO)
+                me->CastSpell(target, *itr, false);
+            else if (AISpellInfo[*itr].condition == AICOND_COMBAT)
             {
-                DoCast(spells[spell]);
-                cooldown += me->GetCurrentSpellCastTime(*itr);
+                uint32 cooldown = GetAISpellInfo(*itr)->realCooldown;
+                if (count == spell)
+                {
+                    DoCast(spells[spell]);
+                    cooldown += me->GetCurrentSpellCastTime(*itr);
+                }
+                events.ScheduleEvent(*itr, cooldown);
             }
-            events.ScheduleEvent(*itr, cooldown);
         }
     }
 
@@ -323,7 +328,9 @@ void CasterAI::UpdateAI(const uint32 diff)
     if (me->HasUnitState(UNIT_STATE_CASTING))
         return;
 
-    if (uint32 spellId = events.ExecuteEvent())
+    if (me->GetScriptName() == "npc_mirror_image")
+        me->CastSpell(target, 59638, false);
+    else if (uint32 spellId = events.ExecuteEvent())
     {
         DoCast(spellId);
         uint32 cooldown = me->GetCurrentSpellCastTime(spellId) + GetAISpellInfo(spellId)->realCooldown;
