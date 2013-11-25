@@ -1488,11 +1488,53 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             if (m_spellInfo->AttributesCu & SPELL_ATTR0_CU_AURA_CC)
                 if (!unit->IsStandState())
                     unit->SetStandState(UNIT_STAND_STATE_STAND);
+
+            if (Player* player = m_caster->ToPlayer())
+                if (!player->m_Controlled.empty())
+                {
+                    for (Unit::ControlList::iterator itr = player->m_Controlled.begin(); itr != player->m_Controlled.end(); ++itr)
+                    {
+                        Unit* controlled = *itr;
+                        if (!controlled)
+                            continue;
+
+                        Creature* cControlled = controlled->ToCreature();
+                        if (!cControlled)
+                            continue;
+
+                        if (!cControlled->IsAIEnabled)
+                            continue;
+
+                        cControlled->AI()->SetTarget(unit);
+                    }
+                }
         }
 
         if (missInfo != SPELL_MISS_EVADE && unit != m_caster && m_caster->IsFriendlyTo(unit) && m_spellInfo->IsPositive() &&
             unit->isInCombat() && !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO))
             m_caster->SetInCombatWith(unit);
+
+        if (Player* player = m_caster->ToPlayer())
+        {
+            if (!player->m_Controlled.empty())
+            {
+                for (Unit::ControlList::iterator itr = player->m_Controlled.begin(); itr != player->m_Controlled.end(); ++itr)
+                {
+                    Unit* controlled = *itr;
+                    if (!controlled)
+                        continue;
+
+                    Creature* cControlled = controlled->ToCreature();
+                    if (!cControlled)
+                        continue;
+
+                    if (!cControlled->IsAIEnabled)
+                        continue;
+
+                    cControlled->AI()->SetTarget(unit);
+                }
+            }
+        }
     }
 
     if (spellHitTarget)
@@ -3422,17 +3464,39 @@ void Spell::cast(bool skipCheck)
 
     CallScriptOnCastHandlers();
 
-    if (Player* player = m_caster->ToPlayer())
+    if (m_caster)
     {
-        if (m_targets.GetUnitTarget())
+        if (Unit* target = m_targets.GetUnitTarget())
         {
-            if ((!player->IsFriendlyTo(m_targets.GetUnitTarget()) || m_spellInfo->HasAura(SPELL_AURA_MOD_POSSESS)) &&
+            if ((!m_caster->IsFriendlyTo(target) || m_spellInfo->HasAura(SPELL_AURA_MOD_POSSESS)) &&
                 (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
-                player->CombatStart(m_targets.GetUnitTarget(), !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO));
+            {
+                m_caster->CombatStart(target, !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO));
 
-            if (m_targets.GetUnitTarget() != m_caster && player->IsFriendlyTo(m_targets.GetUnitTarget()) && m_spellInfo->IsPositive() &&
-                m_targets.GetUnitTarget()->isInCombat() && !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO))
-                player->SetInCombatWith(m_targets.GetUnitTarget());
+                if (Player* player = m_caster->ToPlayer())
+                    if (!player->m_Controlled.empty())
+                    {
+                        for (Unit::ControlList::iterator itr = player->m_Controlled.begin(); itr != player->m_Controlled.end(); ++itr)
+                        {
+                            Unit* controlled = *itr;
+                            if (!controlled)
+                                continue;
+
+                            Creature* cControlled = controlled->ToCreature();
+                            if (!cControlled)
+                                continue;
+
+                            if (!cControlled->IsAIEnabled)
+                                continue;
+
+                            cControlled->AI()->SetTarget(target);
+                        }
+                    }
+            }
+
+            if (target != m_caster && m_caster->IsFriendlyTo(target) && m_spellInfo->IsPositive() &&
+                target->isInCombat() && !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO))
+                m_caster->SetInCombatWith(target);
         }
     }
 

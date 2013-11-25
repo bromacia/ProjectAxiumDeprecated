@@ -132,13 +132,13 @@ class UnitAI
         explicit UnitAI(Unit* unit) : me(unit) {}
         virtual ~UnitAI() {}
 
+        virtual void InitializeAI() { if (!me->isDead()) Reset(); }
+        virtual void Reset() {};
+
+        virtual void SetTarget(Unit* /*newTarget*/) {};
         virtual bool CanAIAttack(Unit const* /*target*/) const { return true; }
         virtual void AttackStart(Unit* /*target*/);
         virtual void UpdateAI(uint32 const diff) = 0;
-
-        virtual void InitializeAI() { if (!me->isDead()) Reset(); }
-
-        virtual void Reset() {};
 
         // Called when unit is charmed
         virtual void OnCharmed(bool apply) = 0;

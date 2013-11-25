@@ -2041,7 +2041,7 @@ void Unit::CalcHealAbsorb(Unit* victim, const SpellInfo* healSpell, uint32 &heal
     healAmount = RemainingHeal;
 }
 
-void Unit::AttackerStateUpdate (Unit* victim, WeaponAttackType attType, bool extra)
+void Unit::AttackerStateUpdate(Unit* victim, WeaponAttackType attType, bool extra)
 {
     if (HasUnitState(UNIT_STATE_CANNOT_AUTOATTACK) || HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED))
         return;
@@ -2051,6 +2051,28 @@ void Unit::AttackerStateUpdate (Unit* victim, WeaponAttackType attType, bool ext
 
     if ((attType == BASE_ATTACK || attType == OFF_ATTACK) && !IsWithinLOSInMap(victim))
         return;
+
+    if (Player* player = ToPlayer())
+    {
+        if (!player->m_Controlled.empty())
+        {
+            for (Unit::ControlList::iterator itr = player->m_Controlled.begin(); itr != player->m_Controlled.end(); ++itr)
+            {
+                Unit* controlled = *itr;
+                if (!controlled)
+                    continue;
+
+                Creature* cControlled = controlled->ToCreature();
+                if (!cControlled)
+                    continue;
+
+                if (!cControlled->IsAIEnabled)
+                    continue;
+
+                cControlled->AI()->SetTarget(victim);
+            }
+        }
+    }
 
     CombatStart(victim);
     RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_MELEE_ATTACK);
