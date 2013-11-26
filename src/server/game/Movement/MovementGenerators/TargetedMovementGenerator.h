@@ -35,7 +35,7 @@ class TargetedMovementGeneratorBase
 };
 
 template<class T, typename D>
-class TargetedMovementGeneratorMedium : public MovementGeneratorMedium<T, D>, public TargetedMovementGeneratorBase
+class TargetedMovementGeneratorMedium : public MovementGeneratorMedium< T, D >, public TargetedMovementGeneratorBase
 {
     protected:
         TargetedMovementGeneratorMedium(Unit &target, float offset, float angle) :
@@ -61,11 +61,11 @@ class TargetedMovementGeneratorMedium : public MovementGeneratorMedium<T, D>, pu
 };
 
 template<class T>
-class ChaseMovementGenerator : public TargetedMovementGeneratorMedium<T, ChaseMovementGenerator<T>>
+class ChaseMovementGenerator : public TargetedMovementGeneratorMedium< T, ChaseMovementGenerator<T> >
 {
     public:
-        ChaseMovementGenerator(Unit &target) : TargetedMovementGeneratorMedium<T, ChaseMovementGenerator<T>>(target) { }
-        ChaseMovementGenerator(Unit &target, float offset, float angle) : TargetedMovementGeneratorMedium<T, ChaseMovementGenerator<T>>(target, offset, angle) { }
+        ChaseMovementGenerator(Unit &target) : TargetedMovementGeneratorMedium<T, ChaseMovementGenerator<T> >(target) { }
+        ChaseMovementGenerator(Unit &target, float offset, float angle) : TargetedMovementGeneratorMedium<T, ChaseMovementGenerator<T> >(target, offset, angle) { }
         ~ChaseMovementGenerator() { }
         MovementGeneratorType GetMovementGeneratorType() { return CHASE_MOTION_TYPE; }
         void Initialize(T &);
@@ -75,16 +75,16 @@ class ChaseMovementGenerator : public TargetedMovementGeneratorMedium<T, ChaseMo
         static void _clearUnitStateMove(T &u) { u.ClearUnitState(UNIT_STATE_CHASE_MOVE); }
         static void _addUnitStateMove(T &u)  { u.AddUnitState(UNIT_STATE_CHASE_MOVE); }
         bool EnableWalking() const { return false;}
-        bool _lostTarget(T &u) const { return u.getVictim() != GetTarget(); }
+        bool _lostTarget(T &u) const { return u.getVictim() != this->GetTarget(); }
         void _reachTarget(T &);
 };
 
 template<class T>
-class FollowMovementGenerator : public TargetedMovementGeneratorMedium<T, FollowMovementGenerator<T>>
+class FollowMovementGenerator : public TargetedMovementGeneratorMedium< T, FollowMovementGenerator<T> >
 {
     public:
-        FollowMovementGenerator(Unit &target) : TargetedMovementGeneratorMedium<T, FollowMovementGenerator<T>>(target) { }
-        FollowMovementGenerator(Unit &target, float offset, float angle) : TargetedMovementGeneratorMedium<T, FollowMovementGenerator<T>>(target, offset, angle) { }
+        FollowMovementGenerator(Unit &target) : TargetedMovementGeneratorMedium<T, FollowMovementGenerator<T> >(target) { }
+        FollowMovementGenerator(Unit &target, float offset, float angle) : TargetedMovementGeneratorMedium<T, FollowMovementGenerator<T> >(target, offset, angle) { }
         ~FollowMovementGenerator() { }
         MovementGeneratorType GetMovementGeneratorType() { return FOLLOW_MOTION_TYPE; }
         void Initialize(T &);

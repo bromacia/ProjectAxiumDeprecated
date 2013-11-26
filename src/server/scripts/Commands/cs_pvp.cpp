@@ -56,7 +56,7 @@ public:
         else if (!handler->extractPlayerTarget((char*)args, 0, &targetGUID, &targetName))
             return false;
 
-        handler->PSendSysMessage("Player: %s", targetName);
+        handler->PSendSysMessage("Player: %s", targetName.c_str());
         handler->PSendSysMessage("Current PvP Rating: %u", sPvPMgr->GetPvPRatingByGUIDLow(GUID_LOPART(targetGUID)));
         handler->PSendSysMessage("Highest PvP Rating: %u", sPvPMgr->GetLifetimePvPRatingByGUIDLow(GUID_LOPART(targetGUID)));
         return true;
@@ -74,7 +74,7 @@ public:
         else if (!handler->extractPlayerTarget((char*)args, 0, &targetGUID, &targetName))
             return false;
 
-        handler->PSendSysMessage("Player: %s", targetName);
+        handler->PSendSysMessage("Player: %s", targetName.c_str());
         handler->PSendSysMessage("2v2 MMR: %u", sPvPMgr->Get2v2MMRByGUIDLow(GUID_LOPART(targetGUID)));
         handler->PSendSysMessage("3v3 MMR: %u", sPvPMgr->Get3v3MMRByGUIDLow(GUID_LOPART(targetGUID)));
         handler->PSendSysMessage("5v5 MMR: %u", sPvPMgr->Get5v5MMRByGUIDLow(GUID_LOPART(targetGUID)));

@@ -22,7 +22,7 @@
 #include "MovementGenerator.h"
 
 template<class T>
-class FleeingMovementGenerator : public MovementGeneratorMedium<T, FleeingMovementGenerator<T>>
+class FleeingMovementGenerator : public MovementGeneratorMedium< T, FleeingMovementGenerator<T> >
 {
     public:
         FleeingMovementGenerator(uint64 fright, uint32 duration = 0) :

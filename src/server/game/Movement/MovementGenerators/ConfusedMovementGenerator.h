@@ -25,7 +25,7 @@
 #define MAX_CONF_WAYPOINTS 24
 
 template<class T>
-class ConfusedMovementGenerator : public MovementGeneratorMedium<T, ConfusedMovementGenerator<T>>
+class ConfusedMovementGenerator : public MovementGeneratorMedium< T, ConfusedMovementGenerator<T> >
 {
     public:
         explicit ConfusedMovementGenerator(uint32 duration = 0) :

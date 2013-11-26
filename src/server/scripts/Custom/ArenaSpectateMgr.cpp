@@ -203,7 +203,9 @@ void ArenaSpectateMgr::HandleSpectatePlayer(Player* player, const char* cPlayerN
     uint32 arenaId = 0;
     Player* target = NULL;
 
-    uint32 guidLow = GUID_LOPART(sObjectMgr->GetPlayerGUIDByName(cPlayerName));
+
+    uint64 tmpGuid = sObjectMgr->GetPlayerGUIDByName(cPlayerName);
+    uint32 guidLow = GUID_LOPART(tmpGuid);
     if (!guidLow)
     {
         handler->PSendSysMessage("Unable to find a player with that name.");

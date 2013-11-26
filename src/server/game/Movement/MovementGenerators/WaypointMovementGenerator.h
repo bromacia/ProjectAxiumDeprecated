@@ -56,7 +56,7 @@ template<class T>
 class WaypointMovementGenerator;
 
 template<>
-class WaypointMovementGenerator<Creature> : public MovementGeneratorMedium<Creature, WaypointMovementGenerator<Creature>>,
+class WaypointMovementGenerator<Creature> : public MovementGeneratorMedium< Creature, WaypointMovementGenerator<Creature> >,
 public PathMovementBase<Creature, WaypointPath const*>
 {
     public:

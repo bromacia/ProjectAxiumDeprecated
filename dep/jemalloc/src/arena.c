@@ -369,20 +369,13 @@ arena_run_zero(arena_chunk_t *chunk, size_t run_ind, size_t npages)
 }
 
 static inline void
-arena_run_page_mark_zeroed(arena_chunk_t *chunk, size_t run_ind)
-{
-
-	VALGRIND_MAKE_MEM_DEFINED((void *)((uintptr_t)chunk + (run_ind <<
-	    LG_PAGE)), PAGE);
-}
-
-static inline void
 arena_run_page_validate_zeroed(arena_chunk_t *chunk, size_t run_ind)
 {
 	size_t i;
 	UNUSED size_t *p = (size_t *)((uintptr_t)chunk + (run_ind << LG_PAGE));
 
-	arena_run_page_mark_zeroed(chunk, run_ind);
+	VALGRIND_MAKE_MEM_DEFINED((void *)((uintptr_t)chunk + (run_ind <<
+	    LG_PAGE)), PAGE);
 	for (i = 0; i < PAGE / sizeof(size_t); i++)
 		assert(p[i] == 0);
 }
@@ -465,9 +458,6 @@ arena_run_split(arena_t *arena, arena_run_t *run, size_t size, bool large,
 					} else if (config_debug) {
 						arena_run_page_validate_zeroed(
 						    chunk, run_ind+i);
-					} else {
-						arena_run_page_mark_zeroed(
-						    chunk, run_ind+i);
 					}
 				}
 			} else {
@@ -477,9 +467,6 @@ arena_run_split(arena_t *arena, arena_run_t *run, size_t size, bool large,
 				 */
 				arena_run_zero(chunk, run_ind, need_pages);
 			}
-		} else {
-			VALGRIND_MAKE_MEM_UNDEFINED((void *)((uintptr_t)chunk +
-			    (run_ind << LG_PAGE)), (need_pages << LG_PAGE));
 		}
 
 		/*
@@ -521,9 +508,9 @@ arena_run_split(arena_t *arena, arena_run_t *run, size_t size, bool large,
 			arena_run_page_validate_zeroed(chunk,
 			    run_ind+need_pages-1);
 		}
-		VALGRIND_MAKE_MEM_UNDEFINED((void *)((uintptr_t)chunk +
-		    (run_ind << LG_PAGE)), (need_pages << LG_PAGE));
 	}
+	VALGRIND_MAKE_MEM_UNDEFINED((void *)((uintptr_t)chunk + (run_ind <<
+	    LG_PAGE)), (need_pages << LG_PAGE));
 }
 
 static arena_chunk_t *
@@ -582,24 +569,17 @@ arena_chunk_alloc(arena_t *arena)
 		 * unless the chunk is not zeroed.
 		 */
 		if (zero == false) {
-			VALGRIND_MAKE_MEM_UNDEFINED(
-			    (void *)arena_mapp_get(chunk, map_bias+1),
-			    (size_t)((uintptr_t) arena_mapp_get(chunk,
-			    chunk_npages-1) - (uintptr_t)arena_mapp_get(chunk,
-			    map_bias+1)));
 			for (i = map_bias+1; i < chunk_npages-1; i++)
 				arena_mapbits_unzeroed_set(chunk, i, unzeroed);
-		} else {
+		} else if (config_debug) {
 			VALGRIND_MAKE_MEM_DEFINED(
 			    (void *)arena_mapp_get(chunk, map_bias+1),
-			    (size_t)((uintptr_t) arena_mapp_get(chunk,
-			    chunk_npages-1) - (uintptr_t)arena_mapp_get(chunk,
-			    map_bias+1)));
-			if (config_debug) {
-				for (i = map_bias+1; i < chunk_npages-1; i++) {
-					assert(arena_mapbits_unzeroed_get(chunk,
-					    i) == unzeroed);
-				}
+			    (void *)((uintptr_t)
+			    arena_mapp_get(chunk, chunk_npages-1)
+			    - (uintptr_t)arena_mapp_get(chunk, map_bias+1)));
+			for (i = map_bias+1; i < chunk_npages-1; i++) {
+				assert(arena_mapbits_unzeroed_get(chunk, i) ==
+				    unzeroed);
 			}
 		}
 		arena_mapbits_unallocated_set(chunk, chunk_npages-1,
@@ -1478,7 +1458,6 @@ arena_malloc_small(arena_t *arena, size_t size, bool zero)
 			} else if (opt_zero)
 				memset(ret, 0, size);
 		}
-		VALGRIND_MAKE_MEM_UNDEFINED(ret, size);
 	} else {
 		if (config_fill && opt_junk) {
 			arena_alloc_junk_small(ret, &arena_bin_info[binind],
@@ -1487,6 +1466,7 @@ arena_malloc_small(arena_t *arena, size_t size, bool zero)
 		VALGRIND_MAKE_MEM_UNDEFINED(ret, size);
 		memset(ret, 0, size);
 	}
+	VALGRIND_MAKE_MEM_UNDEFINED(ret, size);
 
 	return (ret);
 }

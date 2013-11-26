@@ -231,8 +231,8 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
 template<class T>
 void ChaseMovementGenerator<T>::_reachTarget(T &owner)
 {
-    if (owner.IsWithinObjectSizeDistance(i_target.getTarget(), MELEE_RANGE))
-        owner.Attack(i_target.getTarget(), true);
+    if (owner.IsWithinObjectSizeDistance(this->i_target.getTarget(), MELEE_RANGE))
+        owner.Attack(this->i_target.getTarget(), true);
 }
 
 template<>

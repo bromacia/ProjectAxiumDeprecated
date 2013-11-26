@@ -4609,7 +4609,7 @@ bool ChatHandler::HandleUnFreezeCommand(const char* args)
             Field* fields = result->Fetch();
 
             CharacterDatabase.PQuery("DELETE FROM character_aura WHERE character_aura.spell = 9454 AND character_aura.guid = '%u'", fields[0].GetUInt64());
-            CharacterDatabase.PQuery("UPDATE characters SET isFrozen = 0 WHERE name = '%s'", name);
+            CharacterDatabase.PQuery("UPDATE characters SET isFrozen = 0 WHERE name = '%s'", name.c_str());
             PSendSysMessage(LANG_COMMAND_UNFREEZE, name.c_str());
         }
         else

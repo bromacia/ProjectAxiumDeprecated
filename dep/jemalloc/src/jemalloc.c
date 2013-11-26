@@ -282,7 +282,7 @@ arenas_cleanup(void *arg)
 	malloc_mutex_unlock(&arenas_lock);
 }
 
-JEMALLOC_ALWAYS_INLINE_C void
+static JEMALLOC_ATTR(always_inline) void
 malloc_thread_init(void)
 {
 
@@ -299,7 +299,7 @@ malloc_thread_init(void)
 		quarantine_alloc_hook();
 }
 
-JEMALLOC_ALWAYS_INLINE_C bool
+static JEMALLOC_ATTR(always_inline) bool
 malloc_init(void)
 {
 
@@ -436,9 +436,8 @@ malloc_conf_init(void)
 			}
 			break;
 		case 1: {
-			int linklen = 0;
 #ifndef _WIN32
-			int saved_errno = errno;
+			int linklen;
 			const char *linkname =
 #  ifdef JEMALLOC_PREFIX
 			    "/etc/"JEMALLOC_PREFIX"malloc.conf"
@@ -447,20 +446,21 @@ malloc_conf_init(void)
 #  endif
 			    ;
 
-			/*
-			 * Try to use the contents of the "/etc/malloc.conf"
-			 * symbolic link's name.
-			 */
-			linklen = readlink(linkname, buf, sizeof(buf) - 1);
-			if (linklen == -1) {
-				/* No configuration specified. */
-				linklen = 0;
-				/* restore errno */
-				set_errno(saved_errno);
-			}
+			if ((linklen = readlink(linkname, buf,
+			    sizeof(buf) - 1)) != -1) {
+				/*
+				 * Use the contents of the "/etc/malloc.conf"
+				 * symbolic link's name.
+				 */
+				buf[linklen] = '\0';
+				opts = buf;
+			} else
 #endif
-			buf[linklen] = '\0';
-			opts = buf;
+			{
+				/* No configuration specified. */
+				buf[0] = '\0';
+				opts = buf;
+			}
 			break;
 		} case 2: {
 			const char *envname =
@@ -1402,7 +1402,7 @@ je_mallctlbymib(const size_t *mib, size_t miblen, void *oldp, size_t *oldlenp,
  */
 #ifdef JEMALLOC_EXPERIMENTAL
 
-JEMALLOC_ALWAYS_INLINE_C void *
+static JEMALLOC_ATTR(always_inline) void *
 iallocm(size_t usize, size_t alignment, bool zero, bool try_tcache,
     arena_t *arena)
 {

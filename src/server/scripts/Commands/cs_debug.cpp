@@ -1067,7 +1067,7 @@ public:
                 else
                     handler->PSendSysMessage("Queued spell target: NULL");
 
-                handler->PSendSysMessage("MOVE_RUN: %f, MOVE_WALK: %f", pet->GetSpeed(UnitMoveType::MOVE_RUN), pet->GetSpeed(UnitMoveType::MOVE_WALK));
+                handler->PSendSysMessage("MOVE_RUN: %f, MOVE_WALK: %f", pet->GetSpeed(MOVE_RUN), pet->GetSpeed(MOVE_WALK));
             }
             else
                 handler->PSendSysMessage("No pet found");

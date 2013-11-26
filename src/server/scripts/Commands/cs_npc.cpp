@@ -27,7 +27,6 @@ EndScriptData */
 #include "Chat.h"
 #include "Transport.h"
 #include "CreatureGroups.h"
-#include "TargetedMovementGenerator.h" // for HandleNpcUnFollowCommand
 
 class npc_commandscript : public CommandScript
 {
@@ -52,12 +51,6 @@ public:
         {
             { "item",           SEC_GAMEMASTER,     false, &HandleNpcDeleteVendorItemCommand,  "", NULL },
             { "",               SEC_GAMEMASTER,     false, &HandleNpcDeleteCommand,            "", NULL },
-            { NULL,             0,                  false, NULL,                               "", NULL }
-        };
-        static ChatCommand npcFollowCommandTable[] =
-        {
-            { "stop",           SEC_GAMEMASTER,     false, &HandleNpcUnFollowCommand,          "", NULL },
-            { "",               SEC_GAMEMASTER,     false, &HandleNpcFollowCommand,            "", NULL },
             { NULL,             0,                  false, NULL,                               "", NULL }
         };
         static ChatCommand npcSetCommandTable[] =
@@ -91,7 +84,6 @@ public:
             { "tame",           SEC_GAMEMASTER,     false, &HandleNpcTameCommand,              "", NULL },
             { "add",            SEC_GAMEMASTER,     false, NULL,                 "", npcAddCommandTable },
             { "delete",         SEC_GAMEMASTER,     false, NULL,              "", npcDeleteCommandTable },
-            { "follow",         SEC_GAMEMASTER,     false, NULL,              "", npcFollowCommandTable },
             { "set",            SEC_GAMEMASTER,     false, NULL,                 "", npcSetCommandTable },
             { NULL,             0,                  false, NULL,                               "", NULL }
         };
@@ -508,26 +500,6 @@ public:
 
         handler->SendSysMessage(LANG_VALUE_SAVED_REJOIN);
 
-        return true;
-    }
-
-    //npc follow handling
-    static bool HandleNpcFollowCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        Creature* creature = handler->getSelectedCreature();
-
-        if (!creature)
-        {
-            handler->PSendSysMessage(LANG_SELECT_CREATURE);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        // Follow player - Using pet's default dist and angle
-        creature->GetMotionMaster()->MoveFollow(player, PET_FOLLOW_DIST, creature->GetFollowAngle());
-
-        handler->PSendSysMessage(LANG_CREATURE_FOLLOW_YOU_NOW, creature->GetName());
         return true;
     }
 
@@ -1019,43 +991,6 @@ public:
 
         creature->MonsterTextEmote(args, 0);
 
-        return true;
-    }
-
-    //npc unfollow handling
-    static bool HandleNpcUnFollowCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        Player* player = handler->GetSession()->GetPlayer();
-        Creature* creature = handler->getSelectedCreature();
-
-        if (!creature)
-        {
-            handler->PSendSysMessage(LANG_SELECT_CREATURE);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        if (/*creature->GetMotionMaster()->empty() ||*/
-            creature->GetMotionMaster()->GetCurrentMovementGeneratorType () != FOLLOW_MOTION_TYPE)
-        {
-            handler->PSendSysMessage(LANG_CREATURE_NOT_FOLLOW_YOU, creature->GetName());
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        FollowMovementGenerator<Creature> const* mgen = static_cast<FollowMovementGenerator<Creature> const*>((creature->GetMotionMaster()->top()));
-
-        if (mgen->GetTarget() != player)
-        {
-            handler->PSendSysMessage(LANG_CREATURE_NOT_FOLLOW_YOU, creature->GetName());
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        // reset movement
-        creature->GetMotionMaster()->MovementExpired(true);
-
-        handler->PSendSysMessage(LANG_CREATURE_NOT_FOLLOW_YOU_NOW, creature->GetName());
         return true;
     }
 

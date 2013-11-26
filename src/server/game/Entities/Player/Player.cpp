@@ -26012,7 +26012,7 @@ void Player::HandlePvPKill()
         {
             std::string attackerName = "";
             sObjectMgr->GetPlayerNameByGUIDLow(attackerGUIDLow, attackerName);
-            ChatHandler(m_session).PSendSysMessage("You have been deducted %u PvP rating for being killed by %s.", ratingLoss, attackerName);
+            ChatHandler(m_session).PSendSysMessage("You have been deducted %u PvP rating for being killed by %s.", ratingLoss, attackerName.c_str());
         }
     }
 }

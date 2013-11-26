@@ -786,7 +786,7 @@ bool MallMgr::EnchantItem(Player* player, Creature* creature, uint16 enchantId, 
     Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
     if (!pItem)
     {
-        handler->PSendSysMessage("You have no item equipped in your %s slot", SlotToSlotString(slot));
+        handler->PSendSysMessage("You have no item equipped in your %s slot", SlotToSlotString(slot).c_str());
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
@@ -794,7 +794,7 @@ bool MallMgr::EnchantItem(Player* player, Creature* creature, uint16 enchantId, 
     const ItemTemplate* pItemTemplate = pItem->GetTemplate();
     if (!pItemTemplate)
     {
-        handler->PSendSysMessage("Unable to get template data for the item in your %s slot", SlotToSlotString(slot));
+        handler->PSendSysMessage("Unable to get template data for the item in your %s slot", SlotToSlotString(slot).c_str());
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
@@ -878,7 +878,7 @@ bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
     const SkillLineEntry* skillLineEntry = sSkillLineStore.LookupEntry(skill);
     if (!skillLineEntry)
     {
-        handler->PSendSysMessage("Unable to get skill line entry for profession: %s", SkillToSkillString(skill));
+        handler->PSendSysMessage("Unable to get skill line entry for profession: %s", SkillToSkillString(skill).c_str());
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
@@ -899,7 +899,7 @@ bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
 
     if (!professionSpellId)
     {
-        handler->PSendSysMessage("Unable to get spell for profession: %s", SkillToSkillString(skill));
+        handler->PSendSysMessage("Unable to get spell for profession: %s", SkillToSkillString(skill).c_str());
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
