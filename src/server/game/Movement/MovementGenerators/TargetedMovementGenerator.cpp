@@ -49,7 +49,7 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
 
         if (!i_offset)
         {
-            dist = 3.0f;
+            dist = 4.0f;
             size = owner.GetObjectSize();
         }
         else
@@ -210,12 +210,7 @@ bool TargetedMovementGeneratorMedium<T,D>::Update(T &owner, uint32 time_diff)
         G3D::Vector3 dest = owner.movespline->FinalDestination();
 
         if (owner.GetTypeId() == TYPEID_UNIT)
-        {
-            if (owner.canFly())
-                targetMoved = !i_target->IsWithinDist3d(dest.x, dest.y, dest.z, allowed_dist);
-            else
-                targetMoved = !i_target->IsWithinDist2d(dest.x, dest.y, allowed_dist);
-        }
+            targetMoved = !i_target->IsWithinDist3d(dest.x, dest.y, dest.z, allowed_dist);
     }
 
     if (i_recalculateTravel || targetMoved)
