@@ -1023,22 +1023,22 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
 
     if (m_spellInfo->IsSpellDelaySpell())
     {
-        targetInfo.timeDelay = 150;
+        targetInfo.timeDelay = sWorld->getIntConfig(CONFIG_SPELL_DELAY_SPELL_TIME);
         m_delayMoment = targetInfo.timeDelay;
     }
     if (m_spellInfo->IsMovementDelaySpell())
     {
-        targetInfo.timeDelay = 10;
+        targetInfo.timeDelay = sWorld->getIntConfig(CONFIG_MOVEMENT_DELAY_SPELL_TIME);
         m_delayMoment = targetInfo.timeDelay;
     }
     if (m_spellInfo->IsSilenceDelaySpell())
     {
-        targetInfo.timeDelay = 10;
+        targetInfo.timeDelay = sWorld->getIntConfig(CONFIG_SILENCE_DELAY_SPELL_TIME);
         m_delayMoment = targetInfo.timeDelay;
     }
     if (m_spellInfo->IsMiscDelaySpell())
     {
-        targetInfo.timeDelay = 100;
+        targetInfo.timeDelay = sWorld->getIntConfig(CONFIG_MISC_DELAY_SPELL_TIME);
         m_delayMoment = targetInfo.timeDelay;
     }
 

@@ -1327,6 +1327,11 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_CONFUSED_MOVEMENT_GENERATOR_RESET_TIME] = ConfigMgr::GetIntDefault("ConfusedMovementGeneratorResetTime", 100);
     m_int_configs[CONFIG_FLEEING_MOVEMENT_GENERATOR_RESET_TIME]  = ConfigMgr::GetIntDefault("FleeingMovementGeneratorResetTime", 1000);
 
+    m_int_configs[CONFIG_SPELL_DELAY_SPELL_TIME] = ConfigMgr::GetIntDefault("SpellDelaySpellTime", 100);
+    m_int_configs[CONFIG_MOVEMENT_DELAY_SPELL_TIME] = ConfigMgr::GetIntDefault("MovementDelaySpellTime", 10);
+    m_int_configs[CONFIG_SILENCE_DELAY_SPELL_TIME] = ConfigMgr::GetIntDefault("SilenceDelaySpellTime", 10);
+    m_int_configs[CONFIG_MISC_DELAY_SPELL_TIME] = ConfigMgr::GetIntDefault("MiscDelaySpellTime", 100);
+
     sScriptMgr->OnConfigLoad(reload);
 }
 
