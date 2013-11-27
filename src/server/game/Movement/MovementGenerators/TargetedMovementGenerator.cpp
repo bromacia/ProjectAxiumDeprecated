@@ -49,8 +49,8 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner, bool upd
 
         if (!i_offset)
         {
-            dist = 4.0f;
-            size = owner.GetObjectSize();
+            dist = i_target->GetCombatReach();
+            size = i_target->GetCombatReach() - i_target->GetObjectSize();
         }
         else
         {
