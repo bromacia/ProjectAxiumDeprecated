@@ -43,6 +43,7 @@ class CombatAI : public CreatureAI
 
         void InitializeAI();
         void Reset();
+        void EnterCombat(Unit* who);
         void SetTarget(Unit* newTarget);
         void JustDied(Unit* killer);
         void UpdateAI(const uint32 diff);
@@ -61,6 +62,7 @@ class CasterAI : public CombatAI
         explicit CasterAI(Creature* c) : CombatAI(c) { m_attackDist = MELEE_RANGE; target = NULL; }
         void InitializeAI();
         void Reset();
+        void EnterCombat(Unit* who);
         void SetTarget(Unit* newTarget);
         void AttackStart(Unit* victim) { AttackStartCaster(victim, m_attackDist); }
         void UpdateAI(const uint32 diff);

@@ -76,6 +76,17 @@ void CombatAI::Reset()
     events.Reset();
 }
 
+void CombatAI::EnterCombat(Unit* who)
+{
+    for (SpellVct::iterator i = spells.begin(); i != spells.end(); ++i)
+    {
+        if (AISpellInfo[*i].condition == AICOND_AGGRO)
+            me->CastSpell(who, *i, false);
+        else if (AISpellInfo[*i].condition == AICOND_COMBAT)
+            events.ScheduleEvent(*i, AISpellInfo[*i].cooldown + rand()%AISpellInfo[*i].cooldown);
+    }
+}
+
 void CombatAI::SetTarget(Unit* newTarget)
 {
     Unit* owner = me->GetCharmerOrOwner();
@@ -117,41 +128,39 @@ void CombatAI::UpdateAI(const uint32 diff)
 {
     events.Update(diff);
 
-    Unit* owner = me->GetCharmerOrOwner();
-
-    if (!UpdateTarget())
-    {
-        if (owner)
-        {
-            if (!me->HasUnitState(UNIT_STATE_FOLLOW))
-            {
-                me->GetMotionMaster()->Clear();
-                me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
-            }
-        }
-
-        return;
-    }
-
     if (me->IsCrowdControlled())
         return;
 
-    if (target->HasBreakableCrowdControlAura(me))
+    if (Unit* owner = me->GetCharmerOrOwner())
     {
-        me->CombatStop();
-        me->CastStop();
-
-        if (owner)
+        if (!UpdateTarget())
         {
             if (!me->HasUnitState(UNIT_STATE_FOLLOW))
             {
                 me->GetMotionMaster()->Clear();
                 me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
             }
+
+            return;
         }
 
-        return;
+        if (target->HasBreakableCrowdControlAura(me))
+        {
+            me->CombatStop();
+            me->CastStop();
+
+            if (!me->HasUnitState(UNIT_STATE_FOLLOW))
+            {
+                me->GetMotionMaster()->Clear();
+                me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
+            }
+
+            return;
+        }
     }
+    else
+        if (!UpdateVictim())
+            return;
 
     if (me->HasUnitState(UNIT_STATE_CASTING))
         return;
@@ -216,6 +225,30 @@ void CasterAI::Reset()
     events.Reset();
 }
 
+void CasterAI::EnterCombat(Unit* who)
+{
+    if (spells.empty())
+        return;
+
+    uint32 spell = rand()%spells.size();
+    uint32 count = 0;
+    for (SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr, ++count)
+    {
+        if (AISpellInfo[*itr].condition == AICOND_AGGRO)
+            me->CastSpell(who, *itr, false);
+        else if (AISpellInfo[*itr].condition == AICOND_COMBAT)
+        {
+            uint32 cooldown = GetAISpellInfo(*itr)->realCooldown;
+            if (count == spell)
+            {
+                DoCast(spells[spell]);
+                cooldown += me->GetCurrentSpellCastTime(*itr);
+            }
+            events.ScheduleEvent(*itr, cooldown);
+        }
+    }
+}
+
 void CasterAI::SetTarget(Unit* newTarget)
 {
     if (spells.empty())
@@ -274,66 +307,73 @@ void CasterAI::UpdateAI(const uint32 diff)
 
     Unit* owner = me->GetCharmerOrOwner();
 
-    if (!UpdateTarget())
+    if (owner)
     {
-        if (owner)
+        if (!UpdateTarget())
         {
-            if (!me->HasUnitState(UNIT_STATE_FOLLOW))
+            if (owner)
             {
-                me->GetMotionMaster()->Clear();
-                me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
+                if (!me->HasUnitState(UNIT_STATE_FOLLOW))
+                {
+                    me->GetMotionMaster()->Clear();
+                    me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
+                }
             }
+
+            return;
         }
 
-        return;
-    }
+        if (me->IsCrowdControlled())
+            return;
 
-    if (me->IsCrowdControlled())
-        return;
-
-    if (!me->IsWithinDistInMap(target, m_attackDist))
-    {
-        me->CombatStop();
-        me->CastStop();
-
-        if (owner)
+        if (!me->IsWithinDistInMap(target, m_attackDist))
         {
-            if (!me->HasUnitState(UNIT_STATE_FOLLOW))
+            me->CombatStop();
+            me->CastStop();
+
+            if (owner)
             {
-                me->GetMotionMaster()->Clear();
-                me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
+                if (!me->HasUnitState(UNIT_STATE_FOLLOW))
+                {
+                    me->GetMotionMaster()->Clear();
+                    me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
+                }
             }
+
+            return;
         }
 
-        return;
-    }
-
-    if (target->HasBreakableCrowdControlAura(me))
-    {
-        me->CombatStop();
-        me->CastStop();
-
-        if (owner)
+        if (target->HasBreakableCrowdControlAura(me))
         {
-            if (!me->HasUnitState(UNIT_STATE_FOLLOW))
-            {
-                me->GetMotionMaster()->Clear();
-                me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
-            }
-        }
+            me->CombatStop();
+            me->CastStop();
 
-        return;
+            if (owner)
+            {
+                if (!me->HasUnitState(UNIT_STATE_FOLLOW))
+                {
+                    me->GetMotionMaster()->Clear();
+                    me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle());
+                }
+            }
+
+            return;
+        }
     }
+    else
+        if (!UpdateVictim())
+            return;
 
     if (!me->IsWithinLOSInMap(target))
     {
         me->CastStop();
 
-        if (!me->HasUnitState(UNIT_STATE_CHASE))
-        {
-            me->GetMotionMaster()->Clear();
-            me->GetMotionMaster()->MoveChase(target);
-        }
+        if (owner)
+            if (!me->HasUnitState(UNIT_STATE_CHASE))
+            {
+                me->GetMotionMaster()->Clear();
+                me->GetMotionMaster()->MoveChase(target);
+            }
 
         return;
     }
