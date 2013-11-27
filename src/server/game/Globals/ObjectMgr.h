@@ -586,13 +586,16 @@ typedef UNORDERED_MAP<uint32, DungeonEncounterList> DungeonEncounterMap;
 
 struct ExtendedCost2
 {
-    ExtendedCost2() : Required_PvP_Rating(0), Required_2v2_Rating(0), Required_3v3_Rating(0), Required_5v5_Rating(0), Required_Title(0) {}
+    ExtendedCost2() : Required_PvP_Rating(0), Required_2v2_Rating(0), Required_3v3_Rating(0), Required_5v5_Rating(0),
+        Required_Title(0), Required_Item_Id(0), Required_Item_Count(0) {}
 
     uint16 Required_PvP_Rating;
     uint16 Required_2v2_Rating;
     uint16 Required_3v3_Rating;
     uint16 Required_5v5_Rating;
     uint8  Required_Title;
+    uint32 Required_Item_Id;
+    uint32 Required_Item_Count;
 };
 
 typedef std::map<uint32, ExtendedCost2> ExtendedCost2Map;

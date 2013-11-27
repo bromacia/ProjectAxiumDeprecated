@@ -76,7 +76,7 @@
 #include "DuelMgr.h"
 #include "../../../scripts/Custom/MallMgr.h"
 #include "../../../scripts/Custom/TransmogMgr.h"
-#include "../../../scripts/Custom/npc_class_trainer.cpp"
+#include "../../../scripts/Custom/npc_world_pvp.cpp"
 
 #define ZONE_UPDATE_INTERVAL (1*IN_MILLISECONDS)
 
@@ -20976,22 +20976,10 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
         return false;
     }
 
-    if (creature->IsClassTrainer())
-    {
-        npc_class_trainer::BuyGlyph(this, creature, item);
-        return false;
-    }
-
     VendorItemData const* vItems = creature->GetVendorItems();
     if (!vItems || vItems->Empty())
     {
         SendBuyError(BUY_ERR_CANT_FIND_ITEM, creature, item, 0);
-        return false;
-    }
-
-    if (creature->IsTransmogrifier())
-    {
-        TransmogrifyItem(item, vItems->GetItemByVendorSlot(vendorslot));
         return false;
     }
 
@@ -21003,7 +20991,7 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
 
     VendorItem const* crItem = NULL;
 
-    if (creature->IsMallNPC())
+    if (creature->IsTransmogrifier() || creature->IsMallNPC() || creature->IsWorldPvPNPC())
         crItem = vItems->GetItemByItemId(item);
     else
         crItem = vItems->GetItemByVendorSlot(vendorslot);
@@ -21011,6 +20999,18 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
     if (!crItem || crItem->item != item)
     {
         SendBuyError(BUY_ERR_CANT_FIND_ITEM, creature, item, 0);
+        return false;
+    }
+
+    if (creature->IsTransmogrifier())
+    {
+        TransmogrifyItem(item, crItem);
+        return false;
+    }
+
+    if (creature->IsWorldPvPNPC())
+    {
+        BuyWorldPvPItem(creature, crItem, pProto, item, vendorslot, count, bag);
         return false;
     }
 
@@ -25601,6 +25601,10 @@ bool Player::CheckExtendedCost2(const VendorItem* vItem)
             return false;
     }
 
+    if (extendedCost2.Required_Item_Id && extendedCost2.Required_Item_Count)
+        if (!HasItemCount(extendedCost2.Required_Item_Id, extendedCost2.Required_Item_Count))
+            return false;
+
     return true;
 }
 
@@ -25652,8 +25656,7 @@ std::string Player::CreateExtendedCost2ErrorMessage(uint32 extendedCost2Id)
     if (extendedCost2.Required_Title)
     {
         std::string titleName = "";
-        const CharTitlesEntry* titleInfo = sCharTitlesStore.LookupEntry(extendedCost2.Required_Title);
-        if (titleInfo)
+        if (const CharTitlesEntry* titleInfo = sCharTitlesStore.LookupEntry(extendedCost2.Required_Title))
         {
             titleName = titleInfo->name[GetSession()->GetSessionDbcLocale()];
 
@@ -25669,6 +25672,23 @@ std::string Player::CreateExtendedCost2ErrorMessage(uint32 extendedCost2Id)
                 message << " & ";
 
             message << "Title: " << titleName;
+
+            if (!firstMessageAdded)
+                firstMessageAdded = true;
+        }
+    }
+
+    if (extendedCost2.Required_Item_Id && extendedCost2.Required_Item_Count)
+    {
+        std::string itemName = "";
+        if (const ItemTemplate* itemTemplate = sObjectMgr->GetItemTemplate(extendedCost2.Required_Item_Id))
+        {
+            itemName = itemTemplate->Name1;
+
+            if (firstMessageAdded)
+                message << " & ";
+
+            message << extendedCost2.Required_Item_Count << " " << itemName << "(s)";
         }
     }
 
@@ -26027,4 +26047,37 @@ void Player::HandleBattlegroundHonorableKill()
 
     if (HasPvPNotificationsEnabled())
         ChatHandler(m_session).PSendSysMessage("You have been awarded 1 PvP rating for assisting in an honorable kill.");
+}
+
+void Player::BuyWorldPvPItem(Creature* creature, const VendorItem* vItem, const ItemTemplate* vItemTemplate, uint32 itemId, uint32 vendorSlot, uint8 count, uint8 bagSlot)
+{
+    if (!CheckExtendedCost2(vItem))
+    {
+        ChatHandler(this).PSendSysMessage("%s requires %s.", vItemTemplate->Name1.c_str(), CreateExtendedCost2ErrorMessage(vItem->ExtendedCost2).c_str());
+        return;
+    }
+
+    if ((bagSlot == NULL_BAG) || IsInventoryPos(bagSlot, NULL_SLOT))
+    {
+        ItemPosCountVec vDest;
+        uint16 uiDest = 0;
+        InventoryResult msg = CanStoreNewItem(bagSlot, NULL_SLOT, vDest, itemId, vItemTemplate->BuyCount * count);
+        if (msg != EQUIP_ERR_OK)
+        {
+            SendEquipError(msg, NULL, NULL, itemId);
+            return;
+        }
+
+        Item* item = StoreNewItem(vDest, itemId, true);
+        if (!item)
+            return;
+
+        WorldPacket data(SMSG_BUY_ITEM, (8+4+4+4));
+        data << uint64(creature->GetGUID());
+        data << uint32(vendorSlot + 1); // numbered from 1 at client
+        data << int32(0xFFFFFFFF);
+        data << uint32(count);
+        GetSession()->SendPacket(&data);
+        SendNewItem(item, vItemTemplate->BuyCount * count, true, false, false);
+    }
 }

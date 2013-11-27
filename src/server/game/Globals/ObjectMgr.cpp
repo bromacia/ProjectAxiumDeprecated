@@ -8890,7 +8890,8 @@ VehicleAccessoryList const* ObjectMgr::GetVehicleAccessoryList(Vehicle* veh) con
 
 void ObjectMgr::LoadExtendedCost2()
 {
-    QueryResult result = WorldDatabase.Query("SELECT Id, required_pvp_rating, required_2v2_rating, required_3v3_rating, required_5v5_rating, required_title FROM extended_cost_2");
+    QueryResult result = WorldDatabase.Query("SELECT Id, required_pvp_rating, required_2v2_rating, required_3v3_rating, "
+        "required_5v5_rating, required_title, required_item_id, required_item_count FROM extended_cost_2");
     if (!result)
     {
         sLog->outErrorDb(">> Failed to load ExtendedCost2. DB table `extended_cost_2` is empty!");
@@ -8910,6 +8911,8 @@ void ObjectMgr::LoadExtendedCost2()
         extendedCost2.Required_3v3_Rating = fields[3].GetUInt16();
         extendedCost2.Required_5v5_Rating = fields[4].GetUInt16();
         extendedCost2.Required_Title      = fields[5].GetUInt8();
+        extendedCost2.Required_Item_Id    = fields[6].GetUInt32();
+        extendedCost2.Required_Item_Count = fields[7].GetUInt32();
 
         extendedCost2Map[fields[0].GetUInt32()] = extendedCost2;
     }

@@ -2714,6 +2714,8 @@ class Player : public Unit, public GridObject<Player>
         void IncrementGossipPage() { ++m_gossipPage; }
         void DecrementGossipPage() { --m_gossipPage; }
 
+        void BuyWorldPvPItem(Creature* creature, const VendorItem* vItem, const ItemTemplate* vItemTemplate, uint32 itemId, uint32 vendorSlot, uint8 count, uint8 bagSlot);
+
     protected:
         // Gamemaster whisper whitelist
         WhisperListContainer WhisperList;

@@ -144,7 +144,7 @@ class npc_world_pvp : public CreatureScript
 
                         int32 leftInStock = 0xFFFFFFFF; // The item will appear normally
 
-                        if (!CheckItemCost(vItemTemplate))
+                        if (!player->CheckExtendedCost2(vItem))
                             leftInStock = 0x0; // The item will appear greyed out
 
                         ++count;
@@ -194,19 +194,10 @@ class npc_world_pvp : public CreatureScript
             return true;
         }
 
-        bool CheckItemCost(const ItemTemplate* itemTemplate)
-        {
-            return true;
-        }
-
         void HandleRandomTeleport(Player* player)
         {
             LoadTeleportLocations();
             player->TeleportTo(*locations[urand(0, locations.size())]);
-        }
-
-        void LoadItemCosts()
-        {
         }
 
         void LoadTeleportLocations()

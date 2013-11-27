@@ -749,7 +749,7 @@ struct ItemTemplate
             ItemId == 16040 ||      // Arcane Bomb
             ItemId == 32413 ||      // Frost Grenade
             ItemId == 2820 ||       // Nifty Stopwatch
-            ItemId == 23835 ||      // Gnomish Lag Machine
+            ItemId == 1404 ||       // Tidal Charm
             ItemId == 23824 ||      // Rocket Boots Xtreme
             ItemId == 10830 ||      // M73 Frag Grenade
             ItemId == 4397 ||       // Gnomish Cloaking Device
@@ -757,9 +757,9 @@ struct ItemTemplate
             ItemId == 18638 ||      // Hyper-Radiant Flame Reflector
             ItemId == 18639 ||      // Ultra-Flash Shadow Reflector
             ItemId == 10720 ||      // Gnomish Net-o-Matic Projector
-            ItemId == 1404 ||       // Tidal Charm
+            ItemId == 23825 ||      // Nigh Invulnerability Belt
             ItemId == 10588 ||      // Goblin Rocket Helmet
-            ItemId == 23825;        // Nigh Invulnerability Belt
+            ItemId == 23835;        // Gnomish Lag Machine
     }
 };
 
