@@ -2622,7 +2622,7 @@ class Player : public Unit, public GridObject<Player>
         void SetSelectedTransmogItemSlot(uint8 slot) { m_selectedTransmogItemSlot = slot; }
         void TransmogrifyItem(uint32 item, const VendorItem* vItem);
         bool CheckItem(const ItemTemplate* vItemTemplate, const ItemTemplate* pItemTemplate);
-        bool CheckExtendedCost2(const VendorItem* vItem);
+        bool CheckExtendedCost2(const ItemTemplate* vItemTemplate);
         std::string CreateExtendedCost2ErrorMessage(uint32 extendedCost2Id);
 
         TransmogItemsSaveQueue transmogItemsSaveQueue;
@@ -2714,7 +2714,7 @@ class Player : public Unit, public GridObject<Player>
         void IncrementGossipPage() { ++m_gossipPage; }
         void DecrementGossipPage() { --m_gossipPage; }
 
-        void BuyWorldPvPItem(Creature* creature, const VendorItem* vItem, const ItemTemplate* vItemTemplate, uint32 itemId, uint32 vendorSlot, uint8 count, uint8 bagSlot);
+        void BuyWorldPvPItem(Creature* creature, const ItemTemplate* vItemTemplate, uint32 itemId, uint32 vendorSlot, uint8 count, uint8 bagSlot);
 
     protected:
         // Gamemaster whisper whitelist

@@ -319,14 +319,13 @@ enum ChatType
 // Vendors
 struct VendorItem
 {
-    VendorItem(uint32 _item, int32 _maxcount, uint32 _incrtime, uint32 _ExtendedCost, uint32 _ExtendedCost2)
-        : item(_item), maxcount(_maxcount), incrtime(_incrtime), ExtendedCost(_ExtendedCost), ExtendedCost2(_ExtendedCost2) {}
+    VendorItem(uint32 _item, int32 _maxcount, uint32 _incrtime, uint32 _ExtendedCost)
+        : item(_item), maxcount(_maxcount), incrtime(_incrtime), ExtendedCost(_ExtendedCost) {}
 
     uint32 item;
     uint32 maxcount;                                        // 0 for infinity item amount
     uint32 incrtime;                                        // time for restore items amount if maxcount != 0
     uint32 ExtendedCost;
-    uint32 ExtendedCost2;
 
     //helpers
     bool IsGoldRequired(ItemTemplate const* pProto) const { return pProto->Flags2 & ITEM_FLAGS_EXTRA_EXT_COST_REQUIRES_GOLD || !ExtendedCost; }
@@ -342,10 +341,9 @@ struct VendorItemData
     VendorItemList GetVendorItemList() const { return m_items; }
     bool Empty() const { return m_items.empty(); }
     uint16 GetItemCount() const { return m_items.size(); }
-    void AddItem(uint32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost, uint32 ExtendedCost2);
-    void UpdateExtendedCost2(uint32 item, uint32 ExtendedCost2);
+    void AddItem(uint32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost);
     bool RemoveItem(uint32 item);
-    VendorItem const* FindItemCostPair(uint32 item, uint32 extendedCost) const;
+    VendorItem const* FindItemCostPair(uint32 item_id, uint32 extendedCost) const;
     void Clear()
     {
         for (VendorItemList::const_iterator itr = m_items.begin(); itr != m_items.end(); ++itr)

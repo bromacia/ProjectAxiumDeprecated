@@ -13277,7 +13277,12 @@ void Player::AddItemToBuyBackSlot(Item* pItem)
 
         SetUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + (eslot * 2), pItem->GetGUID());
         if (ItemTemplate const* pProto = pItem->GetTemplate())
-            SetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + eslot, pProto->SellPrice ? pProto->SellPrice * pItem->GetCount() : 1);
+        {
+            if (pProto->ExtendedCost2)
+                SetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + eslot, pItem->GetCount());
+            else
+                SetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + eslot, pProto->SellPrice ? pProto->SellPrice * pItem->GetCount() : 1);
+        }
         else
             SetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + eslot, 0);
         SetUInt32Value(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + eslot, (uint32)etime);
@@ -21010,7 +21015,7 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
 
     if (creature->IsWorldPvPNPC())
     {
-        BuyWorldPvPItem(creature, crItem, pProto, item, vendorslot, count, bag);
+        BuyWorldPvPItem(creature, pProto, item, vendorslot, count, bag);
         return false;
     }
 
@@ -25526,9 +25531,9 @@ void Player::TransmogrifyItem(uint32 item, const VendorItem* vItem)
     if (!CheckItem(vItemTemplate, pItemTemplate))
         return;
 
-    if (!CheckExtendedCost2(vItem))
+    if (!CheckExtendedCost2(vItemTemplate))
     {
-        ChatHandler(this).PSendSysMessage("%s requires %s.", vItemTemplate->Name1.c_str(), CreateExtendedCost2ErrorMessage(vItem->ExtendedCost2).c_str());
+        ChatHandler(this).PSendSysMessage("%s requires %s.", vItemTemplate->Name1.c_str(), CreateExtendedCost2ErrorMessage(vItemTemplate->ExtendedCost2).c_str());
         return;
     }
 
@@ -25568,9 +25573,9 @@ bool Player::CheckItem(const ItemTemplate* vItemTemplate, const ItemTemplate* pI
     return true;
 }
 
-bool Player::CheckExtendedCost2(const VendorItem* vItem)
+bool Player::CheckExtendedCost2(const ItemTemplate* vItemTemplate)
 {
-    ExtendedCost2 extendedCost2 = sObjectMgr->GetExtendedCost2Map()[vItem->ExtendedCost2];
+    ExtendedCost2 extendedCost2 = sObjectMgr->GetExtendedCost2Map()[vItemTemplate->ExtendedCost2];
 
     if (extendedCost2.Required_PvP_Rating)
         if (sPvPMgr->GetLifetimePvPRatingByGUIDLow(GetGUIDLow()) < extendedCost2.Required_PvP_Rating)
@@ -25593,7 +25598,7 @@ bool Player::CheckExtendedCost2(const VendorItem* vItem)
         const CharTitlesEntry* titleInfo = sCharTitlesStore.LookupEntry(extendedCost2.Required_Title);
         if (!titleInfo)
         {
-            ChatHandler(this).PSendSysMessage("Unable to find title info for title Id: %u, ExtendedCost2: %u", extendedCost2.Required_Title, vItem->ExtendedCost2);
+            ChatHandler(this).PSendSysMessage("Unable to find title info for title Id: %u, ExtendedCost2: %u", extendedCost2.Required_Title, vItemTemplate->ExtendedCost2);
             return false;
         }
 
@@ -26049,12 +26054,26 @@ void Player::HandleBattlegroundHonorableKill()
         ChatHandler(m_session).PSendSysMessage("You have been awarded 1 PvP rating for assisting in an honorable kill.");
 }
 
-void Player::BuyWorldPvPItem(Creature* creature, const VendorItem* vItem, const ItemTemplate* vItemTemplate, uint32 itemId, uint32 vendorSlot, uint8 count, uint8 bagSlot)
+void Player::BuyWorldPvPItem(Creature* creature, const ItemTemplate* vItemTemplate, uint32 itemId, uint32 vendorSlot, uint8 count, uint8 bagSlot)
 {
-    if (!CheckExtendedCost2(vItem))
+    if (!CheckExtendedCost2(vItemTemplate))
     {
-        ChatHandler(this).PSendSysMessage("%s requires %s.", vItemTemplate->Name1.c_str(), CreateExtendedCost2ErrorMessage(vItem->ExtendedCost2).c_str());
+        ChatHandler(this).PSendSysMessage("%s requires %s.", vItemTemplate->Name1.c_str(), CreateExtendedCost2ErrorMessage(vItemTemplate->ExtendedCost2).c_str());
         return;
+    }
+
+    ExtendedCost2 extendedCost2 = sObjectMgr->GetExtendedCost2Map()[vItemTemplate->ExtendedCost2];
+    if (extendedCost2.Required_Item_Id && extendedCost2.Required_Item_Count)
+    {
+        const ItemTemplate* rItemTemplate = sObjectMgr->GetItemTemplate(extendedCost2.Required_Item_Id);
+        if (!rItemTemplate)
+            return;
+
+        if (!HasItemCount(extendedCost2.Required_Item_Id, extendedCost2.Required_Item_Count * count))
+        {
+            ChatHandler(this).PSendSysMessage("You don't have enough %s(s) to buy %u %s(s).", rItemTemplate->Name1.c_str(), count, vItemTemplate->Name1.c_str());
+            return;
+        }
     }
 
     if ((bagSlot == NULL_BAG) || IsInventoryPos(bagSlot, NULL_SLOT))
@@ -26071,6 +26090,8 @@ void Player::BuyWorldPvPItem(Creature* creature, const VendorItem* vItem, const 
         Item* item = StoreNewItem(vDest, itemId, true);
         if (!item)
             return;
+
+        DestroyItemCount(extendedCost2.Required_Item_Id, extendedCost2.Required_Item_Count * count, true);
 
         WorldPacket data(SMSG_BUY_ITEM, (8+4+4+4));
         data << uint64(creature->GetGUID());

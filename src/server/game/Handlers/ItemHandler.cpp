@@ -599,16 +599,25 @@ void WorldSession::HandleSellItemOpcode(WorldPacket & recv_data)
                 _player->AddItemToBuyBackSlot(pItem);
             }
 
-            uint32 money = 0;
-            if (pProto->SellPrice)
-                money = pProto->SellPrice * count;
-            _player->ModifyMoney(money);
-            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_MONEY_FROM_VENDORS, money);
+            if (pProto->ExtendedCost2)
+            {
+                ExtendedCost2 extendedCost2 = sObjectMgr->GetExtendedCost2Map()[pProto->ExtendedCost2];
+                _player->AddItem(extendedCost2.Required_Item_Id, extendedCost2.Required_Item_Count * count);
+            }
+            else
+            {
+                uint32 money = 0;
+                if (pProto->SellPrice)
+                    money = pProto->SellPrice * count;
+                _player->ModifyMoney(money);
+                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_MONEY_FROM_VENDORS, money);
+            }
+
             return;
         }
     }
+
     _player->SendSellError(SELL_ERR_CANT_FIND_ITEM, creature, itemguid, 0);
-    return;
 }
 
 void WorldSession::HandleBuybackItem(WorldPacket & recv_data)
@@ -632,31 +641,53 @@ void WorldSession::HandleBuybackItem(WorldPacket & recv_data)
         GetPlayer()->RemoveAurasByType(SPELL_AURA_FEIGN_DEATH);
 
     Item* pItem = _player->GetItemFromBuyBackSlot(slot);
-    if (pItem)
+    if (!pItem)
     {
-        uint32 price = _player->GetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + slot - BUYBACK_SLOT_START);
+        _player->SendBuyError(BUY_ERR_CANT_FIND_ITEM, creature, 0, 0);
+        return;
+    }
+
+    const ItemTemplate* pItemTemplate = sObjectMgr->GetItemTemplate(pItem->GetEntry());
+    if (!pItemTemplate)
+        return;
+
+    uint32 price = _player->GetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + slot - BUYBACK_SLOT_START);
+    ExtendedCost2 extendedCost2 = sObjectMgr->GetExtendedCost2Map()[pItemTemplate->ExtendedCost2];
+
+    if (pItemTemplate->ExtendedCost2)
+    {
+        if (!_player->CheckExtendedCost2(pItemTemplate))
+            return;
+
+        if (extendedCost2.Required_Item_Id && extendedCost2.Required_Item_Count)
+            if (!_player->HasItemCount(extendedCost2.Required_Item_Id, extendedCost2.Required_Item_Count * price))
+                return;
+    }
+    else
+    {
         if (!_player->HasEnoughMoney(price))
         {
             _player->SendBuyError(BUY_ERR_NOT_ENOUGHT_MONEY, creature, pItem->GetEntry(), 0);
             return;
         }
+    }
 
-        ItemPosCountVec dest;
-        InventoryResult msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, dest, pItem, false);
-        if (msg == EQUIP_ERR_OK)
-        {
-            _player->ModifyMoney(-(int32)price);
-            _player->RemoveItemFromBuyBackSlot(slot, false);
-            _player->ItemAddedQuestCheck(pItem->GetEntry(), pItem->GetCount());
-            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_RECEIVE_EPIC_ITEM, pItem->GetEntry(), pItem->GetCount());
-            _player->StoreItem(dest, pItem, true);
-        }
+    ItemPosCountVec dest;
+    InventoryResult msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, dest, pItem, false);
+    if (msg == EQUIP_ERR_OK)
+    {
+        if (pItemTemplate->ExtendedCost2)
+            _player->DestroyItemCount(extendedCost2.Required_Item_Id, extendedCost2.Required_Item_Count * price, true);
         else
-            _player->SendEquipError(msg, pItem, NULL);
-        return;
+            _player->ModifyMoney(-(int32)price);
+
+        _player->RemoveItemFromBuyBackSlot(slot, false);
+        _player->ItemAddedQuestCheck(pItem->GetEntry(), pItem->GetCount());
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_RECEIVE_EPIC_ITEM, pItem->GetEntry(), pItem->GetCount());
+        _player->StoreItem(dest, pItem, true);
     }
     else
-        _player->SendBuyError(BUY_ERR_CANT_FIND_ITEM, creature, 0, 0);
+        _player->SendEquipError(msg, pItem, NULL);
 }
 
 void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket & recv_data)

@@ -144,7 +144,7 @@ class npc_world_pvp : public CreatureScript
 
                         int32 leftInStock = 0xFFFFFFFF; // The item will appear normally
 
-                        if (!player->CheckExtendedCost2(vItem))
+                        if (!player->CheckExtendedCost2(vItemTemplate))
                             leftInStock = 0x0; // The item will appear greyed out
 
                         ++count;
