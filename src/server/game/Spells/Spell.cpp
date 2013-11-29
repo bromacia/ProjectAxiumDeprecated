@@ -3142,6 +3142,16 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
                 if (cSpell->m_CastItem == m_CastItem && cSpell->GetSpellInfo()->Id == m_spellInfo->Id)
                     return;
 
+        if (Player* player = m_caster->ToPlayer())
+            if (const ItemTemplate* it = sObjectMgr->GetItemTemplate(m_CastItem->GetEntry()))
+                if (it->IsWorldPvPConsumable())
+                    if (!player->IsInWorldPvPZone())
+                    {
+                        SendCastResult(SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW);
+                        finish(false);
+                        return;
+                    }
+
         m_castItemGUID = m_CastItem->GetGUID();
     }
     else
