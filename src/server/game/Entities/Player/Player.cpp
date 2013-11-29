@@ -8396,6 +8396,7 @@ void Player::CastItemCombatSpell(Unit* target, WeaponAttackType attType, uint32 
 void Player::CastItemUseSpell(Item* item, SpellCastTargets const& targets, uint8 cast_count, uint32 glyphIndex)
 {
     ItemTemplate const* proto = item->GetTemplate();
+
     // special learning case
     if (proto->Spells[0].SpellId == 483 || proto->Spells[0].SpellId == 55884)
     {
@@ -26107,9 +26108,10 @@ void Player::HandleBattlegroundHonorableKill()
 
     uint16 ratingGain = GetPvPRating() + 1;
     sPvPMgr->SetPvPRatingByGUIDLow(GetGUIDLow(), ratingGain);
+    AddItem(43589, 1);
 
     if (HasPvPNotificationsEnabled())
-        ChatHandler(m_session).PSendSysMessage("You have been awarded 1 PvP rating for assisting in an honorable kill.");
+        ChatHandler(m_session).PSendSysMessage("You have been awarded 1 PvP rating and 1 World PvP Token for assisting in an honorable kill.");
 }
 
 void Player::BuyWorldPvPItem(Creature* creature, const ItemTemplate* vItemTemplate, uint32 itemId, uint32 vendorSlot, uint8 count, uint8 bagSlot)
