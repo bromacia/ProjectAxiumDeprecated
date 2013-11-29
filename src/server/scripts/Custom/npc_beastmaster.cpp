@@ -124,7 +124,7 @@ class npc_beastmaster : public CreatureScript
                 case 1300:
                     if (player->getClass() != CLASS_HUNTER)
                     {
-                        ChatHandler(player).PSendSysMessage("You must be a hunter to access a stable.");
+                        ChatHandler(player).PSendSysMessage("You must be a hunter to reset pet talents.");
                         player->CLOSE_GOSSIP_MENU();
                         return false;
                     }
