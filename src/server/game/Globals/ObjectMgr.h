@@ -600,6 +600,17 @@ struct ExtendedCost2
 
 typedef std::map<uint32, ExtendedCost2> ExtendedCost2Map;
 
+struct InitSpell
+{
+    InitSpell(uint32 _requiredRace, uint32 _requiredClass) : requiredRace(_requiredRace), requiredClass(_requiredClass) {}
+    InitSpell() : requiredRace(0), requiredClass(0) {}
+
+    uint32 requiredRace;
+    uint32 requiredClass;
+};
+
+typedef std::map<uint32, InitSpell> InitSpellMap;
+
 class PlayerDumpReader;
 
 class ObjectMgr
@@ -1184,6 +1195,10 @@ class ObjectMgr
 
         ExtendedCost2Map GetExtendedCost2Map() const { return extendedCost2Map; }
 
+        void LoadInitSpells();
+
+        InitSpellMap GetInitSpellMap() const { return m_initSpells; }
+
     private:
         // first free id for selected id type
         uint64 m_equipmentSetGuid;
@@ -1323,6 +1338,8 @@ class ObjectMgr
 
         CacheVendorItemMap m_mCacheVendorItemMap;
         CacheTrainerSpellMap m_mCacheTrainerSpellMap;
+
+        InitSpellMap m_initSpells;
 
         std::set<uint32> difficultyEntries[MAX_DIFFICULTY - 1]; // already loaded difficulty 1 value in creatures, used in CheckCreatureTemplate
         std::set<uint32> hasDifficultyEntries[MAX_DIFFICULTY - 1]; // already loaded creatures with difficulty 1 values, used in CheckCreatureTemplate

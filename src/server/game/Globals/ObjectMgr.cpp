@@ -8919,3 +8919,26 @@ void ObjectMgr::LoadExtendedCost2()
     sLog->outString(">> Loaded ExtendedCost2 in %u ms", GetMSTimeDiffToNow(oldMSTime));
     sLog->outString();
 }
+
+void ObjectMgr::LoadInitSpells()
+{
+    QueryResult result = WorldDatabase.Query("SELECT spellId, requiredRace, requiredClass FROM init_spells");
+    if (!result)
+    {
+        sLog->outErrorDb(">> Failed to load InitSpells. DB table `init_spells` is empty!");
+        sLog->outString();
+        return;
+    }
+
+    uint32 oldMSTime = getMSTime();
+
+    do
+    {
+        Field* fields = result->Fetch();
+        m_initSpells[fields[0].GetUInt32()] = InitSpell(fields[1].GetUInt32(), fields[2].GetUInt32());
+    }
+    while (result->NextRow());
+
+    sLog->outString(">> Loaded InitSpells in %u ms", GetMSTimeDiffToNow(oldMSTime));
+    sLog->outString();
+}

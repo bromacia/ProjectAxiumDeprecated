@@ -1745,6 +1745,9 @@ void World::SetInitialWorldSettings()
     sLog->outString("Loading ExtendedCost2...");
     sObjectMgr->LoadExtendedCost2();
 
+    sLog->outString("Loading InitSpells...");
+    sObjectMgr->LoadInitSpells();
+
     ///- Load and initialize scripts
     sObjectMgr->LoadQuestStartScripts();                         // must be after load Creature/Gameobject(Template/Data) and QuestTemplate
     sObjectMgr->LoadQuestEndScripts();                           // must be after load Creature/Gameobject(Template/Data) and QuestTemplate

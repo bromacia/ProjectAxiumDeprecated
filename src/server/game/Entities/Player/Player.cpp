@@ -3758,7 +3758,7 @@ bool Player::addSpell(uint32 spellId, bool active, bool learning, bool dependent
         m_spells[spellId] = newspell;
 
         // return false if spell disabled
-        if (newspell->disabled)
+        if (newspell->disabled && !singleSpell)
             return false;
     }
 
@@ -22301,6 +22301,64 @@ void Player::learnDefaultSpells()
             addSpell(tspell, true, true, true, false);
         else                                                // but send in normal spell in game learn case
             learnSpell(tspell, true);
+    }
+
+    InitSpellMap initSpells = sObjectMgr->GetInitSpellMap();
+    if (initSpells.empty())
+        return;
+
+    for (InitSpellMap::iterator itr = initSpells.begin(); itr != initSpells.end(); ++itr)
+    {
+        uint32 spellId = itr->first;
+
+        const SpellInfo* spellInfo = sSpellMgr->GetSpellInfo(spellId);
+        if (!spellInfo)
+            continue;
+
+        if (HasSpell(spellId))
+            continue;
+
+        if (!(itr->second.requiredClass & getClassMask()))
+            continue;
+
+        if (!IsSpellFitByClassAndRace(spellId))
+            continue;
+
+        bool disabled = false;
+
+        if (uint32 firstSpell = sSpellMgr->GetFirstSpellInChain(spellId))
+            if (sSpellMgr->IsTalentSpell(firstSpell))
+                if (!HasSpell(firstSpell))
+                    disabled = true;
+
+        // Greater Blessing of Sanctuary
+        if (!HasSpell(20911))
+            if (spellId == 25899)
+                disabled = true;
+
+        // Mangle (Bear)
+        if (!HasSpell(33878))
+            if (spellId == 33986 || spellId == 33987 ||
+                spellId == 48563 || spellId == 48564)
+                    disabled = true;
+
+        // Mangle (Cat)
+        if (!HasSpell(33876))
+            if (spellId == 33982 || spellId == 33983 ||
+                spellId == 48565 || spellId == 48566)
+                    disabled = true;
+
+        addSpell(spellId, true, true, false, disabled, false, true);
+
+        if (!disabled && IsInWorld())
+        {
+            WorldPacket data(SMSG_LEARNED_SPELL, 6);
+            data << uint32(spellId);
+            data << uint16(0);
+            GetSession()->SendPacket(&data);
+        }
+
+        UpdateSkillsToMaxSkillsForLevel();
     }
 }
 

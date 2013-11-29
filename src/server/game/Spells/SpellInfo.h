@@ -492,6 +492,25 @@ public:
     bool IsMiscDelaySpell() const;
     bool IsCrowdControlSpell() const;
     bool IsNegativeAuraSpell() const;
+
+    bool IsWeaponSkill() const
+    {
+        return Id == 196 || // One-Handed Axes
+            Id == 197 ||    // Two-Handed Axes
+            Id == 198 ||    // One-Handed Maces
+            Id == 199 ||    // Two-Handed Maces
+            Id == 201 ||    // One-Handed Swords
+            Id == 202 ||    // Two-Handed Swords
+            Id == 200 ||    // Polearms
+            Id == 227 ||    // Staves
+            Id == 1180 ||   // Daggers
+            Id == 15590 ||  // Fist Weapons
+            Id == 264 ||    // Bows
+            Id == 5011 ||   // Crossbows
+            Id == 266 ||    // Guns
+            Id == 2567 ||   // Thrown
+            Id == 5009;     // Wands
+    }
 };
 
 #endif // _SPELLINFO_H
