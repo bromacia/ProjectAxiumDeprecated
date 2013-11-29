@@ -446,14 +446,15 @@ bool Creature::UpdateEntry(uint32 Entry, uint32 team, const CreatureData* data)
     if (cInfo->InhabitType & INHABIT_AIR)
         AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_FLYING);
 
-    if (cInfo->InhabitType & INHABIT_WATER)
-        AddUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
-
     return true;
 }
 
 void Creature::Update(uint32 diff)
 {
+    CreatureTemplate const* cInfo = GetCreatureInfo();
+    if (!cInfo)
+        return;
+
     if (IsAIEnabled && TriggerJustRespawned)
     {
         TriggerJustRespawned = false;
@@ -461,6 +462,13 @@ void Creature::Update(uint32 diff)
         if (m_vehicleKit)
             m_vehicleKit->Reset();
     }
+
+    if (cInfo->InhabitType & INHABIT_WATER)
+        if (IsInWater())
+            AddUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
+
+    if (!IsInWater())
+        RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
 
     // Only trigger pet swimming if the owner is swimming aswell
     if (Unit* owner = GetCharmerOrOwner())
@@ -815,9 +823,6 @@ bool Creature::Create(uint32 guidlow, Map* map, uint32 phaseMask, uint32 Entry, 
         else
             SetFlying(true);
     }
-
-    if (GetCreatureInfo()->InhabitType & INHABIT_WATER)
-        AddUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
 
     LastUsedScriptID = GetCreatureInfo()->ScriptID;
 
@@ -1563,8 +1568,6 @@ void Creature::setDeathState(DeathState s)
         SetWalk(true);
         if (GetCreatureInfo()->InhabitType & INHABIT_AIR)
             AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_FLYING);
-        if (GetCreatureInfo()->InhabitType & INHABIT_WATER)
-            AddUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
         SetUInt32Value(UNIT_NPC_FLAGS, cinfo->npcflag);
         ClearUnitState(uint32(UNIT_STATE_ALL_STATE));
         SetMeleeDamageSchool(SpellSchools(cinfo->dmgschool));
@@ -2485,6 +2488,7 @@ void Creature::SetWalk(bool enable)
         AddUnitMovementFlag(MOVEMENTFLAG_WALKING);
     else
         RemoveUnitMovementFlag(MOVEMENTFLAG_WALKING);
+
     WorldPacket data(enable ? SMSG_SPLINE_MOVE_SET_WALK_MODE : SMSG_SPLINE_MOVE_SET_RUN_MODE, 9);
     data.append(GetPackGUID());
     SendMessageToSet(&data, true);
