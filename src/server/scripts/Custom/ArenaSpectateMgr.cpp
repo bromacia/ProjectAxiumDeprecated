@@ -21,7 +21,7 @@ bool ArenaSpectateMgr::OnGossipHello(Player* player, Creature* creature)
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate 3v3 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_3V3_MATCHES);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate 5v5 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_5V5_MATCHES);
     player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, "Spectate a Player", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_SPECTATE_PLAYER, "", 0, true);
-    player->SEND_GOSSIP_MENU(1, creature->GetGUID());
+    player->SEND_GOSSIP_MENU(100001, creature->GetGUID());
     return true;
 }
 

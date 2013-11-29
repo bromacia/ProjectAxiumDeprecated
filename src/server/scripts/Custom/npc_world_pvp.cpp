@@ -30,7 +30,7 @@ class npc_world_pvp : public CreatureScript
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "271 Gear", GOSSIP_SENDER_MAIN, OPTION_SHOW_271_GEAR);
             player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_VENDOR, "Convert Tokens", GOSSIP_SENDER_MAIN, OPTION_CONVERT_TOKENS, "", 0, true);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, "Teleport to a Random Location", GOSSIP_SENDER_MAIN, OPTION_RANDOM_TELEPORT);
-            player->SEND_GOSSIP_MENU(1, creature->GetGUID());
+            player->SEND_GOSSIP_MENU(100000, creature->GetGUID());
             return true;
         }
 
