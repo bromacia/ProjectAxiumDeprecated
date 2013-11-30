@@ -61,6 +61,9 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket & recv_data)
 {
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Received CMSG_GROUP_INVITE");
 
+    if (!_player)
+        return;
+
     if (_player->IsInWorldPvPZone())
     {
         ChatHandler(_player).PSendSysMessage("You can't create groups in the World PvP Zone.");
