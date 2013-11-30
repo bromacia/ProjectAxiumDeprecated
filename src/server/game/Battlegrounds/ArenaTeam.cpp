@@ -133,11 +133,28 @@ bool ArenaTeam::AddMember(uint64 playerGuid)
 
     uint32 matchMakerRating = 0;
 
-    switch (GetSlot())
+    if (player)
     {
-        case 0: matchMakerRating = player->Get2v2MMR(); break;
-        case 1: matchMakerRating = player->Get3v3MMR(); break;
-        case 2: matchMakerRating = player->Get5v5MMR(); break;
+        switch (GetSlot())
+        {
+            case 0: matchMakerRating = player->Get2v2MMR(); break;
+            case 1: matchMakerRating = player->Get3v3MMR(); break;
+            case 2: matchMakerRating = player->Get5v5MMR(); break;
+        }
+    }
+    else
+    {
+        // Try to get player's match maker rating from db and fall back to config setting if not found
+        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_MATCH_MAKER_RATING_BY_SLOT);
+        stmt->setUInt32(0, GUID_LOPART(playerGuid));
+        stmt->setUInt8(1, GetSlot());
+        PreparedQueryResult result = CharacterDatabase.Query(stmt);
+
+        uint32 matchMakerRating;
+        if (result)
+            matchMakerRating = (*result)[0].GetUInt32();
+        else
+            matchMakerRating = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
     }
 
     // Remove all player signatures from other petitions
