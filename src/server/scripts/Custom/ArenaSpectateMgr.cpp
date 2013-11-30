@@ -249,6 +249,12 @@ void ArenaSpectateMgr::AddPlayerToArena(Player* player, uint32 action)
         return;
     }
 
+    if (!arenasMap[action])
+    {
+        handler->PSendSysMessage("Something went wrong, please try again.");
+        return;
+    }
+
     Battleground* arena = sBattlegroundMgr->GetBattleground(action, arenasMap[action]->GetTypeID(false));
     if (!arena)
     {
