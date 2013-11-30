@@ -285,6 +285,8 @@ public:
             if (Unit* unitTarget = GetHitUnit())
             {
                 Unit* caster = GetCaster();
+                if (!caster)
+                    return;
 
                 uint8 rank = sSpellMgr->GetSpellRank(GetSpellInfo()->Id);
 
@@ -349,13 +351,21 @@ public:
 
         bool Load()
         {
-            healPct = GetSpellInfo()->Effects[EFFECT_1].CalcValue(GetCaster());
+            Unit* caster = GetCaster();
+            if (!caster)
+                return false;
+
+            healPct = GetSpellInfo()->Effects[EFFECT_1].CalcValue(caster);
             return true;
         }
 
         void TriggerHeal()
         {
-            GetCaster()->CastCustomSpell(SPELL_DIVINE_STORM_DUMMY, SPELLVALUE_BASE_POINT0, (GetHitDamage() * healPct) / 100, GetCaster(), true);
+            Unit* caster = GetCaster();
+            if (!caster)
+                return;
+
+            caster->CastCustomSpell(SPELL_DIVINE_STORM_DUMMY, SPELLVALUE_BASE_POINT0, (GetHitDamage() * healPct) / 100, caster, true);
         }
 
         void Register()
@@ -384,14 +394,21 @@ class spell_pal_hand_of_sacrifice : public SpellScriptLoader
 
             bool Load()
             {
-                remainingAmount = GetCaster()->GetMaxHealth();
-                splitPct = GetSpellInfo()->Effects[EFFECT_0].CalcValue(GetCaster());
+                Unit* caster = GetCaster();
+                if (!caster)
+                    return false;
+
+                remainingAmount = caster->GetMaxHealth();
+                splitPct = GetSpellInfo()->Effects[EFFECT_0].CalcValue(caster);
                 return true;
             }
 
             void Split(AuraEffect* /*aurEff*/, DamageInfo & dmgInfo, uint32 & splitAmount)
             {
                 Unit* target = GetTarget();
+                if (!target)
+                    return;
+
                 splitAmount = CalculatePctN(dmgInfo.GetDamage(), splitPct);
                 remainingAmount -= splitAmount;
 
@@ -425,14 +442,20 @@ class spell_pal_divine_sacrifice : public SpellScriptLoader
 
             bool Load()
             {
-                if (GetCaster()->ToPlayer()->GetGroup())
-                    groupSize = GetCaster()->ToPlayer()->GetGroup()->GetMembersCount();
+                Unit* caster = GetCaster();
+                if (!caster)
+                    return false;
+
+                Player* pCaster = caster->ToPlayer();
+
+                if (pCaster && pCaster->GetGroup())
+                    groupSize = pCaster->GetGroup()->GetMembersCount();
                 else
                     groupSize = 1;
 
-                remainingAmount = (GetCaster()->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_2].CalcValue(GetCaster())) * groupSize);
-                splitPct = GetSpellInfo()->Effects[EFFECT_0].CalcValue(GetCaster());
-                minHpPct = GetSpellInfo()->Effects[EFFECT_1].CalcValue(GetCaster());
+                remainingAmount = (caster->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_2].CalcValue(caster)) * groupSize);
+                splitPct = GetSpellInfo()->Effects[EFFECT_0].CalcValue(caster);
+                minHpPct = GetSpellInfo()->Effects[EFFECT_1].CalcValue(caster);
 
                 return true;
             }
@@ -442,9 +465,13 @@ class spell_pal_divine_sacrifice : public SpellScriptLoader
                 splitAmount = CalculatePctN(dmgInfo.GetDamage(), splitPct);
                 remainingAmount -= splitAmount;
 
+                Unit* caster = GetCaster();
+                if (!caster)
+                    return;
+
                 // break when absorbed everything it could, or if the casters hp drops below 20%
-                if (remainingAmount <= 0 || (GetCaster()->GetHealthPct() < minHpPct))
-                    GetCaster()->RemoveAura(SPELL_DIVINE_SACRIFICE);
+                if (remainingAmount <= 0 || (caster->GetHealthPct() < minHpPct))
+                    caster->RemoveAura(SPELL_DIVINE_SACRIFICE);
             }
 
             void Register()
