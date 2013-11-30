@@ -55,6 +55,7 @@ void DuelMgr::HandleDuelEnd(Player* winner, Player* loser, DuelCompleteType type
     {
         players[i]->SetIsDueling(false);
         HandlePlayerState(players[i], false);
+        players[i]->RemoveAllTempSummons();
 
         if (Pet* pet = players[i]->GetPet())
             pet->SetIsDueling(false);
