@@ -3354,10 +3354,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 51690: // Killing Spree (Ability)
                 spellInfo->AttributesEx |= SPELL_ATTR1_NOT_BREAK_STEALTH;
                 break;
-            case 19574: // Bestial Wrath
-            case 34471: // The Beast Within
-                spellInfo->Effect[2] = SPELL_AURA_MECHANIC_IMMUNITY_MASK;
-                break;
             case 19244: // Spell Lock (Rank 1)
             case 19647: // Spell Lock (Rank 2)
             case 64044: // Psychic Horror
