@@ -64,6 +64,9 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket & recv_data)
     if (!_player)
         return;
 
+    if (!_player->IsInWorld())
+        return;
+
     if (_player->IsInWorldPvPZone())
     {
         ChatHandler(_player).PSendSysMessage("You can't create groups in the World PvP Zone.");
