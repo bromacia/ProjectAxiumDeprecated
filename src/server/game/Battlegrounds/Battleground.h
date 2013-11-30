@@ -110,7 +110,7 @@ enum BattlegroundTimeIntervals
     INVITATION_REMIND_TIME          = 20000,
     INVITE_ACCEPT_WAIT_TIME         = 60000,
     TIME_TO_AUTOREMOVE              = 120000,
-    ARENA_TIME_LIMIT                = 1200000,
+    ARENA_TIME_LIMIT                = 3600000,
     // Seconds
     MAX_OFFLINE_TIME                = 30,
     RESPAWN_ONE_DAY                 = 86400,
