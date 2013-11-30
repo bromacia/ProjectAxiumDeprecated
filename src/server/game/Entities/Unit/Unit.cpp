@@ -10373,6 +10373,16 @@ void Unit::RemoveAllTempSummons()
             if (!target)
                 continue;
 
+            if (GetTypeId() != TYPEID_UNIT)
+                continue;
+
+            Creature* creature = target->ToCreature();
+            if (!creature)
+                continue;
+
+            if (!creature->isSummon())
+                continue;
+
             TempSummon* tempSummon = target->ToTempSummon();
             if (!tempSummon)
                 continue;
