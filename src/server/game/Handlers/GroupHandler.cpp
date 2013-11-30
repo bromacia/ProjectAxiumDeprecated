@@ -88,16 +88,16 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket & recv_data)
 
     Player* player = sObjectAccessor->FindPlayerByName(membername.c_str());
 
-    if (player->IsInWorldPvPZone())
-    {
-        ChatHandler(_player).PSendSysMessage("You can't invite people who are in the World PvP Zone.");
-        return;
-    }
-
     // no player
     if (!player)
     {
         SendPartyResult(PARTY_OP_INVITE, membername, ERR_BAD_PLAYER_NAME_S);
+        return;
+    }
+
+    if (player->IsInWorldPvPZone())
+    {
+        ChatHandler(_player).PSendSysMessage("You can't invite people who are in the World PvP Zone.");
         return;
     }
 
