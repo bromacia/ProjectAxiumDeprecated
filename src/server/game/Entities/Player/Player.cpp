@@ -7428,11 +7428,6 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
         SendInitWorldStates(newZone, newArea);              // only if really enters to new zone, not just area change, works strange...
     }
 
-    // World PvP Zone
-    if (newZone == 3521)
-        if (GetGroup())
-            RemoveFromGroup();
-
     // group update
     if (GetGroup())
         SetGroupUpdateFlag(GROUP_UPDATE_FULL);

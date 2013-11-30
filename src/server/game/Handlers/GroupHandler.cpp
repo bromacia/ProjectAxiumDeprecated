@@ -67,12 +67,6 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket & recv_data)
     if (!_player->IsInWorld())
         return;
 
-    if (_player->IsInWorldPvPZone())
-    {
-        ChatHandler(_player).PSendSysMessage("You can't create groups in the World PvP Zone.");
-        return;
-    }
-
     std::string membername;
     recv_data >> membername;
     recv_data.read_skip<uint32>();
@@ -92,12 +86,6 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket & recv_data)
     if (!player)
     {
         SendPartyResult(PARTY_OP_INVITE, membername, ERR_BAD_PLAYER_NAME_S);
-        return;
-    }
-
-    if (player->IsInWorldPvPZone())
-    {
-        ChatHandler(_player).PSendSysMessage("You can't invite people who are in the World PvP Zone.");
         return;
     }
 
