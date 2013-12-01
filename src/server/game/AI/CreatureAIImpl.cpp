@@ -203,7 +203,7 @@ bool CreatureAI::UpdateVictimWithGaze()
 
 bool CreatureAI::UpdateVictim()
 {
-    if (!me->isInCombat())
+    if (!me->isInCombat() && me->GetScriptName() != "npc_shadowfiend") // Shadowfiend must start attacking immediately (victim pre-set in SummonGuardian)
         return false;
 
     if (!me->HasReactState(REACT_PASSIVE))

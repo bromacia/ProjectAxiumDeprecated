@@ -7279,6 +7279,9 @@ void Spell::SummonGuardian(uint32 i, uint32 entry, SummonPropertiesEntry const* 
         summon->UpdateSpeed(MOVE_RUN, true);
         summon->UpdateSpeed(MOVE_WALK, true);
 
+        if (summon->GetEntry() == 19668) // Shadowfiend
+            summon->Attack(m_targets.GetUnitTarget(), true);
+
         summon->AI()->EnterEvadeMode();
 
         ExecuteLogEffectSummonObject(i, summon);
