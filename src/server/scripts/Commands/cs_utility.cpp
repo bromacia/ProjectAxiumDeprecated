@@ -32,6 +32,7 @@ public:
             { "coeff",            SEC_GAMEMASTER,     false, &HandleCoeffCommand,                     "", NULL },
             { "bank",             SEC_PLAYER,         false, &HandleBankCommand,                      "", NULL },
             { "mailbox",          SEC_PLAYER,         false, &HandleMailboxCommand,                   "", NULL },
+            { "arenaqueue",       SEC_PLAYER,         false, &HandleArenaQueueCommand,                "", NULL },
             { NULL,               0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -756,17 +757,21 @@ public:
 
     static bool HandleBankCommand(ChatHandler* handler, const char* /*args*/)
     {
-        Player* player = handler->GetSession()->GetPlayer();
-        handler->GetSession()->SendShowBank(player->GetGUID());
+        handler->GetSession()->SendShowBank(handler->GetSession()->GetPlayer()->GetGUID());
         return true;
     }
 
     static bool HandleMailboxCommand(ChatHandler* handler, const char* /*args*/)
     {
-        Player* player = handler->GetSession()->GetPlayer();
         WorldPacket data(SMSG_SHOW_MAILBOX, 8);
-        data << uint64(player->GetGUID());
+        data << uint64(handler->GetSession()->GetPlayer()->GetGUID());
         handler->GetSession()->SendPacket(&data);
+        return true;
+    }
+
+    static bool HandleArenaQueueCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        handler->GetSession()->SendBattlegGroundList(handler->GetSession()->GetPlayer()->GetGUID(), BATTLEGROUND_AA);
         return true;
     }
 };
