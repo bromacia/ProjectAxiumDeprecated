@@ -30,6 +30,8 @@ public:
             { "itemid",           SEC_GAMEMASTER,     false, &HandleItemIdCommand,                    "", NULL },
             { "spellid",          SEC_GAMEMASTER,     false, &HandleSpellIdCommand,                   "", NULL },
             { "coeff",            SEC_GAMEMASTER,     false, &HandleCoeffCommand,                     "", NULL },
+            { "bank",             SEC_PLAYER,         false, &HandleBankCommand,                      "", NULL },
+            { "mailbox",          SEC_PLAYER,         false, &HandleMailboxCommand,                   "", NULL },
             { NULL,               0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -749,6 +751,22 @@ public:
         handler->PSendSysMessage("Spell Direct Bonus: %f", spell_directDamage);
         handler->PSendSysMessage("AP Dot Bonus: %f", spell_apDotBonus);
         handler->PSendSysMessage("AP Bonus: %f", spell_apBonus);
+        return true;
+    }
+
+    static bool HandleBankCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Player* player = handler->GetSession()->GetPlayer();
+        handler->GetSession()->SendShowBank(player->GetGUID());
+        return true;
+    }
+
+    static bool HandleMailboxCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        Player* player = handler->GetSession()->GetPlayer();
+        WorldPacket data(SMSG_SHOW_MAILBOX, 8);
+        data << uint64(player->GetGUID());
+        handler->GetSession()->SendPacket(&data);
         return true;
     }
 };

@@ -2716,6 +2716,8 @@ class Player : public Unit, public GridObject<Player>
 
         void BuyWorldPvPItem(Creature* creature, const ItemTemplate* vItemTemplate, uint32 itemId, uint32 vendorSlot, uint8 count, uint8 bagSlot);
 
+        void _LoadMail();
+
     protected:
         // Gamemaster whisper whitelist
         WhisperListContainer WhisperList;
@@ -2766,7 +2768,6 @@ class Player : public Unit, public GridObject<Player>
         void _LoadBoundInstances(PreparedQueryResult result);
         void _LoadInventory(PreparedQueryResult result, uint32 timeDiff);
         void _LoadMailInit(PreparedQueryResult resultUnread, PreparedQueryResult resultDelivery);
-        void _LoadMail();
         void _LoadMailedItems(Mail* mail);
         void _LoadQuestStatus(PreparedQueryResult result);
         void _LoadQuestStatusRewarded(PreparedQueryResult result);

@@ -68,10 +68,6 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data)
     recv_data >> unk4;                                      // const 0
 
     // packet read complete, now do check
-
-    if (!GetPlayer()->GetGameObjectIfCanInteractWith(mailbox, GAMEOBJECT_TYPE_MAILBOX))
-        return;
-
     if (receiver.empty())
         return;
 
@@ -295,9 +291,6 @@ void WorldSession::HandleMailMarkAsRead(WorldPacket & recv_data)
     recv_data >> mailbox;
     recv_data >> mailId;
 
-    if (!GetPlayer()->GetGameObjectIfCanInteractWith(mailbox, GAMEOBJECT_TYPE_MAILBOX))
-        return;
-
     Player* player = _player;
     Mail* m = player->GetMail(mailId);
     if (m)
@@ -318,9 +311,6 @@ void WorldSession::HandleMailDelete(WorldPacket & recv_data)
     recv_data >> mailbox;
     recv_data >> mailId;
     recv_data.read_skip<uint32>();                          // mailTemplateId
-
-    if (!GetPlayer()->GetGameObjectIfCanInteractWith(mailbox, GAMEOBJECT_TYPE_MAILBOX))
-        return;
 
     Mail* m = _player->GetMail(mailId);
     Player* player = _player;
@@ -346,9 +336,6 @@ void WorldSession::HandleMailReturnToSender(WorldPacket & recv_data)
     recv_data >> mailbox;
     recv_data >> mailId;
     recv_data.read_skip<uint64>();                          // original sender GUID for return to, not used
-
-    if (!GetPlayer()->GetGameObjectIfCanInteractWith(mailbox, GAMEOBJECT_TYPE_MAILBOX))
-        return;
 
     Player* player = _player;
     Mail* m = player->GetMail(mailId);
@@ -404,9 +391,6 @@ void WorldSession::HandleMailTakeItem(WorldPacket & recv_data)
     recv_data >> mailbox;
     recv_data >> mailId;
     recv_data >> itemId;                                    // item guid low
-
-    if (!GetPlayer()->GetGameObjectIfCanInteractWith(mailbox, GAMEOBJECT_TYPE_MAILBOX))
-        return;
 
     Player* player = _player;
 
@@ -498,9 +482,6 @@ void WorldSession::HandleMailTakeMoney(WorldPacket & recv_data)
     recv_data >> mailbox;
     recv_data >> mailId;
 
-    if (!GetPlayer()->GetGameObjectIfCanInteractWith(mailbox, GAMEOBJECT_TYPE_MAILBOX))
-        return;
-
     Player* player = _player;
 
     Mail* m = player->GetMail(mailId);
@@ -530,9 +511,6 @@ void WorldSession::HandleGetMailList(WorldPacket & recv_data)
     uint64 mailbox;
     recv_data >> mailbox;
 
-    if (!GetPlayer()->GetGameObjectIfCanInteractWith(mailbox, GAMEOBJECT_TYPE_MAILBOX))
-        return;
-
     Player* player = _player;
 
     //load players mails, and mailed items
@@ -545,7 +523,7 @@ void WorldSession::HandleGetMailList(WorldPacket & recv_data)
     uint32 mailsCount = 0;                                 // real send to client mails amount
     uint32 realCount  = 0;                                 // real mails amount
 
-    WorldPacket data(SMSG_MAIL_LIST_RESULT, (200));         // guess size
+    WorldPacket data(SMSG_MAIL_LIST_RESULT, 200);           // guess size
     data << uint32(0);                                      // real mail's count
     data << uint8(0);                                       // mail's count
     time_t cur_time = time(NULL);
@@ -654,9 +632,6 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket & recv_data)
 
     recv_data >> mailbox;
     recv_data >> mailId;
-
-    if (!GetPlayer()->GetGameObjectIfCanInteractWith(mailbox, GAMEOBJECT_TYPE_MAILBOX))
-        return;
 
     Player* player = _player;
 
