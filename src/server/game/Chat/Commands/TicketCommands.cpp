@@ -322,12 +322,6 @@ bool ChatHandler::HandleGMTicketDeleteByIdCommand(const char* args)
         return true;
     }
 
-    if (!ticket->IsClosed())
-    {
-        SendSysMessage(LANG_COMMAND_TICKETCLOSEFIRST);
-        return true;
-    }
-
     std::string msg = ticket->FormatMessageString(*this, NULL, NULL, NULL, m_session ? m_session->GetPlayer()->GetName() : "Console");
     SendGlobalGMSysMessage(msg.c_str());
 
