@@ -2378,6 +2378,17 @@ bool ChatHandler::HandleListAurasCommand(const char* /*args*/)
 
     Unit::AuraApplicationMap const& uAuras = unit->GetAppliedAuras();
     PSendSysMessage(LANG_COMMAND_TARGET_LISTAURAS, uAuras.size());
+    for (uint16 i = 0; i < TOTAL_AURAS; ++i)
+    {
+        Unit::AuraEffectList const& uAuraList = unit->GetAuraEffectsByType(AuraType(i));
+        if (uAuraList.empty()) continue;
+        PSendSysMessage(LANG_COMMAND_TARGET_LISTAURATYPE, uAuraList.size(), i);
+        for (Unit::AuraEffectList::const_iterator itr = uAuraList.begin(); itr != uAuraList.end(); ++itr)
+        {
+            PSendSysMessage(LANG_COMMAND_TARGET_AURASIMPLE, (*itr)->GetId(), (*itr)->GetEffIndex(),
+                (*itr)->GetAmount());
+        }
+    }
     for (Unit::AuraApplicationMap::const_iterator itr = uAuras.begin(); itr != uAuras.end(); ++itr)
     {
         bool talent = GetTalentSpellCost(itr->second->GetBase()->GetId()) > 0;
@@ -2394,17 +2405,6 @@ bool ChatHandler::HandleListAurasCommand(const char* /*args*/)
             aura->GetDuration(), aura->GetMaxDuration(), (aura->IsPassive() ? passiveStr : ""),
             (talent ? talentStr : ""), IS_PLAYER_GUID(aura->GetCasterGUID()) ? "player" : "creature",
             GUID_LOPART(aura->GetCasterGUID()));
-    }
-    for (uint16 i = 0; i < TOTAL_AURAS; ++i)
-    {
-        Unit::AuraEffectList const& uAuraList = unit->GetAuraEffectsByType(AuraType(i));
-        if (uAuraList.empty()) continue;
-        PSendSysMessage(LANG_COMMAND_TARGET_LISTAURATYPE, uAuraList.size(), i);
-        for (Unit::AuraEffectList::const_iterator itr = uAuraList.begin(); itr != uAuraList.end(); ++itr)
-        {
-            PSendSysMessage(LANG_COMMAND_TARGET_AURASIMPLE, (*itr)->GetId(), (*itr)->GetEffIndex(),
-                (*itr)->GetAmount());
-        }
     }
     return true;
 }
