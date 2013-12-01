@@ -197,7 +197,8 @@ class npc_world_pvp : public CreatureScript
         void HandleRandomTeleport(Player* player)
         {
             LoadTeleportLocations();
-            player->TeleportTo(*locations[urand(0, locations.size())]);
+            WorldLocation loc = *locations[urand(0, locations.size())];
+            player->TeleportTo(loc);
         }
 
         void LoadTeleportLocations()
