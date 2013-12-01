@@ -5930,6 +5930,23 @@ void AuraEffect::HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster) 
             {
                 switch (auraId)
                 {
+                    // Restoration
+                    case 24379:
+                    case 23493:
+                    {
+                        if (caster)
+                        {
+                            int32 heal = caster->CountPctFromMaxHealth(10);
+                            caster->HealBySpell(target, auraSpellInfo, heal);
+
+                            if (int32 mana = caster->GetMaxPower(POWER_MANA))
+                            {
+                                mana /= 10;
+                                caster->EnergizeBySpell(caster, 23493, mana, POWER_MANA);
+                            }
+                        }
+                        return;
+                    }
                     // Personalized Weather
                     case 46736:
                         triggerSpellId = 46737;
