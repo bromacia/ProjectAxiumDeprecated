@@ -10373,14 +10373,7 @@ void Unit::RemoveAllTempSummons()
             if (!target)
                 continue;
 
-            if (GetTypeId() != TYPEID_UNIT)
-                continue;
-
-            Creature* creature = target->ToCreature();
-            if (!creature)
-                continue;
-
-            if (!creature->isSummon())
+            if (!target->isSummon())
                 continue;
 
             TempSummon* tempSummon = target->ToTempSummon();
@@ -10391,6 +10384,7 @@ void Unit::RemoveAllTempSummons()
             {
                 if (tempSummon->GetCharmerGUID() == GetGUID())
                     tempSummon->RemoveCharmAuras();
+
                 tempSummon->UnSummon();
             }
         }
