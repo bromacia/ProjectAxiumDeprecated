@@ -25932,7 +25932,7 @@ void Player::SetArenaSpectatorState(bool apply)
     if (apply)
     {
         m_arenaSpectator = true;
-        AddAura(SPELL_SERVERSIDE_SILENCE);
+        AddAura(SPELL_SERVERSIDE_SILENCE, this);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
