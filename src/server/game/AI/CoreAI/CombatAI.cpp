@@ -191,7 +191,6 @@ bool CombatAI::UpdateTarget()
         return false;
     }
 
-
     return true;
 }
 
@@ -378,6 +377,9 @@ void CasterAI::UpdateAI(const uint32 diff)
         return;
     }
 
+    if (!owner->canSeeOrDetect(target))
+        me->CastStop();
+
     if (me->HasUnitState(UNIT_STATE_CASTING))
         return;
 
@@ -407,6 +409,11 @@ bool CasterAI::UpdateTarget()
         target = NULL;
         return false;
     }
+
+    Unit* owner = me->GetCharmerOrOwner();
+    if (owner)
+        if (!owner->canSeeOrDetect(target))
+            return false;
 
     return true;
 }
