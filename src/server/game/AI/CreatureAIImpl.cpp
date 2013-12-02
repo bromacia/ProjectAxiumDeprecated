@@ -206,7 +206,7 @@ bool CreatureAI::UpdateVictim()
     if (!me->isInCombat() && me->GetScriptName() != "npc_shadowfiend") // Shadowfiend must start attacking immediately (victim pre-set in SummonGuardian)
         return false;
 
-    if (!me->HasReactState(REACT_PASSIVE))
+    if (!me->HasReactState(REACT_PASSIVE) || me->GetScriptName() == "npc_shadowfiend")
     {
         if (Unit* victim = me->SelectVictim())
         {
