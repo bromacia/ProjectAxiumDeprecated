@@ -118,6 +118,8 @@ void WorldSession::HandleMoveWorldportAckOpcode()
             if (_player->IsInvitedForBattlegroundInstance(_player->GetBattlegroundId()))
                 bg->AddPlayer(_player);
 
+            _player->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT);
+
             if (bg->isArena())
                 if (_player->IsArenaSpectator())
                 {
