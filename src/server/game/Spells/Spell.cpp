@@ -1606,7 +1606,8 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
 
         if (!unit->HasAura(32727)) // Arena Preparation
         {
-            unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
+            if (!m_spellInfo->IsPositive() && !m_spellInfo->IsPassive())
+                unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
             {
