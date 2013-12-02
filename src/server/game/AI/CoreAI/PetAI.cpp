@@ -149,6 +149,9 @@ void PetAI::UpdateAI(const uint32 diff)
             return;
         }
 
+        if (!owner->canSeeOrDetect(me->getVictim()))
+            _stopAttack();
+
         DoMeleeAttackIfReady();
     }
     else
