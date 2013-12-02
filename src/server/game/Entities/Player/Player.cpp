@@ -25932,6 +25932,7 @@ void Player::SetArenaSpectatorState(bool apply)
     if (apply)
     {
         m_arenaSpectator = true;
+        AddAura(SPELL_SERVERSIDE_SILENCE);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -25939,6 +25940,7 @@ void Player::SetArenaSpectatorState(bool apply)
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
         Dismount();
         RemoveAllControlled();
+        RemovePet(NULL, PET_SAVE_NOT_IN_SLOT);
 
         if (GetGroup())
             RemoveFromGroup();
@@ -25946,6 +25948,7 @@ void Player::SetArenaSpectatorState(bool apply)
     else
     {
         m_arenaSpectator = false;
+        RemoveAura(SPELL_SERVERSIDE_SILENCE);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
