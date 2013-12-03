@@ -26067,6 +26067,16 @@ void Player::HandlePvPKill()
 
     for (Player::PvPTargetDamageInformationMap::iterator itr = PvPTargetDamageInfo.begin(); itr != PvPTargetDamageInfo.end(); ++itr)
     {
+        Player* pAttacker = sObjectMgr->GetPlayerByLowGUID(itr->first);
+        if (!pAttacker)
+            return;
+
+        if (!IsInWorldPvPZone() && !InBattleground() || InArena())
+            return;
+
+        if (!pAttacker->IsInWorldPvPZone() && !pAttacker->InBattleground() || pAttacker->InArena())
+            return;
+
         if (itr->second.LastDamageDealtTimer > currentMSTime)
         {
             if (itr->second.DamageDoneToVictim > highestDamageDoneToVictim)
