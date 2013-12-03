@@ -3839,6 +3839,23 @@ void Unit::RemoveAurasDueToSpellByDispel(uint32 spellId, uint32 dispellerSpellId
                     }
                     break;
                 }
+                case SPELLFAMILY_PRIEST:
+                {
+                    // Vampiric Touch
+                    if (aura->GetSpellInfo()->SpellFamilyFlags[1] & 0x0400)
+                    {
+                        Unit* caster = aura->GetCaster();
+                        if (!caster)
+                            break;
+                        if (AuraEffect const* aurEff = aura->GetEffect(EFFECT_1))
+                        {
+                            int32 damage = aurEff->GetAmount() * 8;
+                            // backfire damage
+                            caster->CastCustomSpell(dispeller, 64085, &damage, NULL, NULL, true, NULL, aurEff);
+                        }
+                    }
+                    break;
+                }
                 case SPELLFAMILY_DRUID:
                 {
                     // Lifebloom
