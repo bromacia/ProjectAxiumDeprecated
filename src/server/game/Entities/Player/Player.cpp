@@ -26060,7 +26060,6 @@ void Player::HandlePvPKill()
     uint32 currentMSTime = getMSTime();
     uint32 attackerGUIDLow = 0;
     uint32 highestDamageDoneToVictim = 0;
-    uint32 lastDamageDealtTime = 0;
 
     if (PvPTargetDamageInfo.empty())
         return;
@@ -26069,44 +26068,25 @@ void Player::HandlePvPKill()
     {
         Player* pAttacker = sObjectMgr->GetPlayerByLowGUID(itr->first);
         if (!pAttacker)
-            return;
+            continue;
 
         if (!IsInWorldPvPZone() && !InBattleground() || InArena())
-            return;
+            continue;
 
         if (!pAttacker->IsInWorldPvPZone() && !pAttacker->InBattleground() || pAttacker->InArena())
-            return;
+            continue;
 
-        if (itr->second.LastDamageDealtTimer > currentMSTime)
+        if (itr->second.LastDamageDealtTimer < currentMSTime)
+            continue;
+
+        if (itr->second.DamageDoneToVictim > highestDamageDoneToVictim)
         {
-            if (itr->second.DamageDoneToVictim > highestDamageDoneToVictim)
-            {
-                attackerGUIDLow = itr->first;
-                highestDamageDoneToVictim = itr->second.DamageDoneToVictim;
-                lastDamageDealtTime = itr->second.LastDamageDealtTimer;
-            }
-            else if (itr->second.DamageDoneToVictim = highestDamageDoneToVictim)
-            {
-                if (itr->second.LastDamageDealtTimer > lastDamageDealtTime)
-                {
-                    attackerGUIDLow = itr->first;
-                    highestDamageDoneToVictim = itr->second.DamageDoneToVictim;
-                    lastDamageDealtTime = itr->second.LastDamageDealtTimer;
-                }
-                else if (itr->second.LastDamageDealtTimer = lastDamageDealtTime)
-                {
-                    if (sObjectMgr->GetPlayerByLowGUID(itr->first)->GetPvPRating() >= sObjectMgr->GetPlayerByLowGUID(attackerGUIDLow)->GetPvPRating())
-                    {
-                        attackerGUIDLow = itr->first;
-                        highestDamageDoneToVictim = itr->second.DamageDoneToVictim;
-                        lastDamageDealtTime = itr->second.LastDamageDealtTimer;
-                    }
-                }
-            }
+            attackerGUIDLow = itr->first;
+            highestDamageDoneToVictim = itr->second.DamageDoneToVictim;
         }
     }
 
-    if (!attackerGUIDLow || !highestDamageDoneToVictim || !lastDamageDealtTime)
+    if (!attackerGUIDLow || !highestDamageDoneToVictim)
     {
         for (Player::PvPTargetDamageInformationMap::iterator itr = PvPTargetDamageInfo.begin(); itr != PvPTargetDamageInfo.end(); ++itr)
         {
@@ -26117,6 +26097,8 @@ void Player::HandlePvPKill()
             }
         }
     }
+
+    PvPTargetDamageInfo.clear();
 
     uint8 ratingGain = 0;
     uint8 ratingLoss = 0;
