@@ -5887,6 +5887,8 @@ SpellCastResult Spell::CheckCast(bool strict)
     if (m_spellInfo->Id == 36554 || m_spellInfo->Id == 11578 || m_spellInfo->Id == 20252 || m_spellInfo->Id == 3411 || m_spellInfo->Id == 16979 || m_spellInfo->Id == 49376)
         if (m_caster->HasUnitState(UNIT_STATE_ROOT))
             return SPELL_FAILED_ROOTED;
+        else if (m_caster->IsCrowdControlled())
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
     // Don't allow health funnel to be casted if the pet isnt within LoS of the owner
     if (m_spellInfo->AttributesEx2 & SPELL_ATTR2_HEALTH_FUNNEL)
