@@ -14398,7 +14398,7 @@ uint8 Unit::getRace(bool original) const
     {
         Player* pPlayer = ((Player*)this);
 
-        if (forceoriginal)
+        if (original)
             return pPlayer->getOriginalRace();
 
         if (pPlayer->InArena())
