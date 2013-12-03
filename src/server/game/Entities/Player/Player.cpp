@@ -7001,7 +7001,7 @@ void Player::RewardReputation(Unit* pVictim, float rate)
 
     if (!IsPlayingNative())
     {
-        if (GetOTeam() == ALLIANCE)
+        if (GetOriginalTeam() == ALLIANCE)
         {
             if (repfaction1 == 729)
                 repfaction1 = 730;
@@ -11873,10 +11873,10 @@ InventoryResult Player::CanUseItem(ItemTemplate const* proto) const
 
     if (proto)
     {
-        if ((proto->Flags2 & ITEM_FLAGS_EXTRA_HORDE_ONLY) && GetOTeam() != HORDE)
+        if ((proto->Flags2 & ITEM_FLAGS_EXTRA_HORDE_ONLY) && GetOriginalTeam() != HORDE)
             return EQUIP_ERR_YOU_CAN_NEVER_USE_THAT_ITEM;
 
-        if ((proto->Flags2 & ITEM_FLAGS_EXTRA_ALLIANCE_ONLY) && GetOTeam() != ALLIANCE)
+        if ((proto->Flags2 & ITEM_FLAGS_EXTRA_ALLIANCE_ONLY) && GetOriginalTeam() != ALLIANCE)
             return EQUIP_ERR_YOU_CAN_NEVER_USE_THAT_ITEM;
 
         if ((proto->AllowableClass & getClassMask()) == 0 || (proto->AllowableRace & getOriginalRaceMask()) == 0)
@@ -26214,7 +26214,7 @@ bool Player::SendRealNameQuery()
 
 void Player::SetFakeRace()
 {
-    m_FakeRace = GetOTeam() == ALLIANCE ? RACE_BLOODELF : RACE_HUMAN;
+    m_FakeRace = GetOriginalTeam() == ALLIANCE ? RACE_ORC : RACE_HUMAN;
 }
 
 bool Player::SendBattleGroundChat(uint32 msgtype, std::string message)

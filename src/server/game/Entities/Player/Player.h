@@ -2731,7 +2731,7 @@ class Player : public Unit, public GridObject<Player>
         bool ShouldForgetInListPlayers() { return m_ForgetInListPlayers; }
         bool SendBattleGroundChat(uint32 msgtype, std::string message);
         bool IsPlayingNative() const { return GetTeam() == m_team; }
-        uint32 GetOTeam() const { return m_team; }
+        uint32 GetOriginalTeam() const { return m_team; }
         uint32 GetTeam() const { return m_bgData.bgTeam && GetBattleground() ? m_bgData.bgTeam : m_team; }
         bool SendRealNameQuery();
         FakePlayers m_FakePlayers;

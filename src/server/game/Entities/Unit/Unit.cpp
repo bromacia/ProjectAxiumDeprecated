@@ -17798,7 +17798,11 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form)
 
 uint32 Unit::GetModelForTotem(PlayerTotemType totemType)
 {
-    switch (getRace())
+    Player* player = ToPlayer();
+    if (!player)
+        return 0;
+
+    switch (player->getOriginalRace())
     {
         case RACE_ORC:
         {

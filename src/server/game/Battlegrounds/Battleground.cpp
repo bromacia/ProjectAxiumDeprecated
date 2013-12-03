@@ -717,7 +717,7 @@ void Battleground::RewardReputationToTeam(uint32 a_faction_id, uint32 h_faction_
         uint32 team = plr->GetTeam();
 
         if (team == teamId)
-            plr->GetReputationMgr().ModifyReputation(plr->GetOTeam() == ALLIANCE ? a_factionEntry : h_factionEntry, Reputation);
+            plr->GetReputationMgr().ModifyReputation(plr->GetOriginalTeam() == ALLIANCE ? a_factionEntry : h_factionEntry, Reputation);
     }
 }
 
