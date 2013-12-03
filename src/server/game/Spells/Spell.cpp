@@ -5939,6 +5939,12 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (pet->isDead() || pet->IsCrowdControlled())
                 return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
+    // Don't allow Heart of the Phoenix to be cast if the hunter's pet is alive
+    if (m_spellInfo->Id == 54114)
+        if (Unit* pet = m_caster->ToPlayer()->GetPet())
+            if (!pet->isDead())
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
     // Don't allow Stealth or Invisibility to be casted while the target is Flared
     if (m_spellInfo->Id == 1784 || m_spellInfo->Id == 66
         || (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252)

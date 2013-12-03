@@ -483,12 +483,40 @@ public:
             return true;
         }
 
+        bool Load()
+        {
+            if (!GetCaster())
+                return false;
+
+            if (!GetCaster()->isPet())
+                return false;
+
+            return true;
+        }
+
+        SpellCastResult CheckIfAlive()
+        {
+            Unit* caster = GetCaster();
+            Unit* owner = caster->GetOwner();
+            if (!owner)
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+            if (caster->isAlive())
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+            if (caster->HasAura(HUNTER_PET_HEART_OF_THE_PHOENIX_DEBUFF))
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+            return SPELL_CAST_OK;
+        }
+
         void HandleScript(SpellEffIndex /*effIndex*/)
         {
             Unit* caster = GetCaster();
             Unit* owner = caster->GetOwner();
             if (!owner || caster->HasAura(HUNTER_PET_HEART_OF_THE_PHOENIX_DEBUFF))
                 return;
+
             owner->CastCustomSpell(HUNTER_PET_HEART_OF_THE_PHOENIX_TRIGGERED, SPELLVALUE_BASE_POINT0, 100, caster, true);
             caster->CastSpell(caster, HUNTER_PET_HEART_OF_THE_PHOENIX_DEBUFF, true);
         }
@@ -497,13 +525,7 @@ public:
         {
             // add dummy effect spell handler to pet's Last Stand
             OnEffectHitTarget += SpellEffectFn(spell_hun_pet_heart_of_the_phoenix_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-        }
-
-        bool Load()
-        {
-            if (!GetCaster()->isPet())
-                return false;
-            return true;
+            OnCheckCast += SpellCheckCastFn(spell_hun_pet_heart_of_the_phoenix_SpellScript::CheckIfAlive);
         }
     };
 
