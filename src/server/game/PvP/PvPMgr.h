@@ -7,7 +7,7 @@ class Player;
 class Battleground;
 class ChatHandler;
 
-#define DAMAGE_RESET_TIME_MS 30000
+#define DAMAGE_RESET_TIME_MS 10000
 #define BG_RATING_GAIN 50
 #define BG_RATING_LOSS 25
 
