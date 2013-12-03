@@ -72,7 +72,6 @@ Map::~Map()
     MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(GetId(), i_InstanceId);
     MMAP::MMapManager* manager = MMAP::MMapFactory::createOrGetMMapManager();
     manager->unloadMapInstance(GetId(), i_InstanceId); // Delete the dtNavMeshQuery
-    manager->unloadMap(GetId()); // Unload the loaded tiles and delete the dtNavMesh
 }
 
 bool Map::ExistMap(uint32 mapid, int gx, int gy)
