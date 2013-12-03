@@ -270,7 +270,7 @@ void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket & /*recv_
     if (allianceFlagCarrier)
     {
         if (allianceFlagCarrier->SendRealNameQuery())
-            data << uint64(allianceFlagCarrier->GetGUID() + UINT32_MAX);
+            data << uint64(allianceFlagCarrier->GetGUID() + 2147483647);
         else
             data << uint64(allianceFlagCarrier->GetGUID());
 
@@ -281,7 +281,7 @@ void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket & /*recv_
     if (hordeFlagCarrier)
     {
         if (hordeFlagCarrier->SendRealNameQuery())
-            data << uint64(hordeFlagCarrier->GetGUID() + UINT32_MAX);
+            data << uint64(hordeFlagCarrier->GetGUID() + 2147483647);
         else
             data << uint64(hordeFlagCarrier->GetGUID());
 
