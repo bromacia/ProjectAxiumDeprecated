@@ -1925,6 +1925,9 @@ class Unit : public WorldObject
             SetByteValue(UNIT_FIELD_BYTES_2, 3, form);
         }
 
+        ShapeshiftForm GetOldShapeshiftForm() const { return m_oldShapeshiftForm; }
+        void SetOldShapeshiftForm(ShapeshiftForm oldForm) { m_oldShapeshiftForm = oldForm; }
+
         inline bool IsInFeralForm() const
         {
             ShapeshiftForm form = GetShapeshiftForm();
@@ -2406,6 +2409,10 @@ class Unit : public WorldObject
         bool m_isDueling;
 
         ArenaTeamColor arenaTeam;
+
+        // Storage for old shapeshift forms that are not to be removed when applying a new form
+        // e.g. Shadow Dance
+        ShapeshiftForm m_oldShapeshiftForm;
 };
 
 namespace Trinity

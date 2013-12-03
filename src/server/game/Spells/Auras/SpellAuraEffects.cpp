@@ -1982,9 +1982,20 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const* aurApp, uint8 mo
                break;
         }
 
-        // remove other shapeshift before applying a new one
-        if (form != FORM_STEALTH)
-            target->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT, 0, GetBase());
+        switch (target->GetShapeshiftForm())
+        {
+            // Perform additional checks for the following forms
+            case FORM_SHADOW_DANCE:
+                // If Rogue is switching to FORM_STEALTH while still having an active FORM_SHADOW_DANCE,
+                // store this to restore later
+                if (target->getClass() == CLASS_ROGUE && form == FORM_STEALTH)
+                    target->SetOldShapeshiftForm(FORM_SHADOW_DANCE);
+                    break;
+            default:
+                // remove other shapeshift before applying a new one
+                target->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT, 0, GetBase());
+                break;
+        }
 
         // stop handling the effect if it was removed by linked event
         if (aurApp->GetRemoveMode())
@@ -2045,6 +2056,16 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const* aurApp, uint8 mo
     }
     else
     {
+        // If target possesses a different stored shapeshift form apply it,
+        // otherwise, simply clear it
+        if (ShapeshiftForm oldForm = target->GetOldShapeshiftForm())
+        {
+            if (form != oldForm)
+                target->SetShapeshiftForm(oldForm);
+
+            target->SetOldShapeshiftForm(FORM_NONE);
+        }
+
         // reset model id if no other auras present
         // may happen when aura is applied on linked event on aura removal
         if (!target->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
