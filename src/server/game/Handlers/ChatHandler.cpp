@@ -299,10 +299,6 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             if (sender->IsArenaSpectator())
                 return;
 
-            if (!GetPlayer()->HasGameMasterTagOn())
-                if (GetPlayer()->SendBattleGroundChat(type, msg))
-                    return;
-
             if (type == CHAT_MSG_SAY)
                 sender->Say(msg, lang);
             else if (type == CHAT_MSG_EMOTE)
