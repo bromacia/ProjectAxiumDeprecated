@@ -44,18 +44,17 @@ void WorldSession::SendNameQueryOpcode(uint64 guid)
         return;
     }
 
+    Player* player = ObjectAccessor::FindPlayer(guid);
+
     data << uint8(0);                                       // added in 3.1
     data << nameData->m_name;                               // played name
     data << uint8(0);                                       // realm name for cross realm BG usage
-    data << uint8(nameData->m_race);
+    data << uint8(player ? player->getRace() : nameData->m_race);
     data << uint8(nameData->m_gender);
     data << uint8(nameData->m_class);
 
     bool isNameDeclined = false;
     if (sWorld->getBoolConfig(CONFIG_DECLINED_NAMES_USED))
-    {
-        Player* player = ObjectAccessor::FindPlayer(guid);
-
         if (DeclinedName const* names = (player ? player->GetDeclinedNames() : NULL))
         {
             isNameDeclined = true;
@@ -63,7 +62,6 @@ void WorldSession::SendNameQueryOpcode(uint64 guid)
             for (uint8 i = 0; i < MAX_DECLINED_NAME_CASES; ++i)
                 data << names->name[i];
         }
-    }
 
     if (!isNameDeclined)
         data << uint8(0);                                   // is not declined

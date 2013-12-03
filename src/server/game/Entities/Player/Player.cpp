@@ -927,6 +927,11 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_arenaSpectator = false;
 
     m_gossipPage = 1;
+
+    m_FakeRace = 0;
+    m_RealRace = 0;
+    m_ForgetBGPlayers = false;
+    m_ForgetInListPlayers = false;
 }
 
 Player::~Player()
@@ -1035,6 +1040,12 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
     uint32 RaceClassGender = (createInfo->Race) | (createInfo->Class << 8) | (createInfo->Gender << 16);
 
     SetUInt32Value(UNIT_FIELD_BYTES_0, (RaceClassGender | (powertype << 24)));
+
+    setOriginalRace();
+    m_team = TeamForRace(getOriginalRace());
+    SetFakeRace();
+    setFactionForRace(getOriginalRace());
+
     InitDisplayIds();
     if (sWorld->getIntConfig(CONFIG_GAME_TYPE) == REALM_TYPE_PVP || sWorld->getIntConfig(CONFIG_GAME_TYPE) == REALM_TYPE_RPPVP)
     {
@@ -3024,7 +3035,7 @@ void Player::GiveLevel(uint8 level)
         return;
 
     PlayerLevelInfo info;
-    sObjectMgr->GetPlayerLevelInfo(getRace(), getClass(), level, &info);
+    sObjectMgr->GetPlayerLevelInfo(getOriginalRace(), getClass(), level, &info);
 
     PlayerClassLevelInfo classInfo;
     sObjectMgr->GetPlayerClassLevelInfo(getClass(), level, &classInfo);
@@ -3152,7 +3163,7 @@ void Player::InitStatsForLevel(bool reapplyMods)
     sObjectMgr->GetPlayerClassLevelInfo(getClass(), getLevel(), &classInfo);
 
     PlayerLevelInfo info;
-    sObjectMgr->GetPlayerLevelInfo(getRace(), getClass(), getLevel(), &info);
+    sObjectMgr->GetPlayerLevelInfo(getOriginalRace(), getClass(), getLevel(), &info);
 
     SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL));
     SetUInt32Value(PLAYER_NEXT_LEVEL_XP, sObjectMgr->GetXPForLevel(getLevel()));
@@ -5256,7 +5267,7 @@ void Player::CreateCorpse()
         return;
     }
 
-    _uf = GetUInt32Value(UNIT_FIELD_BYTES_0);
+    _uf = getOriginalRace();
     _pb = GetUInt32Value(PLAYER_BYTES);
     _pb2 = GetUInt32Value(PLAYER_BYTES_2);
 
@@ -6930,10 +6941,10 @@ uint32 Player::TeamForRace(uint8 race)
 
 void Player::setFactionForRace(uint8 race)
 {
-    m_team = TeamForRace(race);
+    SetBGTeam(TeamForRace(race));
 
     ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(race);
-    setFaction(rEntry ? rEntry->FactionID : 0);
+    setFaction(rEntry ? rEntry->FactionID : getFaction());
 }
 
 ReputationRank Player::GetReputationRank(uint32 faction) const
@@ -6981,10 +6992,32 @@ void Player::RewardReputation(Unit* pVictim, float rate)
     if (pVictim->ToCreature()->IsReputationGainDisabled())
         return;
 
-    ReputationOnKillEntry const* Rep = sObjectMgr->GetReputationOnKilEntry(pVictim->ToCreature()->GetCreatureInfo()->Entry);
-
+    ReputationOnKillEntry const* Rep = sObjectMgr->GetReputationOnKillEntry(pVictim->ToCreature()->GetCreatureInfo()->Entry);
     if (!Rep)
         return;
+
+    uint32 repfaction1 = Rep->repfaction1;
+    uint32 repfaction2 = Rep->repfaction2;
+
+    if (!IsPlayingNative())
+    {
+        if (GetOTeam() == ALLIANCE)
+        {
+            if (repfaction1 == 729)
+                repfaction1 = 730;
+
+            if (repfaction2 == 729)
+                repfaction2 = 730;
+        }
+        else
+        {
+            if (repfaction1 == 730)
+                repfaction1 = 729;
+
+            if (repfaction2 == 730)
+                repfaction2 = 729;
+        }
+    }
 
     uint32 ChampioningFaction = 0;
 
@@ -7019,23 +7052,23 @@ void Player::RewardReputation(Unit* pVictim, float rate)
     if (favored_rep_mult > 0) favored_rep_mult *= 2; // Multiplied by 2 because the reputation is divided by 2 for some reason (See "donerep1 / 2" and "donerep2 / 2") -- if you know why this is done, please update/explain :)
     // Favored reputation increase END
 
-    if (Rep->repfaction1 && (!Rep->team_dependent || team == ALLIANCE))
+    if (repfaction1 && (!Rep->team_dependent || team == ALLIANCE))
     {
-        int32 donerep1 = CalculateReputationGain(pVictim->getLevel(), Rep->repvalue1, ChampioningFaction ? ChampioningFaction : Rep->repfaction1, false);
+        int32 donerep1 = CalculateReputationGain(pVictim->getLevel(), Rep->repvalue1, ChampioningFaction ? ChampioningFaction : repfaction1, false);
         donerep1 = int32(donerep1*(rate + favored_rep_mult));
 
-        FactionEntry const* factionEntry1 = sFactionStore.LookupEntry(ChampioningFaction ? ChampioningFaction : Rep->repfaction1);
+        FactionEntry const* factionEntry1 = sFactionStore.LookupEntry(ChampioningFaction ? ChampioningFaction : repfaction1);
         uint32 current_reputation_rank1 = GetReputationMgr().GetRank(factionEntry1);
         if (factionEntry1 && current_reputation_rank1 <= Rep->reputation_max_cap1)
             GetReputationMgr().ModifyReputation(factionEntry1, donerep1);
     }
 
-    if (Rep->repfaction2 && (!Rep->team_dependent || team == HORDE))
+    if (repfaction2 && (!Rep->team_dependent || team == HORDE))
     {
-        int32 donerep2 = CalculateReputationGain(pVictim->getLevel(), Rep->repvalue2, ChampioningFaction ? ChampioningFaction : Rep->repfaction2, false);
+        int32 donerep2 = CalculateReputationGain(pVictim->getLevel(), Rep->repvalue2, ChampioningFaction ? ChampioningFaction : repfaction2, false);
         donerep2 = int32(donerep2*(rate + favored_rep_mult));
 
-        FactionEntry const* factionEntry2 = sFactionStore.LookupEntry(ChampioningFaction ? ChampioningFaction : Rep->repfaction2);
+        FactionEntry const* factionEntry2 = sFactionStore.LookupEntry(ChampioningFaction ? ChampioningFaction : repfaction2);
         uint32 current_reputation_rank2 = GetReputationMgr().GetRank(factionEntry2);
         if (factionEntry2 && current_reputation_rank2 <= Rep->reputation_max_cap2)
             GetReputationMgr().ModifyReputation(factionEntry2, donerep2);
@@ -7121,7 +7154,7 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, int32 honor, bool pvpt
         if (!uVictim || uVictim == this || uVictim->GetTypeId() != TYPEID_PLAYER)
             return false;
 
-        if (GetBGTeam() == uVictim->ToPlayer()->GetBGTeam())
+        if (GetTeam() == uVictim->ToPlayer()->GetTeam())
             return false;
 
         return true;
@@ -11840,13 +11873,13 @@ InventoryResult Player::CanUseItem(ItemTemplate const* proto) const
 
     if (proto)
     {
-        if ((proto->Flags2 & ITEM_FLAGS_EXTRA_HORDE_ONLY) && GetTeam() != HORDE)
+        if ((proto->Flags2 & ITEM_FLAGS_EXTRA_HORDE_ONLY) && GetOTeam() != HORDE)
             return EQUIP_ERR_YOU_CAN_NEVER_USE_THAT_ITEM;
 
-        if ((proto->Flags2 & ITEM_FLAGS_EXTRA_ALLIANCE_ONLY) && GetTeam() != ALLIANCE)
+        if ((proto->Flags2 & ITEM_FLAGS_EXTRA_ALLIANCE_ONLY) && GetOTeam() != ALLIANCE)
             return EQUIP_ERR_YOU_CAN_NEVER_USE_THAT_ITEM;
 
-        if ((proto->AllowableClass & getClassMask()) == 0 || (proto->AllowableRace & getRaceMask()) == 0)
+        if ((proto->AllowableClass & getClassMask()) == 0 || (proto->AllowableRace & getOriginalRaceMask()) == 0)
             return EQUIP_ERR_YOU_CAN_NEVER_USE_THAT_ITEM;
 
         if (proto->RequiredSkill != 0)
@@ -16698,6 +16731,11 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     bytes0 |= Gender << 16;                                 // gender
     SetUInt32Value(UNIT_FIELD_BYTES_0, bytes0);
 
+    setOriginalRace();
+    m_team = TeamForRace(getOriginalRace());
+    SetFakeRace();
+    setFactionForRace(getOriginalRace());
+
     SetUInt32Value(UNIT_FIELD_LEVEL, fields[6].GetUInt8());
     SetUInt32Value(PLAYER_XP, fields[7].GetUInt32());
 
@@ -16743,10 +16781,6 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     sLog->outDebug(LOG_FILTER_PLAYER_LOADING, "Load Basic value of player %s is: ", m_name.c_str());
     outDebugValues();
-
-    //Need to call it to initialize m_team (m_team can be calculated from race)
-    //Other way is to saves m_team into characters table.
-    setFactionForRace(getRace());
 
     // load home bind and check in same time class/race pair, it used later for restore broken positions
     if (!_LoadHomeBind(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADHOMEBIND)))
@@ -18571,7 +18605,7 @@ bool Player::CheckInstanceLoginValid()
 
 bool Player::_LoadHomeBind(PreparedQueryResult result)
 {
-    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getRace(), getClass());
+    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getOriginalRace(), getClass());
     if (!info)
     {
         sLog->outError("Player (Name %s) has incorrect race/class pair. Can't be loaded.", GetName());
@@ -18661,7 +18695,7 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt32(index++, GetGUIDLow());
         stmt->setUInt32(index++, GetSession()->GetAccountId());
         stmt->setString(index++, GetName());
-        stmt->setUInt8(index++, getRace());
+        stmt->setUInt8(index++, getOriginalRace());
         stmt->setUInt8(index++, getClass());
         stmt->setUInt8(index++, getGender());
         stmt->setUInt8(index++, getLevel());
@@ -18759,7 +18793,7 @@ void Player::SaveToDB(bool create /*=false*/)
         // Update query
         stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHARACTER);
         stmt->setString(index++, GetName());
-        stmt->setUInt8(index++, getRace());
+        stmt->setUInt8(index++, getOriginalRace());
         stmt->setUInt8(index++, getClass());
         stmt->setUInt8(index++, getGender());
         stmt->setUInt8(index++, getLevel());
@@ -19838,7 +19872,7 @@ void Player::StopCastingCharm()
     }
 }
 
-inline void Player::BuildPlayerChat(WorldPacket* data, uint8 msgtype, const std::string& text, uint32 language) const
+void Player::BuildPlayerChat(WorldPacket* data, uint8 msgtype, const std::string& text, uint32 language) const
 {
     *data << uint8(msgtype);
     *data << uint32(language);
@@ -20860,24 +20894,34 @@ void Player::InitDataForForm(bool reapplyMods)
 
 void Player::InitDisplayIds()
 {
-    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getRace(), getClass());
+    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getOriginalRace(), getClass());
     if (!info)
     {
         sLog->outError("Player %u has incorrect race/class pair. Can't init display ids.", GetGUIDLow());
         return;
     }
 
+    bool IsMorphed = GetNativeDisplayId() != GetDisplayId();
+
     uint8 gender = getGender();
     switch (gender)
     {
         case GENDER_FEMALE:
-            SetDisplayId(info->displayId_f);
+        {
+            if (!IsMorphed)
+                SetDisplayId(info->displayId_f);
+
             SetNativeDisplayId(info->displayId_f);
             break;
+        }
         case GENDER_MALE:
-            SetDisplayId(info->displayId_m);
+        {
+            if (!IsMorphed)
+                SetDisplayId(info->displayId_m);
+
             SetNativeDisplayId(info->displayId_m);
             break;
+        }
         default:
             sLog->outError("Invalid gender %u for player", gender);
             return;
@@ -22285,11 +22329,11 @@ void Player::resetSpells(bool myClassOnly)
 void Player::learnDefaultSpells()
 {
     // learn default race/class spells
-    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getRace(), getClass());
+    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getOriginalRace(), getClass());
     for (PlayerCreateInfoSpells::const_iterator itr = info->spell.begin(); itr != info->spell.end(); ++itr)
     {
         uint32 tspell = *itr;
-        sLog->outDebug(LOG_FILTER_PLAYER_LOADING, "PLAYER (Class: %u Race: %u): Adding initial spell, id = %u", uint32(getClass()), uint32(getRace()), tspell);
+        sLog->outDebug(LOG_FILTER_PLAYER_LOADING, "PLAYER (Class: %u Race: %u): Adding initial spell, id = %u", uint32(getClass()), uint32(getOriginalRace()), tspell);
         if (!IsInWorld())                                    // will send in INITIAL_SPELLS in list anyway at map add
             addSpell(tspell, true, true, true, false);
         else                                                // but send in normal spell in game learn case
@@ -26155,5 +26199,133 @@ void Player::BuyWorldPvPItem(Creature* creature, const ItemTemplate* vItemTempla
         data << uint32(count);
         GetSession()->SendPacket(&data);
         SendNewItem(item, vItemTemplate->BuyCount * count, true, false, false);
+    }
+}
+
+bool Player::SendRealNameQuery()
+{
+    if (IsPlayingNative())
+        return false;
+
+    WorldPacket data(SMSG_NAME_QUERY_RESPONSE, (8 + 1 + 1 + 1 + 1 + 1 + 10));
+    data.appendPackGUID(GetGUID());                             // player guid
+    data << uint8(0);                                       // added in 3.1; if > 1, then end of packet
+    data << GetName();                                   // played name
+    data << uint8(0);                                       // realm name for cross realm BG usage
+    data << uint8(getOriginalRace());
+    data << uint8(getGender());
+    data << uint8(getClass());
+    data << uint8(0);                                   // is not declined
+
+    return true;
+}
+
+void Player::SetFakeRace()
+{
+    m_FakeRace = GetOTeam() == ALLIANCE ? RACE_BLOODELF : RACE_HUMAN;
+}
+
+bool Player::SendBattleGroundChat(uint32 msgtype, std::string message)
+{
+    // Select distance to broadcast to.
+    float distance = msgtype == CHAT_MSG_SAY ? sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_SAY) : sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_YELL);
+
+    if (Battleground* pBattleGround = GetBattleground())
+    {
+        if (pBattleGround->isArena()) // Only fake chat in BG's. CFBG should not interfere with arenas.
+            return false;
+
+        for (Battleground::BattlegroundPlayerMap::const_iterator itr = pBattleGround->GetPlayers().begin(); itr != pBattleGround->GetPlayers().end(); ++itr)
+        {
+            if (Player* pPlayer = ObjectAccessor::FindPlayer(itr->first))
+            {
+                if (GetDistance2d(pPlayer->GetPositionX(), pPlayer->GetPositionY()) <= distance)
+                {
+                    WorldPacket data(SMSG_MESSAGECHAT, 200);
+
+                    if (GetTeam() == pPlayer->GetTeam())
+                        BuildPlayerChat(&data, msgtype, message, LANG_UNIVERSAL);
+                    else if (msgtype != CHAT_MSG_EMOTE)
+                        BuildPlayerChat(&data, msgtype, message, pPlayer->GetTeam() == ALLIANCE ? LANG_ORCISH : LANG_COMMON);
+
+                    pPlayer->GetSession()->SendPacket(&data);
+                }
+            }
+        }
+        return true;
+    }
+    else
+        return false;
+}
+
+void Player::FitPlayerInTeam(bool action, Battleground* pBattleGround)
+{
+    if (!pBattleGround)
+        pBattleGround = GetBattleground();
+
+    if ((!pBattleGround || pBattleGround->isArena()) && action)
+        return;
+
+    if(!IsPlayingNative() && action)
+        setFactionForRace(getRace());
+    else
+        setFactionForRace(getOriginalRace());
+
+    if (action)
+        SetForgetBGPlayers(true);
+    else
+        SetForgetInListPlayers(true);
+}
+
+void Player::DoForgetPlayersInList()
+{
+    // m_FakePlayers is filled from a vector within the battleground
+    // they were in previously so all players that have been in that BG will be invalidated.
+    for (FakePlayers::const_iterator itr = m_FakePlayers.begin(); itr != m_FakePlayers.end(); ++itr)
+    {
+        WorldPacket data(SMSG_INVALIDATE_PLAYER, 8);
+        data << *itr;
+        GetSession()->SendPacket(&data);
+        if (Player* pPlayer = ObjectAccessor::FindPlayer(*itr))
+            GetSession()->SendNameQueryOpcode(pPlayer->GetGUID());
+    }
+    m_FakePlayers.clear();
+}
+
+void Player::DoForgetPlayersInBG(Battleground* pBattleGround)
+{
+    for (Battleground::BattlegroundPlayerMap::const_iterator itr = pBattleGround->GetPlayers().begin(); itr != pBattleGround->GetPlayers().end(); ++itr)
+    {
+        // Here we invalidate players in the bg to the added player
+        WorldPacket data1(SMSG_INVALIDATE_PLAYER, 8);
+        data1 << itr->first;
+        GetSession()->SendPacket(&data1);
+
+        if (Player* pPlayer = ObjectAccessor::FindPlayer(itr->first))
+        {
+            GetSession()->SendNameQueryOpcode(pPlayer->GetGUID()); // Send namequery answer instantly if player is available
+            // Here we invalidate the player added to players in the bg
+            WorldPacket data2(SMSG_INVALIDATE_PLAYER, 8);
+            data2 << GetGUID();
+            pPlayer->GetSession()->SendPacket(&data2);
+            pPlayer->GetSession()->SendNameQueryOpcode(GetGUID());
+        }
+    }
+}
+
+void Player::SendChatMessage(const char *format, ...)
+{
+    if (!IsInWorld())
+        return;
+
+    if (format)
+    {
+        va_list ap;
+        char str [2048];
+        va_start(ap, format);
+        vsnprintf(str, 2048, format, ap);
+        va_end(ap);
+
+        ChatHandler(GetSession()).SendSysMessage(str);
     }
 }

@@ -1463,6 +1463,21 @@ void WorldSession::HandleSetTitleOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleTimeSyncResp(WorldPacket & recv_data)
 {
+    Battleground* bg = _player->GetBattleground();
+    if (bg)
+    {
+        if (_player->ShouldForgetBGPlayers() && bg)
+        {
+            _player->DoForgetPlayersInBG(bg);
+            _player->SetForgetBGPlayers(false);
+        }
+    }
+    else if (_player->ShouldForgetInListPlayers())
+    {
+        _player->DoForgetPlayersInList();
+        _player->SetForgetInListPlayers(false);
+    }
+
     sLog->outDebug(LOG_FILTER_NETWORKIO, "CMSG_TIME_SYNC_RESP");
 
     uint32 counter, clientTicks;

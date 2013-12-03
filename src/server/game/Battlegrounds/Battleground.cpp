@@ -146,6 +146,7 @@ Battleground::Battleground()
     m_Winner            = 2;
     m_Duration          = 0;
     m_ResetStatTimer    = 0;
+    m_ValidStartPositionTimer = 0;
     m_Events            = 0;
     m_IsRated           = false;
     m_BuffChange        = false;
@@ -163,6 +164,7 @@ Battleground::Battleground()
 
     m_MapId             = 0;
     m_Map               = NULL;
+    m_StartMaxDist      = 0.0f;
 
     m_TeamStartLocX[BG_TEAM_ALLIANCE]   = 0;
     m_TeamStartLocX[BG_TEAM_HORDE]      = 0;
@@ -263,7 +265,10 @@ void Battleground::Update(uint32 diff)
     {
         case STATUS_WAIT_JOIN:
             if (GetPlayersSize())
+            {
                 _ProcessJoin(diff);
+                _CheckSafePositions(diff);
+            }
             break;
         case STATUS_IN_PROGRESS:
             _ProcessOfflineQueue();
@@ -298,6 +303,30 @@ void Battleground::Update(uint32 diff)
     m_ResetStatTimer += diff;
 
     PostUpdateImpl(diff);
+}
+
+inline void Battleground::_CheckSafePositions(uint32 diff)
+{
+    float maxDist = GetStartMaxDist();
+    if (!maxDist)
+        return;
+
+    m_ValidStartPositionTimer += diff;
+    if (m_ValidStartPositionTimer >= CHECK_PLAYER_POSITION_INVERVAL)
+    {
+        m_ValidStartPositionTimer = 0;
+
+        Position pos;
+        float x, y, z, o;
+        for (BattlegroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
+            if (Player* player = ObjectAccessor::FindPlayer(itr->first))
+            {
+                player->GetPosition(&pos);
+                GetTeamStartLoc(player->GetTeam(), x, y, z, o);
+                if (pos.GetExactDistSq(x, y, z) > maxDist)
+                    player->TeleportTo(GetMapId(), x, y, z, o);
+            }
+    }
 }
 
 inline void Battleground::_ProcessOfflineQueue()
@@ -491,7 +520,7 @@ inline void Battleground::_ProcessJoin(uint32 diff)
                     WorldPacket status;
                     BattlegroundQueueTypeId bgQueueTypeId = sBattlegroundMgr->BGQueueTypeId(m_TypeID, GetArenaType());
                     uint32 queueSlot = player->GetBattlegroundQueueIndex(bgQueueTypeId);
-                    sBattlegroundMgr->BuildBattlegroundStatusPacket(&status, this, queueSlot, STATUS_IN_PROGRESS, 0, m_Duration, GetArenaType());
+                    sBattlegroundMgr->BuildBattlegroundStatusPacket(&status, this, queueSlot, STATUS_IN_PROGRESS, 0, m_Duration, GetArenaType(), player->GetTeam());
                     player->GetSession()->SendPacket(&status);
 
                     player->RemoveAurasDueToSpell(SPELL_ARENA_PREPARATION);
@@ -667,12 +696,29 @@ void Battleground::RewardHonorToTeam(uint32 Honor, uint32 TeamID)
             UpdatePlayerScore(player, SCORE_BONUS_HONOR, Honor);
 }
 
-void Battleground::RewardReputationToTeam(uint32 faction_id, uint32 Reputation, uint32 TeamID)
+void Battleground::RewardReputationToTeam(uint32 a_faction_id, uint32 h_faction_id, uint32 Reputation, uint32 teamId)
 {
-    if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(faction_id))
-        for (BattlegroundPlayerMap::const_iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
-            if (Player* player = _GetPlayerForTeam(TeamID, itr, "RewardReputationToTeam"))
-                player->GetReputationMgr().ModifyReputation(factionEntry, Reputation);
+    FactionEntry const* a_factionEntry = sFactionStore.LookupEntry(a_faction_id);
+    FactionEntry const* h_factionEntry = sFactionStore.LookupEntry(h_faction_id);
+
+    if (!a_factionEntry || !h_factionEntry)
+        return;
+
+    for (BattlegroundPlayerMap::const_iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
+    {
+        if (itr->second.OfflineRemoveTime)
+            continue;
+
+        Player* plr = ObjectAccessor::FindPlayer(itr->first);
+
+        if (!plr)
+            continue;
+
+        uint32 team = plr->GetTeam();
+
+        if (team == teamId)
+            plr->GetReputationMgr().ModifyReputation(plr->GetOTeam() == ALLIANCE ? a_factionEntry : h_factionEntry, Reputation);
+    }
 }
 
 void Battleground::UpdateWorldState(uint32 Field, uint32 Value)
@@ -873,7 +919,7 @@ void Battleground::EndBattleground(uint32 winner)
         player->GetSession()->SendPacket(&data);
 
         BattlegroundQueueTypeId bgQueueTypeId = BattlegroundMgr::BGQueueTypeId(GetTypeID(), GetArenaType());
-        sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, TIME_TO_AUTOREMOVE, m_Duration, GetArenaType());
+        sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, TIME_TO_AUTOREMOVE, m_Duration, GetArenaType(), player->GetTeam());
         player->GetSession()->SendPacket(&data);
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND, 1);
     }
@@ -988,7 +1034,7 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
             if (SendPacket)
             {
                 WorldPacket data;
-                sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_NONE, 0, 0, 0);
+                sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_NONE, 0, 0, 0, 0);
                 player->GetSession()->SendPacket(&data);
             }
 
@@ -1030,6 +1076,7 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
 
     if (player)
     {
+        player->FitPlayerInTeam(false, this);
         // Do next only if found in battleground
         player->SetBattlegroundId(0, BATTLEGROUND_TYPE_NONE);  // We're not in BG.
         // reset destination bg team
@@ -1098,7 +1145,7 @@ void Battleground::AddPlayer(Player* player)
     // score struct must be created in inherited class
 
     uint64 guid = player->GetGUID();
-    uint32 team = player->GetBGTeam();
+    uint32 team = player->GetTeam();
 
     BattlegroundPlayer bp;
     bp.OfflineRemoveTime = 0;
@@ -1199,6 +1246,8 @@ void Battleground::AddPlayer(Player* player)
     PlayerAddedToBGCheckIfBGIsRunning(player);
     AddOrSetPlayerToCorrectBgGroup(player, team);
 
+    player->FitPlayerInTeam(true, this);
+
     // Log
     sLog->outDetail("BATTLEGROUND: Player %s joined the battle.", player->GetName());
 }
@@ -1274,8 +1323,8 @@ void Battleground::EventPlayerLoggedOut(Player* player)
 
         // 1 player is logging out, if it is the last, then end arena!
         if (isArena())
-            if (GetPlayersCountByTeam(player->GetBGTeam()) <= 0 || GetPlayersCountByTeam(GetOtherTeam(player->GetBGTeam())) <= 0)
-                EndBattleground(GetOtherTeam(player->GetBGTeam()));
+            if (GetAlivePlayersCountByTeam(player->GetTeam()) <= 1 && GetPlayersCountByTeam(GetOtherTeam(player->GetTeam())))
+                EndBattleground(GetOtherTeam(player->GetTeam()));
     }
 }
 
@@ -1774,6 +1823,9 @@ void Battleground::HandleTriggerBuff(uint64 go_guid)
 
 void Battleground::HandleKillPlayer(Player* player, Player* killer)
 {
+    if (player == killer)
+        return;
+
     // Keep in mind that for arena this will have to be changed a bit
 
     // Add +1 deaths
@@ -1839,7 +1891,7 @@ void Battleground::PlayerAddedToBGCheckIfBGIsRunning(Player* player)
     sBattlegroundMgr->BuildPvpLogDataPacket(&data, this);
     player->GetSession()->SendPacket(&data);
 
-    sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, GetEndTime(), m_Duration, GetArenaType());
+    sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, GetEndTime(), m_Duration, GetArenaType(), player->GetTeam());
     player->GetSession()->SendPacket(&data);
 }
 
@@ -1940,7 +1992,7 @@ void Battleground::RewardXPAtKill(Player* killer, Player* victim)
 void Battleground::CheckForPrematureStart(Player* player)
 {
     if (player->WantsPrematureBattleGroundStart())
-        if (uint32 BGTeam = player->GetBGTeam())
+        if (uint32 BGTeam = player->GetTeam())
         {
             switch (BGTeam)
             {

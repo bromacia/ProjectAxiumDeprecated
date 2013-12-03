@@ -14392,19 +14392,23 @@ void Unit::SetLevel(uint8 lvl)
         ToPlayer()->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_LEVEL);
 }
 
-uint8 Unit::getRace() const
+uint8 Unit::getRace(bool original) const
 {
+    if (GetTypeId() == TYPEID_PLAYER)
+    {
+        Player* pPlayer = ((Player*)this);
+
+        if (forceoriginal)
+            return pPlayer->getOriginalRace();
+
+        if (pPlayer->InArena())
+            return GetByteValue(UNIT_FIELD_BYTES_0, 0);
+
+        if (!pPlayer->IsPlayingNative())
+            return pPlayer->getFRace();
+    }
+
     return GetByteValue(UNIT_FIELD_BYTES_0, 0);
-}
-
-uint8 Unit::getClass() const
-{
-    return GetByteValue(UNIT_FIELD_BYTES_0, 1);
-}
-
-uint8 Unit::getGender() const
-{
-    return GetByteValue(UNIT_FIELD_BYTES_0, 2);
 }
 
 void Unit::SetHealth(uint32 val)
@@ -17006,7 +17010,7 @@ void Unit::RemoveCharmedBy(Unit* charmer)
 void Unit::RestoreFaction()
 {
     if (GetTypeId() == TYPEID_PLAYER)
-        ToPlayer()->setFactionForRace(getRace());
+        ToPlayer()->setFactionForRace(ToPlayer()->getRace());
     else
     {
         if (HasUnitTypeMask(UNIT_MASK_MINION))

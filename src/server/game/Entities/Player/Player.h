@@ -1210,7 +1210,7 @@ class Player : public Unit, public GridObject<Player>
         PlayerSocial *GetSocial() { return m_social; }
 
         PlayerTaxi m_taxi;
-        void InitTaxiNodesForLevel() { m_taxi.InitTaxiNodesForLevel(getRace(), getClass(), getLevel()); }
+        void InitTaxiNodesForLevel() { m_taxi.InitTaxiNodesForLevel(getOriginalRace(), getClass(), getLevel()); }
         bool ActivateTaxiPathTo(std::vector<uint32> const& nodes, Creature* npc = NULL, uint32 spellid = 0);
         bool ActivateTaxiPathTo(uint32 taxi_path_id, uint32 spellid = 0);
         void CleanupAfterTaxiFlight();
@@ -2099,8 +2099,7 @@ class Player : public Unit, public GridObject<Player>
         void CheckAreaExploreAndOutdoor(void);
 
         static uint32 TeamForRace(uint8 race);
-        uint32 GetTeam() const { return m_team; }
-        TeamId GetTeamId() const { return m_team == ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
+        TeamId GetTeamId() const { return GetTeam() == ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
         void setFactionForRace(uint8 race);
 
         void InitDisplayIds();
@@ -2301,7 +2300,6 @@ class Player : public Unit, public GridObject<Player>
         void SetBattlegroundEntryPoint();
 
         void SetBGTeam(uint32 team) { m_bgData.bgTeam = team; }
-        uint32 GetBGTeam() const { return m_bgData.bgTeam ? m_bgData.bgTeam : GetTeam(); }
 
         void LeaveBattleground(bool teleportToEntryPoint = true);
         bool CanJoinToBattleground() const;
@@ -2718,6 +2716,26 @@ class Player : public Unit, public GridObject<Player>
 
         void _LoadMail();
 
+        typedef std::vector<uint64> FakePlayers;
+        void SendChatMessage(const char *format, ...);
+        void FitPlayerInTeam(bool action, Battleground* pBattleGround = NULL);
+        void DoForgetPlayersInList();
+        void DoForgetPlayersInBG(Battleground* pBattleGround);
+        uint8 getOriginalRace() const { return m_RealRace; }
+        void setOriginalRace() { m_RealRace = GetByteValue(UNIT_FIELD_BYTES_0, 0); };
+        void SetFakeRace();
+        uint8 getFRace() const { return m_FakeRace; }
+        void SetForgetBGPlayers(bool value) { m_ForgetBGPlayers = value; }
+        bool ShouldForgetBGPlayers() { return m_ForgetBGPlayers; }
+        void SetForgetInListPlayers(bool value) { m_ForgetInListPlayers = value; }
+        bool ShouldForgetInListPlayers() { return m_ForgetInListPlayers; }
+        bool SendBattleGroundChat(uint32 msgtype, std::string message);
+        bool IsPlayingNative() const { return GetTeam() == m_team; }
+        uint32 GetOTeam() const { return m_team; }
+        uint32 GetTeam() const { return m_bgData.bgTeam && GetBattleground() ? m_bgData.bgTeam : m_team; }
+        bool SendRealNameQuery();
+        FakePlayers m_FakePlayers;
+
     protected:
         // Gamemaster whisper whitelist
         WhisperListContainer WhisperList;
@@ -3103,6 +3121,11 @@ class Player : public Unit, public GridObject<Player>
         bool m_arenaSpectator;
 
         uint8 m_gossipPage;
+
+        bool m_ForgetBGPlayers;
+        bool m_ForgetInListPlayers;
+        uint8 m_FakeRace;
+        uint8 m_RealRace;
 };
 
 void AddItemsSetItem(Player *player, Item *item);

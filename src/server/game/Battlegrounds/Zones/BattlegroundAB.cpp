@@ -121,7 +121,7 @@ void BattlegroundAB::PostUpdateImpl(uint32 diff)
                 if (m_ReputationScoreTics[team] >= m_ReputationTics)
                 {
                     uint32 m_ReputationGain = IsHolidayActive(HOLIDAY_CALL_TO_ARMS_AB) ? 13 : 10;
-                    (team == BG_TEAM_ALLIANCE) ? RewardReputationToTeam(509, m_ReputationGain, ALLIANCE) : RewardReputationToTeam(510, m_ReputationGain, HORDE);
+                    RewardReputationToTeam(509, 510, 10, team == ALLIANCE ? ALLIANCE : HORDE);
                     m_ReputationScoreTics[team] -= m_ReputationTics;
                 }
                 if (m_HonorScoreTics[team] >= m_HonorTics)

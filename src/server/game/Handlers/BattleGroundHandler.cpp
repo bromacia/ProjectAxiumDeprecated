@@ -182,7 +182,7 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket & recv_data)
 
         WorldPacket data;
                                                             // send status packet (in queue)
-        sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_WAIT_QUEUE, avgTime, 0, ginfo->ArenaType);
+        sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_WAIT_QUEUE, avgTime, 0, ginfo->ArenaType, _player->GetTeam());
         SendPacket(&data);
         sLog->outDebug(LOG_FILTER_BATTLEGROUND, "Battleground: player joined queue for bg queue type %u bg type %u: GUID %u, NAME %s", bgQueueTypeId, bgTypeId, _player->GetGUIDLow(), _player->GetName());
     }
@@ -226,7 +226,7 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket & recv_data)
             uint32 queueSlot = member->AddBattlegroundQueueId(bgQueueTypeId);
 
             // send status packet (in queue)
-            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_WAIT_QUEUE, avgTime, 0, ginfo->ArenaType);
+            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_WAIT_QUEUE, avgTime, 0, ginfo->ArenaType, member->GetTeam());
             member->GetSession()->SendPacket(&data);
             sBattlegroundMgr->BuildGroupJoinedBattlegroundPacket(&data, err);
             member->GetSession()->SendPacket(&data);
@@ -247,38 +247,46 @@ void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket & /*recv_
         return;
 
     uint32 count = 0;
-    Player* aplr = NULL;
-    Player* hplr = NULL;
+    Player* allianceFlagCarrier = NULL;
+    Player* hordeFlagCarrier = NULL;
 
     if (uint64 guid = bg->GetFlagPickerGUID(BG_TEAM_ALLIANCE))
     {
-        aplr = ObjectAccessor::FindPlayer(guid);
-        if (aplr)
+        allianceFlagCarrier = ObjectAccessor::FindPlayer(guid);
+        if (allianceFlagCarrier)
             ++count;
     }
 
     if (uint64 guid = bg->GetFlagPickerGUID(BG_TEAM_HORDE))
     {
-        hplr = ObjectAccessor::FindPlayer(guid);
-        if (hplr)
+        hordeFlagCarrier = ObjectAccessor::FindPlayer(guid);
+        if (hordeFlagCarrier)
             ++count;
     }
 
     WorldPacket data(MSG_BATTLEGROUND_PLAYER_POSITIONS, 4 + 4 + 16 * count);
     data << 0;
     data << count;
-    if (aplr)
+    if (allianceFlagCarrier)
     {
-        data << uint64(aplr->GetGUID());
-        data << float(aplr->GetPositionX());
-        data << float(aplr->GetPositionY());
+        if (allianceFlagCarrier->SendRealNameQuery())
+            data << uint64(allianceFlagCarrier->GetGUID() + UINT32_MAX);
+        else
+            data << uint64(allianceFlagCarrier->GetGUID());
+
+        data << float(allianceFlagCarrier->GetPositionX());
+        data << float(allianceFlagCarrier->GetPositionY());
     }
 
-    if (hplr)
+    if (hordeFlagCarrier)
     {
-        data << uint64(hplr->GetGUID());
-        data << float(hplr->GetPositionX());
-        data << float(hplr->GetPositionY());
+        if (hordeFlagCarrier->SendRealNameQuery())
+            data << uint64(hordeFlagCarrier->GetGUID() + UINT32_MAX);
+        else
+            data << uint64(hordeFlagCarrier->GetGUID());
+
+        data << float(hordeFlagCarrier->GetPositionX());
+        data << float(hordeFlagCarrier->GetPositionY());
     }
 
     SendPacket(&data);
@@ -431,7 +439,7 @@ void WorldSession::HandleBattleFieldPortOpcode(WorldPacket &recv_data)
                 _player->CleanupAfterTaxiFlight();
             }
 
-            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_IN_PROGRESS, 0, bg->GetDuration(), bg->GetArenaType());
+            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_IN_PROGRESS, 0, bg->GetDuration(), bg->GetArenaType(), _player->GetTeam());
             _player->GetSession()->SendPacket(&data);
             // remove battleground queue status from BGmgr
             bgQueue.RemovePlayer(_player->GetGUID(), false);
@@ -466,7 +474,7 @@ void WorldSession::HandleBattleFieldPortOpcode(WorldPacket &recv_data)
                 }
             }
             _player->RemoveBattlegroundQueueId(bgQueueTypeId);  // must be called this way, because if you move this call to queue->removeplayer, it causes bugs
-            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_NONE, 0, 0, 0);
+            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_NONE, 0, 0, 0, 0);
             bgQueue.RemovePlayer(_player->GetGUID(), true);
             // player left queue, we should update it - do not update Arena Queue
             if (!ginfo.ArenaType)
@@ -516,7 +524,7 @@ void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket & /*recv_data*/)
             {
                 // this line is checked, i only don't know if GetStartTime is changing itself after bg end!
                 // send status in Battleground
-                sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, i, STATUS_IN_PROGRESS, bg->GetEndTime(), bg->GetDuration(), arenaType);
+                sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, i, STATUS_IN_PROGRESS, bg->GetEndTime(), bg->GetDuration(), arenaType, _player->GetTeam());
                 SendPacket(&data);
                 continue;
             }
@@ -534,7 +542,7 @@ void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket & /*recv_data*/)
                 continue;
             uint32 remainingTime = getMSTimeDiff(getMSTime(), ginfo.RemoveInviteTime);
             // send status invited to Battleground
-            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, i, STATUS_WAIT_JOIN, remainingTime, 0, arenaType);
+            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, i, STATUS_WAIT_JOIN, remainingTime, 0, arenaType, _player->GetTeam());
             SendPacket(&data);
         }
         else
@@ -550,7 +558,7 @@ void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket & /*recv_data*/)
 
             uint32 avgTime = bgQueue.GetAverageQueueWaitTime(&ginfo, bracketEntry->GetBracketId());
             // send status in Battleground Queue
-            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, i, STATUS_WAIT_QUEUE, avgTime, getMSTimeDiff(ginfo.JoinTime, getMSTime()), arenaType);
+            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, i, STATUS_WAIT_QUEUE, avgTime, getMSTimeDiff(ginfo.JoinTime, getMSTime()), arenaType, _player->GetTeam());
             SendPacket(&data);
         }
     }
@@ -746,7 +754,7 @@ void WorldSession::HandleBattlemasterJoinArena(WorldPacket & recv_data)
             uint32 queueSlot = member->AddBattlegroundQueueId(bgQueueTypeId);
 
             // send status packet (in queue)
-            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_WAIT_QUEUE, avgTime, 0, arenatype);
+            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_WAIT_QUEUE, avgTime, 0, arenatype, _player->GetTeam());
             member->GetSession()->SendPacket(&data);
             sBattlegroundMgr->BuildGroupJoinedBattlegroundPacket(&data, err);
             member->GetSession()->SendPacket(&data);
@@ -761,7 +769,7 @@ void WorldSession::HandleBattlemasterJoinArena(WorldPacket & recv_data)
 
         WorldPacket data;
         // send status packet (in queue)
-        sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_WAIT_QUEUE, avgTime, 0, arenatype);
+        sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_WAIT_QUEUE, avgTime, 0, arenatype, _player->GetTeam());
         SendPacket(&data);
         sLog->outDebug(LOG_FILTER_BATTLEGROUND, "Battleground: player joined queue for arena, skirmish, bg queue type %u bg type %u: GUID %u, NAME %s", bgQueueTypeId, bgTypeId, _player->GetGUIDLow(), _player->GetName());
     }

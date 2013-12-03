@@ -105,6 +105,7 @@ enum BattlegroundSpells
 enum BattlegroundTimeIntervals
 {
     // Milliseconds
+    CHECK_PLAYER_POSITION_INVERVAL  = 1000,
     RESURRECTION_INTERVAL           = 30000,
     REMIND_INTERVAL                 = 10000,
     INVITATION_REMIND_TIME          = 20000,
@@ -449,6 +450,9 @@ class Battleground
             O = m_TeamStartLocO[idx];
         }
 
+        void SetStartMaxDist(float startMaxDist) { m_StartMaxDist = startMaxDist; }
+        float GetStartMaxDist() const { return m_StartMaxDist; }
+
         // Packet Transfer
         // method that should fill worldpacket with actual world states (not yet implemented for all battlegrounds!)
         virtual void FillInitialWorldStates(WorldPacket& /*data*/) {}
@@ -464,7 +468,7 @@ class Battleground
         void CastSpellOnTeam(uint32 SpellID, uint32 TeamID);
         void RemoveAuraOnTeam(uint32 SpellID, uint32 TeamID);
         void RewardHonorToTeam(uint32 Honor, uint32 TeamID);
-        void RewardReputationToTeam(uint32 faction_id, uint32 Reputation, uint32 TeamID);
+        void RewardReputationToTeam(uint32 a_faction_id, uint32 h_faction_id, uint32 Reputation, uint32 teamId);
         void UpdateWorldState(uint32 Field, uint32 Value);
         void UpdateWorldStateForPlayer(uint32 Field, uint32 Value, Player* Source);
         void EndBattleground(uint32 winner);
@@ -607,6 +611,7 @@ class Battleground
         void _ProcessProgress(uint32 diff);
         void _ProcessLeave(uint32 diff);
         void _ProcessJoin(uint32 diff);
+        void _CheckSafePositions(uint32 diff);
 
         // Scorekeeping
         BattlegroundScoreMap m_PlayerScores;                // Player scores
@@ -637,6 +642,7 @@ class Battleground
         uint32 m_ClientInstanceID;                          // the instance-id which is sent to the client and without any other internal use
         uint32 m_Duration;
         uint32 m_ResetStatTimer;
+        uint32 m_ValidStartPositionTimer;
         int32 m_EndTime;                                    // it is set to 120000 when bg is ending and it decreases itself
         uint32 m_LastResurrectTime;
         BattlegroundBracketId m_BracketId;
@@ -722,6 +728,7 @@ class Battleground
         float m_TeamStartLocY[BG_TEAMS_COUNT];
         float m_TeamStartLocZ[BG_TEAMS_COUNT];
         float m_TeamStartLocO[BG_TEAMS_COUNT];
+        float m_StartMaxDist;
         uint32 ScriptId;
 };
 #endif
