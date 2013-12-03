@@ -5671,10 +5671,16 @@ SpellCastResult Spell::CheckCast(bool strict)
                     return SPELL_FAILED_NOT_BEHIND;
             }
 
-            if (!(m_spellInfo->AttributesEx2 & SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS) && VMAP::VMapFactory::checkSpellForLoS(m_spellInfo->Id) && !m_caster->IsWithinLOSInMap(target))
+            if (!ShouldIgnoreLOS(target) &&
+                !(m_spellInfo->AttributesEx2 & SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS) &&
+                VMAP::VMapFactory::checkSpellForLoS(m_spellInfo->Id) &&
+                !m_caster->IsWithinLOSInMap(target))
                 return SPELL_FAILED_LINE_OF_SIGHT;
 
-            if (!(m_spellInfo->AttributesEx6 & SPELL_ATTR6_CAN_TARGET_INVISIBLE) && !m_caster->canSeeOrDetect(target) && m_casttime != 0 && !target->HasAura(200008))
+            if (!(m_spellInfo->AttributesEx6 & SPELL_ATTR6_CAN_TARGET_INVISIBLE) &&
+                !m_caster->canSeeOrDetect(target) &&
+                m_casttime != 0 &&
+                !target->HasAura(200008))
                 return SPELL_FAILED_BAD_TARGETS;
         }
         else
@@ -6996,7 +7002,7 @@ bool Spell::CheckEffectTarget(Unit const* target, uint32 eff) const
             break;
     }
 
-    if (IsTriggered() || m_spellInfo->AttributesEx2 & SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS)
+    if (ShouldIgnoreLOS(target) || m_spellInfo->AttributesEx2 & SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS)
         return true;
 
     // todo: shit below shouldn't be here, but it's temporary
@@ -7023,15 +7029,30 @@ bool Spell::CheckEffectTarget(Unit const* target, uint32 eff) const
 
             // all ok by some way or another, skip normal check
             break;
-        default:                                            // normal case
-            // Get GO cast coordinates if original caster -> GO
-            WorldObject* caster = NULL;
-            if (IS_GAMEOBJECT_GUID(m_originalCasterGUID))
-                caster = m_caster->GetMap()->GetGameObject(m_originalCasterGUID);
-            if (!caster)
-                caster = m_caster;
-            if (target != m_caster && !target->IsWithinLOSInMap(caster) && !RedirectedSpell)
+        default:
+            // At this point, if spell is self-cast, bypass the following LOS checks
+            if (target == m_caster)
+                return true;
+
+            float x, y, z;
+
+            // Check LOS with center of circle/destination if it exists
+            if (m_targets.HasDst())
+                m_targets.GetDst()->GetPosition(x, y, z);
+            else // Check LOS with caster
+            {
+                WorldObject* caster = m_caster;
+
+                // Get GO cast coordinates if original caster -> GO
+                if (IS_GAMEOBJECT_GUID(m_originalCasterGUID))
+                    caster = m_caster->GetMap()->GetGameObject(m_originalCasterGUID);
+
+                caster->GetPosition(x, y, z);
+            }
+            
+            if (!target->IsWithinLOS(x, y, z))
                 return false;
+
             break;
     }
 
@@ -7897,4 +7918,12 @@ void Spell::CancelGlobalCooldown()
         m_caster->GetCharmInfo()->GetGlobalCooldownMgr().CancelGlobalCooldown(m_spellInfo);
     else if (m_caster->GetTypeId() == TYPEID_PLAYER)
         m_caster->ToPlayer()->GetGlobalCooldownMgr().CancelGlobalCooldown(m_spellInfo);
+}
+
+bool Spell::ShouldIgnoreLOS(Unit const* target) const
+{
+    if (IsTriggered() && m_caster->isSummon() && m_caster->IsFriendlyTo(target) && m_spellInfo->_IsPositiveSpell())
+        return true;
+
+    return false;
 }

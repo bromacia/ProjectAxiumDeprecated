@@ -652,6 +652,8 @@ class Spell
         void CalculateJumpSpeeds(uint8 i, float speedRate, float& speedxy, float& speedz);
 
         SpellCastResult CanOpenLock(uint32 effIndex, uint32 lockid, SkillType& skillid, int32& reqSkillValue, int32& skillValue);
+
+        bool ShouldIgnoreLOS(Unit const* target) const;
         // -------------------------------------------
 
         uint32 m_spellState;
