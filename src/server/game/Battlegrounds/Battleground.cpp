@@ -1015,21 +1015,38 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         {
             player->ClearAfkReports();
 
-            if (!team) team = player->GetTeam();
+            if (!team)
+                team = player->GetTeam();
 
             // if arena, remove the specific arena auras
             if (isArena())
             {
-                bgTypeId=BATTLEGROUND_AA;                   // set the bg type to all arenas (it will be used for queue refreshing)
+                bgTypeId = BATTLEGROUND_AA;                   // set the bg type to all arenas (it will be used for queue refreshing)
 
-                if (isRated() && GetStatus() == STATUS_IN_PROGRESS)
-                {
-                    //left a rated match while the encounter was in progress, consider as loser
-                    ArenaTeam* winner_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(GetOtherTeam(team)));
-                    ArenaTeam* loser_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(team));
-                    if (winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
-                        loser_arena_team->MemberLost(player, GetArenaMatchmakerRating(GetOtherTeam(team)));
-                }
+                if (isRated())
+                    if (GetStatus() != STATUS_WAIT_LEAVE)
+                    {
+                        //left a rated match while the encounter was in progress, consider as loser
+                        ArenaTeam* players_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(team));
+                        ArenaTeam* others_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(GetOtherTeam(team)));
+                        if (players_arena_team && others_arena_team && players_arena_team != others_arena_team)
+                            players_arena_team->MemberLost(player, GetArenaMatchmakerRating(GetOtherTeam(team)));
+                    }
+                    else
+                    {
+                        uint16 winningTeam = 0;
+                        if (!GetAlivePlayersCountByTeam(ALLIANCE) && GetPlayersCountByTeam(HORDE))
+                            winningTeam = HORDE;
+                        else if (GetPlayersCountByTeam(ALLIANCE) && !GetAlivePlayersCountByTeam(HORDE))
+                            winningTeam = ALLIANCE;
+
+                        ArenaTeam* winner_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(winningTeam));
+                        ArenaTeam* loser_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(GetOtherTeam(winningTeam)));
+
+                        if (winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
+                            if (loser_arena_team->GetMember(guid))
+                                loser_arena_team->MemberLost(player, GetArenaMatchmakerRating(GetOtherTeam(winningTeam)));
+                    }
             }
             if (SendPacket)
             {
@@ -1044,14 +1061,30 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         else
         // removing offline participant
         {
-            if (isRated() && GetStatus() == STATUS_IN_PROGRESS)
-            {
-                //left a rated match while the encounter was in progress, consider as loser
-                ArenaTeam* others_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(GetOtherTeam(team)));
-                ArenaTeam* players_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(team));
-                if (others_arena_team && players_arena_team)
-                    players_arena_team->OfflineMemberLost(guid, GetArenaMatchmakerRating(GetOtherTeam(team)));
-            }
+            if (isRated())
+                if (GetStatus() != STATUS_WAIT_LEAVE)
+                {
+                    //left a rated match while the encounter was in progress, consider as loser
+                    ArenaTeam* players_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(team));
+                    ArenaTeam* others_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(GetOtherTeam(team)));
+                    if (players_arena_team && others_arena_team)
+                        players_arena_team->OfflineMemberLost(guid, GetArenaMatchmakerRating(GetOtherTeam(team)));
+                }
+                else
+                {
+                    uint16 winningTeam = 0;
+                    if (!GetAlivePlayersCountByTeam(ALLIANCE) && GetPlayersCountByTeam(HORDE))
+                        winningTeam = HORDE;
+                    else if (GetPlayersCountByTeam(ALLIANCE) && !GetAlivePlayersCountByTeam(HORDE))
+                        winningTeam = ALLIANCE;
+
+                    ArenaTeam* winner_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(winningTeam));
+                    ArenaTeam* loser_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(GetOtherTeam(winningTeam)));
+
+                    if (winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
+                        if (loser_arena_team->GetMember(guid))
+                            loser_arena_team->MemberLost(player, GetArenaMatchmakerRating(GetOtherTeam(winningTeam)));
+                }
         }
 
         // remove from raid group if player is member
@@ -1316,16 +1349,14 @@ void Battleground::EventPlayerLoggedOut(Player* player)
     // player is correct pointer, it is checked in WorldSession::LogoutPlayer()
     m_OfflineQueue.push_back(player->GetGUID());
     m_Players[guid].OfflineRemoveTime = sWorld->GetGameTime() + MAX_OFFLINE_TIME;
-    if (GetStatus() == STATUS_IN_PROGRESS)
-    {
-        // drop flag and handle other cleanups
-        RemovePlayer(player, guid, GetPlayerTeam(guid));
 
-        // 1 player is logging out, if it is the last, then end arena!
-        if (isArena())
-            if (GetAlivePlayersCountByTeam(player->GetTeam()) <= 1 && GetPlayersCountByTeam(GetOtherTeam(player->GetTeam())))
-                EndBattleground(GetOtherTeam(player->GetTeam()));
-    }
+    // drop flag and handle other cleanups
+    RemovePlayer(player, guid, GetPlayerTeam(guid));
+
+    // 1 player is logging out, if it is the last, then end arena!
+    if (isArena())
+        if (GetAlivePlayersCountByTeam(player->GetTeam()) <= 1 && GetPlayersCountByTeam(GetOtherTeam(player->GetTeam())))
+            EndBattleground(GetOtherTeam(player->GetTeam()));
 }
 
 // This method should be called only once ... it adds pointer to queue
