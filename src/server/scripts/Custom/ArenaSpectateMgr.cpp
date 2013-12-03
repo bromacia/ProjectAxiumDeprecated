@@ -162,14 +162,11 @@ void ArenaSpectateMgr::HandleShowMatches(Player* player, Creature* creature, uin
             if (!goldTeam)
                 continue;
 
-            if (goldTeam->GetStats().Rating < sWorld->getIntConfig(CONFIG_ARENA_SPECTATOR_MIN_RATING))
-                continue;
-
             ArenaTeam* greenTeam = sArenaTeamMgr->GetArenaTeamById(arena->GetArenaTeamIdByIndex(BG_TEAM_HORDE));
             if (!greenTeam)
                 continue;
 
-            if (greenTeam->GetStats().Rating < sWorld->getIntConfig(CONFIG_ARENA_SPECTATOR_MIN_RATING))
+            if (goldTeam->GetStats().Rating < sWorld->getIntConfig(CONFIG_ARENA_SPECTATOR_MIN_RATING) && greenTeam->GetStats().Rating < sWorld->getIntConfig(CONFIG_ARENA_SPECTATOR_MIN_RATING))
                 continue;
 
             std::stringstream gossipText;
