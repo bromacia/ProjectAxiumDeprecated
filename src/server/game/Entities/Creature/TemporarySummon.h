@@ -78,11 +78,15 @@ class Guardian : public Minion
         void UpdateMaxPower(Powers power);
         void UpdateAttackPowerAndDamage(bool ranged = false);
         void UpdateDamagePhysical(WeaponAttackType attType);
+        void UpdateHitAndExpertise();
 
         int32 GetBonusDamage() { return m_bonusSpellDamage; }
         void SetBonusDamage(int32 damage);
+
+        int32 GetModExpertise() { return m_modExpertise; }
     protected:
         int32   m_bonusSpellDamage;
+        int32   m_modExpertise;
         float   m_statFromOwner[MAX_STATS];
 };
 

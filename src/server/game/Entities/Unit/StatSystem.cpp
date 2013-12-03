@@ -776,6 +776,9 @@ void Player::UpdateMeleeHitChances()
 {
     m_modMeleeHitChance = (float)GetTotalAuraModifier(SPELL_AURA_MOD_HIT_CHANCE);
     m_modMeleeHitChance += GetRatingBonusValue(CR_HIT_MELEE);
+
+    if (Guardian* pet = GetGuardianPet())
+        pet->UpdateHitAndExpertise();
 }
 
 void Player::UpdateRangedHitChances()
@@ -788,6 +791,9 @@ void Player::UpdateSpellHitChances()
 {
     m_modSpellHitChance = (float)GetTotalAuraModifier(SPELL_AURA_MOD_SPELL_HIT_CHANCE);
     m_modSpellHitChance += GetRatingBonusValue(CR_HIT_SPELL);
+
+    if (Guardian* pet = GetGuardianPet())
+        pet->UpdateHitAndExpertise();
 }
 
 void Player::UpdateAllSpellCritChances()
@@ -1194,6 +1200,8 @@ bool Guardian::UpdateAllStats()
     for (uint8 i = SPELL_SCHOOL_NORMAL; i < MAX_SPELL_SCHOOL; ++i)
         UpdateResistances(i);
 
+    UpdateHitAndExpertise();
+
     return true;
 }
 
@@ -1464,4 +1472,19 @@ void Guardian::SetBonusDamage(int32 damage)
     m_bonusSpellDamage = damage;
     if (GetOwner()->GetTypeId() == TYPEID_PLAYER)
         GetOwner()->SetUInt32Value(PLAYER_PET_SPELL_POWER, damage);
+}
+
+void Guardian::UpdateHitAndExpertise()
+{
+    if (Player* owner = GetOwner()->ToPlayer())
+    {
+        // Melee Hit Chance
+        m_modMeleeHitChance = int32(owner->GetTotalAuraModifier(SPELL_AURA_MOD_HIT_CHANCE) + owner->GetRatingBonusValue(CR_HIT_MELEE));
+
+        // Expertise (1% owner's hit rating -> 1% less chance to dodge/parry pet's attack)
+        m_modExpertise = int32(m_modMeleeHitChance * 32.79f * owner->GetRatingMultiplier(CR_EXPERTISE));
+
+        // Spell Hit Chance
+        m_modSpellHitChance = int32(owner->GetTotalAuraModifier(SPELL_AURA_MOD_SPELL_HIT_CHANCE) + owner->GetRatingBonusValue(CR_HIT_SPELL));
+    }
 }
