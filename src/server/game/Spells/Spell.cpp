@@ -1267,7 +1267,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
 
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         if (unit->GetEntry() == 5925 && ((RedirectedSpell || m_spellInfo->IsNegativeAuraSpell() ||
-            m_spellInfo->Effects[i].Effect == SPELL_EFFECT_DISPEL) && m_spellInfo->Effects[i].TargetA.GetTarget() == TARGET_UNIT_TARGET_ENEMY))
+            m_spellInfo->Effects[i].Effect == SPELL_EFFECT_DISPEL) && (m_spellInfo->Effects[i].TargetA.GetTarget() == TARGET_UNIT_TARGET_ENEMY || m_spellInfo->Effects[i].TargetA.GetTarget() == TARGET_UNIT_TARGET_ANY)))
         {
             unit->setDeathState(JUST_DIED);
             return;
@@ -2356,7 +2356,7 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
                     pushType = PUSH_CHAIN;
                     break;
                 case TARGET_UNIT_TARGET_ANY:
-                    if (!m_spellInfo->IsPositive())
+                    if (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL))
                         if (Unit* magnet = m_caster->SelectMagnetTarget(target, m_spellInfo))
                             if (magnet != target)
                             {
