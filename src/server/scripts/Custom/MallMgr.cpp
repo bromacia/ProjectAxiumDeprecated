@@ -266,7 +266,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Boots", MALL_MENU_ENCHANTS, ENCHANT_OPTION_BOOTS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Cloak", MALL_MENU_ENCHANTS, ENCHANT_OPTION_CLOAK);
 
-            if (player->GetSkillValue(SKILL_ENCHANTING) == 450)
+            if (player->GetSkillValue(SKILL_ENCHANTING) >= 450)
             {
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Ring 1", MALL_MENU_ENCHANTS, ENCHANT_OPTION_RING1);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Ring 2", MALL_MENU_ENCHANTS, ENCHANT_OPTION_RING2);
@@ -314,7 +314,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+24 Spell Power & +15 Critical Strike", ENCHANT_OPTION_SHOULDERS, ENCHANT_SHOULDER_GREATER_INSCRIPTION_OF_THE_STORM);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+24 Spell Power & +8 MP5", ENCHANT_OPTION_SHOULDERS, ENCHANT_SHOULDER_GREATER_INSCRIPTION_OF_THE_CRAG);
 
-            if (player->GetSkillValue(SKILL_INSCRIPTION) == 450)
+            if (player->GetSkillValue(SKILL_INSCRIPTION) >= 450)
             {
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+120 Attack Power & +15 Critical Strike", ENCHANT_OPTION_SHOULDERS, ENCHANT_SHOULDERS_MASTERS_INSCRIPTION_OF_THE_AXE);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+70 Spell Power & +15 Critical Strike", ENCHANT_OPTION_SHOULDERS, ENCHANT_SHOULDERS_MASTERS_INSCRIPTION_OF_THE_STORM);
@@ -357,10 +357,10 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+20 Agility", ENCHANT_OPTION_GLOVES, ENCHANT_GLOVES_MAJOR_AGILITY);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+20 Hit Rating", ENCHANT_OPTION_GLOVES, ENCHANT_GLOVES_PERCISION);
 
-            if (player->GetSkillValue(SKILL_BLACKSMITHING) == 450)
+            if (player->GetSkillValue(SKILL_BLACKSMITHING) >= 450)
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Socket Gloves", ENCHANT_OPTION_GLOVES, ENCHANT_GLOVES_SOCKET);
 
-            if (player->GetSkillValue(SKILL_ENGINEERING) == 450)
+            if (player->GetSkillValue(SKILL_ENGINEERING) >= 450)
             {
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Hand-Mounted Pyro Rocket", ENCHANT_OPTION_GLOVES, ENCHANT_GLOVES_HAND_MOUNTED_PRYO_ROCKET);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Hyperspeed Accelerators", ENCHANT_OPTION_GLOVES, ENCHANT_GLOVES_HYPERSPEED_ACCELERATORS);
@@ -405,10 +405,10 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+18 Spirit", ENCHANT_OPTION_BRACERS, ENCHANT_BRACERS_MAJOR_SPIRIT);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+40 Stamina", ENCHANT_OPTION_BRACERS, ENCHANT_BRACERS_MAJOR_STAMINA);
 
-            if (player->GetSkillValue(SKILL_BLACKSMITHING) == 450)
+            if (player->GetSkillValue(SKILL_BLACKSMITHING) >= 450)
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Socket Bracer", ENCHANT_OPTION_BRACERS, ENCHANT_BRACER_SOCKET);
 
-            if (player->GetSkillValue(SKILL_LEATHERWORKING) == 450)
+            if (player->GetSkillValue(SKILL_LEATHERWORKING) >= 450)
             {
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+130 Attack Power", ENCHANT_OPTION_BRACERS, ENCHANT_BRACER_FUR_LINING_ATTACKPOWER);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+76 Spell Power", ENCHANT_OPTION_BRACERS, ENCHANT_BRACER_FUR_LINING_SPELLPOWER);
@@ -450,7 +450,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+12 Hit Rating & +12 Critical", ENCHANT_OPTION_BOOTS, ENCHANT_BOOTS_ICEWALKER);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+15 Stamina & +8% Movement Speed", ENCHANT_OPTION_BOOTS, ENCHANT_BOOTS_TUSKARR_VITALITY);
 
-            if (player->GetSkillValue(SKILL_ENGINEERING) == 450)
+            if (player->GetSkillValue(SKILL_ENGINEERING) >= 450)
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Nitro Boosts", ENCHANT_OPTION_BOOTS, ENCHANT_BOOTS_NITRO_BOOSTS);
 
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_ENCHANTS);
@@ -472,13 +472,13 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+22 Haste", ENCHANT_OPTION_CLOAK, ENCHANT_CLOAK_GREATER_SPEED);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+10 Agility & +1 Steath Level", ENCHANT_OPTION_CLOAK, ENCHANT_CLOAK_SHADOW_ARMOR);
 
-            if (player->GetSkillValue(SKILL_ENGINEERING) == 450)
+            if (player->GetSkillValue(SKILL_ENGINEERING) >= 450)
             {
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Flexweave Underlay", ENCHANT_OPTION_CLOAK, ENCHANT_CLOAK_FLEXWEAVE_UNDERLAY);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Springy Arachnoweave", ENCHANT_OPTION_CLOAK, ENCHANT_CLOAK_SPRINGY_ARACHNOWEAVE);
             }
 
-            if (player->GetSkillValue(SKILL_TAILORING) == 450)
+            if (player->GetSkillValue(SKILL_TAILORING) >= 450)
             {
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Swordguard Embroidery", ENCHANT_OPTION_CLOAK, ENCHANT_CLOAK_SWORDGUARD_EMBROIDERY);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Lightweave Embroidery", ENCHANT_OPTION_CLOAK, ENCHANT_CLOAK_LIGHTWEAVE_EMBROIDERY);
@@ -499,7 +499,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
                 return false;
             }
 
-            if (player->GetSkillValue(SKILL_ENCHANTING) == 450)
+            if (player->GetSkillValue(SKILL_ENCHANTING) >= 450)
             {
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+40 Attack Power", ENCHANT_OPTION_RING1, ENCHANT_RING_ASSAULT);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+23 Spell Power", ENCHANT_OPTION_RING1, ENCHANT_RING_GREATER_SPELLPOWER);
@@ -519,7 +519,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
                 return false;
             }
 
-            if (player->GetSkillValue(SKILL_ENCHANTING) == 450)
+            if (player->GetSkillValue(SKILL_ENCHANTING) >= 450)
             {
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+40 Attack Power", ENCHANT_OPTION_RING2, ENCHANT_RING_ASSAULT);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+23 Spell Power", ENCHANT_OPTION_RING2, ENCHANT_RING_GREATER_SPELLPOWER);
