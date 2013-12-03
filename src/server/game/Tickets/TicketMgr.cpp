@@ -303,6 +303,8 @@ void TicketMgr::RemoveTicket(uint32 ticketId)
 {
     if (GmTicket* ticket = GetTicket(ticketId))
     {
+        if (!ticket->IsClosed())
+            --_openTicketCount;
         ticket->DeleteFromDB();
         _ticketList.erase(ticketId);
         delete ticket;
