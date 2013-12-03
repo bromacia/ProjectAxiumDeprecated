@@ -11556,6 +11556,7 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, ui
 
     float DoneTotalMod = 1.0f;
     int32 DoneTotal = 0;
+    float apCoeffMod = 1.0f;
 
     // Healing done percent
     AuraEffectList const& mHealingDonePct = GetAuraEffectsByType(SPELL_AURA_MOD_HEALING_DONE_PERCENT);
@@ -11621,6 +11622,38 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, ui
     // Done fixed damage bonus auras
     int32 DoneAdvertisedBenefit = SpellBaseHealingBonusDone(spellProto->GetSchoolMask());
 
+    // Custom scripted bonuses
+    switch (spellProto->SpellFamilyName)
+    {
+        case SPELLFAMILY_DEATHKNIGHT:
+            // Impurity (dummy effect)
+            if (GetTypeId() == TYPEID_PLAYER)
+            {
+                PlayerSpellMap playerSpells = ToPlayer()->GetSpellMap();
+                for (PlayerSpellMap::const_iterator itr = playerSpells.begin(); itr != playerSpells.end(); ++itr)
+                {
+                    if (itr->second->state == PLAYERSPELL_REMOVED || itr->second->disabled)
+                        continue;
+                    switch (itr->first)
+                    {
+                        case 49220:
+                        case 49633:
+                        case 49635:
+                        case 49636:
+                        case 49638:
+                        {
+                            if (SpellInfo const* proto = sSpellMgr->GetSpellInfo(itr->first))
+                                AddPctN(apCoeffMod, proto->Effects[0].CalcValue());
+                        }
+                        break;
+                    }
+                }
+            }
+            break;
+        default:
+            break;
+    }
+
     // Check for table values
     float spell_dotDamage = sSpellMgr->GetSpellDotBonus(spellProto);
     float spell_directDamage = sSpellMgr->GetSpellDirectBonus(spellProto);
@@ -11633,14 +11666,14 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, ui
     {
         coeff = spell_dotDamage;
         if (spell_apDotBonus > 0)
-            DoneTotal += int32(spell_apDotBonus * stack * GetTotalAttackPowerValue(
+            DoneTotal += int32(spell_apDotBonus * apCoeffMod * stack * GetTotalAttackPowerValue(
                 (spellProto->IsRangedWeaponSpell() && spellProto->DmgClass !=SPELL_DAMAGE_CLASS_MELEE) ? RANGED_ATTACK : BASE_ATTACK));
     }
     else
     {
         coeff = spell_directDamage;
         if (spell_apBonus > 0)
-            DoneTotal += int32(spell_apBonus * stack * GetTotalAttackPowerValue(
+            DoneTotal += int32(spell_apBonus * apCoeffMod * stack * GetTotalAttackPowerValue(
                 (spellProto->IsRangedWeaponSpell() && spellProto->DmgClass !=SPELL_DAMAGE_CLASS_MELEE) ? RANGED_ATTACK : BASE_ATTACK));
     }
 
