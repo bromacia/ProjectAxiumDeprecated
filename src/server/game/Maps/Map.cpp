@@ -69,7 +69,10 @@ Map::~Map()
     if (!m_scriptSchedule.empty())
         sScriptMgr->DecreaseScheduledScriptCount(m_scriptSchedule.size());
 
-    MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(GetId(), GetInstanceId());
+    MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(GetId(), i_InstanceId);
+    MMAP::MMapManager* manager = MMAP::MMapFactory::createOrGetMMapManager();
+    manager->unloadMapInstance(GetId(), i_InstanceId); // Delete the dtNavMeshQuery
+    manager->unloadMap(GetId()); // Unload the loaded tiles and delete the dtNavMesh
 }
 
 bool Map::ExistMap(uint32 mapid, int gx, int gy)
