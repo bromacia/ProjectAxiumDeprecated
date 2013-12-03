@@ -149,11 +149,14 @@ GroupQueueInfo* BattlegroundQueue::AddGroup(Player* leader, Group* grp, Battlegr
     ginfo->Players.clear();
 
     //compute index (if group is premade or joined a rated match) to queues
-    uint32 index = BG_QUEUE_MIXED;
-    /*if (!isRated && !isPremade)
+    uint32 index = 0;
+    if (!isRated && !isPremade)
         index += BG_TEAMS_COUNT;
     if (ginfo->Team == HORDE)
-        index++;*/
+        index++;
+
+    if (ArenaType == 0)
+        index = BG_QUEUE_MIXED;
 
     sLog->outDebug(LOG_FILTER_BATTLEGROUND, "Adding Group to BattlegroundQueue bgTypeId : %u, bracket_id : %u, index : %u", BgTypeId, bracketId, index);
 
