@@ -13295,6 +13295,17 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
     float stack_bonus     = 1.0f;
     float non_stack_bonus = 1.0f;
 
+    Unit* owner = GetCharmerOrOwner();
+
+    bool isMounted = false;
+    if (GetTypeId() == TYPEID_UNIT)
+    {
+        if (owner)
+            isMounted = owner->IsMounted();
+    }
+    else
+        isMounted = IsMounted();
+
     switch (mtype)
     {
         // Only apply debuffs
@@ -13306,11 +13317,17 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
             return;
         case MOVE_RUN:
         {
-            if (IsMounted()) // Use on mount auras
+            if (isMounted && !isPet()) // Use on mount auras
             {
                 main_speed_mod  = GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED);
                 stack_bonus     = GetTotalAuraMultiplier(SPELL_AURA_MOD_MOUNTED_SPEED_ALWAYS);
                 non_stack_bonus += GetMaxPositiveAuraModifier(SPELL_AURA_MOD_MOUNTED_SPEED_NOT_STACK) / 100.0f;
+            }
+            else if (isMounted && isPet() && owner)
+            {
+                main_speed_mod  = owner->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED);
+                stack_bonus     = owner->GetTotalAuraMultiplier(SPELL_AURA_MOD_MOUNTED_SPEED_ALWAYS);
+                non_stack_bonus += owner->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_MOUNTED_SPEED_NOT_STACK) / 100.0f;
             }
             else
             {
@@ -13340,7 +13357,7 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
 
                 main_speed_mod = std::max(main_speed_mod, owner_speed_mod);
             }
-            else if (IsMounted())
+            else if (isMounted)
             {
                 main_speed_mod  = GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
                 stack_bonus     = GetTotalAuraMultiplier(SPELL_AURA_MOD_MOUNTED_FLIGHT_SPEED_ALWAYS);
