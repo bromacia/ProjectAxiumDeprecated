@@ -5987,8 +5987,8 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (playerCaster->HasAura(32727) || playerCaster->HasAura(44521))
                     return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
-    // Don't allow Bestial Wrath to be casted while the player's pet isnt within LoS of the player
-    if (m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471)
+    // Don't allow Bestial Wrath or Master's call to be casted while the player's pet isnt within LoS of the player
+    if (m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471 || m_spellInfo->Id == 53271)
         if (Pet* pet = m_caster->ToPlayer()->GetPet())
             if (!m_caster->ToPlayer()->IsWithinLOS(pet->GetPositionX(), pet->GetPositionY(), pet->GetPositionZ()))
                 return SPELL_FAILED_LINE_OF_SIGHT;
