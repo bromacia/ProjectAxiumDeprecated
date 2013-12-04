@@ -252,7 +252,7 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket* data, Battleground* bg)
             *data << uint32(pointsLost);                    // Rating Lost
             *data << uint32(pointsGained);                  // Rating gained
             *data << uint32(MatchmakerRating);              // Matchmaking Value
-            sLog->outDebug(LOG_FILTER_BATTLEGROUND, "rating change: %d", rating_change);
+            sLog->outDebug(LOG_FILTER_BATTLEGROUND, "bg.battleground", "rating change: %d", rating_change);
         }
         for (int8 i = 1; i >= 0; --i)
         {
@@ -283,7 +283,7 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket* data, Battleground* bg)
         BattlegroundScore* score = itr2->second;
         if (!bg->IsPlayerInBattleground(itr2->first))
         {
-            sLog->outDebug(LOG_FILTER_BATTLEGROUND, "Player " UI64FMTD " has scoreboard entry for battleground %u but is not in battleground!", itr->first, bg->GetTypeID(true));
+            sLog->outDebug(LOG_FILTER_BATTLEGROUND, "bg.battleground", "Player " UI64FMTD " has scoreboard entry for battleground %u but is not in battleground!", itr->first, bg->GetTypeID(true));
             continue;
         }
 
@@ -387,14 +387,14 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket* data, Battleground* bg)
                 *data << uint32(0);
                 break;
             default:
-                sLog->outDebug(LOG_FILTER_BATTLEGROUND, "Unhandled MSG_PVP_LOG_DATA for BG id %u", bg->GetTypeID());
+                sLog->outDebug(LOG_FILTER_BATTLEGROUND, "network", "Unhandled MSG_PVP_LOG_DATA for BG id %u", bg->GetTypeID());
                 *data << uint32(0);
                 break;
         }
         // should never happen
         if (++scoreCount >= bg->GetMaxPlayers() && itr != m_PlayerScores.end())
         {
-            sLog->outDebug(LOG_FILTER_BATTLEGROUND, "Battleground %u scoreboard has more entries (%u) than allowed players in this bg (%u)", bg->GetTypeID(true), bg->GetPlayerScoresSize(), bg->GetMaxPlayers());
+            sLog->outDebug(LOG_FILTER_BATTLEGROUND, "bg.battleground", "Battleground %u scoreboard has more entries (%u) than allowed players in this bg (%u)", bg->GetTypeID(true), bg->GetPlayerScoresSize(), bg->GetMaxPlayers());
             break;
         }
     }

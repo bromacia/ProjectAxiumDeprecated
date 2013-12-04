@@ -313,6 +313,8 @@ enum BGHonorMode
 #define BG_AWARD_ARENA_POINTS_MIN_LEVEL 71
 #define ARENA_TIMELIMIT_POINTS_LOSS    -16
 
+#define UI_FRAME 1
+
 /*
 This class is used to:
 1. Add player to battleground
