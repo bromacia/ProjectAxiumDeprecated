@@ -178,7 +178,7 @@ void BattlegroundMgr::Update(uint32 diff)
     }
 }
 
-void BattlegroundMgr::BuildBattlegroundStatusPacket(WorldPacket* data, Battleground* bg, uint8 QueueSlot, uint8 StatusID, uint32 Time1, uint32 Time2, uint8 arenatype, uint8 arenaFaction)
+void BattlegroundMgr::BuildBattlegroundStatusPacket(WorldPacket* data, Battleground* bg, uint8 QueueSlot, uint8 StatusID, uint32 Time1, uint32 Time2, uint8 arenatype, uint8 uiFrame)
 {
     // we can be in 2 queues in same time...
 
@@ -223,7 +223,7 @@ void BattlegroundMgr::BuildBattlegroundStatusPacket(WorldPacket* data, Battlegro
             *data << uint64(0);                                 // 3.3.5, unknown
             *data << uint32(Time1);                             // time to bg auto leave, 0 at bg start, 120000 after bg end, milliseconds
             *data << uint32(Time2);                             // time from bg start, milliseconds
-            *data << uint8(arenaFaction == ALLIANCE ? 1 : 0);   // arenafaction (0 for horde, 1 for alliance)
+            *data << uint8(bg->GetStatus() == STATUS_IN_PROGRESS ? uiFrame : 0);
             break;
         default:
             sLog->outError("Unknown BG status!");
@@ -252,7 +252,7 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket* data, Battleground* bg)
             *data << uint32(pointsLost);                    // Rating Lost
             *data << uint32(pointsGained);                  // Rating gained
             *data << uint32(MatchmakerRating);              // Matchmaking Value
-            sLog->outDebug(LOG_FILTER_BATTLEGROUND, "bg.battleground", "rating change: %d", rating_change);
+            sLog->outDebug(LOG_FILTER_BATTLEGROUND, "rating change: %d", rating_change);
         }
         for (int8 i = 1; i >= 0; --i)
         {
@@ -283,7 +283,7 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket* data, Battleground* bg)
         BattlegroundScore* score = itr2->second;
         if (!bg->IsPlayerInBattleground(itr2->first))
         {
-            sLog->outDebug(LOG_FILTER_BATTLEGROUND, "bg.battleground", "Player " UI64FMTD " has scoreboard entry for battleground %u but is not in battleground!", itr->first, bg->GetTypeID(true));
+            sLog->outDebug(LOG_FILTER_BATTLEGROUND, "Player " UI64FMTD " has scoreboard entry for battleground %u but is not in battleground!", itr->first, bg->GetTypeID(true));
             continue;
         }
 
@@ -387,14 +387,14 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket* data, Battleground* bg)
                 *data << uint32(0);
                 break;
             default:
-                sLog->outDebug(LOG_FILTER_BATTLEGROUND, "network", "Unhandled MSG_PVP_LOG_DATA for BG id %u", bg->GetTypeID());
+                sLog->outDebug(LOG_FILTER_BATTLEGROUND, "Unhandled MSG_PVP_LOG_DATA for BG id %u", bg->GetTypeID());
                 *data << uint32(0);
                 break;
         }
         // should never happen
         if (++scoreCount >= bg->GetMaxPlayers() && itr != m_PlayerScores.end())
         {
-            sLog->outDebug(LOG_FILTER_BATTLEGROUND, "bg.battleground", "Battleground %u scoreboard has more entries (%u) than allowed players in this bg (%u)", bg->GetTypeID(true), bg->GetPlayerScoresSize(), bg->GetMaxPlayers());
+            sLog->outDebug(LOG_FILTER_BATTLEGROUND, "Battleground %u scoreboard has more entries (%u) than allowed players in this bg (%u)", bg->GetTypeID(true), bg->GetPlayerScoresSize(), bg->GetMaxPlayers());
             break;
         }
     }

@@ -124,7 +124,7 @@ void WorldSession::HandleMoveWorldportAckOpcode()
                 if (_player->IsArenaSpectator())
                 {
                     WorldPacket data;
-                    sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, 0, STATUS_IN_PROGRESS, 0, 0, 0, 0);
+                    sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, 0, STATUS_IN_PROGRESS, 0, 0, 0);
                     _player->GetSession()->SendPacket(&data);
 
                     _player->SetSpeed(MOVE_RUN, 3.0, true);
