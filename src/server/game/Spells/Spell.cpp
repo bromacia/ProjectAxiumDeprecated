@@ -938,15 +938,17 @@ void Spell::CleanupTargetList()
 
 void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*= true*/)
 {
+    // Perform the CheckEffectTarget check only for non-instant cast spells
     for (uint8 effIndex = 0; effIndex < MAX_SPELL_EFFECTS; ++effIndex)
-        if (!m_spellInfo->Effects[effIndex].IsEffect() || !CheckEffectTarget(target, effIndex))
+        if (!m_spellInfo->Effects[effIndex].IsEffect() || (m_casttime && !CheckEffectTarget(target, effIndex)))
             effectMask &= ~(1 << effIndex);
 
     // no effects left
     if (!effectMask)
         return;
 
-    if (checkIfValid)
+    // Check validity of target only for non-instant cast spells here
+    if (checkIfValid && m_casttime)
         if (m_spellInfo->CheckTarget(m_caster, target, true) != SPELL_CAST_OK)
             return;
 
@@ -1604,10 +1606,11 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
             return SPELL_MISS_EVADE;
 
-        if (!unit->HasAura(32727)) // Arena Preparation
+        // Do _IsValidAttackTarget check only for non-instant cast spells
+        // For instant cast spells rely on target checks that have already been done, and only check for hostility here
+        if (m_caster->_IsValidAttackTarget(unit, m_spellInfo) || (!m_casttime && m_caster->IsHostileTo(unit)))
         {
-            if (!m_spellInfo->IsPositive() && !m_spellInfo->IsPassive())
-                unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
+            unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
             {
@@ -1618,20 +1621,20 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                     unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
                     unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
                 }
+            }
 
-                if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174)) || // Faerie Fire & Cyclone
-                    m_spellInfo->IsCrowdControlSpell())
-                    unit->RemoveAura(66); // Invisibility 3sec fading aura
+            if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174)) || // Faerie Fire & Cyclone
+                m_spellInfo->IsCrowdControlSpell())
+                unit->RemoveAura(66); // Invisibility 3sec fading aura
 
-                if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252) // Vanish
-                {
-                    // Hunter's Mark
-                    unit->RemoveAura(1130);
-                    unit->RemoveAura(14323);
-                    unit->RemoveAura(14324);
-                    unit->RemoveAura(14325);
-                    unit->RemoveAura(53338);
-                }
+            if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252) // Vanish
+            {
+                // Hunter's Mark
+                unit->RemoveAura(1130);
+                unit->RemoveAura(14323);
+                unit->RemoveAura(14324);
+                unit->RemoveAura(14325);
+                unit->RemoveAura(53338);
             }
 
             if (!m_caster->IsFriendlyTo(unit) || !unit->IsFriendlyTo(m_caster))
