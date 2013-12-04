@@ -7806,7 +7806,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 break;
             }
             // Unholy Blight
-            if (dummySpell->Id == 49194)
+            /*if (dummySpell->Id == 49194)
             {
                 triggered_spell_id = 50536;
                 SpellInfo const* unholyBlight = sSpellMgr->GetSpellInfo(triggered_spell_id);
@@ -7821,7 +7821,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 basepoints0 = basepoints0 / (unholyBlight->GetMaxDuration() / unholyBlight->Effects[0].Amplitude);
                 basepoints0 += victim->GetRemainingPeriodicAmount(GetGUID(), triggered_spell_id, SPELL_AURA_PERIODIC_DAMAGE);
                 break;
-            }
+            }*/
             // Vendetta
             if (dummySpell->SpellFamilyFlags[0] & 0x10000)
             {
