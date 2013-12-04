@@ -2470,7 +2470,7 @@ uint32 Spell::SelectEffectTargets(uint32 i, SpellImplicitTargetInfo const& cur)
             else
                 dist = m_spellInfo->Effects[i].CalcRadius(m_caster) / 2;
             if (modOwner) modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RADIUS, dist, this);
-            if (dist < objSize)
+            if (cur.GetTarget() != TARGET_DEST_CASTER_FRONT && dist < objSize)
                 dist = objSize;
             else if (cur.GetTarget() == TARGET_DEST_CASTER_RANDOM)
                 dist = objSize + (dist - objSize) * (float)rand_norm();
