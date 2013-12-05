@@ -756,7 +756,10 @@ bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 action)
                 data << uint32(vItemTemplate->BuyPrice);        // Price
                 data << uint32(vItemTemplate->MaxDurability);   // Durability
                 data << uint32(vItemTemplate->BuyCount);        // Buy Count
-                data << uint32(vItem->ExtendedCost);            // Extended Cost
+                if (player->IsVIP() && creature->IsVipVendor())
+                    data << uint32(0);
+                else
+                    data << uint32(vItem->ExtendedCost);
             }
         }
     }

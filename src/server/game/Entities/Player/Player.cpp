@@ -16667,8 +16667,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     //"arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk, "
     // 50      51      52      53      54      55      56      57      58           59         60          61             62              63      64           65
     //"health, power1, power2, power3, power4, power5, power6, power7, instance_id, speccount, activespec, exploredZones, equipmentCache, ammoId, knownTitles, actionBars, "
-    // 66               67        68
-    //"grantableLevels, isFrozen, pvpNotificationsEnabled "
+    // 66               67   68        69
+    //"grantableLevels, vip, isFrozen, pvpNotificationsEnabled "
     //"FROM characters WHERE guid = '%u'", guid);
     PreparedQueryResult result = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
@@ -17303,9 +17303,11 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     _LoadTransmogSets();
 
-    m_isFrozen = fields[67].GetBool();
+    m_vip = fields[67].GetBool();
 
-    m_PvPNotificationsEnabled = fields[68].GetBool();
+    m_isFrozen = fields[68].GetBool();
+
+    m_PvPNotificationsEnabled = fields[69].GetBool();
 
     m_playerSpec = GetTalentSpec();
 
@@ -20943,7 +20945,7 @@ inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 c
 
     ModifyMoney(-price);
 
-    if (crItem->ExtendedCost && !IsVIP() && !pVendor->IsVipVendor())                            // case for new honor system
+    if (crItem->ExtendedCost && !(IsVIP() && pVendor->IsVipVendor()))
     {
         ItemExtendedCostEntry const* iece = sItemExtendedCostStore.LookupEntry(crItem->ExtendedCost);
         if (iece->reqhonorpoints)
@@ -20977,7 +20979,7 @@ inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 c
         if (!bStore)
             AutoUnequipOffhandIfNeed();
 
-        if (pProto->Flags & ITEM_PROTO_FLAG_REFUNDABLE && crItem->ExtendedCost && pProto->GetMaxStackSize() == 1 && !IsVIP() && !pVendor->IsVipVendor())
+        if (pProto->Flags & ITEM_PROTO_FLAG_REFUNDABLE && crItem->ExtendedCost && pProto->GetMaxStackSize() == 1 && !(IsVIP() && pVendor->IsVipVendor()))
         {
             it->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
             it->SetRefundRecipient(GetGUIDLow());
@@ -21072,7 +21074,7 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
         return false;
     }
 
-    if (crItem->ExtendedCost && !IsVIP() && !creature->IsVipVendor())
+    if (crItem->ExtendedCost && !(IsVIP() && creature->IsVipVendor()))
     {
         ItemExtendedCostEntry const* iece = sItemExtendedCostStore.LookupEntry(crItem->ExtendedCost);
         if (!iece)

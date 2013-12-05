@@ -2602,7 +2602,7 @@ class Player : public Unit, public GridObject<Player>
 
         void InterruptMovement(bool resetPosition = false);
 
-        bool IsVIP() const { if (GetSession()->GetSecurity() == SEC_VIP) return true; return false; }
+        bool IsVIPAccount() const { if (GetSession()->GetSecurity() == SEC_VIP) return true; return false; }
         bool IsGameMaster() const { if (GetSession()->GetSecurity() == SEC_GAMEMASTER) return true; return false; }
         bool IsHeadGameMaster() const { if (GetSession()->GetSecurity() == SEC_HEAD_GAMEMASTER) return true; return false; }
         bool IsAdministrator() const { if (GetSession()->GetSecurity() == SEC_ADMINISTRATOR) return true; return false; }
@@ -2646,6 +2646,11 @@ class Player : public Unit, public GridObject<Player>
 
         bool IsJumping() const { return m_isJumping; }
         void SetIsJumping(bool x) { m_isJumping = x; }
+
+        bool IsVIPCharacter() const { return m_vip; }
+        void SetVIPCharacter(bool x) { m_vip = x; }
+
+        bool IsVIP() const { return IsVIPCharacter() || IsVIPAccount(); }
 
         bool IsFrozen() const { return m_isFrozen; }
         void SetIsFrozen(bool x) { m_isFrozen = x; }
@@ -3089,6 +3094,8 @@ class Player : public Unit, public GridObject<Player>
         WorldObject* currentViewpoint;
 
         bool m_isJumping;
+
+        bool m_vip;
 
         bool m_isFrozen;
 
