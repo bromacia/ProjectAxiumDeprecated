@@ -1571,7 +1571,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
 SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleAura)
 {
     if (!unit || !effectMask)
-        return SPELL_MISS_EVADE;
+        return SPELL_MISS_MISS;
 
     // For delayed spells immunity may be applied between missile launch and hit - check immunity for that case
     // disable effects to which unit is immune
@@ -1601,61 +1601,61 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
 
     if (m_caster != unit)
     {
+        if (unit->HasAura(32727)) // Arena Preparation
+            return SPELL_MISS_MISS;
+
         // Recheck UNIT_FLAG_NON_ATTACKABLE for delayed spells
         if ((m_spellInfo->Speed > 0.0f || m_spellInfo->IsSpellDelaySpell() || m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell() || m_spellInfo->IsMiscDelaySpell()) &&
             unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
             return SPELL_MISS_EVADE;
 
-        // Do _IsValidAttackTarget check only for non-instant cast spells
-        // For instant cast spells rely on target checks that have already been done, and only check for hostility here
-        if (m_caster->_IsValidAttackTarget(unit, m_spellInfo) || (!m_casttime && m_caster->IsHostileTo(unit)))
-        {
+        if (!m_spellInfo->IsPositive() && !m_spellInfo->IsPassive())
             unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+        {
+            if (m_spellInfo->Id == 34709 || (m_spellInfo->IsNegativeAuraSpell() && // Shadow Sight
+                m_spellInfo->Id != 3600 && m_spellInfo->Id != 2096 && m_spellInfo->Id != 10909 && m_spellInfo->Id != 14183) || // Earthbind, Mind Vision, Premeditation
+                (!m_caster->IsFriendlyTo(unit) && !m_spellInfo->IsTargetingArea() && m_spellInfo->Effects[i].Effect == SPELL_EFFECT_DISPEL))
             {
-                if (m_spellInfo->Id == 34709 || (m_spellInfo->IsNegativeAuraSpell() && // Shadow Sight
-                    m_spellInfo->Id != 3600 && m_spellInfo->Id != 2096 && m_spellInfo->Id != 10909 && m_spellInfo->Id != 14183) || // Earthbind, Mind Vision, Premeditation
-                    (!m_caster->IsFriendlyTo(unit) && !m_spellInfo->IsTargetingArea() && m_spellInfo->Effects[i].Effect == SPELL_EFFECT_DISPEL))
-                {
-                    unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
-                    unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
-                }
-            }
-
-            if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174)) || // Faerie Fire & Cyclone
-                m_spellInfo->IsCrowdControlSpell())
-                unit->RemoveAura(66); // Invisibility 3sec fading aura
-
-            if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252) // Vanish
-            {
-                // Hunter's Mark
-                unit->RemoveAura(1130);
-                unit->RemoveAura(14323);
-                unit->RemoveAura(14324);
-                unit->RemoveAura(14325);
-                unit->RemoveAura(53338);
-            }
-
-            if (!m_caster->IsFriendlyTo(unit) || !unit->IsFriendlyTo(m_caster))
-            {
-                bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);
-                m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
-                if (m_resist >= 100)
-                    return SPELL_MISS_RESIST;
-            }
-
-            // Get Data Needed for Diminishing Returns, some effects may have multiple auras, so this must be done on spell hit, not aura add
-            m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, m_triggeredByAuraSpell);
-            if (m_diminishGroup)
-            {
-                m_diminishLevel = unit->GetDiminishing(m_diminishGroup);
-                DiminishingReturnsType type = GetDiminishingReturnsGroupType(m_diminishGroup);
-                if ((type == DRTYPE_PLAYER && unit->GetCharmerOrOwnerPlayerOrPlayerItself()) || type == DRTYPE_ALL)
-                    unit->IncrDiminishing(m_diminishGroup);
+                unit->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+                unit->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
             }
         }
-        else if (m_caster->IsFriendlyTo(unit))
+
+        if ((m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellInfo->SpellIconID == 109 || m_spellInfo->SpellIconID == 174)) || // Faerie Fire & Cyclone
+            m_spellInfo->IsCrowdControlSpell())
+            unit->RemoveAura(66); // Invisibility 3sec fading aura
+
+        if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252) // Vanish
+        {
+            // Hunter's Mark
+            unit->RemoveAura(1130);
+            unit->RemoveAura(14323);
+            unit->RemoveAura(14324);
+            unit->RemoveAura(14325);
+            unit->RemoveAura(53338);
+        }
+
+        if (!m_caster->IsFriendlyTo(unit) || !unit->IsFriendlyTo(m_caster))
+        {
+            bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);
+            m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
+            if (m_resist >= 100)
+                return SPELL_MISS_RESIST;
+        }
+
+        // Get Data Needed for Diminishing Returns, some effects may have multiple auras, so this must be done on spell hit, not aura add
+        m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, m_triggeredByAuraSpell);
+        if (m_diminishGroup)
+        {
+            m_diminishLevel = unit->GetDiminishing(m_diminishGroup);
+            DiminishingReturnsType type = GetDiminishingReturnsGroupType(m_diminishGroup);
+            if ((type == DRTYPE_PLAYER && unit->GetCharmerOrOwnerPlayerOrPlayerItself()) || type == DRTYPE_ALL)
+                unit->IncrDiminishing(m_diminishGroup);
+        }
+
+        if (m_caster->IsFriendlyTo(unit))
         {
             // for delayed spells ignore negative spells (after duel end) for friendly targets
             // TODO: this cause soul transfer bugged
