@@ -5930,12 +5930,6 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (target->HasAuraType(SPELL_AURA_MOD_ROOT))
                 return SPELL_FAILED_DONT_REPORT;
 
-    // Don't allow Mind Soothe to be casted on players
-    if (m_spellInfo->Id == 453)
-        if (Unit* target = m_targets.GetUnitTarget())
-            if (target->GetTypeId() == TYPEID_PLAYER)
-                return SPELL_FAILED_BAD_TARGETS;
-
     // Don't allow Master's Call to be cast if the hunter's pet is dead
     if (m_spellInfo->Id == 53271)
         if (Unit* pet = m_caster->ToPlayer()->GetPet())
