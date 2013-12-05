@@ -3429,6 +3429,9 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->Effect[1] = 0;
                 spellInfo->Effect[2] = 0;
                 break;
+            case 26013: // Deserter
+                spellInfo->DurationIndex = 6;
+                break;
             default:
                 break;
         }
