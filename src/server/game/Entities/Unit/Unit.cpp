@@ -2519,10 +2519,10 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit* victim, SpellInfo const* spell)
     {
         if (!victim->HasAuraType(SPELL_AURA_IGNORE_HIT_DIRECTION))
         {
-            // Can`t dodge from behind in PvP (but its possible in PvE)
+            // Can't dodge from behind in PvP (but its possible in PvE)
             if (victim->GetTypeId() == TYPEID_PLAYER)
                 canDodge = false;
-            // Can`t parry or block
+            // Can't parry or block
             canParry = false;
             canBlock = false;
         }
@@ -2532,6 +2532,19 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit* victim, SpellInfo const* spell)
                 canParry = false;
         }
     }
+
+    // Prevent spells that require behind target from dodging, parrying and blocking
+    if (!victim->HasAuraType(SPELL_AURA_IGNORE_HIT_DIRECTION) && spell->AttributesCu & SPELL_ATTR0_CU_REQ_CASTER_BEHIND_TARGET)
+    {
+        // Can't dodge from behind in PvP (but its possible in PvE)
+        if (victim->GetTypeId() == TYPEID_PLAYER)
+            canDodge = false;
+
+        // Can't parry or block
+        canParry = false;
+        canBlock = false;
+    }
+
     // Check creatures flags_extra for disable parry
     if (victim->GetTypeId() == TYPEID_UNIT)
     {
