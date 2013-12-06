@@ -7808,7 +7808,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 break;
             }
             // Unholy Blight
-            /*if (dummySpell->Id == 49194)
+            if (dummySpell->Id == 49194)
             {
                 triggered_spell_id = 50536;
                 SpellInfo const* unholyBlight = sSpellMgr->GetSpellInfo(triggered_spell_id);
@@ -7823,7 +7823,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 basepoints0 = basepoints0 / (unholyBlight->GetMaxDuration() / unholyBlight->Effects[0].Amplitude);
                 basepoints0 += victim->GetRemainingPeriodicAmount(GetGUID(), triggered_spell_id, SPELL_AURA_PERIODIC_DAMAGE);
                 break;
-            }*/
+            }
             // Vendetta
             if (dummySpell->SpellFamilyFlags[0] & 0x10000)
             {
@@ -18432,8 +18432,24 @@ uint32 Unit::GetRemainingPeriodicAmount(uint64 caster, uint32 spellId, AuraType 
     AuraEffectList const& periodicAuras = GetAuraEffectsByType(auraType);
     for (AuraEffectList::const_iterator i = periodicAuras.begin(); i != periodicAuras.end(); ++i)
     {
-        if ((*i)->GetCasterGUID() != caster || (*i)->GetId() != spellId || (*i)->GetEffIndex() != effectIndex || !(*i)->GetTotalTicks())
+        if (!(*i)->GetSpellInfo())
             continue;
+
+        if (!(*i)->GetCaster())
+            continue;
+
+        if ((*i)->GetCasterGUID() != caster)
+            continue;
+
+        if ((*i)->GetId() != spellId)
+            continue;
+
+        if ((*i)->GetEffIndex() != effectIndex)
+            continue;
+
+        if (!(*i)->GetTotalTicks())
+            continue;
+
         amount += uint32(((*i)->GetAmount() * std::max<int32>((*i)->GetTotalTicks() - int32((*i)->GetTickNumber()), 0)) / (*i)->GetTotalTicks());
         break;
     }
