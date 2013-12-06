@@ -3279,9 +3279,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 58601: // Remove Flight Auras
                 spellInfo->Effect[2] = 0;
                 break;
-            case 1543:  // Flare
-                spellInfo->speed = 20;
-                break;
             case 64962: // Sigil of the Vengeful Heart
                 spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
                 spellInfo->EffectApplyAuraName[1] = SPELL_AURA_ADD_FLAT_MODIFIER;
