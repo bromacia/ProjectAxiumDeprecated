@@ -17418,6 +17418,18 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         if (!GetItemCount(5175, true))
             StoreNewItemInBestSlots(5175, 1);
 
+    // VIP Swift Spectral Tiger
+    if (IsVIPAccount())
+    {
+        if (!HasSpell(42777))
+        {
+            if (!IsInWorld())
+                addSpell(42777, true, true, true, false);
+            else
+                learnSpell(42777, true);
+        }
+    }
+
     return true;
 }
 
