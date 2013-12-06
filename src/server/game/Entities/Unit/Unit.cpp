@@ -14047,6 +14047,9 @@ void Unit::ModSpellCastTime(SpellInfo const* spellProto, int32 & castTime, Spell
             spellProto->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH) || // Glyphs
             HasAura(32727) || HasAura(44521)) // Arena Preparation & Preparation
         {
+            if (spellProto->Effects[i].Effect == SPELL_EFFECT_TRANS_DOOR) // Prevent soulwell/mage table from being instant
+                continue;
+
             if (Player* player = ToPlayer())
             {
                 if (Battleground* bg = player->GetBattleground())
