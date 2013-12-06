@@ -3429,6 +3429,27 @@ void SpellMgr::LoadDbcDataCorrections()
             case 26013: // Deserter
                 spellInfo->DurationIndex = 6;
                 break;
+            case 13809: // Frost Trap
+            case 34600: // Snake Trap
+            case 1499:  // Freezing Trap (Rank 1)
+            case 14310: // Freezing Trap (Rank 2)
+            case 14311: // Freezing Trap (Rank 3)
+            case 13813: // Explosive Trap (Rank 1)
+            case 14316: // Explosive Trap (Rank 2)
+            case 14317: // Explosive Trap (Rank 3)
+            case 27025: // Explosive Trap (Rank 4)
+            case 49066: // Explosive Trap (Rank 5)
+            case 49067: // Explosive Trap (Rank 6)
+            case 13795: // Immolation Trap (Rank 1)
+            case 14302: // Immolation Trap (Rank 2)
+            case 14303: // Immolation Trap (Rank 3)
+            case 14304: // Immolation Trap (Rank 4)
+            case 14305: // Immolation Trap (Rank 5)
+            case 27023: // Immolation Trap (Rank 6)
+            case 49055: // Immolation Trap (Rank 7)
+            case 49056: // Immolation Trap (Rank 8)
+                spellInfo->EffectRadiusIndex[0] = 16;
+                break;
             default:
                 break;
         }
