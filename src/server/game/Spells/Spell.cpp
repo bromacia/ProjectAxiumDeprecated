@@ -1601,9 +1601,6 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
 
     if (m_caster != unit)
     {
-        if (unit->HasAura(32727)) // Arena Preparation
-            return SPELL_MISS_MISS;
-
         // Recheck UNIT_FLAG_NON_ATTACKABLE for delayed spells
         if ((m_spellInfo->Speed > 0.0f || m_spellInfo->IsSpellDelaySpell() || m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell() || m_spellInfo->IsMiscDelaySpell()) &&
             unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
