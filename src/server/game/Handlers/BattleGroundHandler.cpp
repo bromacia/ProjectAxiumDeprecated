@@ -429,18 +429,23 @@ void WorldSession::HandleBattleFieldPortOpcode(WorldPacket &recv_data)
             if (!_player->InBattleground())
                 _player->SetBattlegroundEntryPoint();
 
-            // resurrect the player
             if (!_player->isAlive())
             {
                 _player->ResurrectPlayer(1.0f);
                 _player->SpawnCorpseBones();
             }
-            // stop taxi flight at port
+
             if (_player->isInFlight())
             {
                 _player->GetMotionMaster()->MovementExpired();
                 _player->CleanupAfterTaxiFlight();
             }
+
+            if (_player->IsMounted())
+                _player->Dismount();
+
+            _player->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT);
+            _player->RemoveAllControlled();
 
             sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_IN_PROGRESS, 0, bg->GetDuration(), bg->GetArenaType(), UI_FRAME);
             _player->GetSession()->SendPacket(&data);
