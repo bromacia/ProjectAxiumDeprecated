@@ -128,7 +128,6 @@ void WorldSession::HandleMoveWorldportAckOpcode()
                     _player->GetSession()->SendPacket(&data);
 
                     _player->SetSpeed(MOVE_RUN, 3.0, true);
-                    _player->SetArenaSpectatorState(true);
                 }
         }
     }

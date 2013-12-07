@@ -25995,8 +25995,8 @@ void Player::SetArenaSpectatorState(bool apply)
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
         Dismount();
-        RemoveAllControlled();
         RemovePet(NULL, PET_SAVE_NOT_IN_SLOT);
+        RemoveAllControlled();
 
         if (GetGroup())
             RemoveFromGroup();
