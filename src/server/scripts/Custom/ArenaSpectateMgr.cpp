@@ -11,12 +11,6 @@ bool ArenaSpectateMgr::OnGossipHello(Player* player, Creature* creature)
 
     CreateArenasMap();
 
-    if (player->InBattlegroundQueue())
-    {
-        handler->PSendSysMessage("You can't spectate while in queue for a battleground or arena.");
-        return false;
-    }
-
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate 2v2 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_2V2_MATCHES);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate 3v3 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_3V3_MATCHES);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate 5v5 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_5V5_MATCHES);
@@ -28,6 +22,8 @@ bool ArenaSpectateMgr::OnGossipHello(Player* player, Creature* creature)
 bool ArenaSpectateMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
 {
     player->PlayerTalkClass->ClearMenus();
+
+    player->RemoveAllBattlegroundQueues();
 
     switch (sender)
     {
@@ -76,11 +72,7 @@ bool ArenaSpectateMgr::OnGossipSelect(Player* player, Creature* creature, uint32
 
 bool ArenaSpectateMgr::OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code)
 {
-    switch (action)
-    {
-        case ARENA_SPECTATE_MENU_SPECTATE_PLAYER: HandleSpectatePlayer(player, code); break;
-    }
-
+    switch (action) { case ARENA_SPECTATE_MENU_SPECTATE_PLAYER: HandleSpectatePlayer(player, code); break; }
     return true;
 }
 
@@ -275,6 +267,7 @@ void ArenaSpectateMgr::AddPlayerToArena(Player* player, uint32 action)
         return;
     }
 
+    player->RemoveAllBattlegroundQueues();
     player->SetArenaSpectatorState(true);
     player->SetBattlegroundId(action, arena->GetTypeID(false));
     player->SetBattlegroundEntryPoint();

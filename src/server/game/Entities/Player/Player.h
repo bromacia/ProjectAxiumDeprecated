@@ -2253,7 +2253,7 @@ class Player : public Unit, public GridObject<Player>
         }
         uint32 AddBattlegroundQueueId(BattlegroundQueueTypeId val)
         {
-            for (uint8 i=0; i < PLAYER_MAX_BATTLEGROUND_QUEUES; ++i)
+            for (uint8 i = 0; i < PLAYER_MAX_BATTLEGROUND_QUEUES; ++i)
             {
                 if (m_bgBattlegroundQueueID[i].bgQueueTypeId == BATTLEGROUND_QUEUE_NONE || m_bgBattlegroundQueueID[i].bgQueueTypeId == val)
                 {
@@ -2281,6 +2281,14 @@ class Player : public Unit, public GridObject<Player>
                     m_bgBattlegroundQueueID[i].invitedToInstance = 0;
                     return;
                 }
+            }
+        }
+        void RemoveAllBattlegroundQueues()
+        {
+            for (uint8 i = 0; i < PLAYER_MAX_BATTLEGROUND_QUEUES; ++i)
+            {
+                m_bgBattlegroundQueueID[i].bgQueueTypeId = BATTLEGROUND_QUEUE_NONE;
+                m_bgBattlegroundQueueID[i].invitedToInstance = 0;
             }
         }
         void SetInviteForBattlegroundQueueType(BattlegroundQueueTypeId bgQueueTypeId, uint32 instanceId)

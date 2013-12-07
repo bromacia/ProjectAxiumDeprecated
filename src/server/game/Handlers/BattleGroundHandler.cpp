@@ -108,6 +108,9 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket & recv_data)
     if (_player->IsFrozen())
         return;
 
+    if (_player->IsArenaSpectator())
+        return;
+
     // Ignore if player is already in BG
     if (_player->InBattleground())
         return;
@@ -618,6 +621,9 @@ void WorldSession::HandleBattlemasterJoinArena(WorldPacket & recv_data)
 
     // Ignore if the player is frozen
     if (_player->IsFrozen())
+        return;
+
+    if (_player->IsArenaSpectator())
         return;
 
     // Ignore if player is already in BG
