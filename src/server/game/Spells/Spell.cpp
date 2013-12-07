@@ -1606,9 +1606,6 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
             return SPELL_MISS_EVADE;
 
-        if (!m_spellInfo->IsPositive() && !m_spellInfo->IsPassive())
-            unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
-
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
         {
             if (m_spellInfo->Id == 34709 || (m_spellInfo->IsNegativeAuraSpell() && // Shadow Sight
@@ -1652,7 +1649,9 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                 unit->IncrDiminishing(m_diminishGroup);
         }
 
-        if (m_caster->IsFriendlyTo(unit))
+        if (m_caster->_IsValidAttackTarget(unit, m_spellInfo))
+            unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
+        else if (m_caster->IsFriendlyTo(unit))
         {
             // for delayed spells ignore negative spells (after duel end) for friendly targets
             // TODO: this cause soul transfer bugged
