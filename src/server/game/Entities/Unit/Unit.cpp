@@ -3874,7 +3874,7 @@ void Unit::RemoveAurasDueToSpellByDispel(uint32 spellId, uint32 dispellerSpellId
                         {
                             int32 damage = aurEff->GetAmount() * 8;
                             // backfire damage
-                            caster->CastCustomSpell(dispeller, 64085, &damage, NULL, NULL, true, NULL, aurEff);
+                            caster->CastCustomSpell(this, 64085, &damage, NULL, NULL, true, NULL, aurEff);
                         }
                     }
                     break;
