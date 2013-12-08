@@ -1604,7 +1604,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         // Recheck UNIT_FLAG_NON_ATTACKABLE for delayed spells
         if ((m_spellInfo->Speed > 0.0f || m_spellInfo->IsSpellDelaySpell() || m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell() || m_spellInfo->IsMiscDelaySpell()) &&
             unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && unit->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
-            return SPELL_MISS_EVADE;
+            return SPELL_MISS_MISS;
 
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
         {
