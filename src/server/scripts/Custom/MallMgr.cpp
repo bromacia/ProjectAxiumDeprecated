@@ -1170,7 +1170,7 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
         }
         case INVENTORY_LIST_245_TRINKETS:
         {
-            if (vItemTemplate->InventoryType != INVTYPE_TRINKET || vItemTemplate->ItemLevel != 245)
+            if (vItemTemplate->InventoryType != INVTYPE_TRINKET || (vItemTemplate->ItemLevel != 245 && vItemTemplate->ItemLevel != 258))
                 return false;
 
             break;
