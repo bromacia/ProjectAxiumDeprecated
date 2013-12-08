@@ -4278,7 +4278,7 @@ void Unit::RemoveAllNegativeAuras()
         Aura const* aura = aurApp->GetBase();
         if ((!(aura->GetSpellInfo()->AttributesEx4 & SPELL_ATTR4_UNK21) && !aura->IsPassive()
             && (!aurApp->IsPositive() || !(aura->GetSpellInfo()->AttributesEx3 & SPELL_ATTR3_DEATH_PERSISTENT)))
-            && !aurApp->IsPositive() && aura->GetSpellInfo()->Id != 7267)
+            && !aurApp->IsPositive() && aura->GetSpellInfo()->Id != 7267 && aura->GetSpellInfo()->Id != 26013)
             RemoveAura(iter);
         else
             ++iter;
