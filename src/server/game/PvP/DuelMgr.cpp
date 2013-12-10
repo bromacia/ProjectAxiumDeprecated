@@ -143,8 +143,6 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
             }
         }
 
-        player->ClearInCombat();
-
         player->RemoveAllPlayerSpellCooldowns();
 
         if (!player->playerState.Cooldowns.empty())
@@ -156,7 +154,16 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
             }
 
             player->SendInitialSpells();
-            player->SendUpdateToPlayer(player);
+
+            // We need to send a generic packet here to update the client.
+            // The reason why SMSG_SPELL_COOLDOWN was because of it's
+            // small size compared to player object update
+            WorldPacket data(SMSG_SPELL_COOLDOWN, 8 + 1 + 4 + 4);
+            data << uint64(player->GetGUID());
+            data << uint8(0);
+            data << uint32(0);
+            data << uint32(0);
+            player->GetSession()->SendPacket(&data);
         }
 
         player->playerState.Health = 0;
@@ -172,6 +179,10 @@ bool DuelMgr::CheckAura(const SpellInfo* spellInfo)
         return false;
 
     if (spellInfo->IsPositive() || spellInfo->GetDuration() == -1 || spellInfo->IsPassive())
+        return false;
+
+    // Deserter
+    if (spellInfo->Id == 26013)
         return false;
 
     return true;
