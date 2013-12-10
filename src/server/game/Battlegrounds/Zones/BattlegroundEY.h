@@ -370,6 +370,8 @@ class BattlegroundEY : public Battleground
 
         /* achievement req. */
         bool IsAllNodesConrolledByTeam(uint32 team) const;
+
+        bool HandlePlayerUnderMap(Player* player);
     private:
         virtual void PostUpdateImpl(uint32 diff);
 

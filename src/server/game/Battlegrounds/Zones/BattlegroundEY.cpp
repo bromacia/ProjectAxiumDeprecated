@@ -947,3 +947,18 @@ bool BattlegroundEY::IsAllNodesConrolledByTeam(uint32 team) const
 
     return count == EY_POINTS_MAX;
 }
+
+bool BattlegroundEY::HandlePlayerUnderMap(Player* player)
+{
+    if (GetStatus() < STATUS_IN_PROGRESS)
+    {
+        float x = 0;
+        float y = 0;
+        float z = 0;
+        float o = 0;
+        GetTeamStartLoc(player->GetTeam(), x, y, z, o);
+        player->TeleportTo(GetMapId(), x, y, z, o, false);
+    }
+
+    return true;
+}

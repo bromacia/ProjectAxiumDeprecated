@@ -452,14 +452,20 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         float UnderMapValueZ;
         switch (plMover->GetMapId())
         {
-            case 559: // Nagrand Arena
+            case 572: // Ruins of Lordaeron
                 UnderMapValueZ = 5.0f;
                 break;
             case 562: // Blade's Edge Arena
                 UnderMapValueZ = -5.0f;
                 break;
-            case 572: // Ruins of Lordaeron
+            case 559: // Nagrand Arena
                 UnderMapValueZ = 5.0f;
+                break;
+            case 617: // Dalaran Sewers
+                UnderMapValueZ = 3.1f;
+                break;
+            case 566: // Eye of the Storm
+                UnderMapValueZ = 1248.0f;
                 break;
             default:
                 UnderMapValueZ = -500.0f;
