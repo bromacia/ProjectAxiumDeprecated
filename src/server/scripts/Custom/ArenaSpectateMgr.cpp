@@ -224,7 +224,7 @@ void ArenaSpectateMgr::HandleSpectatePlayer(Player* player, const char* cPlayerN
 
     if (!arenasMap[arenaId])
     {
-        handler->PSendSysMessage("The arena match of the player you're trying to spectate doesn't exist.");
+        handler->PSendSysMessage("The arena match of the player you're trying to spectate either hasn't started yet or doesn't exist.");
         return;
     }
 
@@ -236,21 +236,15 @@ void ArenaSpectateMgr::AddPlayerToArena(Player* player, uint32 action)
     CreateArenasMap();
     player->CLOSE_GOSSIP_MENU();
 
-    if (player->InBattlegroundQueue())
-    {
-        handler->PSendSysMessage("You can't spectate while in queue for a battleground or arena.");
-        return;
-    }
-
     if (!arenasMap[action])
     {
-        handler->PSendSysMessage("The arena match you're trying to spectate no longer exists.");
+        handler->PSendSysMessage("The arena match you're trying to spectate either hasn't started yet or doesn't exist.");
         return;
     }
 
     if (!CheckBattleground(arenasMap[action]))
     {
-        handler->PSendSysMessage("The arena match you're trying to spectate isn't in progress.");
+        handler->PSendSysMessage("The arena match you're trying to spectate hasn't started yet.");
         return;
     }
 
