@@ -25850,6 +25850,7 @@ bool Player::CanAppearToTarget(Player* target)
 {
     ChatHandler* handler = new ChatHandler(this);
     uint8 playerSecurity = GetSession()->GetSecurity();
+    uint32 msTime = getMSTime();
 
     if (target == this || target->GetGUIDLow() == GetGUIDLow())
     {
@@ -25884,10 +25885,10 @@ bool Player::CanAppearToTarget(Player* target)
         }
         case SEC_VIP:
         {
-            if (lastAppearTime + 10000 > getMSTime())
+            if (lastAppearTime + 10000 > msTime)
             {
                 handler->PSendSysMessage("You can only appear once every 10 seconds.");
-                handler->PSendSysMessage("Remaining Time: %u seconds", ((lastAppearTime + 10000) - getMSTime()) / IN_MILLISECONDS);
+                handler->PSendSysMessage("Remaining Time: %u seconds", ((lastAppearTime + 10000) - msTime) / IN_MILLISECONDS);
                 return false;
             }
 
@@ -25921,10 +25922,10 @@ bool Player::CanAppearToTarget(Player* target)
                 return false;
             }
 
-            if (lastCombatTime + 10000 > getMSTime())
+            if (lastCombatTime + 10000 > msTime)
             {
                 handler->PSendSysMessage("You can only appear 10 seconds after leaving combat.");
-                handler->PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - getMSTime()) / IN_MILLISECONDS);
+                handler->PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - msTime) / IN_MILLISECONDS);
                 return false;
             }
 
@@ -25934,9 +25935,15 @@ bool Player::CanAppearToTarget(Player* target)
                 return false;
             }
 
-            if (GetMap()->IsDungeon() || GetMap()->IsRaid())
+            if (target->GetMap()->IsDungeon() || target->GetMap()->IsRaid())
             {
                 handler->PSendSysMessage("You can't appear to players in dungeons or raids.");
+                return false;
+            }
+
+            if (target->GetMap()->GetId() == 1 && target->GetZoneId() == 876)
+            {
+                handler->PSendSysMessage("You can't appear to players on GM Island.");
                 return false;
             }
         }
@@ -25949,6 +25956,7 @@ bool Player::CanTeleportTo(const GameTele* tele)
 {
     ChatHandler* handler = new ChatHandler(this);
     uint8 playerSecurity = GetSession()->GetSecurity();
+    uint32 msTime = getMSTime();
 
     switch (playerSecurity)
     {
@@ -25959,10 +25967,10 @@ bool Player::CanTeleportTo(const GameTele* tele)
         }
         case SEC_VIP:
         {
-            if (lastTeleportTime + 10000 > getMSTime())
+            if (lastTeleportTime + 10000 > msTime)
             {
                 handler->PSendSysMessage("You can only teleport once every 10 seconds.");
-                handler->PSendSysMessage("Remaining Time: %u seconds", ((lastTeleportTime + 10000) - getMSTime()) / IN_MILLISECONDS);
+                handler->PSendSysMessage("Remaining Time: %u seconds", ((lastTeleportTime + 10000) - msTime) / IN_MILLISECONDS);
                 return false;
             }
 
@@ -25984,10 +25992,10 @@ bool Player::CanTeleportTo(const GameTele* tele)
                 return false;
             }
 
-            if (lastCombatTime + 10000 > getMSTime())
+            if (lastCombatTime + 10000 > msTime)
             {
                 handler->PSendSysMessage("You can only appear 10 seconds after leaving combat.");
-                handler->PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - getMSTime() / IN_MILLISECONDS));
+                handler->PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - msTime / IN_MILLISECONDS));
                 return false;
             }
         }
