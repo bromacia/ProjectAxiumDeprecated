@@ -330,7 +330,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     {
         if (opcode == CMSG_MOVE_SET_FLY || opcode == MSG_MOVE_START_ASCEND && !plMover->IsInWater())
         {
-            if (!plMover->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED))
+            if (!plMover->HasAuraType(SPELL_AURA_FLY) && !plMover->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED))
             {
                 plMover->InterruptMovement();
                 plMover->GetMotionMaster()->MoveFall();
