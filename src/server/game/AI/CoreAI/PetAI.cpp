@@ -101,39 +101,56 @@ void PetAI::UpdateAI(const uint32 diff)
         {
             if (me->isRunningToTarget()) // Is running to a target to cast a spell
             {
-                SpellCastResult result = spell->CheckPetCast(queuedTarget);
-
-                if (result == SPELL_CAST_OK)
+                if (!queuedTarget->IsInWorld())
                 {
-                    me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
-                    spell->prepare(&(spell->m_targets));
-
-                    if (me->GetReactState() != REACT_PASSIVE)
-                        if (me->ToCreature()->IsAIEnabled)
-                            me->ToCreature()->AI()->AttackStart(queuedTarget);
-
-                    me->setIsRunningToTarget(false);
                     me->setQueuedSpell(NULL);
                     me->setQueuedSpellTarget(NULL);
+                    me->setIsRunningToTarget(false);
                 }
-                else if (result != SPELL_FAILED_OUT_OF_RANGE && result != SPELL_FAILED_LINE_OF_SIGHT)
+                else
                 {
-                    me->setIsRunningToTarget(false);
-                    me->setQueuedSpell(NULL);
-                    me->setQueuedSpellTarget(NULL);
-                    me->AttackStop();
+                    SpellCastResult result = spell->CheckPetCast(queuedTarget);
+
+                    if (result == SPELL_CAST_OK)
+                    {
+                        me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
+                        spell->prepare(&(spell->m_targets));
+
+                        if (me->GetReactState() != REACT_PASSIVE)
+                            if (me->ToCreature()->IsAIEnabled)
+                                me->ToCreature()->AI()->AttackStart(queuedTarget);
+
+                        me->setIsRunningToTarget(false);
+                        me->setQueuedSpell(NULL);
+                        me->setQueuedSpellTarget(NULL);
+                    }
+                    else if (result != SPELL_FAILED_OUT_OF_RANGE && result != SPELL_FAILED_LINE_OF_SIGHT)
+                    {
+                        me->setIsRunningToTarget(false);
+                        me->setQueuedSpell(NULL);
+                        me->setQueuedSpellTarget(NULL);
+                        me->AttackStop();
+                    }
                 }
             }
             else // Has a spell in queue, but not running to target
             {
-                SpellCastResult result = spell->CheckPetCast(queuedTarget);
-
-                if (result == SPELL_CAST_OK)
+                if (!queuedTarget->IsInWorld())
                 {
-                    me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
-                    spell->prepare(&(spell->m_targets));
                     me->setQueuedSpell(NULL);
                     me->setQueuedSpellTarget(NULL);
+                }
+                else
+                {
+                    SpellCastResult result = spell->CheckPetCast(queuedTarget);
+
+                    if (result == SPELL_CAST_OK)
+                    {
+                        me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
+                        spell->prepare(&(spell->m_targets));
+                        me->setQueuedSpell(NULL);
+                        me->setQueuedSpellTarget(NULL);
+                    }
                 }
             }
         }
