@@ -3450,6 +3450,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 49056: // Immolation Trap (Rank 8)
                 spellInfo->EffectRadiusIndex[0] = 16;
                 break;
+            case 23881: // Bloodthirst
+                spellInfo->EffectImplicitTargetA[1] = 1;
+                break;
             default:
                 break;
         }
