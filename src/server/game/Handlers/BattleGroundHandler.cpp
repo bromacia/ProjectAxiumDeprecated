@@ -505,6 +505,10 @@ void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket& recv_data)
     recv_data.read_skip<uint32>();                          // BattlegroundTypeId
     recv_data.read_skip<uint16>();                          // unk3
 
+    if (Battleground* bg = _player->GetBattleground())
+        if (!bg->isArena() && _player->isInCombat())
+            return;
+
     _player->LeaveBattleground();
 }
 
