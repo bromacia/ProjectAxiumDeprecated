@@ -834,39 +834,36 @@ struct CalcDamageInfo;
 
 class DamageInfo
 {
-    public:
-        explicit DamageInfo(Unit* _attacker, Unit* _victim, uint32 _damage, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask, DamageEffectType _damageType);
-        explicit DamageInfo(CalcDamageInfo& dmgInfo);
+private:
+    Unit* const m_attacker;
+    Unit* const m_victim;
+    uint32 m_damage;
+    SpellInfo const* const m_spellInfo;
+    SpellSchoolMask const m_schoolMask;
+    DamageEffectType const m_damageType;
+    WeaponAttackType m_attackType;
+    uint32 m_absorb;
+    uint32 m_resist;
+    uint32 m_block;
+public:
+    explicit DamageInfo(Unit* _attacker, Unit* _victim, uint32 _damage, SpellInfo const* _spellInfo, SpellSchoolMask _schoolMask, DamageEffectType _damageType);
+    explicit DamageInfo(CalcDamageInfo& dmgInfo);
 
-        void ModifyDamage(int32 amount);
-        void AbsorbDamage(uint32 amount);
-        void ResistDamage(uint32 amount);
-        void BlockDamage(uint32 amount);
-        void SplitDamage(uint32 amount);
+    void ModifyDamage(int32 amount);
+    void AbsorbDamage(uint32 amount);
+    void ResistDamage(uint32 amount);
+    void BlockDamage(uint32 amount);
 
-        Unit* GetAttacker() const { return m_attacker; };
-        Unit* GetVictim() const { return m_victim; };
-        SpellInfo const* GetSpellInfo() const { return m_spellInfo; };
-        SpellSchoolMask GetSchoolMask() const { return m_schoolMask; };
-        DamageEffectType GetDamageType() const { return m_damageType; };
-        WeaponAttackType GetAttackType() const { return m_attackType; };
-        uint32 GetDamage() const { return m_damage; };
-        uint32 GetAbsorb() const { return m_absorb; };
-        uint32 GetResist() const { return m_resist; };
-        uint32 GetBlock() const { return m_block; };
-        uint32 GetSplitDamage() const { return m_splitDamage; }
-    private:
-        Unit* const m_attacker;
-        Unit* const m_victim;
-        uint32 m_damage;
-        SpellInfo const* const m_spellInfo;
-        SpellSchoolMask const m_schoolMask;
-        DamageEffectType const m_damageType;
-        WeaponAttackType m_attackType;
-        uint32 m_absorb;
-        uint32 m_resist;
-        uint32 m_block;
-        uint32 m_splitDamage;
+    Unit* GetAttacker() const { return m_attacker; };
+    Unit* GetVictim() const { return m_victim; };
+    SpellInfo const* GetSpellInfo() const { return m_spellInfo; };
+    SpellSchoolMask GetSchoolMask() const { return m_schoolMask; };
+    DamageEffectType GetDamageType() const { return m_damageType; };
+    WeaponAttackType GetAttackType() const { return m_attackType; };
+    uint32 GetDamage() const { return m_damage; };
+    uint32 GetAbsorb() const { return m_absorb; };
+    uint32 GetResist() const { return m_resist; };
+    uint32 GetBlock() const { return m_block; };
 };
 
 class HealInfo

@@ -109,7 +109,6 @@ m_damageType(DIRECT_DAMAGE), m_attackType(dmgInfo.attackType)
     m_absorb = 0;
     m_resist = 0;
     m_block = 0;
-    m_splitDamage = 0;
 }
 void DamageInfo::ModifyDamage(int32 amount)
 {
@@ -132,13 +131,6 @@ void DamageInfo::BlockDamage(uint32 amount)
 {
     amount = std::min(amount, GetDamage());
     m_block += amount;
-    m_damage -= amount;
-}
-
-void DamageInfo::SplitDamage(uint32 amount)
-{
-    amount = std::min(amount, GetDamage());
-    m_splitDamage += amount;
     m_damage -= amount;
 }
 
@@ -1929,7 +1921,7 @@ void Unit::CalcAbsorbResist(Unit* victim, SpellSchoolMask schoolMask, DamageEffe
             // absorb must be smaller than the damage itself
             splitDamage = RoundToInterval(splitDamage, 0, int32(dmgInfo.GetDamage()));
 
-            dmgInfo.SplitDamage(splitDamage);
+            dmgInfo.AbsorbDamage(splitDamage);
 
             uint32 splitted = splitDamage;
             uint32 splitted_absorb = 0;
@@ -1968,7 +1960,7 @@ void Unit::CalcAbsorbResist(Unit* victim, SpellSchoolMask schoolMask, DamageEffe
             // absorb must be smaller than the damage itself
             splitDamage = RoundToInterval(splitDamage, 0, int32(dmgInfo.GetDamage()));
 
-            dmgInfo.SplitDamage(splitDamage);
+            dmgInfo.AbsorbDamage(splitDamage);
 
             uint32 splitted = splitDamage;
             uint32 split_absorb = 0;
