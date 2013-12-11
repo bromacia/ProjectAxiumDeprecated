@@ -2096,6 +2096,10 @@ void Unit::AttackerStateUpdate(Unit* victim, WeaponAttackType attType, bool extr
         DealDamageMods(victim, damageInfo.damage, &damageInfo.absorb);
         SendAttackStateUpdate(&damageInfo);
 
+        // Temporary fix for earth shield not proccing when soul link is applied
+        if (damageInfo.target->HasAura(25228))
+            damageInfo.procEx &= ~PROC_EX_ABSORB;
+
         //TriggerAurasProcOnEvent(damageInfo);
         ProcDamageAndSpell(damageInfo.target, damageInfo.procAttacker, damageInfo.procVictim, damageInfo.procEx, damageInfo.damage, damageInfo.attackType);
 
