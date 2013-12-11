@@ -25946,6 +25946,18 @@ bool Player::CanAppearToTarget(Player* target)
                 handler->PSendSysMessage("You can't appear to players on GM Island.");
                 return false;
             }
+
+            if (IsDueling())
+            {
+                handler->PSendSysMessage("You can't appear while dueling.");
+                return false;
+            }
+
+            if (target->IsDueling())
+            {
+                handler->PSendSysMessage("You can't appear to players who are dueling.");
+                return false;
+            }
         }
     }
 
@@ -25996,6 +26008,12 @@ bool Player::CanTeleportTo(const GameTele* tele)
             {
                 handler->PSendSysMessage("You can only appear 10 seconds after leaving combat.");
                 handler->PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - msTime / IN_MILLISECONDS));
+                return false;
+            }
+
+            if (IsDueling())
+            {
+                handler->PSendSysMessage("You can't teleport while dueling.");
                 return false;
             }
         }
