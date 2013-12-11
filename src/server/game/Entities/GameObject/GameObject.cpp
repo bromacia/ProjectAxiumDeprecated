@@ -426,7 +426,7 @@ void GameObject::Update(uint32 diff)
                     bool IsBattlegroundTrap = false;
                     //FIXME: this is activation radius (in different casting radius that must be selected from spell data)
                     //TODO: move activated state code (cast itself) to GO_ACTIVATED, in this place only check activating and set state
-                    float radius = (float)(goInfo->trap.radius)/3*2; // TODO rename radius to diameter (goInfo->trap.radius) should be (goInfo->trap.diameter)
+                    float radius = ((float)goInfo->trap.radius) / 3 * 2; // TODO rename radius to diameter (goInfo->trap.radius) should be (goInfo->trap.diameter)
                     if (!radius)
                     {
                         if (goInfo->trap.cooldown != 3)            // cast in other case (at some triggering/linked go/etc explicit call)
@@ -1727,20 +1727,79 @@ Unit* GameObject::SelectNearestTrapableTarget(Unit* owner, float dist) const
     Cell cell(p);
     cell.SetNoCreate();
 
+    float searchDistance = dist;
+
+    if (searchDistance == 0.0f)
+        searchDistance = 3.0f;
+
+    searchDistance += MIN_MELEE_REACH;
+
+    UnitList targets;
+
+    Trinity::NearestAttackableUnitInTrapRangeCheck u_check(this, owner, searchDistance);
+    Trinity::UnitListSearcher<Trinity::NearestAttackableUnitInTrapRangeCheck> searcher(this, targets, u_check);
+
+    TypeContainerVisitor<Trinity::UnitListSearcher<Trinity::NearestAttackableUnitInTrapRangeCheck>, WorldTypeMapContainer> world_unit_searcher(searcher);
+    TypeContainerVisitor<Trinity::UnitListSearcher<Trinity::NearestAttackableUnitInTrapRangeCheck>, GridTypeMapContainer> grid_unit_searcher(searcher);
+
+    cell.Visit(p, world_unit_searcher, *GetMap(), *this, searchDistance);
+    cell.Visit(p, grid_unit_searcher, *GetMap(), *this, searchDistance);
+
+    if (targets.empty())
+        return NULL;
+
     Unit* target = NULL;
+    float lastTargetDistance = 0.0f;
 
+    for (UnitList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
     {
-        if (dist == 0.0f)
-            dist = 3.0f; // Guessed, doubt this will ever happen.
+        // Scatter Shot
+        // TODO: This is a hack
+        if ((*itr)->HasAura(19503))
+            continue;
 
-        Trinity::NearestAttackableUnitInTrapRangeCheck u_check(this, owner, dist);
-        Trinity::UnitLastSearcher<Trinity::NearestAttackableUnitInTrapRangeCheck> searcher(this, target, u_check);
+        float distance = GetDistance2d(*itr);
+        if (distance > dist)
+            continue;
 
-        TypeContainerVisitor<Trinity::UnitLastSearcher<Trinity::NearestAttackableUnitInTrapRangeCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-        TypeContainerVisitor<Trinity::UnitLastSearcher<Trinity::NearestAttackableUnitInTrapRangeCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+        if (!target)
+        {
+            target = *itr;
+            lastTargetDistance = distance;
+        }
+        else
+        {
+            if (distance < lastTargetDistance)
+            {
+                target = *itr;
+                lastTargetDistance = distance;
+            }
+        }
+    }
 
-        cell.Visit(p, world_unit_searcher, *GetMap(), *this, dist);
-        cell.Visit(p, grid_unit_searcher, *GetMap(), *this, dist);
+    // If for some reason no target was selected
+    if (!target)
+    {
+        for (UnitList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
+        {
+            float distance = GetDistance2d(*itr);
+            if (distance > dist)
+                continue;
+
+            if (!target)
+            {
+                target = *itr;
+                lastTargetDistance = distance;
+            }
+            else
+            {
+                if (distance < lastTargetDistance)
+                {
+                    target = *itr;
+                    lastTargetDistance = distance;
+                }
+            }
+        }
     }
 
     return target;
