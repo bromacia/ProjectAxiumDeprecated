@@ -145,10 +145,17 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
 
         player->RemoveAllPlayerSpellCooldowns();
 
+        typedef std::vector<uint32> NonCombatSpells;
+        NonCombatSpells ncSpells;
+
         if (!player->playerState.Cooldowns.empty())
         {
             for (SpellCooldowns::iterator itr = player->playerState.Cooldowns.begin(); itr != player->playerState.Cooldowns.end();)
             {
+                if (const SpellInfo* spellInfo = sSpellMgr->GetSpellInfo(itr->first))
+                    if (spellInfo->Attributes & SPELL_ATTR0_CANT_USED_IN_COMBAT)
+                        ncSpells.push_back(itr->first);
+
                 player->AddSpellCooldown(itr->first, itr->second.itemid, itr->second.end);
                 player->playerState.Cooldowns.erase((itr++));
             }
@@ -165,6 +172,9 @@ void DuelMgr::HandlePlayerState(Player* player, bool save)
             data << uint32(0);
             player->GetSession()->SendPacket(&data);
         }
+
+        for (NonCombatSpells::iterator itr = ncSpells.begin(); itr != ncSpells.end(); ++itr)
+            player->RemoveSpellCooldown(*itr, true);
 
         player->playerState.Health = 0;
         player->playerState.Mana = 0;
