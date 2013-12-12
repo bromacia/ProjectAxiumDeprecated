@@ -2283,14 +2283,6 @@ class Player : public Unit, public GridObject<Player>
                 }
             }
         }
-        void RemoveAllBattlegroundQueues()
-        {
-            for (uint8 i = 0; i < PLAYER_MAX_BATTLEGROUND_QUEUES; ++i)
-            {
-                m_bgBattlegroundQueueID[i].bgQueueTypeId = BATTLEGROUND_QUEUE_NONE;
-                m_bgBattlegroundQueueID[i].invitedToInstance = 0;
-            }
-        }
         void SetInviteForBattlegroundQueueType(BattlegroundQueueTypeId bgQueueTypeId, uint32 instanceId)
         {
             for (uint8 i=0; i < PLAYER_MAX_BATTLEGROUND_QUEUES; ++i)
@@ -2748,6 +2740,8 @@ class Player : public Unit, public GridObject<Player>
         uint32 GetTeam() const { return m_bgData.bgTeam && GetBattleground() ? m_bgData.bgTeam : m_team; }
         bool SendRealNameQuery();
         FakePlayers m_FakePlayers;
+
+        void RemoveFromAllBattlegroundQueues();
 
     protected:
         // Gamemaster whisper whitelist

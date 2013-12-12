@@ -26372,3 +26372,57 @@ void Player::SendChatMessage(const char *format, ...)
         ChatHandler(GetSession()).SendSysMessage(str);
     }
 }
+
+void Player::RemoveFromAllBattlegroundQueues()
+{
+    if (!InBattlegroundQueue())
+        return;
+
+    for (uint8 bgQueueItr = BATTLEGROUND_QUEUE_NONE; bgQueueItr < MAX_BATTLEGROUND_QUEUE_TYPES; ++bgQueueItr)
+    { 
+        BattlegroundQueueTypeId bgQueueTypeId = (BattlegroundQueueTypeId)bgQueueItr;
+        BattlegroundQueue& bgQueue = sBattlegroundMgr->m_BattlegroundQueues[bgQueueTypeId];
+        GroupQueueInfo ginfo;
+
+        if (!bgQueue.GetPlayerGroupInfoData(GetGUID(), &ginfo))
+            continue;
+
+        for (uint8 bgTypeItr = BATTLEGROUND_TYPE_NONE; bgTypeItr < MAX_BATTLEGROUND_TYPE_ID; ++bgTypeItr)
+        {
+            BattlegroundTypeId bgTypeId = (BattlegroundTypeId)bgTypeItr;
+            Battleground* bg = sBattlegroundMgr->GetBattleground(ginfo.IsInvitedToBGInstanceGUID, bgTypeId);
+
+            if (!bg)
+                bg = sBattlegroundMgr->GetBattlegroundTemplate(bgTypeId);
+
+            if (!bg)
+                continue;
+
+            const PvPDifficultyEntry* bracketEntry = GetBattlegroundBracketByLevel(bg->GetMapId(), getLevel());
+            if (!bracketEntry)
+                continue;
+
+            uint32 queueSlot = GetBattlegroundQueueIndex(bgQueueTypeId);
+
+            if (bg->isArena() && bg->GetStatus() == STATUS_WAIT_JOIN)
+                continue;
+
+            if (ginfo.IsRated && ginfo.IsInvitedToBGInstanceGUID)
+                if (ArenaTeam* at = sArenaTeamMgr->GetArenaTeamById(ginfo.Team))
+                {
+                    at->MemberLost(this, ginfo.OpponentsMatchmakerRating);
+                    at->SaveToDB();
+                }
+
+            RemoveBattlegroundQueueId(bgQueueTypeId);
+            WorldPacket data;
+            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_NONE, 0, 0, 0, UI_FRAME);
+            bgQueue.RemovePlayer(GetGUID(), true);
+
+            if (!ginfo.ArenaType)
+                sBattlegroundMgr->ScheduleQueueUpdate(ginfo.ArenaMatchmakerRating, ginfo.ArenaType, bgQueueTypeId, bgTypeId, bracketEntry->GetBracketId());
+
+            GetSession()->SendPacket(&data);
+        }
+    }
+}

@@ -23,8 +23,6 @@ bool ArenaSpectateMgr::OnGossipSelect(Player* player, Creature* creature, uint32
 {
     player->PlayerTalkClass->ClearMenus();
 
-    player->RemoveAllBattlegroundQueues();
-
     switch (sender)
     {
         case GOSSIP_SENDER_MAIN:
@@ -261,7 +259,7 @@ void ArenaSpectateMgr::AddPlayerToArena(Player* player, uint32 action)
         return;
     }
 
-    player->RemoveAllBattlegroundQueues();
+    player->RemoveFromAllBattlegroundQueues();
     player->SetArenaSpectatorState(true);
     player->SetBattlegroundId(action, arena->GetTypeID(false));
     player->SetBattlegroundEntryPoint();
