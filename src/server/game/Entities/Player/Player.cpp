@@ -25958,6 +25958,12 @@ bool Player::CanAppearToTarget(Player* target)
                 handler->PSendSysMessage("You can't appear to players who are dueling.");
                 return false;
             }
+
+            if (target->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
+            {
+                handler->PSendSysMessage("You can't appear to Axium-Gaming staff members.");
+                return false;
+            }
         }
     }
 
