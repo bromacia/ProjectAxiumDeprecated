@@ -6273,7 +6273,7 @@ SpellCastResult Spell::CheckRange(bool strict)
         if (range_type == SPELL_RANGE_MELEE)
         {
             // Because of lag, we can not check too strictly here.
-            if (!m_caster->IsWithinObjectSizeDistance(target, max_range))
+            if (!m_caster->IsWithinExactDistance(target, max_range))
                 return !(_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_OUT_OF_RANGE : SPELL_FAILED_DONT_REPORT;
         }
         else if (!m_caster->IsWithinCombatRange(target, max_range))
@@ -6281,7 +6281,7 @@ SpellCastResult Spell::CheckRange(bool strict)
 
         if (range_type == SPELL_RANGE_RANGED)
         {
-            if (m_caster->IsWithinObjectSizeDistance(target, MELEE_RANGE))
+            if (m_caster->IsWithinExactDistance(target, MELEE_RANGE))
                 return !(_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_TOO_CLOSE : SPELL_FAILED_DONT_REPORT;
         }
         else if (min_range && m_caster->IsWithinCombatRange(target, min_range)) // skip this check if min_range = 0
