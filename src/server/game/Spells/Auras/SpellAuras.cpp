@@ -1876,6 +1876,13 @@ bool Aura::CanStackWith(Aura const* existingAura) const
     if (IsPassive() && sameCaster && m_spellInfo->IsDifferentRankOf(existingSpellInfo))
         return false;
 
+    // Prevent Wrecking ball & Enrage stacking for Warriors
+    if (GetSpellInfo()->Mechanic == MECHANIC_ENRAGED)
+    {
+        if (GetSpellInfo()->SpellIconID == 95 && existingSpellInfo->SpellIconID == 95)
+            return false;
+    }
+
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         // prevent remove triggering aura by triggered aura
