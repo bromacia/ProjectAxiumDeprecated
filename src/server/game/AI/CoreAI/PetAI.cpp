@@ -113,6 +113,10 @@ void PetAI::UpdateAI(const uint32 diff)
 
                     if (result == SPELL_CAST_OK)
                     {
+                        me->GetMotionMaster()->Clear();
+                        if (spell->GetSpellInfo()->CastTimeEntry > 0)
+                            me->StopMoving();
+
                         me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
                         spell->prepare(&(spell->m_targets));
 
