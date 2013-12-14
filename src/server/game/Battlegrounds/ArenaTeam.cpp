@@ -888,9 +888,9 @@ void ArenaTeam::SaveToDB()
         stmt->setUInt16(2, itr->MatchMakerRating);
         trans->Append(stmt);
 
-        switch (GetId())
+        switch (GetType())
         {
-            case 0: // 2v2
+            case 2: // 2v2
             {
                 sPvPMgr->Set2v2MMRByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
                     
@@ -904,7 +904,7 @@ void ArenaTeam::SaveToDB()
                 sPvPMgr->SetLifetime2v2GamesByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime2v2GamesByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonGames);
                 break;
             }
-            case 1: // 3v3
+            case 3: // 3v3
             {
                 sPvPMgr->Set3v3MMRByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
                     
@@ -918,7 +918,7 @@ void ArenaTeam::SaveToDB()
                 sPvPMgr->SetLifetime3v3GamesByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime3v3GamesByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonGames);
                 break;
             }
-            case 2: // 5v5
+            case 5: // 5v5
             {
                 sPvPMgr->Set5v5MMRByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
                     
