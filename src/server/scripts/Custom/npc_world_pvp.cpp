@@ -66,13 +66,13 @@ class npc_world_pvp : public CreatureScript
             {
                 case OPTION_CONVERT_TOKENS:
                 {
-                    ChatHandler* handler = new ChatHandler(player);
+                    ChatHandler handler = ChatHandler(player);
 
                     player->CLOSE_GOSSIP_MENU();
 
                     if (!isNumeric(code))
                     {
-                        handler->PSendSysMessage("Invalid Number; Please try again.");
+                        handler.PSendSysMessage("Invalid Number; Please try again.");
                         return false;
                     }
 
@@ -80,7 +80,7 @@ class npc_world_pvp : public CreatureScript
 
                     if (!amount || amount > 2000000)
                     {
-                        handler->PSendSysMessage("The amount of tokens to convert must be a number between 0 and 2,000,000.");
+                        handler.PSendSysMessage("The amount of tokens to convert must be a number between 0 and 2,000,000.");
                         return false;
                     }
 
@@ -95,7 +95,7 @@ class npc_world_pvp : public CreatureScript
                         player->ModifyArenaPoints(arenaPoints);
                         honorPoints = CONVERSION_RATE_HONOR_POINTS * amountInBags;
                         player->ModifyHonorPoints(honorPoints);
-                        handler->PSendSysMessage("Converted %u tokens into %u Arena Points and %u Honor Points.", amountInBags, arenaPoints, honorPoints);
+                        handler.PSendSysMessage("Converted %u tokens into %u Arena Points and %u Honor Points.", amountInBags, arenaPoints, honorPoints);
                     }
                     else
                     {
@@ -104,7 +104,7 @@ class npc_world_pvp : public CreatureScript
                         player->ModifyArenaPoints(arenaPoints);
                         honorPoints = CONVERSION_RATE_HONOR_POINTS * amount;
                         player->ModifyHonorPoints(honorPoints);
-                        handler->PSendSysMessage("Converted %u tokens into %u Arena Points and %u Honor Points.", amount, arenaPoints, honorPoints);
+                        handler.PSendSysMessage("Converted %u tokens into %u Arena Points and %u Honor Points.", amount, arenaPoints, honorPoints);
                     }
                     break;
                 }
@@ -115,14 +115,14 @@ class npc_world_pvp : public CreatureScript
 
         void ShowInventory(Player* player, Creature* creature, uint32 option)
         {
-            ChatHandler* handler = new ChatHandler(player);
+            ChatHandler handler = ChatHandler(player);
 
             player->CLOSE_GOSSIP_MENU();
 
             const VendorItemData* items = creature->GetVendorItems();
             if (!items)
             {
-                handler->PSendSysMessage("This npc doesn't have any items.");
+                handler.PSendSysMessage("This npc doesn't have any items.");
                 return;
             }
 
@@ -165,7 +165,7 @@ class npc_world_pvp : public CreatureScript
 
             if (!count)
             {
-                handler->PSendSysMessage("No items found for that option.");
+                handler.PSendSysMessage("No items found for that option.");
                 return;
             }
 

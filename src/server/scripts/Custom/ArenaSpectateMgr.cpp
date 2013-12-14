@@ -2,13 +2,10 @@
 
 ArenaSpectateMgr::ArenaSpectateMgr() : CreatureScript("ArenaSpectateNPC")
 {
-    handler = NULL;
 }
 
 bool ArenaSpectateMgr::OnGossipHello(Player* player, Creature* creature)
 {
-    handler = new ChatHandler(player);
-
     CreateArenasMap();
 
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate 2v2 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_2V2_MATCHES);
@@ -76,6 +73,7 @@ bool ArenaSpectateMgr::OnGossipSelectCode(Player* player, Creature* creature, ui
 
 void ArenaSpectateMgr::HandleShowMatches(Player* player, Creature* creature, uint32 sender, uint32 action)
 {
+    ChatHandler handler = ChatHandler(player);
     CreateArenasMap();
     uint8 arenaType = 0;
     uint32 gossipAction = 0;
@@ -104,7 +102,7 @@ void ArenaSpectateMgr::HandleShowMatches(Player* player, Creature* creature, uin
                 if (gossipPage < 1)
                 {
                     sLog->outError("ArenaSpectateMgr:: Gossip Page below 1 for player: [%u]%s", player->GetGUIDLow(), player->GetName());
-                    handler->PSendSysMessage("Something went wrong, try again.");
+                    handler.PSendSysMessage("Something went wrong, try again.");
                     player->CLOSE_GOSSIP_MENU();
                     return;
                 }
@@ -113,8 +111,8 @@ void ArenaSpectateMgr::HandleShowMatches(Player* player, Creature* creature, uin
                     uint16 increment = (--gossipPage) * roomLeft;
                     if (increment < 50)
                     {
-                        sLog->outError("ArenaSpectateMgr:: Gossip Page below 1 for player: [%u]%s", player->GetGUIDLow(), player->GetName());
-                        handler->PSendSysMessage("Something went wrong, try again.");
+                        sLog->outError("ArenaSpectateMgr:: Gossip increment less than 50 for player: [%u]%s", player->GetGUIDLow(), player->GetName());
+                        handler.PSendSysMessage("Something went wrong, try again.");
                         player->CLOSE_GOSSIP_MENU();
                         return;
                     }
@@ -192,6 +190,7 @@ void ArenaSpectateMgr::HandleShowMatches(Player* player, Creature* creature, uin
 
 void ArenaSpectateMgr::HandleSpectatePlayer(Player* player, const char* cPlayerName)
 {
+    ChatHandler handler = ChatHandler(player);
     CreateArenasMap();
     uint32 arenaId = 0;
     Player* target = NULL;
@@ -202,27 +201,27 @@ void ArenaSpectateMgr::HandleSpectatePlayer(Player* player, const char* cPlayerN
 
     if (!guidLow)
     {
-        handler->PSendSysMessage("Unable to find a player with that name.");
+        handler.PSendSysMessage("Unable to find a player with that name.");
         return;
     }
 
     target = sObjectMgr->GetPlayerByLowGUID(guidLow);
     if (!target)
     {
-        handler->PSendSysMessage("The player you're trying to spectate is offline.");
+        handler.PSendSysMessage("The player you're trying to spectate is offline.");
         return;
     }
 
     arenaId = target->GetBattlegroundId();
     if (!arenaId)
     {
-        handler->PSendSysMessage("The player you're trying to spectate isn't in a arena.");
+        handler.PSendSysMessage("The player you're trying to spectate isn't in a arena.");
         return;
     }
 
     if (!arenasMap[arenaId])
     {
-        handler->PSendSysMessage("The arena match of the player you're trying to spectate either hasn't started yet or doesn't exist.");
+        handler.PSendSysMessage("The arena match of the player you're trying to spectate either hasn't started yet or doesn't exist.");
         return;
     }
 
@@ -231,31 +230,32 @@ void ArenaSpectateMgr::HandleSpectatePlayer(Player* player, const char* cPlayerN
 
 void ArenaSpectateMgr::AddPlayerToArena(Player* player, uint32 action)
 {
+    ChatHandler handler = ChatHandler(player);
     CreateArenasMap();
     player->CLOSE_GOSSIP_MENU();
 
     if (!arenasMap[action])
     {
-        handler->PSendSysMessage("The arena match you're trying to spectate either hasn't started yet or doesn't exist.");
+        handler.PSendSysMessage("The arena match you're trying to spectate either hasn't started yet or doesn't exist.");
         return;
     }
 
     if (!CheckBattleground(arenasMap[action]))
     {
-        handler->PSendSysMessage("The arena match you're trying to spectate hasn't started yet.");
+        handler.PSendSysMessage("The arena match you're trying to spectate hasn't started yet.");
         return;
     }
 
     if (!arenasMap[action]->GetBgMap())
     {
-        handler->PSendSysMessage("The map for the arena match you're trying to spectate is being deconstructed.");
+        handler.PSendSysMessage("The map for the arena match you're trying to spectate is being deconstructed.");
         return;
     }
 
     Battleground* arena = sBattlegroundMgr->GetBattleground(action, arenasMap[action]->GetTypeID(false));
     if (!arena)
     {
-        handler->PSendSysMessage("The arena match of the player you're trying to spectate no longer exists.");
+        handler.PSendSysMessage("The arena match of the player you're trying to spectate no longer exists.");
         return;
     }
 

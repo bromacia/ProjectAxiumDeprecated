@@ -1679,7 +1679,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         if (!m_caster->IsFriendlyTo(unit) || !unit->IsFriendlyTo(m_caster))
         {
             bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);
-            m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
+            m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask, binary, m_spellInfo);
             if (m_resist >= 100)
                 return SPELL_MISS_RESIST;
         }
@@ -3140,7 +3140,10 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
         if (CurrentSpellTypes CSpellType = GetCurrentContainer())
             if (Spell* cSpell = m_caster->GetCurrentSpell(CSpellType))
                 if (cSpell->m_CastItem == m_CastItem && cSpell->GetSpellInfo()->Id == m_spellInfo->Id)
+                {
+                    finish(false);
                     return;
+                }
 
         if (Player* player = m_caster->ToPlayer())
             if (const ItemTemplate* it = sObjectMgr->GetItemTemplate(m_CastItem->GetEntry()))

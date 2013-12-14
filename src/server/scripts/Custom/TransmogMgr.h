@@ -160,6 +160,4 @@ class Transmogrification : public CreatureScript
                     return 0;
             }
         }
-
-        ChatHandler* handler;
 };

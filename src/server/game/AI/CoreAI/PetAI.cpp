@@ -246,7 +246,12 @@ void PetAI::UpdateAI(const uint32 diff)
                 }
 
                 if (spellInfo->HasEffect(SPELL_EFFECT_JUMP_DEST))
+                {
+                    if (!spellUsed)
+                        delete spell;
+
                     continue;
+                }
 
                 // No enemy, check friendly
                 if (!spellUsed)

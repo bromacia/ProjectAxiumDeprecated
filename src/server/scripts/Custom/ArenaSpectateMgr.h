@@ -47,5 +47,4 @@ class ArenaSpectateMgr : public CreatureScript
         }
 
         BattlegroundsMap arenasMap;
-        ChatHandler* handler;
 };
