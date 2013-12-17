@@ -298,6 +298,12 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
     if (plMover)
     {
+        if (plMover->HasUnitState(UNIT_STATE_CHARGING))
+        {
+            recv_data.rfinish(); // prevent warnings spam
+            return;
+        }
+
         if (plMover->IsMovementBlocked())
         {
             plMover->InterruptMovement();

@@ -43,6 +43,8 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
         if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED | UNIT_STATE_CONFUSED | UNIT_STATE_FLEEING))
         {
             unit.ClearUnitState(UNIT_STATE_ROAMING_MOVE);
+            if (path)
+                unit.ClearUnitState(UNIT_STATE_CHARGING);
             return true;
         }
     }
@@ -60,7 +62,7 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
             if (speed > 0.0f)
                 pInit.SetVelocity(speed);
             pInit.Launch();
-            unit.AddUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
+            unit.AddUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE | UNIT_STATE_CHARGING);
             init = false;
             return true;
         }
@@ -144,13 +146,16 @@ bool PointMovementGenerator<T>::Update(T &unit, const uint32 &diff)
     }
 
     unit.AddUnitState(UNIT_STATE_ROAMING_MOVE);
+    if (path)
+        unit.AddUnitState(UNIT_STATE_CHARGING);
+
     return !unit.movespline->Finalized();
 }
 
 template<class T>
 void PointMovementGenerator<T>::Finalize(T &unit)
 {
-    unit.ClearUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
+    unit.ClearUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE | UNIT_STATE_CHARGING);
 
     if (unit.movespline->Finalized())
         MovementInform(unit);
@@ -163,6 +168,9 @@ void PointMovementGenerator<T>::Reset(T &unit)
         unit.StopMoving();
 
     unit.AddUnitState(UNIT_STATE_ROAMING|UNIT_STATE_ROAMING_MOVE);
+
+    if (path)
+        unit.AddUnitState(UNIT_STATE_CHARGING);
 }
 
 template<class T>
