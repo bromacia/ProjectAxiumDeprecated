@@ -9791,6 +9791,20 @@ bool Unit::AttackStop()
     if (!m_attacking)
         return false;
 
+    // Pet's with AI should interrupt casts and return when told to stop attacking
+    if (GetTypeId() == TYPEID_UNIT)
+    {
+        if (Pet* pet = ToPet())
+        {
+            if (pet->IsAIEnabled && pet->AI() && pet->GetCharmInfo())
+            {
+                pet->InterruptNonMeleeSpells(false);
+                pet->GetCharmInfo()->SetIsCommandAttack(false);
+                pet->AI()->HandleReturnMovement();
+            }
+        }
+    }
+
     Unit* victim = m_attacking;
 
     m_attacking->_removeAttacker(this);
