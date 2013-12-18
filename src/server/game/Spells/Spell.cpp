@@ -938,17 +938,15 @@ void Spell::CleanupTargetList()
 
 void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*= true*/)
 {
-    // Perform the CheckEffectTarget check only for non-instant cast spells
     for (uint8 effIndex = 0; effIndex < MAX_SPELL_EFFECTS; ++effIndex)
-        if (!m_spellInfo->Effects[effIndex].IsEffect() || (m_casttime && !CheckEffectTarget(target, effIndex)))
+        if (!m_spellInfo->Effects[effIndex].IsEffect() || !CheckEffectTarget(target, effIndex))
             effectMask &= ~(1 << effIndex);
 
     // no effects left
     if (!effectMask)
         return;
 
-    // Check validity of target only for non-instant cast spells here
-    if (checkIfValid && m_casttime)
+    if (checkIfValid)
         if (m_spellInfo->CheckTarget(m_caster, target, true) != SPELL_CAST_OK)
             return;
 
