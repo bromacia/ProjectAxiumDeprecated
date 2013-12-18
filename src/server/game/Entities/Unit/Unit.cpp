@@ -14077,6 +14077,9 @@ void Unit::ModSpellCastTime(SpellInfo const* spellProto, int32 & castTime, Spell
     else if (spellProto->SpellVisual[0] == 3881 && HasAura(67556)) // cooking with Chef Hat.
         castTime = 500;
 
+    if (spellProto->HasEffect(SPELL_EFFECT_TRANS_DOOR)) // Don't allow gameobject spawning to be instant casts (mage table, soulwell, ect)
+        return;
+
     // Custom Cast Times
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
     {
@@ -14085,9 +14088,6 @@ void Unit::ModSpellCastTime(SpellInfo const* spellProto, int32 & castTime, Spell
             spellProto->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH) || // Glyphs
             HasAura(32727) || HasAura(44521)) // Arena Preparation & Preparation
         {
-            if (spellProto->Effects[i].Effect == SPELL_EFFECT_TRANS_DOOR) // Prevent soulwell/mage table from being instant
-                continue;
-
             if (Player* player = ToPlayer())
             {
                 if (Battleground* bg = player->GetBattleground())
