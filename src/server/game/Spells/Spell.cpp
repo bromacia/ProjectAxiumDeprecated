@@ -1655,7 +1655,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             // TODO: this cause soul transfer bugged
             if ((m_spellInfo->Speed > 0.0f || m_spellInfo->IsSpellDelaySpell() ||
                 m_spellInfo->IsMovementDelaySpell() || m_spellInfo->IsSilenceDelaySpell() || m_spellInfo->IsMiscDelaySpell()) &&
-                unit->GetTypeId() == TYPEID_PLAYER && !m_spellInfo->IsPositive() && !m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL))
+                unit->GetTypeId() == TYPEID_PLAYER && !m_spellInfo->IsPositive())
                 return SPELL_MISS_EVADE;
 
             // assisting case, healing and resurrection
