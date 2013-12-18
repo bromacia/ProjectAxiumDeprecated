@@ -3453,6 +3453,8 @@ void SpellMgr::LoadDbcDataCorrections()
             case 23881: // Bloodthirst
                 spellInfo->EffectImplicitTargetA[1] = 1;
                 break;
+            case 7321: // Chilled
+                spellInfo->EffectMechanic[0] = 11;
             default:
                 break;
         }
