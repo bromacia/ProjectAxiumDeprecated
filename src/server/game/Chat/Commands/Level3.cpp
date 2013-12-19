@@ -1806,7 +1806,7 @@ bool ChatHandler::HandleDieCommand(const char* /*args*/)
         if (sWorld->getBoolConfig(CONFIG_DIE_COMMAND_MODE))
             player->Kill(target);
         else
-            player->DealDamage(target, target->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false, true);
+            player->DealDamage(target, target->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
     }
 
     return true;
@@ -1881,7 +1881,7 @@ bool ChatHandler::HandleDamageCommand(const char* args)
         damage -= absorb + resist;
 
         m_session->GetPlayer()->DealDamageMods(target, damage, &absorb);
-        m_session->GetPlayer()->DealDamage(target, damage, NULL, DIRECT_DAMAGE, schoolmask, NULL, false, true);
+        m_session->GetPlayer()->DealDamage(target, damage, NULL, DIRECT_DAMAGE, schoolmask, NULL, false);
         m_session->GetPlayer()->SendAttackStateUpdate (HITINFO_NORMALSWING2, target, 1, schoolmask, damage, absorb, resist, VICTIMSTATE_HIT, 0);
         return true;
     }

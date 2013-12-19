@@ -628,7 +628,7 @@ void Unit::DealDamageMods(Unit* victim, uint32 &damage, uint32* absorb)
         *absorb += (originalDamage - damage);
 }
 
-uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDamage, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellInfo const* spellProto, bool durabilityLoss, bool command)
+uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDamage, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellInfo const* spellProto, bool durabilityLoss)
 {
     if (victim->IsAIEnabled)
         victim->GetAI()->DamageTaken(this, damage);
@@ -798,16 +798,6 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         if (IsControlledByPlayer())
             victim->ToCreature()->LowerPlayerDamageReq(health < damage ?  health : damage);
     }
-
-    if (!command)
-        if (Player* pVictim = victim->ToPlayer())
-            if (Unit* owner = GetCharmerOrOwner())
-            {
-                if (Player* pOwner = owner->ToPlayer())
-                    pVictim->HandleDealDamage(pOwner, damage);
-            }
-            else if (Player* player = ToPlayer())
-                pVictim->HandleDealDamage(player, damage);
 
     if (health <= damage)
     {

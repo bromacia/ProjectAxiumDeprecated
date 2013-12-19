@@ -1126,14 +1126,6 @@ typedef std::map<uint32, TransmogItemInformation> TransmogItemsSaveQueue;
 typedef std::map<uint8, uint32> TransmogSetItemMap;
 typedef std::map<uint8, TransmogSetItemMap> TransmogSets;
 
-struct PvPTargetDamageInformation
-{
-    PvPTargetDamageInformation() : DamageDoneToVictim(0), LastDamageDealtTimer(0) {}
-
-    uint32 DamageDoneToVictim;
-    uint32 LastDamageDealtTimer;
-};
-
 struct PlayerState
 {
     uint32 Health;
@@ -2654,9 +2646,6 @@ class Player : public Unit, public GridObject<Player>
 
         bool IsFrozen() const { return m_isFrozen; }
         void SetIsFrozen(bool x) { m_isFrozen = x; }
-
-        typedef std::map<uint32, PvPTargetDamageInformation> PvPTargetDamageInformationMap;
-        PvPTargetDamageInformationMap PvPTargetDamageInfo;
 
         PlayerState playerState;
 

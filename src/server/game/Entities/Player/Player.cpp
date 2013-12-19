@@ -915,8 +915,6 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_Lifetime5v5Wins = 0;
     m_Lifetime5v5Games = 0;
 
-    PvPTargetDamageInfo.clear();
-
     playerState.Health = 0;
     playerState.Mana = 0;
     playerState.Auras.clear();
@@ -5231,8 +5229,6 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
 
 void Player::KillPlayer()
 {
-    PvPTargetDamageInfo.clear();
-
     SetMovement(MOVE_ROOT);
 
     StopMirrorTimers();                                     //disable timers(bars)
@@ -26056,136 +26052,6 @@ void Player::SetArenaSpectatorState(bool apply)
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
         UpdateSpeed(MOVE_RUN, true);
-    }
-}
-
-void Player::HandleDealDamage(Unit* attacker, uint32 damage)
-{
-    if (!attacker || !damage)
-        return;
-
-    if (attacker == this)
-        return;
-
-    Player* pAttacker = NULL;
-
-    if (Player* player = attacker->ToPlayer())
-        pAttacker = player;
-    else if (Unit* owner = attacker->GetCharmerOrOwner())
-        if (Player* pOwner = owner->ToPlayer())
-            pAttacker = pOwner;
-
-    if (!pAttacker)
-        return;
-
-    if (pAttacker->IsHealingSpec())
-        return;
-
-    if (!IsInWorldPvPZone() && !InBattleground() || InArena())
-        return;
-
-    if (!pAttacker->IsInWorldPvPZone() && !pAttacker->InBattleground() || pAttacker->InArena())
-        return;
-
-    uint32 LastDamageDealtCountdownTime = getMSTime() + DAMAGE_RESET_TIME_MS;
-
-    if (PvPTargetDamageInfo.empty())
-    {
-        PvPTargetDamageInformation m_PvPTargetDamageInfo;
-        m_PvPTargetDamageInfo.DamageDoneToVictim += damage;
-        m_PvPTargetDamageInfo.LastDamageDealtTimer = LastDamageDealtCountdownTime;
-        PvPTargetDamageInfo[pAttacker->GetGUIDLow()] = m_PvPTargetDamageInfo;
-    }
-    else
-    {
-        for (Player::PvPTargetDamageInformationMap::iterator itr = PvPTargetDamageInfo.begin(); itr != PvPTargetDamageInfo.end(); ++itr)
-        {
-            if (pAttacker->GetGUIDLow() == itr->first)
-            {
-                itr->second.DamageDoneToVictim += damage;
-                itr->second.LastDamageDealtTimer = LastDamageDealtCountdownTime;
-            }
-        }
-    }
-
-    if (damage >= GetHealth())
-        HandlePvPKill();
-}
-
-void Player::HandlePvPKill()
-{
-    uint32 currentMSTime = getMSTime();
-    uint32 attackerGUIDLow = 0;
-    uint32 highestDamageDoneToVictim = 0;
-
-    if (PvPTargetDamageInfo.empty())
-        return;
-
-    for (Player::PvPTargetDamageInformationMap::iterator itr = PvPTargetDamageInfo.begin(); itr != PvPTargetDamageInfo.end(); ++itr)
-    {
-        Player* pAttacker = sObjectMgr->GetPlayerByLowGUID(itr->first);
-        if (!pAttacker)
-            continue;
-
-        if (!IsInWorldPvPZone() && !InBattleground() || InArena())
-            continue;
-
-        if (!pAttacker->IsInWorldPvPZone() && !pAttacker->InBattleground() || pAttacker->InArena())
-            continue;
-
-        if (itr->second.LastDamageDealtTimer < currentMSTime)
-            continue;
-
-        if (itr->second.DamageDoneToVictim > highestDamageDoneToVictim)
-        {
-            attackerGUIDLow = itr->first;
-            highestDamageDoneToVictim = itr->second.DamageDoneToVictim;
-        }
-    }
-
-    if (!attackerGUIDLow || !highestDamageDoneToVictim)
-    {
-        for (Player::PvPTargetDamageInformationMap::iterator itr = PvPTargetDamageInfo.begin(); itr != PvPTargetDamageInfo.end(); ++itr)
-        {
-            if (itr->second.DamageDoneToVictim > highestDamageDoneToVictim)
-            {
-                attackerGUIDLow = itr->first;
-                highestDamageDoneToVictim = itr->second.DamageDoneToVictim;
-            }
-        }
-    }
-
-    PvPTargetDamageInfo.clear();
-
-    uint8 ratingGain = 0;
-    uint8 ratingLoss = 0;
-    uint32 victimGUIDLow = GetGUIDLow();
-    uint16 attackerPvPRating = sPvPMgr->GetPvPRatingByGUIDLow(attackerGUIDLow);
-    uint16 victimPvPRating = sPvPMgr->GetPvPRatingByGUIDLow(victimGUIDLow);
-
-    ratingGain = sPvPMgr->CalculatePvPRating(attackerPvPRating, victimPvPRating, true);
-
-    if (ratingGain)
-    {
-        sPvPMgr->SetPvPRatingByGUIDLow(attackerGUIDLow, attackerPvPRating + ratingGain);
-
-        if (Player* attacker = sObjectMgr->GetPlayerByLowGUID(attackerGUIDLow))
-            if (attacker->HasPvPNotificationsEnabled())
-                ChatHandler(attacker->GetSession()).PSendSysMessage("You have been awarded %u PvP rating for killing %s.", ratingGain, GetName());
-    }
-
-    ratingLoss = sPvPMgr->CalculatePvPRating(attackerPvPRating, victimPvPRating, false);
-
-    if (ratingLoss)
-    {
-        sPvPMgr->SetPvPRatingByGUIDLow(victimGUIDLow, victimPvPRating - ratingLoss);
-
-        if (HasPvPNotificationsEnabled())
-        {
-            std::string attackerName = "";
-            sObjectMgr->GetPlayerNameByGUIDLow(attackerGUIDLow, attackerName);
-            ChatHandler(m_session).PSendSysMessage("You have been deducted %u PvP rating for being killed by %s.", ratingLoss, attackerName.c_str());
-        }
     }
 }
 

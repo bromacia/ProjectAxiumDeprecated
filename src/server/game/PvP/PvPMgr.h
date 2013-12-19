@@ -52,7 +52,6 @@ class PvPMgr
         ~PvPMgr();
 
     public:
-        void HandleTwinSpireCapture(TeamId team);
         uint8 CalculatePvPRating(uint16 attackerRating, uint16 victimRating, bool gain);
         uint8 ApplyPvPRatingMultipliers(float rating, uint8 ratingChange, bool gain);
 

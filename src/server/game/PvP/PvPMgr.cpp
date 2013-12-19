@@ -12,10 +12,6 @@ PvPMgr::~PvPMgr()
 {
 }
 
-void PvPMgr::HandleTwinSpireCapture(TeamId team)
-{
-}
-
 uint8 PvPMgr::CalculatePvPRating(uint16 attackerRating, uint16 victimRating, bool gain)
 {
     uint8 ratingChange = 0;
