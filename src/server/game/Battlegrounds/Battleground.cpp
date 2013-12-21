@@ -1432,8 +1432,6 @@ void Battleground::UpdatePlayerScore(Player* Source, uint32 type, uint32 value, 
             break;
         case SCORE_HONORABLE_KILLS:                         // Honorable kills
             itr->second->HonorableKills += value;
-            if (isBattleground())
-                Source->HandleBattlegroundHonorableKill();
             break;
         case SCORE_BONUS_HONOR:                             // Honor bonus
             // do not add honor in arenas

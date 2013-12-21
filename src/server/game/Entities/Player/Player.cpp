@@ -26055,19 +26055,6 @@ void Player::SetArenaSpectatorState(bool apply)
     }
 }
 
-void Player::HandleBattlegroundHonorableKill()
-{
-    if (!IsHealingSpec())
-        return;
-
-    uint16 ratingGain = GetPvPRating() + 1;
-    sPvPMgr->SetPvPRatingByGUIDLow(GetGUIDLow(), ratingGain);
-    AddItem(43589, 1);
-
-    if (HasPvPNotificationsEnabled())
-        ChatHandler(m_session).PSendSysMessage("You have been awarded 1 PvP rating and 1 World PvP Token for assisting in an honorable kill.");
-}
-
 void Player::BuyWorldPvPItem(Creature* creature, const ItemTemplate* vItemTemplate, uint32 itemId, uint32 vendorSlot, uint8 count, uint8 bagSlot)
 {
     if (!CheckExtendedCost2(vItemTemplate))

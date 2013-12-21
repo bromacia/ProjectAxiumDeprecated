@@ -2697,10 +2697,6 @@ class Player : public Unit, public GridObject<Player>
         void SetArenaSpectator(bool x) { m_arenaSpectator = x; }
         void SetArenaSpectatorState(bool apply);
 
-        void HandleDealDamage(Unit* attacker, uint32 damage);
-        void HandlePvPKill();
-        void HandleBattlegroundHonorableKill();
-
         uint8 GetGossipPage() const { return m_gossipPage; }
         void SetGossipPage(uint8 page) { m_gossipPage = page; }
         void IncrementGossipPage() { ++m_gossipPage; }
