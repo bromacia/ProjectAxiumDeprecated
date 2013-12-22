@@ -2656,11 +2656,6 @@ class Player : public Unit, public GridObject<Player>
         uint16 Get5v5MMR() const { return m_5v5MMR; }
         void Set5v5MMR(uint16 mmr) { m_5v5MMR = mmr; }
 
-        uint16 GetPvPRating() const { return m_PvPRating; }
-        void SetPvPRating(uint16 rating) { m_PvPRating = rating; }
-        uint16 GetLifetimePvPRating() const { return m_LifetimePvPRating; }
-        void SetLifetimePvPRating(uint16 rating) { m_LifetimePvPRating = rating; }
-
         uint16 GetLifetime2v2Rating() const { return m_Lifetime2v2Rating; }
         void SetLifetime2v2Rating(uint16 rating) { m_Lifetime2v2Rating = rating; }
         uint16 GetLifetime2v2MMR() const { return m_Lifetime2v2MMR; }
@@ -2687,9 +2682,6 @@ class Player : public Unit, public GridObject<Player>
         void SetLifetime5v5Wins(uint16 wins) { m_Lifetime5v5Wins = wins; }
         uint16 GetLifetime5v5Games() const { return m_Lifetime5v5Games; }
         void SetLifetime5v5Games(uint16 games) { m_Lifetime5v5Games = games; }
-
-        bool HasPvPNotificationsEnabled() const { return m_PvPNotificationsEnabled; }
-        void SetPvPNotificationsEnabled(bool x) { m_PvPNotificationsEnabled = x; }
 
         bool HasDelayedOperation(uint32 operation) { return (m_DelayedOperations & operation); }
 
@@ -3090,9 +3082,6 @@ class Player : public Unit, public GridObject<Player>
         uint16 m_3v3MMR;
         uint16 m_5v5MMR;
 
-        uint16 m_PvPRating;
-        uint16 m_LifetimePvPRating;
-
         uint16 m_Lifetime2v2Rating;
         uint16 m_Lifetime2v2MMR;
         uint16 m_Lifetime2v2Wins;
@@ -3107,8 +3096,6 @@ class Player : public Unit, public GridObject<Player>
         uint16 m_Lifetime5v5MMR;
         uint16 m_Lifetime5v5Wins;
         uint16 m_Lifetime5v5Games;
-
-        bool m_PvPNotificationsEnabled;
 
         bool m_delayDuelFinish;
 

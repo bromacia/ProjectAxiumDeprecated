@@ -76,7 +76,6 @@
 #include "DuelMgr.h"
 #include "../../../scripts/Custom/MallMgr.h"
 #include "../../../scripts/Custom/TransmogMgr.h"
-#include "../../../scripts/Custom/npc_world_pvp.cpp"
 
 #define ZONE_UPDATE_INTERVAL (1*IN_MILLISECONDS)
 
@@ -891,14 +890,10 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     lastTeleportTime = 0;
 
     m_isFrozen = false;
-    m_PvPNotificationsEnabled = true;
 
     m_2v2MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
     m_3v3MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
     m_5v5MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
-
-    m_PvPRating = 0;
-    m_LifetimePvPRating = 0;
 
     m_Lifetime2v2Rating = 0;
     m_Lifetime2v2MMR = 0;
@@ -16503,13 +16498,11 @@ void Player::_LoadMatchMakerRating()
 
 void Player::_LoadPvPStats()
 {
-                                               //        0           1
-   QueryResult result = CharacterDatabase.PQuery("SELECT PvPRating, LifetimePvPRating, "
-                                               // 2                  3               4                5
-                                                 "Lifetime2v2Rating, Lifetime2v2MMR, Lifetime2v2Wins, Lifetime2v2Games, "
-                                               // 6                  7               8                9
+                                               //        0                  1               2                3
+   QueryResult result = CharacterDatabase.PQuery("SELECT Lifetime2v2Rating, Lifetime2v2MMR, Lifetime2v2Wins, Lifetime2v2Games, "
+                                               // 4                  5               6                7
                                                  "Lifetime3v3Rating, Lifetime3v3MMR, Lifetime3v3Wins, Lifetime3v3Games, "
-                                               // 10                 11              12               13
+                                               // 8                  9               10               11
                                                  "Lifetime5v5Rating, Lifetime5v5MMR, Lifetime5v5Wins, Lifetime5v5Games "
                                                  "FROM character_pvp_stats WHERE guid = %u", GetGUIDLow());
 
@@ -16520,23 +16513,21 @@ void Player::_LoadPvPStats()
     }
 
     Field* fields = result->Fetch();
-    m_PvPRating = fields[0].GetUInt16();
-    m_LifetimePvPRating = fields[1].GetUInt16();
 
-    m_Lifetime2v2Rating = fields[2].GetUInt16();
-    m_Lifetime2v2MMR = fields[3].GetUInt16();
-    m_Lifetime2v2Wins = fields[4].GetUInt16();
-    m_Lifetime2v2Games = fields[5].GetUInt16();
+    m_Lifetime2v2Rating = fields[0].GetUInt16();
+    m_Lifetime2v2MMR = fields[1].GetUInt16();
+    m_Lifetime2v2Wins = fields[2].GetUInt16();
+    m_Lifetime2v2Games = fields[3].GetUInt16();
 
-    m_Lifetime3v3Rating = fields[6].GetUInt16();
-    m_Lifetime3v3MMR = fields[7].GetUInt16();
-    m_Lifetime3v3Wins = fields[8].GetUInt16();
-    m_Lifetime3v3Games = fields[9].GetUInt16();
+    m_Lifetime3v3Rating = fields[4].GetUInt16();
+    m_Lifetime3v3MMR = fields[5].GetUInt16();
+    m_Lifetime3v3Wins = fields[6].GetUInt16();
+    m_Lifetime3v3Games = fields[7].GetUInt16();
 
-    m_Lifetime5v5Rating = fields[10].GetUInt16();
-    m_Lifetime5v5MMR = fields[11].GetUInt16();
-    m_Lifetime5v5Wins = fields[12].GetUInt16();
-    m_Lifetime5v5Games = fields[13].GetUInt16();
+    m_Lifetime5v5Rating = fields[8].GetUInt16();
+    m_Lifetime5v5MMR = fields[9].GetUInt16();
+    m_Lifetime5v5Wins = fields[10].GetUInt16();
+    m_Lifetime5v5Games = fields[11].GetUInt16();
                                                  
 }
 
@@ -17300,8 +17291,6 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     m_vip = fields[67].GetBool();
 
     m_isFrozen = fields[68].GetBool();
-
-    m_PvPNotificationsEnabled = fields[69].GetBool();
 
     m_playerSpec = GetTalentSpec();
 
@@ -18794,7 +18783,6 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setString(index++, ss.str());
         stmt->setUInt8(index++, GetByteValue(PLAYER_FIELD_BYTES, 2));
         stmt->setUInt32(index++, m_grantableLevels);
-        stmt->setBool(index++, m_PvPNotificationsEnabled);
     }
     else
     {
@@ -18908,8 +18896,6 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt32(index++, m_grantableLevels);
 
         stmt->setUInt8(index++, IsInWorld() ? 1 : 0);
-
-        stmt->setBool(index++, m_PvPNotificationsEnabled);
 
         stmt->setUInt32(index++, m_playerSpec);
 
@@ -25693,10 +25679,6 @@ bool Player::CheckExtendedCost2(const ItemTemplate* vItemTemplate)
 {
     ExtendedCost2 extendedCost2 = sObjectMgr->GetExtendedCost2Map()[vItemTemplate->ExtendedCost2];
 
-    if (extendedCost2.Required_PvP_Rating)
-        if (sPvPMgr->GetLifetimePvPRatingByGUIDLow(GetGUIDLow()) < extendedCost2.Required_PvP_Rating)
-            return false;
-
     if (extendedCost2.Required_2v2_Rating)
         if (sPvPMgr->GetLifetime2v2RatingByGUIDLow(GetGUIDLow()) < extendedCost2.Required_2v2_Rating)
             return false;
@@ -25735,21 +25717,10 @@ std::string Player::CreateExtendedCost2ErrorMessage(uint32 extendedCost2Id)
     std::stringstream message;
     bool firstMessageAdded = false;
 
-    if (extendedCost2.Required_PvP_Rating)
-    {
-        message << "PvP Rating: " << extendedCost2.Required_PvP_Rating;
-        firstMessageAdded = true;
-    }
-
     if (extendedCost2.Required_2v2_Rating)
     {
-        if (firstMessageAdded)
-            message << " & ";
-
         message << "2v2 Rating: " << extendedCost2.Required_2v2_Rating;
-
-        if (!firstMessageAdded)
-            firstMessageAdded = true;
+        firstMessageAdded = true;
     }
 
     if (extendedCost2.Required_3v3_Rating)

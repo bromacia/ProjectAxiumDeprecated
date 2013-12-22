@@ -1,74 +1,6 @@
 #include "PvPMgr.h"
 #include "Player.h"
-#include "Battleground.h"
 #include "ObjectMgr.h"
-#include "Chat.h"
-
-PvPMgr::PvPMgr()
-{
-}
-
-PvPMgr::~PvPMgr()
-{
-}
-
-uint8 PvPMgr::CalculatePvPRating(uint16 attackerRating, uint16 victimRating, bool gain)
-{
-    uint8 ratingChange = 0;
-
-    if (gain)
-    {
-        if (victimRating)
-            ratingChange = victimRating / 100;
-        else
-            ratingChange = 10;
-
-        if (ratingChange < 10)
-            ratingChange = 10;
-
-        if (attackerRating > 2000)
-            ratingChange = ApplyPvPRatingMultipliers((float)attackerRating, ratingChange, true);
-    }
-    else
-    {
-        if (victimRating <= 1000)
-            return 0;
-
-        if (victimRating)
-            ratingChange = victimRating / 100;
-        else
-            ratingChange = 5;
-
-        if (ratingChange < 5)
-            ratingChange = 5;
-
-        ratingChange = ApplyPvPRatingMultipliers((float)victimRating, ratingChange, false);
-    }
-
-    if (ratingChange > 100)
-        ratingChange = 100;
-
-    return ratingChange;
-}
-
-uint8 PvPMgr::ApplyPvPRatingMultipliers(float rating, uint8 ratingChange, bool gain)
-{
-    float ratingMod = 0;
-
-    if (gain)
-    {
-        if (rating >= 10000)
-            return 0;
-
-        ratingMod = ((100 - (rating / 100)) / 100);
-        return ratingChange *= ratingMod;
-    }
-    else
-    {
-        ratingMod = rating / 10000;
-        return ratingChange *= ratingMod;
-    }
-}
 
 uint16 PvPMgr::Get2v2MMRByGUIDLow(uint32 GUIDLow) const
 {
@@ -143,53 +75,6 @@ void PvPMgr::Set5v5MMRByGUIDLow(uint32 GUIDLow, uint16 mmr)
 
     if (mmr > GetLifetime5v5MMRByGUIDLow(GUIDLow))
         SetLifetime5v5MMRByGUIDLow(GUIDLow, mmr);
-}
-
-uint16 PvPMgr::GetPvPRatingByGUIDLow(uint32 GUIDLow) const
-{
-    if (Player* player = sObjectMgr->GetPlayerByLowGUID(GUIDLow))
-        return player->GetPvPRating();
-    else
-    {
-        QueryResult result = CharacterDatabase.PQuery("SELECT PvPRating FROM character_pvp_stats WHERE guid = '%u'", GUIDLow);
-        if (!result)
-            return 0;
-
-        return (*result)[0].GetUInt16();
-    }
-}
-
-void PvPMgr::SetPvPRatingByGUIDLow(uint32 GUIDLow, uint16 rating)
-{
-    if (Player* player = sObjectMgr->GetPlayerByLowGUID(GUIDLow))
-        player->SetPvPRating(rating);
-
-    CharacterDatabase.PExecute("UPDATE character_pvp_stats SET PvPRating = '%u' WHERE guid = '%u'", rating, GUIDLow);
-
-    if (rating > GetLifetimePvPRatingByGUIDLow(GUIDLow))
-        SetLifetimePvPRatingByGUIDLow(GUIDLow, rating);
-}
-
-uint16 PvPMgr::GetLifetimePvPRatingByGUIDLow(uint32 GUIDLow) const
-{
-    if (Player* player = sObjectMgr->GetPlayerByLowGUID(GUIDLow))
-        return player->GetLifetimePvPRating();
-    else
-    {
-        QueryResult result = CharacterDatabase.PQuery("SELECT LifetimePvPRating FROM character_pvp_stats WHERE guid = '%u'", GUIDLow);
-        if (!result)
-            return 0;
-
-        return (*result)[0].GetUInt16();
-    }
-}
-
-void PvPMgr::SetLifetimePvPRatingByGUIDLow(uint32 GUIDLow, uint16 rating)
-{
-    if (Player* player = sObjectMgr->GetPlayerByLowGUID(GUIDLow))
-        player->SetLifetimePvPRating(rating);
-
-    CharacterDatabase.PExecute("UPDATE character_pvp_stats SET LifetimePvPRating = '%u' WHERE guid = '%u'", rating, GUIDLow);
 }
 
 uint16 PvPMgr::GetLifetime2v2RatingByGUIDLow(uint32 GUIDLow) const

@@ -61,7 +61,6 @@ public:
             { "morph",          SEC_GAMEMASTER,     false, &HandleModifyMorphCommand,         "", NULL },
             { "phase",          SEC_ADMINISTRATOR,  false, &HandleModifyPhaseCommand,         "", NULL },
             { "gender",         SEC_GAMEMASTER,     false, &HandleModifyGenderCommand,        "", NULL },
-            { "pvprating",      SEC_GAMEMASTER,     false, &HandleModifyPvPRatingCommand,     "", NULL },
             { NULL,             0,                  false, NULL,                              "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -1352,28 +1351,6 @@ public:
         if (handler->needReportToTarget(target))
             (ChatHandler(target)).PSendSysMessage(LANG_YOUR_GENDER_CHANGED, gender_full, handler->GetNameLink().c_str());
 
-        return true;
-    }
-
-    static bool HandleModifyPvPRatingCommand(ChatHandler* handler, const char* args)
-    {
-        if (!*args)
-            return false;
-
-        Player* target = handler->getSelectedPlayer();
-        if (!target)
-            return false;
-
-        char* ratingModArg = strtok((char*)args, " ");
-        if (!ratingModArg)
-            return false;
-
-        uint16 ratingMod = (uint16)atoi(ratingModArg);
-
-        if (ratingMod > 10000)
-            return false;
-
-        sPvPMgr->SetPvPRatingByGUIDLow(target->GetGUIDLow(), ratingMod);
         return true;
     }
 };

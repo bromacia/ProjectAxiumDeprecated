@@ -4,12 +4,6 @@
 #include <ace/Singleton.h>
 
 class Player;
-class Battleground;
-class ChatHandler;
-
-#define DAMAGE_RESET_TIME_MS 10000
-#define BG_RATING_GAIN 50
-#define BG_RATING_LOSS 25
 
 enum PvPTitle
 {
@@ -48,24 +42,16 @@ class PvPMgr
     friend class ACE_Singleton<PvPMgr, ACE_Null_Mutex>;
 
     private:
-        PvPMgr();
-        ~PvPMgr();
+        PvPMgr() {}
+        ~PvPMgr() {}
 
     public:
-        uint8 CalculatePvPRating(uint16 attackerRating, uint16 victimRating, bool gain);
-        uint8 ApplyPvPRatingMultipliers(float rating, uint8 ratingChange, bool gain);
-
         uint16 Get2v2MMRByGUIDLow(uint32 GUIDLow) const;
         void Set2v2MMRByGUIDLow(uint32 GUIDLow, uint16 mmr);
         uint16 Get3v3MMRByGUIDLow(uint32 GUIDLow) const;
         void Set3v3MMRByGUIDLow(uint32 GUIDLow, uint16 mmr);
         uint16 Get5v5MMRByGUIDLow(uint32 GUIDLow) const;
         void Set5v5MMRByGUIDLow(uint32 GUIDLow, uint16 mmr);
-
-        uint16 GetPvPRatingByGUIDLow(uint32 GUIDLow) const;
-        void SetPvPRatingByGUIDLow(uint32 GUIDLow, uint16 rating);
-        uint16 GetLifetimePvPRatingByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetimePvPRatingByGUIDLow(uint32 GUIDLow, uint16 rating);
 
         uint16 GetLifetime2v2RatingByGUIDLow(uint32 GUIDLow) const;
         void SetLifetime2v2RatingByGUIDLow(uint32 GUIDLow, uint16 rating);

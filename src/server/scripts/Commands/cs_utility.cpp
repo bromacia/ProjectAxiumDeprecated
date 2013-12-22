@@ -33,6 +33,7 @@ public:
             { "bank",             SEC_PLAYER,         false, &HandleBankCommand,                      "", NULL },
             { "mailbox",          SEC_PLAYER,         false, &HandleMailboxCommand,                   "", NULL },
             { "arenaqueue",       SEC_PLAYER,         false, &HandleArenaQueueCommand,                "", NULL },
+            { "mmr",              SEC_PLAYER,         false, &HandleMMRCommand,                       "", NULL },
             { NULL,               0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -772,6 +773,25 @@ public:
     static bool HandleArenaQueueCommand(ChatHandler* handler, const char* /*args*/)
     {
         handler->GetSession()->SendBattlegGroundList(handler->GetSession()->GetPlayer()->GetGUID(), BATTLEGROUND_AA);
+        return true;
+    }
+
+    static bool HandleMMRCommand(ChatHandler* handler, const char* args)
+    {
+        uint64 targetGUID;
+        std::string targetName;
+
+        uint32 parseGUID = MAKE_NEW_GUID(atol((char*)args), 0, HIGHGUID_PLAYER);
+
+        if (sObjectMgr->GetPlayerNameByGUID(parseGUID, targetName))
+            targetGUID = parseGUID;
+        else if (!handler->extractPlayerTarget((char*)args, 0, &targetGUID, &targetName))
+            return false;
+
+        handler->PSendSysMessage("Player: %s", targetName.c_str());
+        handler->PSendSysMessage("2v2 MMR: %u", sPvPMgr->Get2v2MMRByGUIDLow(GUID_LOPART(targetGUID)));
+        handler->PSendSysMessage("3v3 MMR: %u", sPvPMgr->Get3v3MMRByGUIDLow(GUID_LOPART(targetGUID)));
+        handler->PSendSysMessage("5v5 MMR: %u", sPvPMgr->Get5v5MMRByGUIDLow(GUID_LOPART(targetGUID)));
         return true;
     }
 };
