@@ -16652,8 +16652,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     //"arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk, "
     // 50      51      52      53      54      55      56      57      58           59         60          61             62              63      64           65
     //"health, power1, power2, power3, power4, power5, power6, power7, instance_id, speccount, activespec, exploredZones, equipmentCache, ammoId, knownTitles, actionBars, "
-    // 66               67   68        69
-    //"grantableLevels, vip, isFrozen, pvpNotificationsEnabled "
+    // 66               67   68
+    //"grantableLevels, vip, isFrozen "
     //"FROM characters WHERE guid = '%u'", guid);
     PreparedQueryResult result = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
