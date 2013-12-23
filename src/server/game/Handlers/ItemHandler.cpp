@@ -28,6 +28,7 @@
 #include "ObjectAccessor.h"
 #include "Spell.h"
 #include "SpellInfo.h"
+#include "ScriptMgr.h"
 
 void WorldSession::HandleSplitItemOpcode(WorldPacket & recv_data)
 {
@@ -463,28 +464,36 @@ void WorldSession::HandleReadItem(WorldPacket & recv_data)
 
     //sLog->outDetail("STORAGE: Read bag = %u, slot = %u", bag, slot);
     Item* pItem = _player->GetItemByPos(bag, slot);
-
-    if (pItem && pItem->GetTemplate()->PageText)
+    if (!pItem)
     {
-        WorldPacket data;
+        _player->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL);
+        return;
+    }
 
-        InventoryResult msg = _player->CanUseItem(pItem);
-        if (msg == EQUIP_ERR_OK)
-        {
-            data.Initialize (SMSG_READ_ITEM_OK, 8);
-            sLog->outDetail("STORAGE: Item page sent");
-        }
-        else
-        {
-            data.Initialize(SMSG_READ_ITEM_FAILED, 8);
-            sLog->outDetail("STORAGE: Unable to read item");
-            _player->SendEquipError(msg, pItem, NULL);
-        }
-        data << pItem->GetGUID();
-        SendPacket(&data);
+    if (!pItem->GetTemplate()->PageText)
+        return;
+
+    if (pItem->GetTemplate()->PageText == 1)
+        if (sScriptMgr->OnGossipHello(_player, pItem))
+            return;
+
+    WorldPacket data;
+
+    InventoryResult msg = _player->CanUseItem(pItem);
+    if (msg == EQUIP_ERR_OK)
+    {
+        data.Initialize (SMSG_READ_ITEM_OK, 8);
+        sLog->outDetail("STORAGE: Item page sent");
     }
     else
-        _player->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL);
+    {
+        data.Initialize(SMSG_READ_ITEM_FAILED, 8);
+        sLog->outDetail("STORAGE: Unable to read item");
+        _player->SendEquipError(msg, pItem, NULL);
+    }
+
+    data << pItem->GetGUID();
+    SendPacket(&data);
 }
 
 void WorldSession::HandlePageQuerySkippedOpcode(WorldPacket & recv_data)

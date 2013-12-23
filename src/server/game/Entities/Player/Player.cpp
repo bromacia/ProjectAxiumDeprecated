@@ -14072,7 +14072,7 @@ void Player::SendNewItem(Item* item, uint32 count, bool received, bool created, 
 /***                    GOSSIP SYSTEM                  ***/
 /*********************************************************/
 
-void Player::PrepareGossipMenu(WorldObject* source, uint32 menuId /*= 0*/, bool showQuests /*= false*/)
+void Player::PrepareGossipMenu(Object* source, uint32 menuId /*= 0*/, bool showQuests /*= false*/)
 {
     PlayerMenu* menu = PlayerTalkClass;
     menu->ClearMenus();
@@ -14217,7 +14217,7 @@ void Player::PrepareGossipMenu(WorldObject* source, uint32 menuId /*= 0*/, bool 
     }
 }
 
-void Player::SendPreparedGossip(WorldObject* source)
+void Player::SendPreparedGossip(Object* source)
 {
     if (!source)
         return;
@@ -14252,7 +14252,7 @@ void Player::SendPreparedGossip(WorldObject* source)
     PlayerTalkClass->SendGossipMenu(textId, source->GetGUID());
 }
 
-void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 menuId)
+void Player::OnGossipSelect(Object* source, uint32 gossipListId, uint32 menuId)
 {
     GossipMenu& gossipMenu = PlayerTalkClass->GetGossipMenu();
 
@@ -14386,7 +14386,7 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
     ModifyMoney(-cost);
 }
 
-uint32 Player::GetGossipTextId(WorldObject* source)
+uint32 Player::GetGossipTextId(Object* source)
 {
     if (!source)
         return DEFAULT_GOSSIP_MESSAGE;
@@ -14410,7 +14410,7 @@ uint32 Player::GetGossipTextId(uint32 menuId)
     return textId;
 }
 
-uint32 Player::GetDefaultGossipMenuForSource(WorldObject* source)
+uint32 Player::GetDefaultGossipMenuForSource(Object* source)
 {
     switch (source->GetTypeId())
     {

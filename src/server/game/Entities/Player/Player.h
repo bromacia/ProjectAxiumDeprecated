@@ -1439,13 +1439,13 @@ class Player : public Unit, public GridObject<Player>
         /***                    GOSSIP SYSTEM                  ***/
         /*********************************************************/
 
-        void PrepareGossipMenu(WorldObject* source, uint32 menuId = 0, bool showQuests = false);
-        void SendPreparedGossip(WorldObject* source);
-        void OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 menuId);
+        void PrepareGossipMenu(Object* source, uint32 menuId = 0, bool showQuests = false);
+        void SendPreparedGossip(Object* source);
+        void OnGossipSelect(Object* source, uint32 gossipListId, uint32 menuId);
 
         uint32 GetGossipTextId(uint32 menuId);
-        uint32 GetGossipTextId(WorldObject* source);
-        static uint32 GetDefaultGossipMenuForSource(WorldObject* source);
+        uint32 GetGossipTextId(Object* source);
+        static uint32 GetDefaultGossipMenuForSource(Object* source);
 
         /*********************************************************/
         /***                    QUEST SYSTEM                   ***/
