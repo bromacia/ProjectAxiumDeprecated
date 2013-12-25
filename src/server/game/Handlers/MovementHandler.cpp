@@ -298,7 +298,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
     if (plMover)
     {
-        if (plMover->HasUnitState(UNIT_STATE_CHARGING))
+        if (plMover->HasUnitMovementFlag(MOVEMENTFLAG_SPLINE_ENABLED))
         {
             recv_data.rfinish(); // prevent warnings spam
             return;

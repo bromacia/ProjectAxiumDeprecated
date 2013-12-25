@@ -323,9 +323,6 @@ void MotionMaster::MoveJump(float x, float y, float z, float speedXY, float spee
     float moveTimeHalf = speedZ / Movement::gravity;
     float max_height = -Movement::computeFallElevation(moveTimeHalf, false, -speedZ);
 
-    if (Player* player = i_owner->ToPlayer())
-        player->InterruptMovement(true);
-
     Movement::MoveSplineInit init(*i_owner);
     init.MoveTo(x, y, z);
     init.SetParabolic(max_height, 0);

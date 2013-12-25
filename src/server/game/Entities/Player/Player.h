@@ -2592,7 +2592,7 @@ class Player : public Unit, public GridObject<Player>
 
         uint32 lastEmoteTime;
 
-        void InterruptMovement(bool resetPosition = false);
+        void InterruptMovement();
 
         bool IsVIPAccount() const { if (GetSession()->GetSecurity() == SEC_VIP) return true; return false; }
         bool IsGameMaster() const { if (GetSession()->GetSecurity() == SEC_GAMEMASTER) return true; return false; }

@@ -25542,7 +25542,7 @@ bool Player::IsInWhisperWhiteList(uint64 guid)
     return false;
 }
 
-void Player::InterruptMovement(bool resetPosition)
+void Player::InterruptMovement()
 {
     WorldPacket data(MSG_MOVE_STOP, 8 + 4 + 4);
     m_movementInfo.guid = GetGUID();
@@ -25550,13 +25550,6 @@ void Player::InterruptMovement(bool resetPosition)
     m_movementInfo.time = getMSTime();
     GetSession()->WriteMovementInfo(&data, &m_movementInfo);
     SendMessageToSet(&data, true);
-
-    if (resetPosition)
-    {
-        float z = m_positionZ;
-        UpdateGroundOrWaterPositionZ(m_positionX, m_positionY, z);
-        TeleportTo(m_mapId, m_positionX, m_positionY, z, m_orientation);
-    }
 }
 
 void Player::_SaveTransmogItems()
