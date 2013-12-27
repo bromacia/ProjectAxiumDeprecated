@@ -2282,6 +2282,8 @@ class Unit : public WorldObject
 
         void SetRooted(bool apply);
 
+        void InterruptSpline(bool updateSpeed = false);
+
     protected:
         explicit Unit (bool isWorldObject);
 
@@ -2351,8 +2353,6 @@ class Unit : public WorldObject
 
         bool IsAlwaysVisibleFor(WorldObject const* seer) const;
         bool IsAlwaysDetectableFor(WorldObject const* seer) const;
-
-        void DisableSpline();
 
     private:
         bool IsTriggeredAtSpellProcEvent(Unit* pVictim, Aura* aura, SpellInfo const* procSpell, uint32 procFlag, uint32 procExtra, WeaponAttackType attType, bool isVictim, bool active, SpellProcEventEntry const* & spellProcEvent);

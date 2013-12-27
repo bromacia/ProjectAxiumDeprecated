@@ -197,10 +197,12 @@ template<>
 void ConfusedMovementGenerator<Player>::Finalize(Player &unit)
 {
     PathFinderMovementGenerator path(&unit);
+    path.Clear();
     unit.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
     unit.ClearUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
     unit.StopMoving();
-    path.Clear();
+    unit.InterruptSpline(true);
+
     if (unit.isPossessed())
     {
         if (Unit* charmer = unit.GetCharmer())
@@ -215,10 +217,12 @@ template<>
 void ConfusedMovementGenerator<Creature>::Finalize(Creature &unit)
 {
     PathFinderMovementGenerator path(&unit);
+    path.Clear();
     unit.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
     unit.ClearUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
     unit.StopMoving();
-    path.Clear();
+    unit.InterruptSpline(true);
+
     if (unit.getVictim())
         unit.SetTarget(unit.getVictim()->GetGUID());
 }

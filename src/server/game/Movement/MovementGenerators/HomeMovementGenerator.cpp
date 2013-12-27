@@ -66,6 +66,8 @@ bool HomeMovementGenerator<Creature>::Update(Creature &owner, const uint32 time_
 void HomeMovementGenerator<Creature>::Finalize(Creature &owner)
 {
     owner.ClearUnitState(UNIT_STATE_EVADE);
+    owner.InterruptSpline(true);
+
     if (arrived)
     {
         owner.SetWalk(true);

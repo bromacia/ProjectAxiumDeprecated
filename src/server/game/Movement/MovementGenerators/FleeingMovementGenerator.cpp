@@ -321,10 +321,12 @@ template<>
 void FleeingMovementGenerator<Player>::Finalize(Player &owner)
 {
     PathFinderMovementGenerator path(&owner);
+    path.Clear();
     owner.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
     owner.ClearUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
     owner.StopMoving();
-    path.Clear();
+    owner.InterruptSpline(true);
+
     if (owner.isPossessed())
     {
         if (Unit* charmer = owner.GetCharmer())
@@ -339,10 +341,12 @@ template<>
 void FleeingMovementGenerator<Creature>::Finalize(Creature &owner)
 {
     PathFinderMovementGenerator path(&owner);
-    owner.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
-    owner.ClearUnitState(UNIT_STATE_FLEEING | UNIT_STATE_ROAMING);
-    owner.StopMoving();
     path.Clear();
+    owner.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
+    owner.ClearUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
+    owner.StopMoving();
+    owner.InterruptSpline(true);
+
     if (owner.GetTypeId() == TYPEID_UNIT && owner.getVictim())
         owner.SetTarget(owner.getVictim()->GetGUID());
 }

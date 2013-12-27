@@ -423,12 +423,7 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
     bool arrived = movespline->Finalized();
 
     if (arrived)
-    {
-        DisableSpline();
-        UpdateSpeed(MOVE_RUN, false);
-        UpdateSpeed(MOVE_SWIM, false);
-        UpdateSpeed(MOVE_FLIGHT, false);
-    }
+        InterruptSpline(true);
 
     m_movesplineTimer.Update(t_diff);
     if (m_movesplineTimer.Passed() || arrived)
@@ -462,10 +457,17 @@ void Unit::UpdateSplinePosition()
     UpdatePosition(loc.x, loc.y, loc.z, loc.orientation);
 }
 
-void Unit::DisableSpline()
+void Unit::InterruptSpline(bool updateSpeed)
 {
     m_movementInfo.RemoveMovementFlag(MovementFlags(MOVEMENTFLAG_SPLINE_ENABLED|MOVEMENTFLAG_FORWARD));
     movespline->_Interrupt();
+
+    if (updateSpeed)
+    {
+        UpdateSpeed(MOVE_RUN, false);
+        UpdateSpeed(MOVE_SWIM, false);
+        UpdateSpeed(MOVE_FLIGHT, false);
+    }
 }
 
 void Unit::resetAttackTimer(WeaponAttackType type)
@@ -18243,7 +18245,7 @@ void Unit::SetFlying(bool apply)
 
 void Unit::NearTeleportTo(float x, float y, float z, float orientation, bool casting /*= false*/)
 {
-    DisableSpline();
+    InterruptSpline();
     if (GetTypeId() == TYPEID_PLAYER)
         ToPlayer()->TeleportTo(GetMapId(), x, y, z, orientation, TELE_TO_NOT_LEAVE_TRANSPORT | TELE_TO_NOT_LEAVE_COMBAT | TELE_TO_NOT_UNSUMMON_PET | (casting ? TELE_TO_SPELL : 0));
     else

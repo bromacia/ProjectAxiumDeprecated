@@ -156,6 +156,7 @@ template<class T>
 void PointMovementGenerator<T>::Finalize(T &unit)
 {
     unit.ClearUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE | UNIT_STATE_CHARGING);
+    unit.InterruptSpline(true);
 
     if (unit.movespline->Finalized())
         MovementInform(unit);
@@ -210,6 +211,8 @@ void EffectMovementGenerator::Finalize(Unit &unit)
 {
     if (unit.GetTypeId() != TYPEID_UNIT)
         return;
+
+    unit.InterruptSpline(true);
 
     if (((Creature&)unit).AI() && unit.movespline->Finalized())
         ((Creature&)unit).AI()->MovementInform(EFFECT_MOTION_TYPE, m_Id);

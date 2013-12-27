@@ -263,6 +263,7 @@ template<class T>
 void ChaseMovementGenerator<T>::Finalize(T &owner)
 {
     owner.ClearUnitState(UNIT_STATE_CHASE | UNIT_STATE_CHASE_MOVE);
+    owner.InterruptSpline(true);
 }
 
 template<class T>
