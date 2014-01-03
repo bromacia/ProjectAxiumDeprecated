@@ -1154,7 +1154,7 @@ void Unit::CalculateSpellDamageTaken(SpellNonMeleeDamage* damageInfo, int32 dama
     // Calculate absorb resist
     if (damage > 0)
     {
-        CalcAbsorbResist(victim, damageSchoolMask, SPELL_DIRECT_DAMAGE, damage, &damageInfo->absorb, &damageInfo->resist, spellInfo, calc_resist);
+        CalcAbsorbResist(victim, damageSchoolMask, SPELL_DIRECT_DAMAGE, damage, &damageInfo->absorb, &damageInfo->resist, spellInfo, calc_resist, &damageInfo->splitDamage);
         damage -= damageInfo->absorb + damageInfo->resist;
     }
     else
