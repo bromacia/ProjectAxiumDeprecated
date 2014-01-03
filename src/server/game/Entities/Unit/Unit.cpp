@@ -746,6 +746,18 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         return 0;
     }
 
+    // Roar of Sacrifice
+    if (victim->GetTypeId() == TYPEID_PLAYER && victim->HasAura(53480))
+    {
+        Guardian* pet = victim->GetGuardianPet();
+        if (pet && pet->isHunterPet())
+        {
+            uint32 petDamage = CalculatePctN(damage, 20);
+            SendSpellNonMeleeDamageLog(pet, 53480, petDamage, SPELL_SCHOOL_MASK_NATURE, 0, 0, false, 0, false);
+            victim->DealDamage(pet, petDamage, NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NATURE);
+        }
+    }
+
     sLog->outStaticDebug("DealDamageStart");
 
     uint32 health = victim->GetHealth();
