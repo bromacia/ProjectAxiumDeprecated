@@ -5124,7 +5124,9 @@ void ObjectMgr::LoadInstanceEncounters()
         }
 
         DungeonEncounterList& encounters = mDungeonEncounters[MAKE_PAIR32(dungeonEncounter->mapId, dungeonEncounter->difficulty)];
-        encounters.push_back(new DungeonEncounter(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
+        DungeonEncounter* de = new DungeonEncounter(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon);
+        encounters.push_back(de);
+        delete de;
         ++count;
     } while (result->NextRow());
 
