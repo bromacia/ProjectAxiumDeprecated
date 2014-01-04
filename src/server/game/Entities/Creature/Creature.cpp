@@ -463,17 +463,19 @@ void Creature::Update(uint32 diff)
             m_vehicleKit->Reset();
     }
 
+    bool inWater = IsInWater();
+
     if (cInfo->InhabitType & INHABIT_WATER)
-        if (IsInWater())
+        if (inWater)
             AddUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
 
-    if (!IsInWater())
+    if (!inWater)
         RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
 
     // Only trigger pet swimming if the owner is swimming aswell
     if (Unit* owner = GetCharmerOrOwner())
     {
-        if (IsInWater() && owner->HasUnitMovementFlag(MOVEMENTFLAG_SWIMMING))
+        if (inWater && owner->HasUnitMovementFlag(MOVEMENTFLAG_SWIMMING))
         {
             if (canSwim())
                 AddUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
