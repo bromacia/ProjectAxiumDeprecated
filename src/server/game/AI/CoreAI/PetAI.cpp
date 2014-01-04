@@ -248,7 +248,10 @@ void PetAI::UpdateAI(const uint32 diff)
                 if (spellInfo->HasEffect(SPELL_EFFECT_JUMP_DEST))
                 {
                     if (!spellUsed)
+                    {
+                        spell->finish(false);
                         delete spell;
+                    }
 
                     continue;
                 }
@@ -274,7 +277,10 @@ void PetAI::UpdateAI(const uint32 diff)
                 }
                 // No valid targets at all
                 if (!spellUsed)
+                {
+                    spell->finish(false);
                     delete spell;
+                }
             }
             else if (me->getVictim() && CanAttack(me->getVictim()) && spellInfo->CanBeUsedInCombat())
             {
@@ -282,7 +288,10 @@ void PetAI::UpdateAI(const uint32 diff)
                 if (spell->CanAutoCast(me->getVictim()))
                     targetSpellStore.push_back(std::make_pair(me->getVictim(), spell));
                 else
+                {
+                    spell->finish(false);
                     delete spell;
+                }
             }
         }
 

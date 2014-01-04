@@ -54,7 +54,7 @@ void TotemAI::EnterEvadeMode()
 void
 TotemAI::UpdateAI(const uint32 /*diff*/)
 {
-  if (me->ToTotem()->GetTotemType() != TOTEM_ACTIVE)
+    if (me->ToTotem()->GetTotemType() != TOTEM_ACTIVE)
         return;
 
     if (!me->isAlive() || me->IsNonMeleeSpellCasted(false))

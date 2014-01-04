@@ -590,6 +590,7 @@ Spell::~Spell()
     if (m_caster && m_caster->GetTypeId() == TYPEID_PLAYER)
         ASSERT(m_caster->ToPlayer()->m_spellModTakingSpell != this);
     delete m_spellValue;
+    delete m_preGeneratedPath;
 
     CheckEffectExecuteData();
 }
