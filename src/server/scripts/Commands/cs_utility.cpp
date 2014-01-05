@@ -34,6 +34,7 @@ public:
             { "mailbox",          SEC_PLAYER,         false, &HandleMailboxCommand,                   "", NULL },
             { "arenaqueue",       SEC_PLAYER,         false, &HandleArenaQueueCommand,                "", NULL },
             { "mmr",              SEC_PLAYER,         false, &HandleMMRCommand,                       "", NULL },
+            { "commentator",      SEC_GAMEMASTER,     false, &HandleCommentatorCommand,               "", NULL },
             { NULL,               0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -792,6 +793,12 @@ public:
         handler->PSendSysMessage("2v2 MMR: %u", sPvPMgr->Get2v2MMRByGUIDLow(GUID_LOPART(targetGUID)));
         handler->PSendSysMessage("3v3 MMR: %u", sPvPMgr->Get3v3MMRByGUIDLow(GUID_LOPART(targetGUID)));
         handler->PSendSysMessage("5v5 MMR: %u", sPvPMgr->Get5v5MMRByGUIDLow(GUID_LOPART(targetGUID)));
+        return true;
+    }
+
+    static bool HandleCommentatorCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        handler->GetSession()->GetPlayer()->ToggleFlag(PLAYER_FLAGS, 4718592);
         return true;
     }
 };
