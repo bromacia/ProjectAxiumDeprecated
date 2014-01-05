@@ -209,7 +209,7 @@ void FlightPathMovementGenerator::Finalize(Player &player)
     player.Dismount();
     player.RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_DISABLE_MOVE | UNIT_FLAG_TAXI_FLIGHT);
 
-    if(player.m_taxi.empty())
+    if (player.m_taxi.empty())
     {
         player.getHostileRefManager().setOnlineOfflineState(true);
         if(player.pvpInfo.inHostileArea)

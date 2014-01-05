@@ -85,6 +85,7 @@ void SmartWaypointMgr::LoadFromDB()
         }
         last_entry = entry;
         total++;
+        delete wp;
     }
     while (result->NextRow());
 
