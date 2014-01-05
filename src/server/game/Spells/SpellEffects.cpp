@@ -299,8 +299,9 @@ void Spell::EffectEnvironmentalDMG(SpellEffIndex /*effIndex*/)
 
     uint32 absorb = 0;
     uint32 resist = 0;
+    bool splitDamage = false;
 
-    m_caster->CalcAbsorbResist(unitTarget, m_spellInfo->GetSchoolMask(), SPELL_DIRECT_DAMAGE, damage, &absorb, &resist, m_spellInfo);
+    m_caster->CalcAbsorbResist(unitTarget, m_spellInfo->GetSchoolMask(), SPELL_DIRECT_DAMAGE, damage, &absorb, &resist, m_spellInfo, -1, &splitDamage);
 
     m_caster->SendSpellNonMeleeDamageLog(unitTarget, m_spellInfo->Id, damage, m_spellInfo->GetSchoolMask(), absorb, resist, false, 0, false);
     if (unitTarget->GetTypeId() == TYPEID_PLAYER)
@@ -2403,8 +2404,9 @@ void Spell::EffectHealthLeech(SpellEffIndex effIndex)
 
     uint32 absorb = 0;
     uint32 resist = 0;
+    bool splitDamage = false;
 
-    m_caster->CalcAbsorbResist(unitTarget, m_spellInfo->GetSchoolMask(), SPELL_DIRECT_DAMAGE, uint32(m_damage), &absorb, &resist, m_spellInfo);
+    m_caster->CalcAbsorbResist(unitTarget, m_spellInfo->GetSchoolMask(), SPELL_DIRECT_DAMAGE, uint32(m_damage), &absorb, &resist, m_spellInfo, -1, &splitDamage);
 
     damage = (damage <= int32(absorb) + int32(resist)) ? 0 : (damage - int32(absorb) - int32(resist));
 

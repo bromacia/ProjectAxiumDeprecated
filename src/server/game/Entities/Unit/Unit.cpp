@@ -1989,8 +1989,7 @@ void Unit::CalcAbsorbResist(Unit* victim, SpellSchoolMask schoolMask, DamageEffe
 
     *resist = dmgInfo.GetResist();
     *absorb = dmgInfo.GetAbsorb();
-    if (splitDamage)
-        *splitDamage = dmgInfo.m_splitDamage;
+    *splitDamage = dmgInfo.m_splitDamage;
 }
 
 void Unit::CalcHealAbsorb(Unit* victim, const SpellInfo* healSpell, uint32 &healAmount, uint32 &absorb)
