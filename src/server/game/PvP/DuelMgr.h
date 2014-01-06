@@ -16,10 +16,9 @@ class DuelMgr
     public:
         void HandleDuelStart(Player* initiator, Player* opponent);
         void HandleDuelEnd(Player* winner, Player* loser, DuelCompleteType type);
-
     private:
-        void HandlePlayerState(Player* player, bool save);
-        bool CheckAura(const SpellInfo* spellInfo);
+        void ResetPlayer(Player* player);
+        void ResetPet(Pet* pet, Player* owner);
 };
 
 #define sDuelMgr ACE_Singleton<DuelMgr, ACE_Null_Mutex>::instance()

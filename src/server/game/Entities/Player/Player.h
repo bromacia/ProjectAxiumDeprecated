@@ -1126,14 +1126,6 @@ typedef std::map<uint32, TransmogItemInformation> TransmogItemsSaveQueue;
 typedef std::map<uint8, uint32> TransmogSetItemMap;
 typedef std::map<uint8, TransmogSetItemMap> TransmogSets;
 
-struct PlayerState
-{
-    uint32 Health;
-    uint32 Mana;
-    Unit::AuraApplicationMap Auras;
-    SpellCooldowns Cooldowns;
-};
-
 class Player : public Unit, public GridObject<Player>
 {
     friend class WorldSession;
@@ -2646,8 +2638,6 @@ class Player : public Unit, public GridObject<Player>
 
         bool IsFrozen() const { return m_isFrozen; }
         void SetIsFrozen(bool x) { m_isFrozen = x; }
-
-        PlayerState playerState;
 
         uint16 Get2v2MMR() const { return m_2v2MMR; }
         void Set2v2MMR(uint16 mmr) { m_2v2MMR = mmr; }

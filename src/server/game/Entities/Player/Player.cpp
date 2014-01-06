@@ -910,11 +910,6 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_Lifetime5v5Wins = 0;
     m_Lifetime5v5Games = 0;
 
-    playerState.Health = 0;
-    playerState.Mana = 0;
-    playerState.Auras.clear();
-    playerState.Cooldowns.clear();
-
     m_delayDuelFinish = false;
 
     m_arenaSpectator = false;
