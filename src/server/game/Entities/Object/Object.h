@@ -833,9 +833,6 @@ class WorldObject : public Object, public WorldLocation
 
         MovementInfo m_movementInfo;
 
-        bool IsInWorldPvPZone() const { return GetZoneId() == 3521 || GetAreaId() == 3521; }
-        bool IsInWorldPvPZoneMall() const { return GetAreaId() == 3668; }
-
     protected:
         std::string m_name;
         bool m_isActive;

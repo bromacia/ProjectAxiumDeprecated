@@ -464,7 +464,6 @@ class Creature : public Unit, public GridObject<Creature>, public MapCreature
         bool IsMallNPC() const;
         bool IsTransmogrifier() const;
         bool IsClassTrainer() const;
-        bool IsWorldPvPNPC() const;
         bool canWalk() const { return GetCreatureInfo()->InhabitType & INHABIT_GROUND; }
         virtual bool canSwim() const { return GetCreatureInfo()->InhabitType & INHABIT_WATER; }
         //bool canFly()  const { return GetCreatureInfo()->InhabitType & INHABIT_AIR; }

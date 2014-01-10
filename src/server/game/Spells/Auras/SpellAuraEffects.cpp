@@ -5083,10 +5083,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                         case 58600: // Restricted Flight Area
                             // TODO: Handle world pvp zone flight prevention on area change to further prevent any kind of abuse
                             if (aurApp->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
-                                if (caster->ToPlayer()->GetMapId() == 530)
-                                    caster->ToPlayer()->TeleportTo(530, -389.221f, 7257.6f, 54.774f, 3.0f);
-                                else
-                                    caster->ToPlayer()->CastSpell(caster->ToPlayer(), 58601, true, NULL, this);
+                                caster->ToPlayer()->CastSpell(caster->ToPlayer(), 58601, true, NULL, this);
                             break;
                         case 200000: // Object Visibility Update Timer (Stealth, At Apply)
                         case 200002: // Object Visibility Update Timer (Invisibility, At Apply)

@@ -1666,7 +1666,7 @@ bool WorldObject::canSeeOrDetect(WorldObject const* obj, bool ignoreStealth, boo
         bool corpseCheck = false;
         if (Player const* thisPlayer = ToPlayer())
         {
-            if (thisPlayer->isDead() && thisPlayer->GetHealth() > 0 && // Cheap way to check for ghost state
+            if (thisPlayer->isDead() && thisPlayer->GetHealth() > 0 &&
                 !(obj->m_serverSideVisibility.GetValue(SERVERSIDE_VISIBILITY_GHOST) & m_serverSideVisibility.GetValue(SERVERSIDE_VISIBILITY_GHOST) & GHOST_VISIBILITY_GHOST))
             {
                 if (Corpse* corpse = thisPlayer->GetCorpse())
@@ -1689,11 +1689,6 @@ bool WorldObject::canSeeOrDetect(WorldObject const* obj, bool ignoreStealth, boo
         if (!corpseCheck && !viewpoint->IsWithinDist(obj, GetSightRange(obj), false))
             return false;
     }
-
-    if (const Player* pObj = obj->ToPlayer())
-        if (pObj->IsArenaSpectator())
-            if (!m_serverSideVisibilityDetect.GetValue(SERVERSIDE_VISIBILITY_GM))
-                return false;
 
     // GM visibility off or hidden NPC
     if (!obj->m_serverSideVisibility.GetValue(SERVERSIDE_VISIBILITY_GM))
@@ -1742,6 +1737,10 @@ bool WorldObject::CanDetect(WorldObject const* obj, bool ignoreStealth) const
 
     if (obj->IsAlwaysDetectableFor(seer))
         return true;
+
+    if (const Player* pObj = obj->ToPlayer())
+        if (pObj->IsInMall() || pObj->IsArenaSpectator())
+            return false;
 
     if (!ignoreStealth && !seer->CanDetectInvisibilityOf(obj))
         return false;

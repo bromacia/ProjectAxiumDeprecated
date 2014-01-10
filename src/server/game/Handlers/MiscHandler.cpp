@@ -75,22 +75,11 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
         _player->KillPlayer();
     }
 
-    // Release Spirit
-    if (_player->IsInWorldPvPZone())
-    {
-        _player->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
-        _player->ResurrectPlayer(1.0f);
-        _player->SpawnCorpseBones();
-        _player->CastSpell(_player, 30231, true);
-        _player->TeleportTo(530, -388.62f, 7257.59f, 54.77f, 6.2f);
-        return;
-    }
-    else if (_player->InBattleground() || _player->InArena())
+    if (_player->InBattleground() || _player->InArena())
     {
         _player->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
         _player->BuildPlayerRepop();
         _player->RepopAtGraveyard();
-        return;
     }
     else
     {
@@ -100,7 +89,6 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
         _player->ResurrectPlayer(1.0f);
         _player->SpawnCorpseBones();
         _player->SaveToDB();
-        return;
     }
 }
 
@@ -418,49 +406,43 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket & /*recv_data*/)
     if (uint64 lguid = _player->GetLootGUID())
         DoLootRelease(lguid);
 
-    uint8 reason = 0;
-
     if (_player->isInCombat())
-        reason = 1;
-
-    if (reason)
     {
         WorldPacket data(SMSG_LOGOUT_RESPONSE, 1+4);
-        data << uint8(reason);
+        data << uint8(1);
         data << uint32(0);
         SendPacket(&data);
         LogoutRequest(0);
         return;
     }
 
-    // Instant logout in taverns/cities or on taxi or for admins, gm's, mod's if its enabled in worldserver.conf and not in zangarmarsh if player
-    if (_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_RESTING) || _player->isInFlight() || ((!_player->IsInWorldPvPZone() || _player->IsInWorldPvPZoneMall()) || _player->GetSession()->GetSecurity() >= SEC_GAMEMASTER))
+    if (_player->InBattleground())
     {
+        // not set flags if player can't free move to prevent lost state at logout cancel
+        if (_player->CanFreeMove())
+        {
+            _player->SetStandState(UNIT_STAND_STATE_SIT);
+
+            WorldPacket data(SMSG_FORCE_MOVE_ROOT, (8+4));    // guess size
+            data.append(_player->GetPackGUID());
+            data << (uint32)2;
+            SendPacket(&data);
+            _player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
+        }
+
         WorldPacket data(SMSG_LOGOUT_RESPONSE, 1+4);
         data << uint8(0);
-        data << uint32(16777216);
+        data << uint32(0);
         SendPacket(&data);
-        LogoutPlayer(true);
+        LogoutRequest(time(NULL));
         return;
-    }
-
-    // not set flags if player can't free move to prevent lost state at logout cancel
-    if (_player->CanFreeMove())
-    {
-        _player->SetStandState(UNIT_STAND_STATE_SIT);
-
-        WorldPacket data(SMSG_FORCE_MOVE_ROOT, (8+4));    // guess size
-        data.append(_player->GetPackGUID());
-        data << (uint32)2;
-        SendPacket(&data);
-        _player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
     }
 
     WorldPacket data(SMSG_LOGOUT_RESPONSE, 1+4);
     data << uint8(0);
-    data << uint32(0);
+    data << uint32(16777216);
     SendPacket(&data);
-    LogoutRequest(time(NULL));
+    LogoutPlayer(true);
 }
 
 void WorldSession::HandlePlayerLogoutOpcode(WorldPacket & /*recv_data*/)

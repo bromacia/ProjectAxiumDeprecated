@@ -154,22 +154,6 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket & recv_data)
     if (!pSrcItem)
         return;                                             // only at cheat
 
-    if (const ItemTemplate* itemTempalte = pSrcItem->GetTemplate())
-        if (itemTempalte->IsWorldPvPConsumable())
-        {
-            const SpellInfo* spellInfo = sSpellMgr->GetSpellInfo(itemTempalte->Spells[0].SpellId);
-            if (spellInfo)
-            {
-                SpellCastTargets target;
-                target.SetSrc(*_player);
-                target.SetItemTarget(pSrcItem);
-                target.SetSpeed(spellInfo->Speed);
-                _player->CastItemUseSpell(pSrcItem, target, 1, 0);
-                _player->SendEquipError(EQUIP_ERR_NONE, pSrcItem, NULL);
-                return;
-            }
-        }
-
     uint16 dest;
     InventoryResult msg = _player->CanEquipItem(NULL_SLOT, dest, pSrcItem, !pSrcItem->IsBag());
     if (msg != EQUIP_ERR_OK)

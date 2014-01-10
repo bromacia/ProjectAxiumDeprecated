@@ -452,6 +452,15 @@ void MapManager::LoadDbcDataCorrections()
         mapInfo = (MapEntry*)sMapStore.LookupEntry(i);
         if (!mapInfo)
             continue;
+
+        switch (mapInfo->MapID)
+        {
+            case 558: // Auchindoun: Auchenai Crypts
+                mapInfo->map_type = 0;
+                break;
+            default:
+                break;
+        }
     }
 
     AreaTableEntry* areaInfo = NULL;
@@ -463,6 +472,7 @@ void MapManager::LoadDbcDataCorrections()
 
         switch (areaInfo->mapid)
         {
+            case 558: // Auchindoun: Auchenai Crypts
             case 609: // Ebon Hold
                 areaInfo->flags |= AREA_FLAG_SANCTUARY;
                 break;
@@ -472,28 +482,8 @@ void MapManager::LoadDbcDataCorrections()
 
         switch (areaInfo->zone)
         {
-            case 1519: // Stormwind
-            case 1537: // Ironforge
-            case 1657: // Darnassus
-            case 3557: // The Exodar
-            case 1637: // Orgrimmar
-            case 1497: // Undercity
-            case 1638: // Thunderbluff
-            case 3487: // Silvermoon City
-                areaInfo->flags = (AREA_FLAG_CAPITAL | AREA_FLAG_CITY | AREA_FLAG_SANCTUARY);
-                break;
-            case 12:   // Elwynn Forest
-            case 1:    // Dun Morogh
-            case 141:  // Teldrassil
-            case 3524: // Azuremyst Isle
-            case 14:   // Durotar
-            case 85:   // Tirisfal Glades
-            case 215:  // Mulgore
-            case 3430: // Eversong Woods
+            case 495: // Howling Fjord
                 areaInfo->flags = (AREA_FLAG_ALLOW_DUELS | AREA_FLAG_SANCTUARY);
-                break;
-            case 3521: // Zangarmarsh (World PvP Zone)
-                areaInfo->flags = (AREA_FLAG_ARENA | AREA_FLAG_OUTLAND | AREA_FLAG_OUTDOOR_PVP | AREA_FLAG_CONTESTED_AREA | AREA_FLAG_NO_FLY_ZONE);
                 break;
             default:
                 break;
@@ -501,31 +491,8 @@ void MapManager::LoadDbcDataCorrections()
 
         switch (areaInfo->ID)
         {
-            case 1519: // Stormwind
-            case 1537: // Ironforge
-            case 1657: // Darnassus
-            case 3557: // The Exodar
-            case 1637: // Orgrimmar
-            case 1497: // Undercity
-            case 1638: // Thunderbluff
-            case 3487: // Silvermoon City
-                areaInfo->flags = (AREA_FLAG_CAPITAL | AREA_FLAG_CITY | AREA_FLAG_SANCTUARY);
-                break;
-            case 12:   // Elwynn Forest
-            case 1:    // Dun Morogh
-            case 141:  // Teldrassil
-            case 3524: // Azuremyst Isle
-            case 14:   // Durotar
-            case 85:   // Tirisfal Glades
-            case 215:  // Mulgore
-            case 3430: // Eversong Woods
+            case 495: // Howling Fjord
                 areaInfo->flags = (AREA_FLAG_ALLOW_DUELS | AREA_FLAG_SANCTUARY);
-                break;
-            case 3521: // Zangarmarsh (World PvP Zone)
-                areaInfo->flags = (AREA_FLAG_ARENA | AREA_FLAG_OUTLAND | AREA_FLAG_OUTDOOR_PVP | AREA_FLAG_CONTESTED_AREA | AREA_FLAG_NO_FLY_ZONE);
-                break;
-            case 3668: // Boha'mu Ruins (Mall)
-                areaInfo->flags = (AREA_FLAG_CAPITAL | AREA_FLAG_OUTLAND | AREA_FLAG_SANCTUARY | AREA_FLAG_NO_FLY_ZONE);
                 break;
             default:
                 break;

@@ -2521,8 +2521,3 @@ bool Creature::IsClassTrainer() const
 {
     return GetScriptName() == "npc_class_trainer";
 }
-
-bool Creature::IsWorldPvPNPC() const
-{
-    return GetScriptName() == "WorldPvPNPC";
-}

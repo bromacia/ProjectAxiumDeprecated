@@ -1004,13 +1004,13 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
 
     SetMap(sMapMgr->CreateMap(info->mapId, this));
 
-    // World PvP Zone Entrance
+    // Mall Entrance
     WorldLocation loc;
-    loc.m_mapId = 530;
-    loc.m_positionX = -389.221f;
-    loc.m_positionY = 7257.6f;
-    loc.m_positionZ = 54.774f;
-    SetHomebind(loc, 3668);
+    loc.m_mapId = 558;
+    loc.m_positionX = 72.5f;
+    loc.m_positionY = -163.0f;
+    loc.m_positionZ = 15.5f;
+    SetHomebind(loc, 3790);
 
     uint8 powertype = cEntry->powerType;
 
@@ -21036,7 +21036,7 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
 
     VendorItem const* crItem = NULL;
 
-    if (creature->IsTransmogrifier() || creature->IsMallNPC() || creature->IsWorldPvPNPC())
+    if (creature->IsTransmogrifier() || creature->IsMallNPC())
         crItem = vItems->GetItemByItemId(item);
     else
         crItem = vItems->GetItemByVendorSlot(vendorslot);
@@ -21050,12 +21050,6 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
     if (creature->IsTransmogrifier())
     {
         TransmogrifyItem(item, crItem);
-        return false;
-    }
-
-    if (creature->IsWorldPvPNPC())
-    {
-        BuyWorldPvPItem(creature, pProto, item, vendorslot, count, bag);
         return false;
     }
 
@@ -25848,18 +25842,6 @@ bool Player::CanAppearToTarget(Player* target)
                 return false;
             }
 
-            if (IsInWorldPvPZone())
-            {
-                handler.PSendSysMessage("You can't appear while in the World PvP zone.");
-                return false;
-            }
-
-            if (target->IsInWorldPvPZone())
-            {
-                handler.PSendSysMessage("You can't appear to players in the World PvP zone.");
-                return false;
-            }
-
             if (InBattleground() || InArena())
             {
                 handler.PSendSysMessage("You can't appear while in a battleground or arena.");
@@ -25948,12 +25930,6 @@ bool Player::CanTeleportTo(const GameTele* tele)
                 return false;
             }
 
-            if (IsInWorldPvPZone())
-            {
-                handler.PSendSysMessage("You can't appear while in the World PvP zone.");
-                return false;
-            }
-
             if (InBattleground() || InArena())
             {
                 handler.PSendSysMessage("You can't appear while in a battleground or arena.");
@@ -26012,55 +25988,6 @@ void Player::SetArenaSpectatorState(bool apply)
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
         UpdateSpeed(MOVE_RUN, true);
-    }
-}
-
-void Player::BuyWorldPvPItem(Creature* creature, const ItemTemplate* vItemTemplate, uint32 itemId, uint32 vendorSlot, uint8 count, uint8 bagSlot)
-{
-    if (!CheckExtendedCost2(vItemTemplate))
-    {
-        ChatHandler(this).PSendSysMessage("%s requires %s.", vItemTemplate->Name1.c_str(), CreateExtendedCost2ErrorMessage(vItemTemplate->ExtendedCost2).c_str());
-        return;
-    }
-
-    ExtendedCost2 extendedCost2 = sObjectMgr->GetExtendedCost2Map()[vItemTemplate->ExtendedCost2];
-    if (extendedCost2.Required_Item_Id && extendedCost2.Required_Item_Count)
-    {
-        const ItemTemplate* rItemTemplate = sObjectMgr->GetItemTemplate(extendedCost2.Required_Item_Id);
-        if (!rItemTemplate)
-            return;
-
-        if (!HasItemCount(extendedCost2.Required_Item_Id, extendedCost2.Required_Item_Count * count))
-        {
-            ChatHandler(this).PSendSysMessage("You don't have enough %s(s) to buy %u %s(s).", rItemTemplate->Name1.c_str(), count, vItemTemplate->Name1.c_str());
-            return;
-        }
-    }
-
-    if ((bagSlot == NULL_BAG) || IsInventoryPos(bagSlot, NULL_SLOT))
-    {
-        ItemPosCountVec vDest;
-        uint16 uiDest = 0;
-        InventoryResult msg = CanStoreNewItem(bagSlot, NULL_SLOT, vDest, itemId, vItemTemplate->BuyCount * count);
-        if (msg != EQUIP_ERR_OK)
-        {
-            SendEquipError(msg, NULL, NULL, itemId);
-            return;
-        }
-
-        Item* item = StoreNewItem(vDest, itemId, true);
-        if (!item)
-            return;
-
-        DestroyItemCount(extendedCost2.Required_Item_Id, extendedCost2.Required_Item_Count * count, true);
-
-        WorldPacket data(SMSG_BUY_ITEM, (8+4+4+4));
-        data << uint64(creature->GetGUID());
-        data << uint32(vendorSlot + 1); // numbered from 1 at client
-        data << int32(0xFFFFFFFF);
-        data << uint32(count);
-        GetSession()->SendPacket(&data);
-        SendNewItem(item, vItemTemplate->BuyCount * count, true, false, false);
     }
 }
 

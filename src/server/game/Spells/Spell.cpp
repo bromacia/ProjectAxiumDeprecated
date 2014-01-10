@@ -3144,16 +3144,6 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
                     return;
                 }
 
-        if (Player* player = m_caster->ToPlayer())
-            if (const ItemTemplate* it = sObjectMgr->GetItemTemplate(m_CastItem->GetEntry()))
-                if (it->IsWorldPvPConsumable())
-                    if (!player->IsInWorldPvPZone())
-                    {
-                        SendCastResult(SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW);
-                        finish(false);
-                        return;
-                    }
-
         m_castItemGUID = m_CastItem->GetGUID();
     }
     else
@@ -4563,19 +4553,6 @@ void Spell::TakeCastItem()
     // not remove cast item at triggered spell (equipping, weapon damage, etc)
     if (_triggeredCastFlags & TRIGGERED_IGNORE_CAST_ITEM)
         return;
-
-    if (m_CastItem->GetTemplate()->IsWorldPvPConsumable())
-    {
-        uint32 count = 1;
-        m_caster->ToPlayer()->DestroyItemCount(m_CastItem, count, true);
-
-        // prevent crash at access to deleted m_targets.GetItemTarget
-        if (m_CastItem == m_targets.GetItemTarget())
-            m_targets.SetItemTarget(NULL);
-
-        m_CastItem = NULL;
-        return;
-    }
 
     ItemTemplate const* proto = m_CastItem->GetTemplate();
 

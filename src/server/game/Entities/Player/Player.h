@@ -2684,8 +2684,6 @@ class Player : public Unit, public GridObject<Player>
         void IncrementGossipPage() { ++m_gossipPage; }
         void DecrementGossipPage() { --m_gossipPage; }
 
-        void BuyWorldPvPItem(Creature* creature, const ItemTemplate* vItemTemplate, uint32 itemId, uint32 vendorSlot, uint8 count, uint8 bagSlot);
-
         void _LoadMail();
 
         typedef std::vector<uint64> FakePlayers;
