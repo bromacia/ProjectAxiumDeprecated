@@ -51,6 +51,7 @@ void AddSC_npc_commandscript();
 void AddSC_quest_commandscript();
 void AddSC_reload_commandscript();
 void AddSC_tele_commandscript();
+void AddSC_ticket_commandscript();
 void AddSC_titles_commandscript();
 void AddSC_wp_commandscript();
 void AddSC_gps_commandscript();
@@ -144,6 +145,7 @@ void AddCommandScripts()
     AddSC_quest_commandscript();
     AddSC_reload_commandscript();
     AddSC_tele_commandscript();
+    AddSC_ticket_commandscript();
     AddSC_titles_commandscript();
     AddSC_wp_commandscript();
     AddSC_gps_commandscript();

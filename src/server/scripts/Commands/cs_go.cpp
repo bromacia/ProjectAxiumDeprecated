@@ -549,7 +549,7 @@ public:
         GmTicket* ticket = sTicketMgr->GetTicket(ticketId);
         if (!ticket)
         {
-            handler->SendSysMessage(LANG_COMMAND_TICKETNOTEXIST);
+            handler->SendSysMessage("Ticket not found.");
             return true;
         }
 

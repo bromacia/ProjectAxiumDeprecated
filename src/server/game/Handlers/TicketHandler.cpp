@@ -33,25 +33,28 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket & recv_data)
     if (sTicketMgr->GetStatus() == GMTICKET_QUEUE_STATUS_DISABLED)
         return;
 
-    if (GetPlayer()->getLevel() < sWorld->getIntConfig(CONFIG_TICKET_LEVEL_REQ))
+    if (_player->getLevel() < sWorld->getIntConfig(CONFIG_TICKET_LEVEL_REQ))
     {
         SendNotification(GetTrinityString(LANG_TICKET_REQ), sWorld->getIntConfig(CONFIG_TICKET_LEVEL_REQ));
         return;
     }
 
     GMTicketResponse response = GMTICKET_RESPONSE_FAILURE;
+    GmTicket* ticket = sTicketMgr->GetTicketByPlayer(_player->GetGUID());
+
+    if (ticket && ticket->IsCompleted())
+        sTicketMgr->CloseTicket(ticket->GetId(), _player->GetGUID());
+
     // Player must not have ticket
-    if (!sTicketMgr->GetTicketByPlayer(GetPlayer()->GetGUID()))
+    if (!ticket || ticket->IsClosed())
     {
-        GmTicket* ticket = new GmTicket(GetPlayer(), recv_data);
+        ticket = new GmTicket(_player, recv_data);
         sTicketMgr->AddTicket(ticket);
         sTicketMgr->UpdateLastChange();
 
-        ChatHandler handler = ChatHandler(GetPlayer());
-        std::string nameLink = handler.playerLink(GetPlayer()->GetName());
-
-        sWorld->SendGMText(LANG_COMMAND_TICKETNEW, nameLink.c_str(), ticket->GetId());
-
+        ChatHandler handler = ChatHandler(_player);
+        std::string nameLink = handler.playerLink(_player->GetName());
+        handler.PSendGlobalGMSysMessage("%s: |cff00ff00Created|r |cffaaffaaTicket|r|cffaaccff(%d)|r", nameLink.c_str(), ticket->GetId());
         response = GMTICKET_RESPONSE_SUCCESS;
     }
 
@@ -66,17 +69,15 @@ void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket & recv_data)
     recv_data >> message;
 
     GMTicketResponse response = GMTICKET_RESPONSE_FAILURE;
-    if (GmTicket *ticket = sTicketMgr->GetTicketByPlayer(GetPlayer()->GetGUID()))
+    if (GmTicket* ticket = sTicketMgr->GetTicketByPlayer(_player->GetGUID()))
     {
         SQLTransaction trans = SQLTransaction(NULL);
         ticket->SetMessage(message);
         ticket->SaveToDB(trans);
 
-        ChatHandler handler = ChatHandler(GetPlayer());
-        std::string nameLink = handler.playerLink(GetPlayer()->GetName());
-
-        sWorld->SendGMText(LANG_COMMAND_TICKETUPDATED, nameLink.c_str(), ticket->GetId());
-
+        ChatHandler handler = ChatHandler(_player);
+        std::string nameLink = handler.playerLink(_player->GetName());
+        handler.PSendGlobalGMSysMessage("%s: |cff00ff00Edited|r |cffaaffaaTicket|r|cffaaccff(%d)|r", nameLink.c_str(), ticket->GetId());
         response = GMTICKET_RESPONSE_SUCCESS;
     }
 
@@ -87,18 +88,16 @@ void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleGMTicketDeleteOpcode(WorldPacket & /*recv_data*/)
 {
-    if (GmTicket* ticket = sTicketMgr->GetTicketByPlayer(GetPlayer()->GetGUID()))
+    if (GmTicket* ticket = sTicketMgr->GetTicketByPlayer(_player->GetGUID()))
     {
         WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);
         data << uint32(GMTICKET_RESPONSE_TICKET_DELETED);
         SendPacket(&data);
 
-        ChatHandler handler = ChatHandler(GetPlayer());
-        std::string nameLink = handler.playerLink(GetPlayer()->GetName());
-
-        sWorld->SendGMText(LANG_COMMAND_TICKETPLAYERABANDON, nameLink.c_str(), ticket->GetId());
-
-        sTicketMgr->CloseTicket(ticket->GetId(), GetPlayer()->GetGUID());
+        ChatHandler handler = ChatHandler(_player);
+        std::string nameLink = handler.playerLink(_player->GetName());
+        handler.PSendGlobalGMSysMessage("%s: |cff00ff00Abandoned|r |cffaaffaaTicket|r|cffaaccff(%d)|r", nameLink.c_str(), ticket->GetId());
+        sTicketMgr->CloseTicket(ticket->GetId(), _player->GetGUID());
         sTicketMgr->SendTicket(this, NULL);
     }
 }

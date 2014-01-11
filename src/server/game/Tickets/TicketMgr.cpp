@@ -141,37 +141,44 @@ std::string GmTicket::FormatMessageString(ChatHandler& handler, bool detailed) c
     time_t curTime = time(NULL);
 
     std::stringstream ss;
-    ss << handler.PGetParseString(LANG_COMMAND_TICKETLISTGUID, _id);
-    ss << handler.PGetParseString(LANG_COMMAND_TICKETLISTNAME, handler.playerLink(_playerName).c_str());
-    ss << handler.PGetParseString(LANG_COMMAND_TICKETLISTAGECREATE, (secsToTimeString(curTime - _createTime, true, false)).c_str());
-    ss << handler.PGetParseString(LANG_COMMAND_TICKETLISTAGE, (secsToTimeString(curTime - _lastModifiedTime, true, false)).c_str());
+    ss << handler.playerLink(_playerName).c_str() << ": |cffaaffaaTicket|r|cffaaccff(" << _id << ")|r ";
+    ss << "|cff00ff00Created|r:|cff00ccff " << (secsToTimeString(curTime - _createTime, true, false)).c_str() << " ago|r ";
+    ss << "|cff00ff00Last change|r:|cff00ccff " << (secsToTimeString(curTime - _lastModifiedTime, true, false)).c_str() << " ago|r ";
 
     std::string name;
     if (sObjectMgr->GetPlayerNameByGUID(_assignedTo, name))
-        ss << handler.PGetParseString(LANG_COMMAND_TICKETLISTASSIGNEDTO, name.c_str());
+        ss << "|cff00ff00Assigned to|r:|cff00ccff " << name.c_str() << "|r ";
 
     if (detailed)
     {
-        ss << handler.PGetParseString(LANG_COMMAND_TICKETLISTMESSAGE, _message.c_str());
+        ss << "|cff00ff00Ticket Message|r: [" << _message.c_str() << "]|r";
         if (!_comment.empty())
-            ss << handler.PGetParseString(LANG_COMMAND_TICKETLISTCOMMENT, _comment.c_str());
+            ss << "|cff00ff00GM Comment|r: [" << _comment.c_str() << "]|r";
     }
+
     return ss.str();
 }
 
-std::string GmTicket::FormatMessageString(ChatHandler& handler, const char* szClosedName, const char* szAssignedToName, const char* szUnassignedName, const char* szDeletedName) const
+std::string GmTicket::FormatMessageString(ChatHandler& handler, const char* completedByName, const char* closedByName, const char* deletedByName, const char* assignedToName, const char* unassignedByName) const
 {
     std::stringstream ss;
-    ss << handler.PGetParseString(LANG_COMMAND_TICKETLISTGUID, _id);
-    ss << handler.PGetParseString(LANG_COMMAND_TICKETLISTNAME, handler.playerLink(_playerName).c_str());
-    if (szClosedName)
-        ss << handler.PGetParseString(LANG_COMMAND_TICKETCLOSED, szClosedName);
-    if (szAssignedToName)
-        ss << handler.PGetParseString(LANG_COMMAND_TICKETLISTASSIGNEDTO, szAssignedToName);
-    if (szUnassignedName)
-        ss << handler.PGetParseString(LANG_COMMAND_TICKETLISTUNASSIGNED, szUnassignedName);
-    if (szDeletedName)
-        ss << handler.PGetParseString(LANG_COMMAND_TICKETDELETED, szDeletedName);
+    ss << handler.playerLink(_playerName).c_str() << ": |cffaaffaaTicket|r|cffaaccff(" << _id << ")|r ";
+
+    if (completedByName)
+        ss << "|cff00ff00Completed by|r:|cff00ccff " << completedByName << "|r ";
+
+    if (closedByName)
+        ss << "|cff00ff00Closed by|r:|cff00ccff " << closedByName << "|r ";
+
+    if (deletedByName)
+        ss << "|cff00ff00Deleted by|r:|cff00ccff " << deletedByName << "|r ";
+
+    if (assignedToName)
+        ss << "|cff00ff00Assigned to|r:|cff00ccff " << assignedToName << "|r ";
+
+    if (unassignedByName)
+        ss << "|cff00ff00Unassigned by|r:|cff00ccff " << unassignedByName << "|r ";
+
     return ss.str();
 }
 
@@ -196,7 +203,7 @@ void GmTicket::TeleportTo(Player* player) const
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Ticket manager
-TicketMgr::TicketMgr() : _status(true), _lastTicketId(0), _lastSurveyId(0), _openTicketCount(0), _lastChange(time(NULL)) { }
+TicketMgr::TicketMgr() : _status(true), _lastTicketId(0), _lastSurveyId(0), _openTicketCount(0), _lastChange(time(NULL)) {}
 
 TicketMgr::~TicketMgr()
 {
@@ -204,7 +211,10 @@ TicketMgr::~TicketMgr()
         delete itr->second;
 }
 
-void TicketMgr::Initialize() { SetStatus(sWorld->getBoolConfig(CONFIG_ALLOW_TICKETS)); }
+void TicketMgr::Initialize()
+{
+    SetStatus(sWorld->getBoolConfig(CONFIG_ALLOW_TICKETS));
+}
 
 void TicketMgr::ResetTickets()
 {
@@ -313,7 +323,7 @@ void TicketMgr::RemoveTicket(uint32 ticketId)
 
 void TicketMgr::ShowList(ChatHandler& handler, bool onlineOnly) const
 {
-    handler.SendSysMessage(onlineOnly ? LANG_COMMAND_TICKETSHOWONLINELIST : LANG_COMMAND_TICKETSHOWLIST);
+    handler.SendSysMessage(onlineOnly ? "Showing list of open tickets whose creator is online." : "Showing list of open tickets.");
     for (GmTicketList::const_iterator itr = _ticketList.begin(); itr != _ticketList.end(); ++itr)
         if (!itr->second->IsClosed() && !itr->second->IsCompleted())
             if (!onlineOnly || itr->second->GetPlayer())
@@ -322,7 +332,7 @@ void TicketMgr::ShowList(ChatHandler& handler, bool onlineOnly) const
 
 void TicketMgr::ShowClosedList(ChatHandler& handler) const
 {
-    handler.SendSysMessage(LANG_COMMAND_TICKETSHOWCLOSEDLIST);
+    handler.SendSysMessage("Showing list of closed tickets.");
     for (GmTicketList::const_iterator itr = _ticketList.begin(); itr != _ticketList.end(); ++itr)
         if (itr->second->IsClosed())
             handler.SendSysMessage(itr->second->FormatMessageString(handler).c_str());
@@ -330,7 +340,7 @@ void TicketMgr::ShowClosedList(ChatHandler& handler) const
 
 void TicketMgr::ShowEscalatedList(ChatHandler& handler) const
 {
-    handler.SendSysMessage(LANG_COMMAND_TICKETSHOWESCALATEDLIST);
+    handler.SendSysMessage("Showing list of escalated tickets.");
     for (GmTicketList::const_iterator itr = _ticketList.begin(); itr != _ticketList.end(); ++itr)
         if (!itr->second->IsClosed() && itr->second->GetEscalatedStatus() == TICKET_IN_ESCALATION_QUEUE)
             handler.SendSysMessage(itr->second->FormatMessageString(handler).c_str());

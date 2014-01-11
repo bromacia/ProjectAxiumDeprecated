@@ -79,7 +79,7 @@ class GmTicket
 {
 public:
     GmTicket();
-    explicit GmTicket(Player* player, WorldPacket& recv_data);
+    GmTicket(Player* player, WorldPacket& recv_data);
     ~GmTicket();
 
     bool IsClosed() const { return _closedBy; }
@@ -116,7 +116,8 @@ public:
         else if (_escalatedStatus == TICKET_UNASSIGNED)
             _escalatedStatus = TICKET_ASSIGNED;
     }
-    void SetClosedBy(const int64& value) { _closedBy = value; }
+    void SetClosedBy(int64 value) { _closedBy = value; }
+    void SetCompleted() { _completed = true; }
     void SetMessage(const std::string& message)
     {
         _message = message;
@@ -137,7 +138,7 @@ public:
 
     void TeleportTo(Player* player) const;
     std::string FormatMessageString(ChatHandler& handler, bool detailed = false) const;
-    std::string FormatMessageString(ChatHandler& handler, const char* szClosedName, const char* szAssignedToName, const char* szUnassignedName, const char* szDeletedName) const;
+    std::string FormatMessageString(ChatHandler& handler, const char* completedByName, const char* closedByName, const char* deletedByName, const char* assignedToName, const char* unassignedByName) const;
 
 private:
     uint32 _id;

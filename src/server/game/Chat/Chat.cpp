@@ -292,34 +292,6 @@ ChatCommand* ChatHandler::getCommandTable()
         { NULL,             0,                    false, NULL,                                                      "", NULL }
     };
 
-    static ChatCommand ticketResponseCommandTable[] =
-    {
-        { "append",         SEC_GAMEMASTER,     true,  OldHandler<&ChatHandler::HandleGMTicketResponseAppendCommand>,   "", NULL },
-        { "appendln",       SEC_GAMEMASTER,     true,  OldHandler<&ChatHandler::HandleGMTicketResponseAppendLnCommand>, "", NULL },
-        { NULL,             0,                  false, NULL,                                                            "", NULL }
-    };
-
-    static ChatCommand ticketCommandTable[] =
-    {
-        { "list",           SEC_GAMEMASTER,         true,  OldHandler<&ChatHandler::HandleGMTicketListCommand>,             "", NULL },
-        { "onlinelist",     SEC_GAMEMASTER,         true,  OldHandler<&ChatHandler::HandleGMTicketListOnlineCommand>,       "", NULL },
-        { "viewname",       SEC_GAMEMASTER,         true,  OldHandler<&ChatHandler::HandleGMTicketGetByNameCommand>,        "", NULL },
-        { "viewid",         SEC_GAMEMASTER,         true,  OldHandler<&ChatHandler::HandleGMTicketGetByIdCommand>,          "", NULL },
-        { "close",          SEC_GAMEMASTER,         true,  OldHandler<&ChatHandler::HandleGMTicketCloseByIdCommand>,        "", NULL },
-        { "closedlist",     SEC_GAMEMASTER,         true,  OldHandler<&ChatHandler::HandleGMTicketListClosedCommand>,       "", NULL },
-        { "escalatedlist",  SEC_GAMEMASTER,         true,  OldHandler<&ChatHandler::HandleGMTicketListEscalatedCommand>,    "", NULL },
-        { "delete",         SEC_HEAD_GAMEMASTER,    true,  OldHandler<&ChatHandler::HandleGMTicketDeleteByIdCommand>,       "", NULL },
-        { "reset",          SEC_HEAD_GAMEMASTER,    true,  OldHandler<&ChatHandler::HandleGMTicketResetCommand>,            "", NULL },
-        { "assign",         SEC_GAMEMASTER,         true,  OldHandler<&ChatHandler::HandleGMTicketAssignToCommand>,         "", NULL },
-        { "unassign",       SEC_GAMEMASTER,         true,  OldHandler<&ChatHandler::HandleGMTicketUnAssignCommand>,         "", NULL },
-        { "comment",        SEC_GAMEMASTER,         true,  OldHandler<&ChatHandler::HandleGMTicketCommentCommand>,          "", NULL },
-        { "togglesystem",   SEC_HEAD_GAMEMASTER,    true,  OldHandler<&ChatHandler::HandleToggleGMTicketSystem>,            "", NULL },
-        { "escalate",       SEC_GAMEMASTER,         true,  OldHandler<&ChatHandler::HandleGMTicketEscalateCommand>,         "", NULL },
-        { "response",       SEC_GAMEMASTER,         true,  NULL,                                      "", ticketResponseCommandTable },
-        { "complete",       SEC_GAMEMASTER,         true,  OldHandler<&ChatHandler::HandleGMTicketCompleteCommand>,         "", NULL },
-        { NULL,             0,                      false, NULL,                                                            "", NULL }
-    };
-
     static ChatCommand commandTable[] =
     {
         { "character",        SEC_GAMEMASTER,           true,  NULL,                                      "", characterCommandTable },
@@ -333,7 +305,6 @@ ChatCommand* ChatHandler::getCommandTable()
         { "server",           SEC_HEAD_GAMEMASTER,      true,  NULL,                                         "", serverCommandTable },
         { "channel",          SEC_HEAD_GAMEMASTER,      true,  NULL,                                        "", channelCommandTable },
         { "pet",              SEC_GAMEMASTER,           false, NULL,                                            "", petCommandTable },
-        { "ticket",           SEC_GAMEMASTER,           false,  NULL,                                        "", ticketCommandTable },
         { "aura",             SEC_HEAD_GAMEMASTER,      false, OldHandler<&ChatHandler::HandleAuraCommand>,                "", NULL },
         { "unaura",           SEC_HEAD_GAMEMASTER,      false, OldHandler<&ChatHandler::HandleUnAuraCommand>,              "", NULL },
         { "nameannounce",     SEC_GAMEMASTER,           true,  OldHandler<&ChatHandler::HandleNameAnnounceCommand>,        "", NULL },
