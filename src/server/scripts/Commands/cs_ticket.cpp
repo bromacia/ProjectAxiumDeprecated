@@ -211,8 +211,10 @@ public:
         }
 
         Player* ticketCreator = ticket->GetPlayer();
-        if (!ticketCreator->IsInWorld())
+        if (!ticketCreator || !ticketCreator->IsInWorld())
         {
+            handler->PSendSysMessage("The creator of Ticket(%d) is not online.", ticket->GetId());
+            return false;
         }
 
         ticket->SendResponse(ticketCreator->GetSession());
