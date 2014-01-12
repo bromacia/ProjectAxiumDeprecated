@@ -138,6 +138,7 @@ void PetAI::UpdateAI(const uint32 diff)
                             me->setQueuedSpellTargetGuid(0);
                             me->setIsRunningToTarget(false);
                             me->AttackStop();
+                            HandleReturnMovement();
                         }
                     }
                     else // Has a spell in queue, but not running to target
