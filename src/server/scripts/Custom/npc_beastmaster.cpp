@@ -36,6 +36,9 @@ class npc_beastmaster : public CreatureScript
             pet->UpdateAllStats();
             pet->SavePetToDB(PET_SAVE_AS_CURRENT);
 
+            pet->GetMotionMaster()->MoveFollow(player, PET_FOLLOW_DIST, pet->GetFollowAngle());
+            pet->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
+
             player->CLOSE_GOSSIP_MENU();
             ChatHandler(player).PSendSysMessage("Pet added.");
         }
