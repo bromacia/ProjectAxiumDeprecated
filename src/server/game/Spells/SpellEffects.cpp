@@ -6548,8 +6548,6 @@ void Spell::EffectSummonDeadPet(SpellEffIndex /*effIndex*/)
     pet->ClearUnitState(uint32(UNIT_STATE_ALL_STATE));
     pet->SetHealth(pet->CountPctFromMaxHealth(damage));
 
-    //pet->AIM_Initialize();
-    //player->PetSpellInitialize();
     pet->SavePetToDB(PET_SAVE_AS_CURRENT);
 }
 
