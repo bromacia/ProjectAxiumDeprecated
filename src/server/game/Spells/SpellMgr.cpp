@@ -90,10 +90,10 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellInfo const* spellproto,
         {
             // Frostbite
             if (spellproto->SpellFamilyFlags[1] & 0x80000000)
-                return DIMINISHING_ROOT;
+                return DIMINISHING_RANDOM_ROOT;
             // Shattered Barrier
             else if (spellproto->SpellVisual[0] == 12297)
-                return DIMINISHING_SHATTERED_BARRIER;
+                return DIMINISHING_RANDOM_ROOT;
             // Deep Freeze
             else if (spellproto->SpellIconID == 2939 && spellproto->SpellVisual[0] == 9963)
                 return DIMINISHING_CONTROLLED_STUN;
@@ -102,7 +102,7 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellInfo const* spellproto,
                 return DIMINISHING_CONTROLLED_ROOT;
             // Dragon's Breath
             else if (spellproto->SpellFamilyFlags[0] & 0x800000)
-                return DIMINISHING_DRAGONS_BREATH;
+                return DIMINISHING_SCATTER;
             break;
         }
         case SPELLFAMILY_WARRIOR:
@@ -165,7 +165,7 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellInfo const* spellproto,
                 return DIMINISHING_LIMITONLY;
             // Scatter Shot (own diminishing)
             else if ((spellproto->SpellFamilyFlags[0] & 0x40000) && spellproto->SpellIconID == 132)
-                return DIMINISHING_SCATTER_SHOT;
+                return DIMINISHING_SCATTER;
             // Entrapment (own diminishing)
             else if (spellproto->SpellVisual[0] == 7484 && spellproto->SpellIconID == 20)
                 return DIMINISHING_ENTRAPMENT;
@@ -225,11 +225,11 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellInfo const* spellproto,
     if (mechanic & (1 << MECHANIC_FEAR))
         return DIMINISHING_FEAR;
     if (mechanic & (1 << MECHANIC_STUN))
-        return triggered ? DIMINISHING_STUN : DIMINISHING_CONTROLLED_STUN;
+        return triggered ? DIMINISHING_RANDOM_STUN : DIMINISHING_CONTROLLED_STUN;
     if (mechanic & (1 << MECHANIC_BANISH))
         return DIMINISHING_BANISH;
     if (mechanic & (1 << MECHANIC_ROOT))
-        return triggered ? DIMINISHING_ROOT : DIMINISHING_CONTROLLED_ROOT;
+        return triggered ? DIMINISHING_RANDOM_ROOT : DIMINISHING_CONTROLLED_ROOT;
     if (mechanic & (1 << MECHANIC_HORROR))
         return DIMINISHING_HORROR;
 
@@ -242,7 +242,7 @@ DiminishingReturnsType GetDiminishingReturnsGroupType(DiminishingGroup group)
     {
         case DIMINISHING_TAUNT:
         case DIMINISHING_CONTROLLED_STUN:
-        case DIMINISHING_STUN:
+        case DIMINISHING_RANDOM_STUN:
         case DIMINISHING_OPENING_STUN:
         case DIMINISHING_CYCLONE:
         case DIMINISHING_CHARGE:
@@ -332,8 +332,8 @@ bool IsDiminishingReturnsGroupDurationLimited(DiminishingGroup group)
         case DIMINISHING_HORROR:
         case DIMINISHING_MIND_CONTROL:
         case DIMINISHING_OPENING_STUN:
-        case DIMINISHING_ROOT:
-        case DIMINISHING_STUN:
+        case DIMINISHING_RANDOM_ROOT:
+        case DIMINISHING_RANDOM_STUN:
         case DIMINISHING_SLEEP:
         case DIMINISHING_LIMITONLY:
             return true;
