@@ -656,6 +656,8 @@ void BattlegroundEY::EventPlayerClickedOnFlag(Player* Source, GameObject* target
     //get flag aura on player
     Source->CastSpell(Source, BG_EY_NETHERSTORM_FLAG_SPELL, true);
     Source->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_ENTER_PVP_COMBAT);
+    Source->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+    Source->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
 
     if (Source->GetTeam() == ALLIANCE)
         PSendMessageToAll(LANG_BG_EY_HAS_TAKEN_FLAG, CHAT_MSG_BG_SYSTEM_ALLIANCE, NULL, Source->GetName());

@@ -554,6 +554,8 @@ void BattlegroundWS::EventPlayerClickedOnFlag(Player* Source, GameObject* target
         return;
 
     SendMessageToAll(message_id, type, Source);
+    Source->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+    Source->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
     Source->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_ENTER_PVP_COMBAT);
 }
 

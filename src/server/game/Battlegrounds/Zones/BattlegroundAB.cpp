@@ -448,6 +448,8 @@ void BattlegroundAB::EventPlayerClickedOnFlag(Player* source, GameObject* /*targ
         return;
 
     source->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_ENTER_PVP_COMBAT);
+    source->RemoveAurasByType(SPELL_AURA_MOD_STEALTH);
+    source->RemoveAurasByType(SPELL_AURA_MOD_INVISIBILITY);
     uint32 sound = 0;
     // If node is neutral, change to contested
     if (m_Nodes[node] == BG_AB_NODE_TYPE_NEUTRAL)
