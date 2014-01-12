@@ -1202,6 +1202,20 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
     if (unit->isAlive() != target->alive)
         return;
 
+    if (unit->HasAuraType(SPELL_AURA_SPELL_MAGNET) && m_spellInfo->IsDelaySpell())
+    {
+        if (m_spellInfo->HasTargetA(TARGET_UNIT_TARGET_ENEMY))
+            if (Unit* magnet = m_caster->SelectMagnetTarget(unit, m_spellInfo))
+                if (magnet != unit)
+                    unit = magnet;
+
+        if (m_spellInfo->HasTargetA(TARGET_UNIT_TARGET_ANY))
+            if (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL))
+                if (Unit* magnet = m_caster->SelectMagnetTarget(unit, m_spellInfo))
+                    if (magnet != unit)
+                        unit = magnet;
+    }
+
     switch (m_spellInfo->Id)
     {
         case 19244: // Spell Lock (Rank 1)
