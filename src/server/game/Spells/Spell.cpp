@@ -3461,38 +3461,32 @@ void Spell::cast(bool skipCheck)
 
     CallScriptOnCastHandlers();
 
-    if (m_caster)
+    if (Unit* target = m_targets.GetUnitTarget())
     {
-        if (Unit* target = m_targets.GetUnitTarget())
+        if ((!m_caster->IsFriendlyTo(target) || m_spellInfo->HasAura(SPELL_AURA_MOD_POSSESS)) &&
+            (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
         {
-            if (Player* pTarget = target->ToPlayer())
-            {
-                if ((!m_caster->IsFriendlyTo(pTarget) || m_spellInfo->HasAura(SPELL_AURA_MOD_POSSESS)) &&
-                    (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
+            m_caster->CombatStart(target, !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO));
+
+            if (Player* player = m_caster->ToPlayer())
+                if (!player->m_Controlled.empty())
                 {
-                    m_caster->CombatStart(pTarget, !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO));
+                    for (Unit::ControlList::iterator itr = player->m_Controlled.begin(); itr != player->m_Controlled.end(); ++itr)
+                    {
+                        Unit* controlled = *itr;
+                        if (!controlled)
+                            continue;
 
-                    if (Player* player = m_caster->ToPlayer())
-                        if (!player->m_Controlled.empty())
-                        {
-                            for (Unit::ControlList::iterator itr = player->m_Controlled.begin(); itr != player->m_Controlled.end(); ++itr)
-                            {
-                                Unit* controlled = *itr;
-                                if (!controlled)
-                                    continue;
+                        Creature* cControlled = controlled->ToCreature();
+                        if (!cControlled)
+                            continue;
 
-                                Creature* cControlled = controlled->ToCreature();
-                                if (!cControlled)
-                                    continue;
+                        if (!cControlled->IsAIEnabled)
+                            continue;
 
-                                if (!cControlled->IsAIEnabled)
-                                    continue;
-
-                                cControlled->AI()->SetTarget(pTarget);
-                            }
-                        }
+                        cControlled->AI()->SetTarget(target);
+                    }
                 }
-            }
         }
     }
 

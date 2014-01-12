@@ -355,7 +355,7 @@ void Unit::Update(uint32 p_time)
     {
         if (m_combatDelayTime <= p_time)
         {
-            Player* target = ObjectAccessor::FindPlayer(m_sharedCombatTargetGUID);
+            Unit* target = ObjectAccessor::FindUnit(m_sharedCombatTargetGUID);
             SetInCombatState(true, target, true);
             m_combatDelayTime = 0;
         }
