@@ -403,6 +403,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         movementInfo.t_seat = -1;
     }
 
+    if (opcode == CMSG_MOVE_SET_FLY && plMover)
+        plMover->m_lastFallZ = 0.0f;
+
     // fall damage generation (ignore in flight case that can be triggered also at lags in moment teleportation to another map).
     if (opcode == MSG_MOVE_FALL_LAND && plMover && !plMover->isInFlight())
     {
