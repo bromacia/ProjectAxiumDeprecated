@@ -5948,6 +5948,10 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (pArea->IsNoFlyZone())
                     return (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_NOT_HERE;
 
+    if (!m_spellInfo->CanBeUsedInCombat())
+        if (m_caster->GetCombatDelayTime() > 0)
+            return SPELL_FAILED_AFFECTING_COMBAT;
+
     // check trade slot case (last, for allow catch any another cast problems)
     if (m_targets.GetTargetMask() & TARGET_FLAG_TRADE_ITEM)
     {

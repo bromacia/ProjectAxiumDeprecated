@@ -1585,6 +1585,7 @@ class Unit : public WorldObject
         void SetInCombatState(bool PvP, Unit* target = NULL, bool ignoreDelay = false);
         void ClearInCombat();
         uint32 GetCombatTime() const { return m_combatTime; }
+        uint32 GetCombatDelayTime() const { return m_combatDelayTime; }
 
         bool HasAuraTypeWithFamilyFlags(AuraType auraType, uint32 familyName, uint32 familyFlags) const;
         bool virtual HasSpell(uint32 /*spellID*/) const { return false; }
