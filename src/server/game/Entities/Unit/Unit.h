@@ -1582,7 +1582,7 @@ class Unit : public WorldObject
         bool isInCombat()  const { return HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT); }
         void SetInCombatWith(Unit* target);
         void CombatStart(Unit* target, bool initialAggro = true);
-        void SetInCombatState(bool PvP, Unit* target = NULL);
+        void SetInCombatState(bool PvP, Unit* target = NULL, bool ignoreDelay = false);
         void ClearInCombat();
         uint32 GetCombatTimer() const { return m_CombatTimer; }
 
@@ -2412,7 +2412,11 @@ class Unit : public WorldObject
         Spell* m_queuedSpell;
         Unit* m_queuedSpellTarget;
 
+        uint64 m_sharedCombat;
+
         bool m_isDueling;
+
+        uint32 m_combatDelay;
 
         ArenaTeamColor arenaTeam;
 

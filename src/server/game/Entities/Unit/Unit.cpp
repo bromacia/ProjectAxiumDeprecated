@@ -232,6 +232,8 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
     m_positiveCastTimePrecent = 1.0f;
 
     m_CombatTimer = 0;
+    m_combatDelay = 0;
+    m_sharedCombat = 0;
     m_lastManaUse = 0;
 
     for (uint8 i = 0; i < MAX_SPELL_SCHOOL; ++i)
@@ -347,6 +349,18 @@ void Unit::Update(uint32 p_time)
             else
                 m_CombatTimer -= p_time;
         }
+    }
+
+    if (m_combatDelay)
+    {
+        if (m_combatDelay <= p_time)
+        {
+            Player* target = ObjectAccessor::FindPlayer(m_sharedCombat);
+            SetInCombatState(true, target, true);
+            m_combatDelay = 0;
+        }
+        else
+            m_combatDelay -= p_time;
     }
 
     // not implemented before 3.0.2
@@ -12865,6 +12879,8 @@ void Unit::Dismount()
 
 void Unit::SetInCombatWith(Unit* target)
 {
+    m_sharedCombat = target->GetGUID();
+
     Unit* eOwner = target->GetCharmerOrOwnerOrSelf();
     if (eOwner->IsPvP())
     {
@@ -12899,7 +12915,6 @@ void Unit::CombatStart(Unit* target, bool initialAggro)
         }
 
         SetInCombatWith(target);
-        target->SetInCombatWith(this);
 
         if (Unit* owner = GetCharmerOrOwner())
             owner->SetInCombatWith(target);
@@ -12918,14 +12933,26 @@ void Unit::CombatStart(Unit* target, bool initialAggro)
     }
 }
 
-void Unit::SetInCombatState(bool PvP, Unit* target)
+void Unit::SetInCombatState(bool PvP, Unit* target, bool ignoreDelay)
 {
     // only alive units can be in combat
     if (!isAlive())
         return;
 
+    // Combat handled in Unit::Update
+    if (!ignoreDelay && !m_CombatTimer && PvP)
+    {
+        if (!m_combatDelay)
+            m_combatDelay = sWorld->getIntConfig(CONFIG_COMBAT_DELAY);
+
+        return;
+    }
+
     if (PvP)
         m_CombatTimer = 5000;
+
+    if (target)
+        target->SetInCombatState(PvP, NULL, true);
 
     if (isInCombat() || HasUnitState(UNIT_STATE_EVADE))
         return;
@@ -12968,6 +12995,8 @@ void Unit::SetInCombatState(bool PvP, Unit* target)
 void Unit::ClearInCombat()
 {
     m_CombatTimer = 0;
+    m_combatDelay = 0;
+    m_sharedCombat = 0;
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
 
     // Player's state will be cleared in Player::UpdateContestedPvP

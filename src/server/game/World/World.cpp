@@ -1331,6 +1331,7 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_MOVEMENT_DELAY_SPELL_TIME] = ConfigMgr::GetIntDefault("MovementDelaySpellTime", 10);
     m_int_configs[CONFIG_SILENCE_DELAY_SPELL_TIME] = ConfigMgr::GetIntDefault("SilenceDelaySpellTime", 10);
     m_int_configs[CONFIG_MISC_DELAY_SPELL_TIME] = ConfigMgr::GetIntDefault("MiscDelaySpellTime", 100);
+    m_int_configs[CONFIG_COMBAT_DELAY]           = ConfigMgr::GetIntDefault("CombatDelay", 700);
 
     sScriptMgr->OnConfigLoad(reload);
 }

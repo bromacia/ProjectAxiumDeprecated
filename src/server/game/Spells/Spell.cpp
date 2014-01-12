@@ -1481,7 +1481,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
 
     if (m_caster)
     {
-        if (missInfo != SPELL_MISS_EVADE && (!m_caster->IsFriendlyTo(unit) || m_spellInfo->HasAura(SPELL_AURA_MOD_POSSESS)) &&
+        if (missInfo != SPELL_MISS_EVADE && !m_targets.GetUnitTarget() && (!m_caster->IsFriendlyTo(unit) || m_spellInfo->HasAura(SPELL_AURA_MOD_POSSESS)) &&
             (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
         {
             m_caster->CombatStart(unit, !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO));
@@ -1509,32 +1509,6 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
                         cControlled->AI()->SetTarget(unit);
                     }
                 }
-        }
-
-        if (missInfo != SPELL_MISS_EVADE && unit != m_caster && m_caster->IsFriendlyTo(unit) && m_spellInfo->IsPositive() &&
-            unit->isInCombat() && !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO))
-            m_caster->SetInCombatWith(unit);
-
-        if (Player* player = m_caster->ToPlayer())
-        {
-            if (!player->m_Controlled.empty())
-            {
-                for (Unit::ControlList::iterator itr = player->m_Controlled.begin(); itr != player->m_Controlled.end(); ++itr)
-                {
-                    Unit* controlled = *itr;
-                    if (!controlled)
-                        continue;
-
-                    Creature* cControlled = controlled->ToCreature();
-                    if (!cControlled)
-                        continue;
-
-                    if (!cControlled->IsAIEnabled)
-                        continue;
-
-                    cControlled->AI()->SetTarget(unit);
-                }
-            }
         }
     }
 
@@ -1633,7 +1607,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         if (!m_caster->IsFriendlyTo(unit) || !unit->IsFriendlyTo(m_caster))
         {
             bool binary = uint32(m_spellInfo->AttributesCu & SPELL_ATTR0_CU_BINARY);
-            m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask , binary, m_spellInfo);
+            m_resist = m_caster->CalcSpellResistance(unit, m_spellSchoolMask, binary, m_spellInfo);
             if (m_resist >= 100)
                 return SPELL_MISS_RESIST;
         }
@@ -3497,10 +3471,6 @@ void Spell::cast(bool skipCheck)
                             }
                         }
                 }
-
-                if (pTarget != m_caster && m_caster->IsFriendlyTo(pTarget) && m_spellInfo->IsPositive() &&
-                    pTarget->isInCombat() && !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_NO_INITIAL_AGGRO))
-                    m_caster->SetInCombatWith(pTarget);
             }
         }
     }
