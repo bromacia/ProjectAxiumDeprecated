@@ -231,9 +231,9 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
     m_baseSpellCritChance = 5;
     m_positiveCastTimePrecent = 1.0f;
 
-    m_CombatTimer = 0;
-    m_combatDelay = 0;
-    m_sharedCombat = 0;
+    m_combatTime = 0;
+    m_combatDelayTime = 0;
+    m_sharedCombatTargetGUID = 0;
     m_lastManaUse = 0;
 
     for (uint8 i = 0; i < MAX_SPELL_SCHOOL; ++i)
@@ -343,24 +343,24 @@ void Unit::Update(uint32 p_time)
         // These flags are reset after target dies or another command is given.
         if (m_HostileRefManager.isEmpty())
         {
-            // m_CombatTimer set at aura start and it will be freeze until aura removing
-            if (m_CombatTimer <= p_time)
+            // m_combatTime set at aura start and it will be freeze until aura removing
+            if (m_combatTime <= p_time)
                 ClearInCombat();
             else
-                m_CombatTimer -= p_time;
+                m_combatTime -= p_time;
         }
     }
 
-    if (m_combatDelay)
+    if (m_combatDelayTime)
     {
-        if (m_combatDelay <= p_time)
+        if (m_combatDelayTime <= p_time)
         {
-            Player* target = ObjectAccessor::FindPlayer(m_sharedCombat);
+            Player* target = ObjectAccessor::FindPlayer(m_sharedCombatTargetGUID);
             SetInCombatState(true, target, true);
-            m_combatDelay = 0;
+            m_combatDelayTime = 0;
         }
         else
-            m_combatDelay -= p_time;
+            m_combatDelayTime -= p_time;
     }
 
     // not implemented before 3.0.2
@@ -12879,7 +12879,7 @@ void Unit::Dismount()
 
 void Unit::SetInCombatWith(Unit* target)
 {
-    m_sharedCombat = target->GetGUID();
+    m_sharedCombatTargetGUID = target->GetGUID();
 
     Unit* eOwner = target->GetCharmerOrOwnerOrSelf();
     if (eOwner->IsPvP())
@@ -12940,16 +12940,16 @@ void Unit::SetInCombatState(bool PvP, Unit* target, bool ignoreDelay)
         return;
 
     // Combat handled in Unit::Update
-    if (!ignoreDelay && !m_CombatTimer && PvP)
+    if (!ignoreDelay && !m_combatTime && PvP)
     {
-        if (!m_combatDelay)
-            m_combatDelay = sWorld->getIntConfig(CONFIG_COMBAT_DELAY);
+        if (!m_combatDelayTime)
+            m_combatDelayTime = sWorld->getIntConfig(CONFIG_COMBAT_DELAY);
 
         return;
     }
 
     if (PvP)
-        m_CombatTimer = 5000;
+        m_combatTime = 5000;
 
     if (target)
         target->SetInCombatState(PvP, NULL, true);
@@ -12994,9 +12994,9 @@ void Unit::SetInCombatState(bool PvP, Unit* target, bool ignoreDelay)
 
 void Unit::ClearInCombat()
 {
-    m_CombatTimer = 0;
-    m_combatDelay = 0;
-    m_sharedCombat = 0;
+    m_combatTime = 0;
+    m_combatDelayTime = 0;
+    m_sharedCombatTargetGUID = 0;
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
 
     // Player's state will be cleared in Player::UpdateContestedPvP

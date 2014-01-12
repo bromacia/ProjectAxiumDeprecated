@@ -1584,7 +1584,7 @@ class Unit : public WorldObject
         void CombatStart(Unit* target, bool initialAggro = true);
         void SetInCombatState(bool PvP, Unit* target = NULL, bool ignoreDelay = false);
         void ClearInCombat();
-        uint32 GetCombatTimer() const { return m_CombatTimer; }
+        uint32 GetCombatTime() const { return m_combatTime; }
 
         bool HasAuraTypeWithFamilyFlags(AuraType auraType, uint32 familyName, uint32 familyFlags) const;
         bool virtual HasSpell(uint32 /*spellID*/) const { return false; }
@@ -2387,7 +2387,9 @@ class Unit : public WorldObject
         uint32 m_rootTimes;
 
         uint32 m_state;                                     // Even derived shouldn't modify
-        uint32 m_CombatTimer;
+        uint32 m_combatTime;
+        uint32 m_combatDelayTime;
+        uint64 m_sharedCombatTargetGUID;
         uint32 m_lastManaUse;                               // msecs
         TimeTrackerSmall m_movesplineTimer;
 
@@ -2412,11 +2414,7 @@ class Unit : public WorldObject
         Spell* m_queuedSpell;
         Unit* m_queuedSpellTarget;
 
-        uint64 m_sharedCombat;
-
         bool m_isDueling;
-
-        uint32 m_combatDelay;
 
         ArenaTeamColor arenaTeam;
 
