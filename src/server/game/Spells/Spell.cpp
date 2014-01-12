@@ -979,13 +979,15 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
 
     // Get spell hit result on target
     TargetInfo targetInfo;
-    targetInfo.targetGUID = targetGUID;                         // Store target GUID
-    targetInfo.effectMask = effectMask;                         // Store all effects not immune
-    targetInfo.processed  = false;                              // Effects not apply on target
-    targetInfo.alive      = target->isAlive();
-    targetInfo.damage     = 0;
-    targetInfo.crit       = false;
-    targetInfo.scaleAura  = false;
+    targetInfo.targetGUID    = targetGUID;          // Store target GUID
+    targetInfo.effectMask    = effectMask;          // Store all effects not immune
+    targetInfo.processed     = false;               // Effects not apply on target
+    targetInfo.alive         = target->isAlive();
+    targetInfo.damage        = 0;
+    targetInfo.crit          = false;
+    targetInfo.missCondition = SPELL_MISS_NONE;
+    targetInfo.scaleAura     = false;
+
     if (m_auraScaleMask && targetInfo.effectMask == m_auraScaleMask && m_caster != target)
     {
         SpellInfo const* auraSpell = sSpellMgr->GetSpellInfo(sSpellMgr->GetFirstSpellInChain(m_spellInfo->Id));
@@ -994,14 +996,17 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
     }
 
     // Calculate hit result
-    if (m_originalCaster)
+    if (!m_spellInfo->IsDelaySpell())
     {
-        targetInfo.missCondition = m_originalCaster->SpellHitResult(target, m_spellInfo, m_canReflect);
-        if (m_skipCheck && targetInfo.missCondition != SPELL_MISS_IMMUNE)
-            targetInfo.missCondition = SPELL_MISS_NONE;
+        if (m_originalCaster)
+        {
+            targetInfo.missCondition = m_originalCaster->SpellHitResult(target, m_spellInfo, m_canReflect);
+            if (m_skipCheck && targetInfo.missCondition != SPELL_MISS_IMMUNE)
+                targetInfo.missCondition = SPELL_MISS_NONE;
+        }
+        else
+            targetInfo.missCondition = SPELL_MISS_EVADE;
     }
-    else
-        targetInfo.missCondition = SPELL_MISS_EVADE;
 
     // Spell have speed - need calculate incoming time
     // Incoming time is zero for self casts. At least I think so.
@@ -1266,13 +1271,12 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
             return;
         }
 
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        if (unit->GetEntry() == 5925 && ((RedirectedSpell || m_spellInfo->IsNegativeAuraSpell() ||
-            m_spellInfo->Effects[i].Effect == SPELL_EFFECT_DISPEL) && (m_spellInfo->Effects[i].TargetA.GetTarget() == TARGET_UNIT_TARGET_ENEMY || m_spellInfo->Effects[i].TargetA.GetTarget() == TARGET_UNIT_TARGET_ANY)))
-        {
-            unit->setDeathState(JUST_DIED);
-            return;
-        }
+    if (unit->GetEntry() == 5925 && ((RedirectedSpell || m_spellInfo->IsNegativeAuraSpell() ||
+        m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)) && (m_spellInfo->HasTargetA(TARGET_UNIT_TARGET_ENEMY) || m_spellInfo->HasTargetA(TARGET_UNIT_TARGET_ANY))))
+    {
+        unit->setDeathState(JUST_DIED);
+        return;
+    }
 
     // Get original caster (if exist) and calculate damage/healing from him data
     Unit* caster = m_originalCaster ? m_originalCaster : m_caster;
@@ -1281,7 +1285,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
     if (!caster)
         return;
 
-    SpellMissInfo missInfo = target->missCondition;
+    SpellMissInfo missInfo = m_spellInfo->IsDelaySpell() ? m_caster->SpellHitResult(unit, m_spellInfo, m_canReflect) : target->missCondition;
 
     // Need init unitTarget by default unit (can changed in code on reflect)
     // Or on missInfo != SPELL_MISS_NONE unitTarget undefined (but need in trigger subsystem)
@@ -1299,7 +1303,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
 
     m_spellAura = NULL; // Set aura to null for every target-make sure that pointer is not used for unit without aura applied
 
-                            //Spells with this flag cannot trigger if effect is casted on self
+    //Spells with this flag cannot trigger if effect is casted on self
     bool canEffectTrigger = !(m_spellInfo->AttributesEx3 & SPELL_ATTR3_CANT_TRIGGER_PROC) && unitTarget->CanProc() && CanExecuteTriggersOnHit(mask);
     Unit* spellHitTarget = NULL;
 
@@ -1333,10 +1337,13 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         {
             if (tmp != SPELL_MISS_MISS)
                 m_caster->SendSpellMiss(unit, m_spellInfo->Id, tmp);
+
             m_damage = 0;
             spellHitTarget = NULL;
         }
     }
+    else if (m_spellInfo->IsDelaySpell())
+        m_caster->SendSpellMiss(unit, m_spellInfo->Id, missInfo);
 
     // Do not take combo points on dodge and miss
     if (missInfo != SPELL_MISS_NONE && m_needComboPoints &&
@@ -3649,7 +3656,7 @@ uint64 Spell::handle_delayed(uint64 t_offset)
     bool single_missile = (m_targets.HasDst());
 
     // now recheck units targeting correctness (need before any effects apply to prevent adding immunity at first effect not allow apply second spell effect and similar cases)
-    for (std::list<TargetInfo>::iterator ihit= m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
+    for (std::list<TargetInfo>::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
     {
         if (ihit->processed == false)
         {
@@ -3664,7 +3671,7 @@ uint64 Spell::handle_delayed(uint64 t_offset)
     }
 
     // now recheck gameobject targeting correctness
-    for (std::list<GOTargetInfo>::iterator ighit= m_UniqueGOTargetInfo.begin(); ighit != m_UniqueGOTargetInfo.end(); ++ighit)
+    for (std::list<GOTargetInfo>::iterator ighit = m_UniqueGOTargetInfo.begin(); ighit != m_UniqueGOTargetInfo.end(); ++ighit)
     {
         if (ighit->processed == false)
         {

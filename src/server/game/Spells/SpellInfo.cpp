@@ -938,6 +938,22 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
     ChainEntry = NULL;
 }
 
+bool SpellInfo::HasTargetA(uint8 target) const
+{
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        if (Effects[i].TargetA.GetTarget() == target)
+            return true;
+    return false;
+}
+
+bool SpellInfo::HasTargetB(uint8 target) const
+{
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        if (Effects[i].TargetB.GetTarget() == target)
+            return true;
+    return false;
+}
+
 bool SpellInfo::HasEffect(SpellEffects effect) const
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)

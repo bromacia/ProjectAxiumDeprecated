@@ -390,6 +390,8 @@ public:
 
     SpellInfo(SpellEntry const* spellEntry);
 
+    bool HasTargetA(uint8 target) const;
+    bool HasTargetB(uint8 target) const;
     bool HasEffect(SpellEffects effect) const;
     bool HasAura(AuraType aura) const;
     bool HasAreaAuraEffect() const;
@@ -490,6 +492,14 @@ public:
     bool IsMovementDelaySpell() const;
     bool IsSilenceDelaySpell() const;
     bool IsMiscDelaySpell() const;
+    bool IsDelaySpell() const
+    {
+        return IsSpellDelaySpell() ||
+            IsMovementDelaySpell() ||
+            IsSilenceDelaySpell() ||
+            IsMiscDelaySpell();
+    }
+
     bool IsCrowdControlSpell() const;
     bool IsNegativeAuraSpell() const;
 
