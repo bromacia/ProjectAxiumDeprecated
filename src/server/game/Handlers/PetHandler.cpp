@@ -166,7 +166,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                     charmInfo->SaveStayPosition();
                     pet->setIsRunningToTarget(false);
                     pet->setQueuedSpell(NULL);
-                    pet->setQueuedSpellTarget(NULL);
+                    pet->setQueuedSpellTargetGuid(0);
                     break;
                 case COMMAND_FOLLOW:                        //spellid=1792  //FOLLOW
                     pet->AttackStop();
@@ -180,7 +180,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                     charmInfo->SetIsFollowing(false);
                     pet->setIsRunningToTarget(false);
                     pet->setQueuedSpell(NULL);
-                    pet->setQueuedSpellTarget(NULL);
+                    pet->setQueuedSpellTargetGuid(0);
                     break;
                 case COMMAND_ATTACK:                        //spellid=1792  //ATTACK
                 {
@@ -210,13 +210,13 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
 
                     if (pet->isRunningToTarget())
                     {
-                        if (Unit* queuedTarget = pet->getQueuedSpellTarget())
+                        if (uint64 queuedTargetGuid = pet->getQueuedSpellTargetGuid())
                         {
-                            if (queuedTarget != TargetUnit)
+                            if (queuedTargetGuid != TargetUnit->GetGUID())
                             {
                                 pet->setIsRunningToTarget(false);
                                 pet->setQueuedSpell(NULL);
-                                pet->setQueuedSpellTarget(NULL);
+                                pet->setQueuedSpellTargetGuid(0);
                             }
                         }
                     }
@@ -287,7 +287,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                 case REACT_PASSIVE:                         //passive
                     pet->setIsRunningToTarget(false);
                     pet->setQueuedSpell(NULL);
-                    pet->setQueuedSpellTarget(NULL);
+                    pet->setQueuedSpellTargetGuid(0);
                     pet->AttackStop();
                     pet->InterruptNonMeleeSpells(false);
                     charmInfo->SetIsCommandAttack(false);
@@ -370,7 +370,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                 {
                     pet->setIsRunningToTarget(true);
                     pet->setQueuedSpell(spell);
-                    pet->setQueuedSpellTarget(unit_target);
+                    pet->setQueuedSpellTargetGuid(unit_target->GetGUID());
                     pet->GetMotionMaster()->MoveChase(unit_target);
                     return;
                 }
@@ -417,7 +417,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                 if (result == SPELL_FAILED_NO_POWER)
                 {
                     pet->setQueuedSpell(spell);
-                    pet->setQueuedSpellTarget(unit_target);
+                    pet->setQueuedSpellTargetGuid(unit_target->GetGUID());
                     return;
                 }
 

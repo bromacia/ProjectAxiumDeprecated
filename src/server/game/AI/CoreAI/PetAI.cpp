@@ -97,63 +97,60 @@ void PetAI::UpdateAI(const uint32 diff)
 
     if (Spell* spell = me->getQueuedSpell())
     {
-        if (Unit* queuedTarget = me->getQueuedSpellTarget())
+        if (uint64 targetGuid = me->getQueuedSpellTargetGuid())
         {
-            if (me->isRunningToTarget()) // Is running to a target to cast a spell
+            if (Unit* queuedTarget = ObjectAccessor::FindUnit(targetGuid))
             {
-                if (!queuedTarget->IsInWorld())
+                if (!queuedTarget)
                 {
+                    spell->finish(false);
                     me->setQueuedSpell(NULL);
-                    me->setQueuedSpellTarget(NULL);
+                    me->setQueuedSpellTargetGuid(0);
                     me->setIsRunningToTarget(false);
+                    HandleReturnMovement();
                 }
                 else
                 {
-                    SpellCastResult result = spell->CheckPetCast(queuedTarget);
-
-                    if (result == SPELL_CAST_OK)
+                    if (me->isRunningToTarget()) // Is running to a target to cast a spell
                     {
-                        me->GetMotionMaster()->Clear();
-                        if (spell->GetSpellInfo()->CastTimeEntry > 0)
-                            me->StopMoving();
+                        SpellCastResult result = spell->CheckPetCast(queuedTarget);
 
-                        me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
-                        spell->prepare(&(spell->m_targets));
+                        if (result == SPELL_CAST_OK)
+                        {
+                            me->GetMotionMaster()->Clear();
+                            if (spell->GetSpellInfo()->CastTimeEntry > 0)
+                                me->StopMoving();
 
-                        if (me->GetReactState() != REACT_PASSIVE)
-                            if (me->ToCreature()->IsAIEnabled)
-                                me->ToCreature()->AI()->AttackStart(queuedTarget);
+                            me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
+                            spell->prepare(&(spell->m_targets));
 
-                        me->setIsRunningToTarget(false);
-                        me->setQueuedSpell(NULL);
-                        me->setQueuedSpellTarget(NULL);
+                            if (me->GetReactState() != REACT_PASSIVE)
+                                if (me->ToCreature()->IsAIEnabled)
+                                    me->ToCreature()->AI()->AttackStart(queuedTarget);
+
+                            me->setQueuedSpell(NULL);
+                            me->setQueuedSpellTargetGuid(0);
+                            me->setIsRunningToTarget(false);
+                        }
+                        else if (result != SPELL_FAILED_OUT_OF_RANGE && result != SPELL_FAILED_LINE_OF_SIGHT)
+                        {
+                            me->setQueuedSpell(NULL);
+                            me->setQueuedSpellTargetGuid(0);
+                            me->setIsRunningToTarget(false);
+                            me->AttackStop();
+                        }
                     }
-                    else if (result != SPELL_FAILED_OUT_OF_RANGE && result != SPELL_FAILED_LINE_OF_SIGHT)
+                    else // Has a spell in queue, but not running to target
                     {
-                        me->setIsRunningToTarget(false);
-                        me->setQueuedSpell(NULL);
-                        me->setQueuedSpellTarget(NULL);
-                        me->AttackStop();
-                    }
-                }
-            }
-            else // Has a spell in queue, but not running to target
-            {
-                if (!queuedTarget->IsInWorld())
-                {
-                    me->setQueuedSpell(NULL);
-                    me->setQueuedSpellTarget(NULL);
-                }
-                else
-                {
-                    SpellCastResult result = spell->CheckPetCast(queuedTarget);
+                        SpellCastResult result = spell->CheckPetCast(queuedTarget);
 
-                    if (result == SPELL_CAST_OK)
-                    {
-                        me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
-                        spell->prepare(&(spell->m_targets));
-                        me->setQueuedSpell(NULL);
-                        me->setQueuedSpellTarget(NULL);
+                        if (result == SPELL_CAST_OK)
+                        {
+                            me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
+                            spell->prepare(&(spell->m_targets));
+                            me->setQueuedSpell(NULL);
+                            me->setQueuedSpellTargetGuid(0);
+                        }
                     }
                 }
             }

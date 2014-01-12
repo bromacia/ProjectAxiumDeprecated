@@ -1448,8 +1448,8 @@ class Unit : public WorldObject
         bool isRunningToTarget() { return m_runningToTarget; }
         Spell* getQueuedSpell() { return m_queuedSpell; }
         void setQueuedSpell(Spell* spell) { m_queuedSpell = spell; }
-        Unit* getQueuedSpellTarget() { return m_queuedSpellTarget; }
-        void setQueuedSpellTarget(Unit* target) { m_queuedSpellTarget = target; }
+        uint64 getQueuedSpellTargetGuid() { return m_queuedSpellTargetGuid; }
+        void setQueuedSpellTargetGuid(uint64 target) { m_queuedSpellTargetGuid = target; }
 
         void  SetStandFlags(uint8 flags) { SetByteFlag(UNIT_FIELD_BYTES_1, 2, flags); }
         void  RemoveStandFlags(uint8 flags) { RemoveByteFlag(UNIT_FIELD_BYTES_1, 2, flags); }
@@ -2412,7 +2412,7 @@ class Unit : public WorldObject
 
         bool m_runningToTarget;
         Spell* m_queuedSpell;
-        Unit* m_queuedSpellTarget;
+        uint64 m_queuedSpellTargetGuid;
 
         bool m_isDueling;
 

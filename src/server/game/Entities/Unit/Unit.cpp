@@ -267,7 +267,7 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
 
     m_runningToTarget = false;
     m_queuedSpell = NULL;
-    m_queuedSpellTarget = NULL;
+    m_queuedSpellTargetGuid = 0;
 
     m_oldShapeshiftForm = FORM_NONE;
 }
