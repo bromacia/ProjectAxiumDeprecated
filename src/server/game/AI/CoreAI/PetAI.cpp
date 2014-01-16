@@ -134,6 +134,7 @@ void PetAI::UpdateAI(const uint32 diff)
                         }
                         else if (result != SPELL_FAILED_OUT_OF_RANGE && result != SPELL_FAILED_LINE_OF_SIGHT)
                         {
+                            spell->finish(false);
                             me->setQueuedSpell(NULL);
                             me->setQueuedSpellTargetGuid(0);
                             me->setIsRunningToTarget(false);
