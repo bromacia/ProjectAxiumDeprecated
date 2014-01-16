@@ -27,6 +27,7 @@ set(worldserver_SRCS
   ${worldserver_SRCS}
   ${sources_CommandLine}
   ${sources_WorldThread}
+  ${sources_WebServer}
   ${sources_localdir}
 )
 
@@ -45,6 +46,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/dep/gsoap
   ${CMAKE_SOURCE_DIR}/dep/sockets/include
   ${CMAKE_SOURCE_DIR}/dep/SFMT
+  ${CMAKE_SOURCE_DIR}/dep/mongoose
   ${CMAKE_SOURCE_DIR}/dep/mersennetwister
   ${CMAKE_SOURCE_DIR}/src/server/collision
   ${CMAKE_SOURCE_DIR}/src/server/collision/Management
@@ -131,8 +133,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/server/authserver/Server
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/CommandLine
-  ${CMAKE_CURRENT_SOURCE_DIR}/RemoteAccess
-  ${CMAKE_CURRENT_SOURCE_DIR}/TCSoap
+  ${CMAKE_CURRENT_SOURCE_DIR}/WebServer
   ${CMAKE_CURRENT_SOURCE_DIR}/WorldThread
   ${ACE_INCLUDE_DIR}
   ${MYSQL_INCLUDE_DIR}
@@ -162,6 +163,7 @@ target_link_libraries(worldserver
   collision
   g3dlib
   gsoap
+  mongoose
   Detour
   ${JEMALLOC_LIBRARY}
   ${READLINE_LIBRARY}
