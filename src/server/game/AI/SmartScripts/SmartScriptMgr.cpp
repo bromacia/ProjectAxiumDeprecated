@@ -89,6 +89,8 @@ void SmartWaypointMgr::LoadFromDB()
     }
     while (result->NextRow());
 
+    delete path;
+
     sLog->outString(">> Loaded %u SmartAI waypoint paths (total %u waypoints) in %u ms", count, total, GetMSTimeDiffToNow(oldMSTime));
     sLog->outString();
 }
