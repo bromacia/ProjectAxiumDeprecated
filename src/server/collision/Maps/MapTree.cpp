@@ -127,7 +127,7 @@ namespace VMAP
     StaticMapTree::StaticMapTree(uint32 mapID, const std::string &basePath):
         iMapID(mapID), iTreeValues(0), iBasePath(basePath)
     {
-        if (iBasePath.length() > 0 && (iBasePath[iBasePath.length()-1] != '/' || iBasePath[iBasePath.length()-1] != '\\'))
+        if (iBasePath.length() > 0 && iBasePath[iBasePath.length()-1] != '/' && iBasePath[iBasePath.length()-1] != '\\')
         {
             iBasePath.push_back('/');
         }
@@ -160,6 +160,11 @@ namespace VMAP
     bool StaticMapTree::isInLineOfSight(const Vector3& pos1, const Vector3& pos2) const
     {
         float maxDist = (pos2 - pos1).magnitude();
+		// return false if distance is over max float, in case of cheater teleporting to the end of the universe
+         if (maxDist == std::numeric_limits<float>::max() ||
+             maxDist == std::numeric_limits<float>::infinity())
+             return false;
+
         // valid map coords should *never ever* produce float overflow, but this would produce NaNs too
         ASSERT(maxDist < std::numeric_limits<float>::max());
         // prevent NaN values which can cause BIH intersection to enter infinite loop
@@ -241,7 +246,7 @@ namespace VMAP
     bool StaticMapTree::CanLoadMap(const std::string &vmapPath, uint32 mapID, uint32 tileX, uint32 tileY)
     {
         std::string basePath = vmapPath;
-        if (basePath.length() > 0 && (basePath[basePath.length()-1] != '/' || basePath[basePath.length()-1] != '\\'))
+        if (basePath.length() > 0 && basePath[basePath.length()-1] != '/' && basePath[basePath.length()-1] != '\\')
             basePath.push_back('/');
         std::string fullname = basePath + VMapManager2::getMapFileName(mapID);
         bool success = true;
