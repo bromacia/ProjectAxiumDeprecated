@@ -45,7 +45,7 @@ private:
 class ModelInstance
 {
 public:
-	Model *model;
+    Model *model;
 
     uint32 id;
     Vec3D pos, rot;
