@@ -22,12 +22,14 @@
 #include "MapTree.h"
 #include "ModelInstance.h"
 #include "LoginDatabase.h"
+#include "LogDatabase.h"
 
 #include "DetourNavMeshBuilder.h"
 #include "DetourCommon.h"
 
 // These make the linker happy.
 LoginDatabaseWorkerPool LoginDatabase;
+LogDatabaseWorkerPool LogDatabase;
 uint32 GetLiquidFlags(uint32 liquidType)
 {
     return 0;
