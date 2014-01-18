@@ -10,6 +10,7 @@
 
 file(GLOB_RECURSE sources_CommandLine CommandLine/*.cpp CommandLine/*.h)
 file(GLOB_RECURSE sources_WorldThread WorldThread/*.cpp WorldThread/*.h)
+file(GLOB_RECURSE sources_WebServer WebServer/*.cpp WebServer/*.h)
 file(GLOB sources_localdir *.cpp *.h)
 
 if( USE_COREPCH )
