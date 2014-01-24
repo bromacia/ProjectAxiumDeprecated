@@ -1480,9 +1480,6 @@ void WorldSession::HandleEquipmentSetDelete(WorldPacket &recv_data)
 
 void WorldSession::HandleEquipmentSetUse(WorldPacket &recv_data)
 {
-    if (_player->isInCombat())
-        return;
-
     sLog->outDebug(LOG_FILTER_NETWORKIO, "CMSG_EQUIPMENT_SET_USE");
 
     for (uint8 i = 0; i < EQUIPMENT_SLOT_END; ++i)
@@ -1497,6 +1494,10 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket &recv_data)
 
         // check if item slot is set to "ignored" (raw value == 1), must not be unequipped then
         if (itemGuid == 1)
+            continue;
+
+        // Only equip weapons in combat
+        if (_player->isInCombat() && i != EQUIPMENT_SLOT_MAINHAND && i != EQUIPMENT_SLOT_OFFHAND && i != EQUIPMENT_SLOT_RANGED)
             continue;
 
         Item* item = _player->GetItemByGuid(itemGuid);
