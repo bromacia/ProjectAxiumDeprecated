@@ -1,13 +1,10 @@
 #ifndef CHALLENGE_MGR_H_
 #define CHALLENGE_MGR_H_
 
-#include "Battleground.h"
-#include "BattlegroundMgr.h"
-#include "BattlegroundQueue.h"
-#include "Player.h"
-#include "SocialMgr.h"
-#include "Group.h"
-#include "SharedDefines.h"
+class Player;
+class Battleground;
+class BattlegroundQueue;
+struct PvPDifficultyEntry;
 
 class ChallengeMgr
 {

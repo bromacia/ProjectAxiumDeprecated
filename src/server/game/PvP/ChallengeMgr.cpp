@@ -1,4 +1,11 @@
 #include "ChallengeMgr.h"
+#include "Battleground.h"
+#include "BattlegroundMgr.h"
+#include "BattlegroundQueue.h"
+#include "Player.h"
+#include "SocialMgr.h"
+#include "Group.h"
+#include "SharedDefines.h"
 
 ChallengeMgr::ChallengeMgr()
 {
@@ -13,6 +20,8 @@ ChallengeMgr::ChallengeMgr()
 
 ChallengeMgr::~ChallengeMgr()
 {
+    delete bg;
+    delete bracketEntry;
 }
 
 void ChallengeMgr::HandleChallenge(uint64 challengerGUID, uint64 challengedGUID, uint8 map)
