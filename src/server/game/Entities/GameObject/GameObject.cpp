@@ -1609,7 +1609,7 @@ void GameObject::Use(Unit* user)
             // Prevent client crashes
             if (player->IsMorphed())
             {
-                ChatHandler(player).PSendSysMessage("You can't do that while morphed");
+                player->SendSysMessage("You can't do that while morphed");
                 return;
             }
 

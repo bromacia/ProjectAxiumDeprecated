@@ -12,7 +12,7 @@ class npc_beastmaster : public CreatureScript
         {
             if (player->getClass() != CLASS_HUNTER)
             {
-                ChatHandler(player).PSendSysMessage("You must be a hunter to have access to pets.");
+                player->SendSysMessage("You must be a hunter to have access to pets.");
                 return;
             }
 
@@ -40,7 +40,7 @@ class npc_beastmaster : public CreatureScript
             pet->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
 
             player->CLOSE_GOSSIP_MENU();
-            ChatHandler(player).PSendSysMessage("Pet added.");
+            player->SendSysMessage("Pet added.");
         }
 
         bool OnGossipHello(Player* player, Creature* creature)
@@ -117,7 +117,7 @@ class npc_beastmaster : public CreatureScript
                 case 1200:
                     if (player->getClass() != CLASS_HUNTER)
                     {
-                        ChatHandler(player).PSendSysMessage("You must be a hunter to access a stable.");
+                        player->SendSysMessage("You must be a hunter to access a stable.");
                         player->CLOSE_GOSSIP_MENU();
                         return false;
                     }
@@ -127,7 +127,7 @@ class npc_beastmaster : public CreatureScript
                 case 1300:
                     if (player->getClass() != CLASS_HUNTER)
                     {
-                        ChatHandler(player).PSendSysMessage("You must be a hunter to reset pet talents.");
+                        player->SendSysMessage("You must be a hunter to reset pet talents.");
                         player->CLOSE_GOSSIP_MENU();
                         return false;
                     }

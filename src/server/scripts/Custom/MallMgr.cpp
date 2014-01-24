@@ -250,8 +250,6 @@ bool MallMgr::HandleProfessions(Player* player, Creature* creature)
 
 bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
 {
-    ChatHandler handler = ChatHandler(player);
-
     switch (action)
     {
         case MALL_MENU_ENCHANTS:
@@ -284,7 +282,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your head slot");
+                player->SendSysMessage("You have no item equipped in your head slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -303,7 +301,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_SHOULDERS);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your shoulder slot");
+                player->SendSysMessage("You have no item equipped in your shoulder slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -330,7 +328,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_CHEST);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your chest slot");
+                player->SendSysMessage("You have no item equipped in your chest slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -347,7 +345,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HANDS);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your hands slot");
+                player->SendSysMessage("You have no item equipped in your hands slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -375,7 +373,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_LEGS);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your legs slot");
+                player->SendSysMessage("You have no item equipped in your legs slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -394,7 +392,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_WRISTS);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your wrists slot");
+                player->SendSysMessage("You have no item equipped in your wrists slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -425,7 +423,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_WAIST);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your waist slot");
+                player->SendSysMessage("You have no item equipped in your waist slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -440,7 +438,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FEET);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your feet slot");
+                player->SendSysMessage("You have no item equipped in your feet slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -462,7 +460,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_BACK);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your back slot");
+                player->SendSysMessage("You have no item equipped in your back slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -494,7 +492,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FINGER2);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your finger1 slot");
+                player->SendSysMessage("You have no item equipped in your finger1 slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -514,7 +512,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FINGER2);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your finger2 slot");
+                player->SendSysMessage("You have no item equipped in your finger2 slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -534,7 +532,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your main hand slot");
+                player->SendSysMessage("You have no item equipped in your main hand slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -542,7 +540,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             const ItemTemplate* pItemTemplate = pItem->GetTemplate();
             if (!pItemTemplate)
             {
-                handler.PSendSysMessage("Unable to get template data for the item in your main hand slot");
+                player->SendSysMessage("Unable to get template data for the item in your main hand slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -591,7 +589,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your off hand slot");
+                player->SendSysMessage("You have no item equipped in your off hand slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -599,7 +597,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             const ItemTemplate* pItemTemplate = pItem->GetTemplate();
             if (!pItemTemplate)
             {
-                handler.PSendSysMessage("Unable to get template data for the item in your off hand slot");
+                player->SendSysMessage("Unable to get template data for the item in your off hand slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -655,7 +653,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
             Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
             if (!pItem)
             {
-                handler.PSendSysMessage("You have no item equipped in your ranged slot");
+                player->SendSysMessage("You have no item equipped in your ranged slot");
                 player->CLOSE_GOSSIP_MENU();
                 return false;
             }
@@ -720,14 +718,12 @@ bool MallMgr::HandleFinishShadowDanceBar(Player* player, Creature* creature)
 
 bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 action)
 {
-    ChatHandler handler = ChatHandler(player);
-
     player->CLOSE_GOSSIP_MENU();
 
     const VendorItemData* items = creature->GetVendorItems();
     if (!items)
     {
-        handler.PSendSysMessage("Unable to find item data");
+        player->SendSysMessage("Unable to find item data");
         return false;
     }
 
@@ -766,7 +762,7 @@ bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 action)
 
     if (!count)
     {
-        handler.PSendSysMessage("Unable to find item data");
+        player->SendSysMessage("Unable to find item data");
         return false;
     }
 
@@ -777,11 +773,10 @@ bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 action)
 
 bool MallMgr::EnchantItem(Player* player, Creature* creature, uint16 enchantId, uint8 enchantOption)
 {
-    ChatHandler handler = ChatHandler(player);
     uint8 slot = GetItemSlotByEnchantOption(enchantOption);
     if (slot > EQUIPMENT_SLOT_RANGED)
     {
-        handler.PSendSysMessage("Unable to find item slot based on enchant option: %u", enchantOption);
+        player->SendSysMessage("Unable to find item slot based on enchant option: %u", enchantOption);
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
@@ -789,7 +784,7 @@ bool MallMgr::EnchantItem(Player* player, Creature* creature, uint16 enchantId, 
     Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
     if (!pItem)
     {
-        handler.PSendSysMessage("You have no item equipped in your %s slot", SlotToSlotString(slot).c_str());
+        player->SendSysMessage("You have no item equipped in your %s slot", SlotToSlotString(slot).c_str());
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
@@ -797,7 +792,7 @@ bool MallMgr::EnchantItem(Player* player, Creature* creature, uint16 enchantId, 
     const ItemTemplate* pItemTemplate = pItem->GetTemplate();
     if (!pItemTemplate)
     {
-        handler.PSendSysMessage("Unable to get template data for the item in your %s slot", SlotToSlotString(slot).c_str());
+        player->SendSysMessage("Unable to get template data for the item in your %s slot", SlotToSlotString(slot).c_str());
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
@@ -805,7 +800,7 @@ bool MallMgr::EnchantItem(Player* player, Creature* creature, uint16 enchantId, 
     const SpellItemEnchantmentEntry* enchantEntry = sSpellItemEnchantmentStore.LookupEntry(enchantId);
     if (!enchantEntry)
     {
-        handler.PSendSysMessage("Unable to get data for enchant: %u", enchantId);
+        player->SendSysMessage("Unable to get data for enchant: %u", enchantId);
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
@@ -833,7 +828,7 @@ bool MallMgr::EnchantItem(Player* player, Creature* creature, uint16 enchantId, 
 
             if (!addSocket)
             {
-                handler.PSendSysMessage("Unable to add socket to %s because enchant: %u doesn't have enchant entry type: ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET",
+                player->SendSysMessage("Unable to add socket to %s because enchant: %u doesn't have enchant entry type: ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET",
                 pItemTemplate->Name1.c_str(), enchantId);
                 player->CLOSE_GOSSIP_MENU();
                 return false;
@@ -863,11 +858,9 @@ bool MallMgr::EnchantItem(Player* player, Creature* creature, uint16 enchantId, 
 
 bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
 {
-    ChatHandler handler = ChatHandler(player);
-
     if (player->GetSkillValue(skill) == 450)
     {
-        handler.PSendSysMessage("You already have that profession");
+        player->SendSysMessage("You already have that profession");
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
@@ -881,7 +874,7 @@ bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
     const SkillLineEntry* skillLineEntry = sSkillLineStore.LookupEntry(skill);
     if (!skillLineEntry)
     {
-        handler.PSendSysMessage("Unable to get skill line entry for profession: %s", SkillToSkillString(skill).c_str());
+        player->SendSysMessage("Unable to get skill line entry for profession: %s", SkillToSkillString(skill).c_str());
         player->CLOSE_GOSSIP_MENU();
         return false;
     }
@@ -902,7 +895,7 @@ bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
 
     if (!professionSpellId)
     {
-        handler.PSendSysMessage("Unable to get spell for profession: %s", SkillToSkillString(skill).c_str());
+        player->SendSysMessage("Unable to get spell for profession: %s", SkillToSkillString(skill).c_str());
         player->CLOSE_GOSSIP_MENU();
         return false;
     }

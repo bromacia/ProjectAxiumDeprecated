@@ -2103,13 +2103,13 @@ bool ChatHandler::HandleExploreCheatCommand(const char* args)
     {
         PSendSysMessage(LANG_YOU_SET_EXPLORE_ALL, GetNameLink(chr).c_str());
         if (needReportToTarget(chr))
-            ChatHandler(chr).PSendSysMessage(LANG_YOURS_EXPLORE_SET_ALL, GetNameLink().c_str());
+            chr->SendSysMessage(LANG_YOURS_EXPLORE_SET_ALL, GetNameLink().c_str());
     }
     else
     {
         PSendSysMessage(LANG_YOU_SET_EXPLORE_NOTHING, GetNameLink(chr).c_str());
         if (needReportToTarget(chr))
-            ChatHandler(chr).PSendSysMessage(LANG_YOURS_EXPLORE_SET_NOTHING, GetNameLink().c_str());
+            chr->SendSysMessage(LANG_YOURS_EXPLORE_SET_NOTHING, GetNameLink().c_str());
     }
 
     for (uint8 i = 0; i < PLAYER_EXPLORED_ZONES_SIZE; ++i)
@@ -2153,11 +2153,11 @@ void ChatHandler::HandleCharacterLevel(Player* player, uint64 playerGuid, uint32
         if (needReportToTarget(player))
         {
             if (oldLevel == newLevel)
-                ChatHandler(player).PSendSysMessage(LANG_YOURS_LEVEL_PROGRESS_RESET, GetNameLink().c_str());
+                player->SendSysMessage(LANG_YOURS_LEVEL_PROGRESS_RESET, GetNameLink().c_str());
             else if (oldLevel < newLevel)
-                ChatHandler(player).PSendSysMessage(LANG_YOURS_LEVEL_UP, GetNameLink().c_str(), newLevel);
+                player->SendSysMessage(LANG_YOURS_LEVEL_UP, GetNameLink().c_str(), newLevel);
             else                                                // if (oldlevel > newlevel)
-                ChatHandler(player).PSendSysMessage(LANG_YOURS_LEVEL_DOWN, GetNameLink().c_str(), newLevel);
+                player->SendSysMessage(LANG_YOURS_LEVEL_DOWN, GetNameLink().c_str(), newLevel);
         }
     }
     else
@@ -2544,7 +2544,7 @@ bool ChatHandler::HandleResetSpellsCommand(const char* args)
     {
         target->resetSpells(/* bool myClassOnly */);
 
-        ChatHandler(target).SendSysMessage(LANG_RESET_SPELLS);
+        target->SendSysMessage(LANG_RESET_SPELLS);
         if (!m_session || m_session->GetPlayer() != target)
             PSendSysMessage(LANG_RESET_SPELLS_ONLINE, GetNameLink(target).c_str());
     }
@@ -2580,7 +2580,7 @@ bool ChatHandler::HandleResetTalentsCommand(const char* args)
                 creature->ToPet()->resetTalents();
                 owner->ToPlayer()->SendTalentsInfoData(true);
 
-                ChatHandler(owner->ToPlayer()).SendSysMessage(LANG_RESET_PET_TALENTS);
+                owner->ToPlayer()->SendSysMessage(LANG_RESET_PET_TALENTS);
                 if (!m_session || m_session->GetPlayer() != owner->ToPlayer())
                     PSendSysMessage(LANG_RESET_PET_TALENTS_ONLINE, GetNameLink(owner->ToPlayer()).c_str());
             }
@@ -2596,7 +2596,7 @@ bool ChatHandler::HandleResetTalentsCommand(const char* args)
     {
         target->resetTalents(true);
         target->SendTalentsInfoData(false);
-        ChatHandler(target).SendSysMessage(LANG_RESET_TALENTS);
+        target->SendSysMessage(LANG_RESET_TALENTS);
         if (!m_session || m_session->GetPlayer() != target)
             PSendSysMessage(LANG_RESET_TALENTS_ONLINE, GetNameLink(target).c_str());
 

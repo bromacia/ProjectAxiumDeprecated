@@ -86,7 +86,7 @@ bool ChatHandler::HandleMuteCommand(const char* args)
 
         stmt->setInt64(0, muteTime);
 
-        ChatHandler(target).PSendSysMessage(LANG_YOUR_CHAT_DISABLED, notspeaktime, mutereasonstr.c_str());
+        target->SendSysMessage(LANG_YOUR_CHAT_DISABLED, notspeaktime, mutereasonstr.c_str());
     }
     else
     {
@@ -147,7 +147,7 @@ bool ChatHandler::HandleUnmuteCommand(const char* args)
     LoginDatabase.Execute(stmt);
 
     if (target)
-        ChatHandler(target).PSendSysMessage(LANG_YOUR_CHAT_ENABLED);
+        target->SendSysMessage(LANG_YOUR_CHAT_ENABLED);
 
     std::string nameLink = playerLink(target_name);
 
@@ -887,7 +887,7 @@ bool ChatHandler::HandleRepairitemsCommand(const char* args)
 
     PSendSysMessage(LANG_YOU_REPAIR_ITEMS, GetNameLink(target).c_str());
     if (needReportToTarget(target))
-        ChatHandler(target).PSendSysMessage(LANG_YOUR_ITEMS_REPAIRED, GetNameLink().c_str());
+        target->SendSysMessage(LANG_YOUR_ITEMS_REPAIRED, GetNameLink().c_str());
     return true;
 }
 
@@ -921,7 +921,7 @@ bool ChatHandler::HandleWaterwalkCommand(const char* args)
 
     PSendSysMessage(LANG_YOU_SET_WATERWALK, args, GetNameLink(player).c_str());
     if (needReportToTarget(player))
-        ChatHandler(player).PSendSysMessage(LANG_YOUR_WATERWALK_SET, args, GetNameLink().c_str());
+        player->SendSysMessage(LANG_YOUR_WATERWALK_SET, args, GetNameLink().c_str());
     return true;
 }
 

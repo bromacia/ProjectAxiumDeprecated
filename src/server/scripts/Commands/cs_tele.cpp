@@ -266,7 +266,7 @@ public:
 
             handler->PSendSysMessage(LANG_TELEPORTING_TO, plNameLink.c_str(), "", tele->name.c_str());
             if (handler->needReportToTarget(player))
-                (ChatHandler(player)).PSendSysMessage(LANG_TELEPORTED_TO_BY, nameLink.c_str());
+                player->SendSysMessage(LANG_TELEPORTED_TO_BY, nameLink.c_str());
 
             // stop flight if need
             if (player->isInFlight())

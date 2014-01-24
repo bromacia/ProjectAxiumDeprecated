@@ -142,7 +142,7 @@ public:
 
             handler->PSendSysMessage(LANG_SUMMONING, plNameLink.c_str(), "");
             if (handler->needReportToTarget(player))
-                ChatHandler(player).PSendSysMessage(LANG_SUMMONED_BY, handler->GetNameLink().c_str());
+                player->SendSysMessage(LANG_SUMMONED_BY, handler->GetNameLink().c_str());
 
             // stop flight if need
             if (player->isInFlight())

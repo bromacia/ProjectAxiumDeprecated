@@ -214,7 +214,7 @@ GroupQueueInfo* BattlegroundQueue::AddGroup(Player* leader, Group* grp, Battlegr
 
                 if (sWorld->getBoolConfig(CONFIG_BATTLEGROUND_QUEUE_ANNOUNCER_PLAYERONLY))
                 {
-                    ChatHandler(leader->GetSession()).PSendSysMessage("Queue status for %s (Lvl: %u to %u) Queued players: %u (Need at least %u more)",
+                    leader->GetSession()->SendSysMessage("Queue status for %s (Lvl: %u to %u) Queued players: %u (Need at least %u more)",
                         bgName, q_min_level, q_max_level, qPlayers, MinPlayers - qPlayers);
                 }
                 else

@@ -195,7 +195,6 @@ void Transmogrification::ShowRemoveTransmogEnchantOptions(Player* player, Creatu
 
 void Transmogrification::SelectIndividualTransmog(Player* player, Creature* creature, uint16 action)
 {
-    ChatHandler handler = ChatHandler(player);
     uint8 itemSlot = GetItemSlotByAction(action);
     player->SetSelectedTransmogItemSlot(itemSlot);
 
@@ -204,7 +203,7 @@ void Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
     const ItemTemplate* pItemTemplate = player->GetItemByPos(INVENTORY_SLOT_BAG_0, itemSlot)->GetTemplate();
     if (!pItemTemplate)
     {
-        handler.PSendSysMessage("Unable to find item data for slot %u.", itemSlot);
+        player->SendSysMessage("Unable to find item data for slot %u.", itemSlot);
         player->SetSelectedTransmogItemSlot(0);
         return;
     }
@@ -212,7 +211,7 @@ void Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
     const VendorItemData* items = creature->GetVendorItems();
     if (!items)
     {
-        handler.PSendSysMessage("This transmogrifier doesn't have any items.");
+        player->SendSysMessage("This transmogrifier doesn't have any items.");
         player->SetSelectedTransmogItemSlot(0);
         return;
     }
@@ -256,7 +255,7 @@ void Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
 
     if (!count)
     {
-        handler.PSendSysMessage("No items found for that option.");
+        player->SendSysMessage("No items found for that option.");
         player->SetSelectedTransmogItemSlot(0);
         return;
     }

@@ -342,7 +342,7 @@ bool ChatHandler::HandleTaxiCheatCommand(const char* args)
         chr->SetTaxiCheater(true);
         PSendSysMessage(LANG_YOU_GIVE_TAXIS, GetNameLink(chr).c_str());
         if (needReportToTarget(chr))
-            ChatHandler(chr).PSendSysMessage(LANG_YOURS_TAXIS_ADDED, GetNameLink().c_str());
+            chr->SendSysMessage(LANG_YOURS_TAXIS_ADDED, GetNameLink().c_str());
         return true;
     }
 
@@ -351,7 +351,7 @@ bool ChatHandler::HandleTaxiCheatCommand(const char* args)
         chr->SetTaxiCheater(false);
         PSendSysMessage(LANG_YOU_REMOVE_TAXIS, GetNameLink(chr).c_str());
         if (needReportToTarget(chr))
-            ChatHandler(chr).PSendSysMessage(LANG_YOURS_TAXIS_REMOVED, GetNameLink().c_str());
+            chr->SendSysMessage(LANG_YOURS_TAXIS_REMOVED, GetNameLink().c_str());
 
         return true;
     }

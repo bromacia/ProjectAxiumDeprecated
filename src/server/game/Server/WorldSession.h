@@ -218,6 +218,9 @@ class WorldSession
         void ReadAddonsInfo(WorldPacket& data);
         void SendAddonsInfo();
 
+        void SendSysMessage(const char *format, ...) ATTR_PRINTF(2, 3);
+        void SendSysMessage(int32 entry, ...);
+
         void ReadMovementInfo(WorldPacket& data, MovementInfo* mi);
         void WriteMovementInfo(WorldPacket* data, MovementInfo* mi);
 

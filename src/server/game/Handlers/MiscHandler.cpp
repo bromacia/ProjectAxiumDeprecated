@@ -892,7 +892,7 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
     }
 
     if (player->isDebugAreaTriggers)
-        ChatHandler(player).PSendSysMessage(LANG_DEBUG_AREATRIGGER_REACHED, triggerId);
+        player->SendSysMessage(LANG_DEBUG_AREATRIGGER_REACHED, triggerId);
 
     if (sScriptMgr->OnAreaTrigger(player, atEntry))
         return;
@@ -1641,13 +1641,13 @@ void WorldSession::HandleCancelMountAuraOpcode(WorldPacket & /*recv_data*/)
     //If player is not mounted, so go out :)
     if (!_player->IsMounted())                              // not blizz like; no any messages on blizz
     {
-        ChatHandler(this).SendSysMessage(LANG_CHAR_NON_MOUNTED);
+        SendSysMessage(LANG_CHAR_NON_MOUNTED);
         return;
     }
 
     if (_player->isInFlight())                               // not blizz like; no any messages on blizz
     {
-        ChatHandler(this).SendSysMessage(LANG_YOU_IN_FLIGHT);
+        SendSysMessage(LANG_YOU_IN_FLIGHT);
         return;
     }
 

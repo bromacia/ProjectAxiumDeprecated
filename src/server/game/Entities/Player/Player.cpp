@@ -4514,13 +4514,13 @@ bool Player::resetTalents(bool no_cost)
                 uint8 msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
                 if (msg == EQUIP_ERR_OK)
                 {
-                    ChatHandler(this).PSendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
                     RemoveItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1, true);
                     item = StoreItem(dest, item, true);
                 }
                 else
                 {
-                    ChatHandler(this).PSendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
                     SQLTransaction trans = CharacterDatabase.BeginTransaction();
                     MailDraft draft("Bauble of True Blood", "");
                     draft.AddItem(item);
@@ -4538,13 +4538,13 @@ bool Player::resetTalents(bool no_cost)
                 uint8 msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
                 if (msg == EQUIP_ERR_OK)
                 {
-                    ChatHandler(this).PSendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
                     RemoveItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET2, true);
                     item = StoreItem(dest, item, true);
                 }
                 else
                 {
-                    ChatHandler(this).PSendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
                     SQLTransaction trans = CharacterDatabase.BeginTransaction();
                     MailDraft draft("Bauble of True Blood", "");
                     draft.AddItem(item);
@@ -7315,7 +7315,7 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, int32 honor, bool pvpt
             int32 count = sWorld->getIntConfig(CONFIG_PVP_TOKEN_COUNT);
 
             if (AddItem(itemId, count))
-                ChatHandler(this).PSendSysMessage("You have been awarded a token for slaying another player.");
+                SendSysMessage("You have been awarded a token for slaying another player.");
         }
     }
 
@@ -11585,7 +11585,7 @@ InventoryResult Player::CanEquipItem(uint8 slot, uint16 &dest, Item* pItem, bool
             if (sWorld->getBoolConfig(CONFIG_HEALER_ONLY_BAUBLE))
                 if (IsInWorld() && !IsHealingSpec() && (pItem->GetTemplate()->ItemId == 50354 || pItem->GetTemplate()->ItemId == 50726))
                 {
-                    ChatHandler(GetSession()).PSendSysMessage("You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    GetSession()->SendSysMessage("You can't equip Bauble of True Blood unless you're specced as a healer.");
                     return EQUIP_ERR_NONE;
                 }
 
@@ -17321,13 +17321,13 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
                 uint8 msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
                 if (msg == EQUIP_ERR_OK)
                 {
-                    ChatHandler(this).PSendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
                     RemoveItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1, true);
                     item = StoreItem(dest, item, true);
                 }
                 else
                 {
-                    ChatHandler(this).PSendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
                     SQLTransaction trans = CharacterDatabase.BeginTransaction();
                     MailDraft draft("Bauble of True Blood", "");
                     draft.AddItem(item);
@@ -17345,13 +17345,13 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
                 uint8 msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
                 if (msg == EQUIP_ERR_OK)
                 {
-                    ChatHandler(this).PSendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
                     RemoveItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET2, true);
                     item = StoreItem(dest, item, true);
                 }
                 else
                 {
-                    ChatHandler(this).PSendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
                     SQLTransaction trans = CharacterDatabase.BeginTransaction();
                     MailDraft draft("Bauble of True Blood", "");
                     draft.AddItem(item);
@@ -18578,7 +18578,7 @@ bool Player::Satisfy(AccessRequirement const* ar, uint32 target_map, bool report
             if (report)
             {
                 if (missingQuest && !ar->questFailedText.empty())
-                    ChatHandler(GetSession()).PSendSysMessage("%s", ar->questFailedText.c_str());
+                    GetSession()->SendSysMessage("%s", ar->questFailedText.c_str());
                 else if (mapDiff->hasErrorMessage) // if (missingAchievement) covered by this case
                     SendTransferAborted(target_map, TRANSFER_ABORT_DIFFICULTY, target_difficulty);
                 else if (missingItem)
@@ -19952,14 +19952,14 @@ void Player::Whisper(const std::string& text, uint32 language, uint64 receiver)
     if (!IsAcceptWhispers() && !HasGameMasterTagOn() && !rPlayer->HasGameMasterTagOn())
     {
         SetAcceptWhispers(true);
-        ChatHandler(this).SendSysMessage(LANG_COMMAND_WHISPERON);
+        SendSysMessage(LANG_COMMAND_WHISPERON);
     }
 
     // announce afk or dnd message
     if (rPlayer->isAFK())
-        ChatHandler(this).PSendSysMessage(LANG_PLAYER_AFK, rPlayer->GetName(), rPlayer->afkMsg.c_str());
+        SendSysMessage(LANG_PLAYER_AFK, rPlayer->GetName(), rPlayer->afkMsg.c_str());
     else if (rPlayer->isDND())
-        ChatHandler(GetSession()).PSendSysMessage(LANG_PLAYER_DND, rPlayer->GetName(), rPlayer->dndMsg.c_str());
+        GetSession()->SendSysMessage(LANG_PLAYER_DND, rPlayer->GetName(), rPlayer->dndMsg.c_str());
 }
 
 void Player::LogChatMessageToDB(const std::string& text, uint32 type, uint32 language, Player* receiver)
@@ -25187,13 +25187,13 @@ void Player::ActivateSpec(uint8 spec)
                 uint8 msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
                 if (msg == EQUIP_ERR_OK)
                 {
-                    ChatHandler(this).PSendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
                     RemoveItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1, true);
                     item = StoreItem(dest, item, true);
                 }
                 else
                 {
-                    ChatHandler(this).PSendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
                     SQLTransaction trans = CharacterDatabase.BeginTransaction();
                     MailDraft draft("Bauble of True Blood", "");
                     draft.AddItem(item);
@@ -25211,13 +25211,13 @@ void Player::ActivateSpec(uint8 spec)
                 uint8 msg = CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
                 if (msg == EQUIP_ERR_OK)
                 {
-                    ChatHandler(this).PSendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SendSysMessage("Unequipping Bauble of True Blood. You can't equip Bauble of True Blood unless you're specced as a healer.");
                     RemoveItem(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET2, true);
                     item = StoreItem(dest, item, true);
                 }
                 else
                 {
-                    ChatHandler(this).PSendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
+                    SendSysMessage("Mailing Bauble of True Blood (not enough space in bags). You can't equip Bauble of True Blood unless you're specced as a healer.");
                     SQLTransaction trans = CharacterDatabase.BeginTransaction();
                     MailDraft draft("Bauble of True Blood", "");
                     draft.AddItem(item);
@@ -25335,7 +25335,7 @@ bool Player::AddItem(uint32 itemId, uint32 count)
     if (count == 0 || dest.empty())
     {
         // -- TODO: Send to mailbox if no space
-        ChatHandler(this).PSendSysMessage("You don't have any space in your bags.");
+        SendSysMessage("You don't have any space in your bags.");
         return false;
     }
 
@@ -25661,7 +25661,7 @@ void Player::TransmogrifyItem(uint32 item, const VendorItem* vItem)
 
     if (!CheckExtendedCost2(vItemTemplate))
     {
-        ChatHandler(this).PSendSysMessage("%s requires %s.", vItemTemplate->Name1.c_str(), CreateExtendedCost2ErrorMessage(vItemTemplate->ExtendedCost2).c_str());
+        SendSysMessage("%s requires %s.", vItemTemplate->Name1.c_str(), CreateExtendedCost2ErrorMessage(vItemTemplate->ExtendedCost2).c_str());
         return;
     }
 
@@ -25722,7 +25722,7 @@ bool Player::CheckExtendedCost2(const ItemTemplate* vItemTemplate)
         const CharTitlesEntry* titleInfo = sCharTitlesStore.LookupEntry(extendedCost2.Required_Title);
         if (!titleInfo)
         {
-            ChatHandler(this).PSendSysMessage("Unable to find title info for title Id: %u, ExtendedCost2: %u", extendedCost2.Required_Title, vItemTemplate->ExtendedCost2);
+            SendSysMessage("Unable to find title info for title Id: %u, ExtendedCost2: %u", extendedCost2.Required_Title, vItemTemplate->ExtendedCost2);
             return false;
         }
 
@@ -25841,31 +25841,30 @@ bool Player::IsHealingSpec() const
 
 bool Player::CanAppearToTarget(Player* target)
 {
-    ChatHandler handler = ChatHandler(this);
     uint8 playerSecurity = GetSession()->GetSecurity();
     uint32 msTime = getMSTime();
 
     if (target == this || target->GetGUIDLow() == GetGUIDLow())
     {
-        handler.PSendSysMessage("You can't appear to yourself.");
+        SendSysMessage("You can't appear to yourself.");
         return false;
     }
 
     if (!target->IsInWorld())
     {
-        handler.PSendSysMessage("You can't appear to players who are loading.");
+        SendSysMessage("You can't appear to players who are loading.");
         return false;
     }
 
     if (target->IsBeingTeleported())
     {
-        handler.PSendSysMessage("You can't appear to players who are being teleported.");
+        SendSysMessage("You can't appear to players who are being teleported.");
         return false;
     }
 
     if (target->isInFlight())
     {
-        handler.PSendSysMessage("You can't appear to players who are on a flight path.");
+        SendSysMessage("You can't appear to players who are on a flight path.");
         return false;
     }
 
@@ -25873,76 +25872,76 @@ bool Player::CanAppearToTarget(Player* target)
     {
         case SEC_PLAYER:
         {
-            handler.PSendSysMessage("You don't have high enough security to use this command.");
+            SendSysMessage("You don't have high enough security to use this command.");
             return false;
         }
         case SEC_VIP:
         {
             if (lastAppearTime + 10000 > msTime)
             {
-                handler.PSendSysMessage("You can only appear once every 10 seconds.");
-                handler.PSendSysMessage("Remaining Time: %u seconds", ((lastAppearTime + 10000) - msTime) / IN_MILLISECONDS);
+                SendSysMessage("You can only appear once every 10 seconds.");
+                SendSysMessage("Remaining Time: %u seconds", ((lastAppearTime + 10000) - msTime) / IN_MILLISECONDS);
                 return false;
             }
 
             if (InBattleground() || InArena())
             {
-                handler.PSendSysMessage("You can't appear while in a battleground or arena.");
+                SendSysMessage("You can't appear while in a battleground or arena.");
                 return false;
             }
 
             if (target->InBattleground() || target->InArena())
             {
-                handler.PSendSysMessage("You can't appear to players in battlegrounds or arenas.");
+                SendSysMessage("You can't appear to players in battlegrounds or arenas.");
                 return false;
             }
 
             if (isInCombat())
             {
-                handler.PSendSysMessage("You can't appear while in combat.");
+                SendSysMessage("You can't appear while in combat.");
                 return false;
             }
 
             if (lastCombatTime + 10000 > msTime)
             {
-                handler.PSendSysMessage("You can only appear 10 seconds after leaving combat.");
-                handler.PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - msTime) / IN_MILLISECONDS);
+                SendSysMessage("You can only appear 10 seconds after leaving combat.");
+                SendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - msTime) / IN_MILLISECONDS);
                 return false;
             }
 
             if (target->HasAuraType(SPELL_AURA_MOD_STEALTH) || target->HasAuraType(SPELL_AURA_MOD_INVISIBILITY))
             {
-                handler.PSendSysMessage("You can't appear to sleathed or invisible players.");
+                SendSysMessage("You can't appear to sleathed or invisible players.");
                 return false;
             }
 
             if (target->GetMap()->IsDungeon() || target->GetMap()->IsRaid())
             {
-                handler.PSendSysMessage("You can't appear to players in dungeons or raids.");
+                SendSysMessage("You can't appear to players in dungeons or raids.");
                 return false;
             }
 
             if (target->GetMap()->GetId() == 1 && target->GetZoneId() == 876)
             {
-                handler.PSendSysMessage("You can't appear to players on GM Island.");
+                SendSysMessage("You can't appear to players on GM Island.");
                 return false;
             }
 
             if (IsDueling())
             {
-                handler.PSendSysMessage("You can't appear while dueling.");
+                SendSysMessage("You can't appear while dueling.");
                 return false;
             }
 
             if (target->IsDueling())
             {
-                handler.PSendSysMessage("You can't appear to players who are dueling.");
+                SendSysMessage("You can't appear to players who are dueling.");
                 return false;
             }
 
             if (target->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
             {
-                handler.PSendSysMessage("You can't appear to Axium-Gaming staff members.");
+                SendSysMessage("You can't appear to Axium-Gaming staff members.");
                 return false;
             }
         }
@@ -25953,7 +25952,6 @@ bool Player::CanAppearToTarget(Player* target)
 
 bool Player::CanTeleportTo(const GameTele* tele)
 {
-    ChatHandler handler = ChatHandler(this);
     uint8 playerSecurity = GetSession()->GetSecurity();
     uint32 msTime = getMSTime();
 
@@ -25961,40 +25959,40 @@ bool Player::CanTeleportTo(const GameTele* tele)
     {
         case SEC_PLAYER:
         {
-            handler.PSendSysMessage("You don't have high enough security to use this command.");
+            SendSysMessage("You don't have high enough security to use this command.");
             return false;
         }
         case SEC_VIP:
         {
             if (lastTeleportTime + 10000 > msTime)
             {
-                handler.PSendSysMessage("You can only teleport once every 10 seconds.");
-                handler.PSendSysMessage("Remaining Time: %u seconds", ((lastTeleportTime + 10000) - msTime) / IN_MILLISECONDS);
+                SendSysMessage("You can only teleport once every 10 seconds.");
+                SendSysMessage("Remaining Time: %u seconds", ((lastTeleportTime + 10000) - msTime) / IN_MILLISECONDS);
                 return false;
             }
 
             if (InBattleground() || InArena())
             {
-                handler.PSendSysMessage("You can't appear while in a battleground or arena.");
+                SendSysMessage("You can't appear while in a battleground or arena.");
                 return false;
             }
 
             if (isInCombat())
             {
-                handler.PSendSysMessage("You can't appear while in combat.");
+                SendSysMessage("You can't appear while in combat.");
                 return false;
             }
 
             if (lastCombatTime + 10000 > msTime)
             {
-                handler.PSendSysMessage("You can only appear 10 seconds after leaving combat.");
-                handler.PSendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - msTime / IN_MILLISECONDS));
+                SendSysMessage("You can only appear 10 seconds after leaving combat.");
+                SendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - msTime / IN_MILLISECONDS));
                 return false;
             }
 
             if (IsDueling())
             {
-                handler.PSendSysMessage("You can't teleport while dueling.");
+                SendSysMessage("You can't teleport while dueling.");
                 return false;
             }
         }

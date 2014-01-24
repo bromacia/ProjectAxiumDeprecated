@@ -28,6 +28,7 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 #include "Player.h"
+#include "Chat.h"
 #include "Vehicle.h"
 #include "ObjectMgr.h"
 #include "GuildMgr.h"
@@ -1001,6 +1002,37 @@ void WorldSession::SendAddonsInfo()
     data << uint32(0); // count for an unknown for loop
 
     SendPacket(&data);
+}
+
+void WorldSession::SendSysMessage(int32 entry, ...)
+{
+    ChatHandler* handler = new ChatHandler(this);
+    if (!handler)
+        return;
+
+    const char *format = handler->GetTrinityString(entry);
+    va_list ap;
+    char str [2048];
+    va_start(ap, entry);
+    vsnprintf(str, 2048, format, ap);
+    va_end(ap);
+    handler->SendSysMessage(str);
+    delete handler;
+}
+
+void WorldSession::SendSysMessage(const char *format, ...)
+{
+    ChatHandler* handler = new ChatHandler(this);
+    if (!handler)
+        return;
+
+    va_list ap;
+    char str [2048];
+    va_start(ap, format);
+    vsnprintf(str, 2048, format, ap);
+    va_end(ap);
+    handler->SendSysMessage(str);
+    delete handler;
 }
 
 void WorldSession::SetPlayer(Player* player)

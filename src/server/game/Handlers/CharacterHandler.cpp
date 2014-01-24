@@ -736,7 +736,6 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
 
     Player* pCurrChar = new Player(this);
      // for send server info and strings (config)
-    ChatHandler chH = ChatHandler(pCurrChar);
 
     // "GetAccountId() == db stored account id" checked in LoadFromDB (prevent login not own character using cheating tools)
     if (!pCurrChar->LoadFromDB(GUID_LOPART(playerGuid), holder))
@@ -802,7 +801,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
 
         // send server info
         if (sWorld->getIntConfig(CONFIG_ENABLE_SINFO_LOGIN) == 1)
-            chH.PSendSysMessage("Axium-Core");
+            pCurrChar->SendSysMessage("Axium-Core");
 
         sLog->outStaticDebug("WORLD: Sent server info");
     }
@@ -853,7 +852,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
 
             // send new char string if not empty
             if (!sWorld->GetNewCharString().empty())
-                chH.PSendSysMessage("%s", sWorld->GetNewCharString().c_str());
+                pCurrChar->SendSysMessage("%s", sWorld->GetNewCharString().c_str());
         }
     }
 
@@ -954,7 +953,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         SendNotification(LANG_GM_ON);
 
     if (pCurrChar->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
-        chH.PSendSysMessage("There is currently %u open ticket(s).", sTicketMgr->GetOpenTicketCount());
+        pCurrChar->SendSysMessage("There is currently %u open ticket(s).", sTicketMgr->GetOpenTicketCount());
 
     std::string IP_str = GetRemoteAddress();
     sLog->outChar("Account: %d (IP: %s) Login Character:[%s] (GUID: %u)",
