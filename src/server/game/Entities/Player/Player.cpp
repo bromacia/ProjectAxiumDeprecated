@@ -2055,16 +2055,50 @@ uint8 Player::GetChatTag() const
 {
     uint8 tag = CHAT_TAG_NONE;
 
-    if (HasGMChatBadgeOn())
+    if (HasGameMasterTagOn())
         tag |= CHAT_TAG_GM;
     if (isDND())
         tag |= CHAT_TAG_DND;
     if (isAFK())
         tag |= CHAT_TAG_AFK;
-    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_DEVELOPER))
+    if (HasDeveloperTagOn())
         tag |= CHAT_TAG_DEV;
 
     return tag;
+}
+
+void Player::SetGameMasterMode(bool option)
+{
+    if (option)
+    {
+        SetGodMode(true);
+        SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_GM);
+        m_ExtraFlags |= PLAYER_EXTRA_GM_ON;
+    }
+    else
+    {
+        SetGodMode(false);
+        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_GM);
+        m_ExtraFlags &= ~ PLAYER_EXTRA_GM_ON;
+    }
+
+    UpdateTriggerVisibility();
+}
+
+void Player::SetDeveloperMode(bool option)
+{
+    if (option)
+    {
+        SetGodMode(true);
+        SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_DEVELOPER);
+    }
+    else
+    {
+        SetGodMode(false);
+        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_DEVELOPER);
+    }
+
+    UpdateTriggerVisibility();
 }
 
 void Player::SendTeleportAckPacket()
@@ -2810,13 +2844,11 @@ void Player::SetInWater(bool apply)
     getHostileRefManager().updateThreatTables();
 }
 
-void Player::SetGameMasterTag(bool on)
+void Player::SetGodMode(bool on)
 {
     if (on)
     {
-        m_ExtraFlags |= PLAYER_EXTRA_GM_ON;
         setFaction(35);
-        SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_GM);
         SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ALLOW_CHEAT_SPELLS);
 
         if (Pet* pet = GetPet())
@@ -2848,9 +2880,7 @@ void Player::SetGameMasterTag(bool on)
 
         SetPhaseMask(newPhase, false);
 
-        m_ExtraFlags &= ~ PLAYER_EXTRA_GM_ON;
         setFactionForRace(getRace());
-        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_GM);
         RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ALLOW_CHEAT_SPELLS);
 
         if (Pet* pet = GetPet())
@@ -17228,11 +17258,11 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         switch (sWorld->getIntConfig(CONFIG_GM_LOGIN_STATE))
         {
             default:
-            case 0:                      break;             // disable
-            case 1: SetGameMasterTag(true); break;          // enable
-            case 2:                                         // save state
+            case 0:                          break;             // disable
+            case 1: SetGameMasterMode(true); break;             // enable
+            case 2:                                             // save state
                 if (extraflags & PLAYER_EXTRA_GM_ON)
-                    SetGameMasterTag(true);
+                    SetGameMasterMode(true);
                 break;
         }
 
@@ -17240,21 +17270,10 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         {
             default:
             case 0: SetGMInvisible(true); break;            // invisible
-            case 1:                       break;             // visible
+            case 1:                       break;            // visible
             case 2:                                         // save state
                 if (extraflags & PLAYER_EXTRA_GM_INVISIBLE)
                     SetGMInvisible(true);
-                break;
-        }
-
-        switch (sWorld->getIntConfig(CONFIG_GM_CHAT))
-        {
-            default:
-            case 0:                  break;                 // disable
-            case 1: SetGMChatBadge(true); break;            // enable
-            case 2:                                         // save state
-                if (extraflags & PLAYER_EXTRA_GM_CHAT)
-                    SetGMChatBadge(true);
                 break;
         }
 

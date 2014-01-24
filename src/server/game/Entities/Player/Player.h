@@ -535,8 +535,7 @@ enum PlayerExtraFlags
     PLAYER_EXTRA_ACCEPT_WHISPERS    = 0x0004,
     PLAYER_EXTRA_TAXICHEAT          = 0x0008,
     PLAYER_EXTRA_GM_INVISIBLE       = 0x0010,
-    PLAYER_EXTRA_GM_CHAT            = 0x0020,               // Show GM badge in chat messages
-    PLAYER_EXTRA_HAS_310_FLYER      = 0x0040,               // Marks if player already has 310% speed flying mount
+    PLAYER_EXTRA_HAS_310_FLYER      = 0x0020,               // Marks if player already has 310% speed flying mount
 
     // other states
     PLAYER_EXTRA_PVP_DEATH          = 0x0100                // store PvP death status until corpse creating.
@@ -1189,6 +1188,9 @@ class Player : public Unit, public GridObject<Player>
         std::string afkMsg;
         std::string dndMsg;
 
+        void SetGameMasterMode(bool option);
+        void SetDeveloperMode(bool option);
+
         uint32 GetBarberShopCost(uint8 newhairstyle, uint8 newhaircolor, uint8 newfacialhair, BarberShopStyleEntry const* newSkin=NULL);
 
         PlayerSocial *GetSocial() { return m_social; }
@@ -1203,9 +1205,8 @@ class Player : public Unit, public GridObject<Player>
         bool IsAcceptWhispers() const { return m_ExtraFlags & PLAYER_EXTRA_ACCEPT_WHISPERS; }
         void SetAcceptWhispers(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_ACCEPT_WHISPERS; else m_ExtraFlags &= ~PLAYER_EXTRA_ACCEPT_WHISPERS; }
         bool HasGameMasterTagOn() const { return m_ExtraFlags & PLAYER_EXTRA_GM_ON; }
-        void SetGameMasterTag(bool on);
-        bool HasGMChatBadgeOn() const { return m_ExtraFlags & PLAYER_EXTRA_GM_CHAT; }
-        void SetGMChatBadge(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_GM_CHAT; else m_ExtraFlags &= ~PLAYER_EXTRA_GM_CHAT; }
+        void SetGodMode(bool on);
+        bool HasDeveloperTagOn() const { return HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_DEVELOPER); }
         bool IsTaxiCheater() const { return m_ExtraFlags & PLAYER_EXTRA_TAXICHEAT; }
         void SetTaxiCheater(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_TAXICHEAT; else m_ExtraFlags &= ~PLAYER_EXTRA_TAXICHEAT; }
         bool IsGMInvisible() const { return m_ExtraFlags & PLAYER_EXTRA_GM_INVISIBLE; }

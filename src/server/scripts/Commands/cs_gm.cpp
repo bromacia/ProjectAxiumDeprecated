@@ -37,7 +37,6 @@ public:
     {
         static ChatCommand gmCommandTable[] =
         {
-            { "chat",           SEC_GAMEMASTER,     false, &HandleGMChatCommand,              "", NULL },
             { "fly",            SEC_ADMINISTRATOR,  false, &HandleGMFlyCommand,               "", NULL },
             { "ingame",         SEC_PLAYER,         true,  &HandleGMListIngameCommand,        "", NULL },
             { "list",           SEC_ADMINISTRATOR,  true,  &HandleGMListFullCommand,          "", NULL },
@@ -51,40 +50,6 @@ public:
             { NULL,             0,                  false, NULL,                               "", NULL }
         };
         return commandTable;
-    }
-
-    // Enables or disables hiding of the staff badge
-    static bool HandleGMChatCommand(ChatHandler* handler, char const* args)
-    {
-        if (!*args)
-        {
-            WorldSession* session = handler->GetSession();
-            if (session->GetPlayer()->HasGMChatBadgeOn())
-                session->SendNotification(LANG_GM_CHAT_ON);
-            else
-                session->SendNotification(LANG_GM_CHAT_OFF);
-            return true;
-        }
-
-        std::string param = (char*)args;
-
-        if (param == "on")
-        {
-            handler->GetSession()->GetPlayer()->SetGMChatBadge(true);
-            handler->GetSession()->SendNotification(LANG_GM_CHAT_ON);
-            return true;
-        }
-
-        if (param == "off")
-        {
-            handler->GetSession()->GetPlayer()->SetGMChatBadge(false);
-            handler->GetSession()->SendNotification(LANG_GM_CHAT_OFF);
-            return true;
-        }
-
-        handler->SendSysMessage(LANG_USE_BOL);
-        handler->SetSentErrorMessage(true);
-        return false;
     }
 
     static bool HandleGMFlyCommand(ChatHandler* handler, char const* args)
@@ -226,25 +191,15 @@ public:
 
         if (param == "on")
         {
-            handler->GetSession()->GetPlayer()->SetGameMasterTag(true);
+            handler->GetSession()->GetPlayer()->SetGameMasterMode(true);
             handler->GetSession()->SendNotification(LANG_GM_ON);
-            handler->GetSession()->GetPlayer()->UpdateTriggerVisibility();
-#ifdef _DEBUG_VMAPS
-            VMAP::IVMapManager* vMapManager = VMAP::VMapFactory::createOrGetVMapManager();
-            vMapManager->processCommand("stoplog");
-#endif
             return true;
         }
 
         if (param == "off")
         {
-            handler->GetSession()->GetPlayer()->SetGameMasterTag(false);
+            handler->GetSession()->GetPlayer()->SetGameMasterMode(false);
             handler->GetSession()->SendNotification(LANG_GM_OFF);
-            handler->GetSession()->GetPlayer()->UpdateTriggerVisibility();
-#ifdef _DEBUG_VMAPS
-            VMAP::IVMapManager* vMapManager = VMAP::VMapFactory::createOrGetVMapManager();
-            vMapManager->processCommand("startlog");
-#endif
             return true;
         }
 

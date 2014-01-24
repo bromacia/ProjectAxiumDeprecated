@@ -48,15 +48,23 @@ public:
 
         if (argstr == "on")
         {
-            handler->GetSession()->GetPlayer()->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_DEVELOPER);
+            handler->GetSession()->GetPlayer()->SetDeveloperMode(true);
             handler->GetSession()->SendNotification(LANG_DEV_ON);
+#ifdef _DEBUG_VMAPS
+            VMAP::IVMapManager* vMapManager = VMAP::VMapFactory::createOrGetVMapManager();
+            vMapManager->processCommand("stoplog");
+#endif
             return true;
         }
 
         if (argstr == "off")
         {
-            handler->GetSession()->GetPlayer()->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_DEVELOPER);
+            handler->GetSession()->GetPlayer()->SetDeveloperMode(false);
             handler->GetSession()->SendNotification(LANG_DEV_OFF);
+#ifdef _DEBUG_VMAPS
+            VMAP::IVMapManager* vMapManager = VMAP::VMapFactory::createOrGetVMapManager();
+            vMapManager->processCommand("startlog");
+#endif
             return true;
         }
 
