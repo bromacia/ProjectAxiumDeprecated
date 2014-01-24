@@ -1087,32 +1087,29 @@ public:
         if (!*args)
             return false;
 
-        Unit* unit = handler->getSelectedUnit();
-        if (!unit)
-        {
-            handler->PSendSysMessage("Unable to find unit");
-            return false;
-        }
-
-        if (unit->GetTypeId() != TYPEID_PLAYER)
-        {
-            handler->PSendSysMessage("Unit is not a player");
-            return false;
-        }
-
-        Player* player = unit->ToPlayer();
+        Player* player = handler->getSelectedPlayer();
         if (!player)
+        {
+            handler->PSendSysMessage("Target must be a player");
+            handler->SetSentErrorMessage(true);
             return false;
+        }
+
+        if (player->GetGUID() == handler->GetSession()->GetPlayer()->GetGUID())
+        {
+            handler->PSendSysMessage("You cannot use this command on your self!");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
 
         uint8 loginFailed = atoi((char*)args);
 
         player->GetSession()->SendLoginFailed(loginFailed);
 
-        handler->PSendSysMessage("Sent login failed to %s with code %u", unit->GetName(), loginFailed);
-        handler->SetSentErrorMessage(true);
+        handler->PSendSysMessage("Sent login failed to %s with code %u", player->GetName(), loginFailed);
 
         player->GetSession()->LogoutPlayer(true);
-        return false;
+        return true;
     }
 
     static bool HandleDebugSetAuraStateCommand(ChatHandler* handler, char const* args)
