@@ -500,7 +500,7 @@ uint32 BattlegroundMgr::CreateClientVisibleInstanceId(BattlegroundTypeId bgTypeI
 }
 
 // create a new battleground that will really be used to play
-Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId, PvPDifficultyEntry const* bracketEntry, uint8 arenaType, bool isRated)
+Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId, PvPDifficultyEntry const* bracketEntry, uint8 arenaType, bool isRated, bool IsChallenge)
 {
     // get the template BG
     Battleground* bg_template = GetBattlegroundTemplate(bgTypeId);
@@ -511,14 +511,22 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId
         sLog->outError("Battleground: CreateNewBattleground - bg template not found for %u", bgTypeId);
         return NULL;
     }
-    bool isRandom = false;
 
-    if (bg_template->isArena())
-        selectionWeights = &m_ArenaSelectionWeights;
-    else if (bgTypeId == BATTLEGROUND_RB)
+    bool random = false;
+    if (!IsChallenge)
     {
-        selectionWeights = &m_BGSelectionWeights;
-        isRandom = true;
+        if (isArenaTesting() && GetArenaTestingMap())
+            bgTypeId = (BattlegroundTypeId)GetArenaTestingMap();
+        else
+        {
+            if (bg_template->isArena())
+                selectionWeights = &m_ArenaSelectionWeights;
+            else if (bgTypeId == BATTLEGROUND_RB)
+            {
+                selectionWeights = &m_BGSelectionWeights;
+                random = true;
+            }
+        }
     }
 
     if (selectionWeights)
@@ -547,9 +555,6 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId
                 break;
             }
         }
-
-        if (isArenaTesting() && GetArenaTestingMap())
-            bgTypeId = (BattlegroundTypeId)GetArenaTestingMap();
 
         bg_template = GetBattlegroundTemplate(bgTypeId);
         if (!bg_template)
@@ -612,7 +617,7 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId
 
     // generate a new instance id
     bg->SetInstanceID(sMapMgr->GenerateInstanceId()); // set instance id
-    bg->SetClientInstanceID(CreateClientVisibleInstanceId(isRandom ? BATTLEGROUND_RB : bgTypeId, bracketEntry->GetBracketId()));
+    bg->SetClientInstanceID(CreateClientVisibleInstanceId(random ? BATTLEGROUND_RB : bgTypeId, bracketEntry->GetBracketId()));
 
     // reset the new bg (set status to status_wait_queue from status_none)
     bg->Reset();
@@ -621,8 +626,8 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId
     bg->SetStatus(STATUS_WAIT_JOIN);
     bg->SetArenaType(arenaType);
     bg->SetRated(isRated);
-    bg->SetRandom(isRandom);
-    bg->SetTypeID(isRandom ? BATTLEGROUND_RB : bgTypeId);
+    bg->SetRandom(random);
+    bg->SetTypeID(random ? BATTLEGROUND_RB : bgTypeId);
     bg->SetRandomTypeID(bgTypeId);
 
     // Set up correct min/max player counts for scoreboards
@@ -631,15 +636,9 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId
         uint32 maxPlayersPerTeam = 0;
         switch (arenaType)
         {
-            case ARENA_TYPE_2v2:
-                maxPlayersPerTeam = 2;
-                break;
-            case ARENA_TYPE_3v3:
-                maxPlayersPerTeam = 3;
-                break;
-            case ARENA_TYPE_5v5:
-                maxPlayersPerTeam = 5;
-                break;
+            case ARENA_TYPE_2v2: maxPlayersPerTeam = 2; break;
+            case ARENA_TYPE_3v3: maxPlayersPerTeam = 3; break;
+            case ARENA_TYPE_5v5: maxPlayersPerTeam = 5; break;
         }
 
         bg->SetMaxPlayersPerTeam(maxPlayersPerTeam);

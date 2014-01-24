@@ -302,6 +302,8 @@ class Group
         GroupType GetGroupType() { return m_groupType; }
         void SetGroupType(GroupType type) { m_groupType = type; }
 
+        MemberSlotList GetMembers() const { return m_memberSlots; }
+
     protected:
         bool _setMembersGroup(uint64 guid, uint8 group);
         void _homebindIfInstance(Player* player);

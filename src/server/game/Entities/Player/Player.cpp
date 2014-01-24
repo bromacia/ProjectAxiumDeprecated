@@ -878,8 +878,10 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     transmogItemsSaveQueue.clear();
     transmogSets.clear();
 
-    m_wantsPrematureBattleGroundStart = false;
-    m_addedToPrematureBattleGroundStartList = false;
+    challengeInfo.ginfo = NULL;
+
+    m_WantsEarlyBattlegroundStart = false;
+    m_AddedToEarlyBattlegroundStartList = false;
 
     currentViewpoint = this;
 
@@ -25542,6 +25544,37 @@ bool Player::IsInWhisperWhiteList(uint64 guid)
     return false;
 }
 
+void Player::SendSysMessage(int32 entry, ...)
+{
+    ChatHandler* handler = new ChatHandler(this);
+    if (!handler)
+        return;
+
+    const char *format = handler->GetTrinityString(entry);
+    va_list ap;
+    char str [2048];
+    va_start(ap, entry);
+    vsnprintf(str, 2048, format, ap);
+    va_end(ap);
+    handler->SendSysMessage(str);
+    delete handler;
+}
+
+void Player::SendSysMessage(const char *format, ...)
+{
+    ChatHandler* handler = new ChatHandler(this);
+    if (!handler)
+        return;
+
+    va_list ap;
+    char str [2048];
+    va_start(ap, format);
+    vsnprintf(str, 2048, format, ap);
+    va_end(ap);
+    handler->SendSysMessage(str);
+    delete handler;
+}
+
 void Player::InterruptMovement()
 {
     WorldPacket data(MSG_MOVE_STOP, 8 + 4 + 4);
@@ -26172,7 +26205,7 @@ void Player::RemoveFromAllBattlegroundQueues()
 
             RemoveBattlegroundQueueId(bgQueueTypeId);
             WorldPacket data;
-            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_NONE, 0, 0, 0, UI_FRAME);
+            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_NONE, 0, 0, 0);
             bgQueue.RemovePlayer(GetGUID(), true);
 
             if (!ginfo.ArenaType)

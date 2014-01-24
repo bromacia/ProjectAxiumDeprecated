@@ -21,6 +21,7 @@
 
 #include "AchievementMgr.h"
 #include "Battleground.h"
+#include "BattlegroundQueue.h"
 #include "Bag.h"
 #include "Common.h"
 #include "DatabaseEnv.h"
@@ -1124,6 +1125,13 @@ struct TransmogItemInformation
 typedef std::map<uint32, TransmogItemInformation> TransmogItemsSaveQueue;
 typedef std::map<uint8, uint32> TransmogSetItemMap;
 typedef std::map<uint8, TransmogSetItemMap> TransmogSets;
+
+struct ChallengeInformation
+{
+    ChallengeInformation() : ginfo(NULL) {}
+
+    GroupQueueInfo* ginfo;
+};
 
 class Player : public Unit, public GridObject<Player>
 {
@@ -2583,6 +2591,9 @@ class Player : public Unit, public GridObject<Player>
             //! TODO: Need a proper calculation for collision height when mounted
         }
 
+        void SendSysMessage(const char *format, ...) ATTR_PRINTF(2, 3);
+        void SendSysMessage(int32 entry, ...);
+
         uint32 lastEmoteTime;
 
         void InterruptMovement();
@@ -2611,10 +2622,12 @@ class Player : public Unit, public GridObject<Player>
         TransmogItemsSaveQueue transmogItemsSaveQueue;
         TransmogSets transmogSets;
 
-        void SetWantsPrematureBattleGroundStart(bool x) { m_wantsPrematureBattleGroundStart = x; }
-        bool WantsPrematureBattleGroundStart() const { return m_wantsPrematureBattleGroundStart; }
-        void SetAddedToPrematureBattleGroundStartList(bool x) { m_addedToPrematureBattleGroundStartList = x; }
-        bool IsAddedToPrematureBattleGroundStartList() const { return m_addedToPrematureBattleGroundStartList; }
+        ChallengeInformation challengeInfo;
+
+        void SetWantsEarlyBattlegroundStart(bool x) { m_WantsEarlyBattlegroundStart = x; }
+        bool WantsEarlyBattlegroundStart() const { return m_WantsEarlyBattlegroundStart; }
+        void SetAddedToEarlyBattlegroundStartList(bool x) { m_AddedToEarlyBattlegroundStartList = x; }
+        bool IsAddedToEarlyBattlegroundStartList() const { return m_AddedToEarlyBattlegroundStartList; }
 
         bool IsDamageSpec() const;
         bool IsTankingSpec() const;
@@ -3056,8 +3069,8 @@ class Player : public Unit, public GridObject<Player>
 
         uint8 m_selectedTransmogItemSlot;
 
-        bool m_wantsPrematureBattleGroundStart;
-        bool m_addedToPrematureBattleGroundStartList;
+        bool m_WantsEarlyBattlegroundStart;
+        bool m_AddedToEarlyBattlegroundStartList;
 
         WorldObject* currentViewpoint;
 

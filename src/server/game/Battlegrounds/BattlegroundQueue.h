@@ -30,6 +30,7 @@ typedef std::list<Battleground*> BGFreeSlotQueueType;
 #define COUNT_OF_PLAYERS_TO_AVERAGE_WAIT_TIME 10
 
 struct GroupQueueInfo;                                      // type predefinition
+
 struct PlayerQueueInfo                                      // stores information for players in queue
 {
     uint32  LastOnlineTime;                                 // for tracking and removing offline players from queue after 5 minutes
@@ -64,7 +65,14 @@ enum BattlegroundQueueGroupTypes
 };
 #define BG_QUEUE_GROUP_TYPES_COUNT 5
 
+enum BattlegroundQueueAction
+{
+    QUEUE_DECLINE = 0,
+    QUEUE_ACCEPT  = 1
+};
+
 class Battleground;
+
 class BattlegroundQueue
 {
     public:
@@ -89,6 +97,7 @@ class BattlegroundQueue
         bool GetPlayerGroupInfoData(uint64 guid, GroupQueueInfo* ginfo);
         void PlayerInvitedToBGUpdateAverageWaitTime(GroupQueueInfo* ginfo, BattlegroundBracketId bracket_id);
         uint32 GetAverageQueueWaitTime(GroupQueueInfo* ginfo, BattlegroundBracketId bracket_id) const;
+        bool InviteGroupToBG(GroupQueueInfo* ginfo, Battleground* bg, uint32 side = 0);
 
         typedef std::map<uint64, PlayerQueueInfo> QueuedPlayersMap;
         QueuedPlayersMap m_QueuedPlayers;
@@ -107,27 +116,27 @@ class BattlegroundQueue
         */
         GroupsQueueType m_QueuedGroups[MAX_BATTLEGROUND_BRACKETS][BG_QUEUE_GROUP_TYPES_COUNT];
 
+        EventProcessor GetBattlegroundQueueEvents() const { return m_events; }
+
         // class to select and invite groups to bg
         class SelectionPool
         {
-        public:
-            SelectionPool(): PlayerCount(0) {};
-            void Init();
-            bool AddGroup(GroupQueueInfo* ginfo, uint32 desiredCount);
-            bool KickGroup(uint32 size);
-            uint32 GetPlayerCount() const {return PlayerCount;}
-        public:
-            GroupsQueueType SelectedGroups;
-        private:
-            uint32 PlayerCount;
+            public:
+                SelectionPool(): PlayerCount(0) {};
+                void Init();
+                bool AddGroup(GroupQueueInfo* ginfo, uint32 desiredCount);
+                bool KickGroup(uint32 size);
+                uint32 GetPlayerCount() const {return PlayerCount;}
+            public:
+                GroupsQueueType SelectedGroups;
+            private:
+                uint32 PlayerCount;
         };
 
         //one selection pool for horde, other one for alliance
         SelectionPool m_SelectionPools[BG_TEAMS_COUNT];
 
     private:
-
-        bool InviteGroupToBG(GroupQueueInfo* ginfo, Battleground* bg, uint32 side);
         uint32 m_WaitTimes[BG_TEAMS_COUNT][MAX_BATTLEGROUND_BRACKETS][COUNT_OF_PLAYERS_TO_AVERAGE_WAIT_TIME];
         uint32 m_WaitTimeLastPlayer[BG_TEAMS_COUNT][MAX_BATTLEGROUND_BRACKETS];
         uint32 m_SumOfWaitTimes[BG_TEAMS_COUNT][MAX_BATTLEGROUND_BRACKETS];

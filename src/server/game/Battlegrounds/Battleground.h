@@ -313,8 +313,6 @@ enum BGHonorMode
 #define BG_AWARD_ARENA_POINTS_MIN_LEVEL 71
 #define ARENA_TIMELIMIT_POINTS_LOSS    -16
 
-#define UI_FRAME 1
-
 /*
 This class is used to:
 1. Add player to battleground
@@ -374,25 +372,27 @@ class Battleground
         bool IsRandom() const { return m_IsRandom; }
 
         // Set methods:
-        void SetName(char const* Name)      { m_Name = Name; }
-        void SetTypeID(BattlegroundTypeId TypeID) { m_TypeID = TypeID; }
-        void SetRandomTypeID(BattlegroundTypeId TypeID) { m_RandomTypeID = TypeID; }
+        void SetName(char const* Name)                              { m_Name = Name; }
+        void SetTypeID(BattlegroundTypeId TypeID)                   { m_TypeID = TypeID; }
+        void SetRandomTypeID(BattlegroundTypeId TypeID)             { m_RandomTypeID = TypeID; }
         //here we can count minlevel and maxlevel for players
         void SetBracket(PvPDifficultyEntry const* bracketEntry);
-        void SetInstanceID(uint32 InstanceID) { m_InstanceID = InstanceID; }
-        void SetStatus(BattlegroundStatus Status) { m_Status = Status; }
-        void SetClientInstanceID(uint32 InstanceID) { m_ClientInstanceID = InstanceID; }
-        void SetDuration(uint32 Time)       { m_Duration = Time; }
-        void SetEndTime(uint32 Time)        { m_EndTime = Time; }
-        void SetLastResurrectTime(uint32 Time) { m_LastResurrectTime = Time; }
-        void SetMaxPlayers(uint32 MaxPlayers) { m_MaxPlayers = MaxPlayers; }
-        void SetMinPlayers(uint32 MinPlayers) { m_MinPlayers = MinPlayers; }
-        void SetLevelRange(uint32 min, uint32 max) { m_LevelMin = min; m_LevelMax = max; }
-        void SetRated(bool state)           { m_IsRated = state; }
-        void SetArenaType(uint8 type)       { m_ArenaType = type; }
-        void SetArenaorBGType(bool _isArena) { m_IsArena = _isArena; }
-        void SetWinner(uint8 winner)        { m_Winner = winner; }
-        void SetScriptId(uint32 scriptId)   { ScriptId = scriptId; }
+        void SetInstanceID(uint32 InstanceID)                       { m_InstanceID = InstanceID; }
+        void SetStatus(BattlegroundStatus Status)                   { m_Status = Status; }
+        void SetClientInstanceID(uint32 InstanceID)                 { m_ClientInstanceID = InstanceID; }
+        void SetDuration(uint32 Time)                               { m_Duration = Time; }
+        void SetEndTime(uint32 Time)                                { m_EndTime = Time; }
+        void SetLastResurrectTime(uint32 Time)                      { m_LastResurrectTime = Time; }
+        void SetMaxPlayers(uint32 MaxPlayers)                       { m_MaxPlayers = MaxPlayers; }
+        void SetMinPlayers(uint32 MinPlayers)                       { m_MinPlayers = MinPlayers; }
+        void SetLevelRange(uint32 min, uint32 max)                  { m_LevelMin = min; m_LevelMax = max; }
+        void SetRated(bool state)                                   { m_IsRated = state; }
+        void SetChallenge(bool state)                               { m_IsChallenge = state; }
+        void SetChallengeTeamSize(uint8 size)                       { m_ChallengeTeamSize = size; }
+        void SetArenaType(uint8 type)                               { m_ArenaType = type; }
+        void SetArenaorBGType(bool _isArena)                        { m_IsArena = _isArena; }
+        void SetWinner(uint8 winner)                                { m_Winner = winner; }
+        void SetScriptId(uint32 scriptId)                           { ScriptId = scriptId; }
 
         void ModifyStartDelayTime(int diff) { m_StartDelayTime -= diff; }
         void SetStartDelayTime(int Time)    { m_StartDelayTime = Time; }
@@ -403,17 +403,20 @@ class Battleground
         void AddToBGFreeSlotQueue();                        //this queue will be useful when more battlegrounds instances will be available
         void RemoveFromBGFreeSlotQueue();                   //this method could delete whole BG instance, if another free is available
 
-        void DecreaseInvitedCount(uint32 team)      { (team == ALLIANCE) ? --m_InvitedAlliance : --m_InvitedHorde; }
-        void IncreaseInvitedCount(uint32 team)      { (team == ALLIANCE) ? ++m_InvitedAlliance : ++m_InvitedHorde; }
+        void IncreaseInvitedCount(uint32 team);
+        void DecreaseInvitedCount(uint32 team);
+        uint32 GetInvitedCountByTeam(uint32 team) const   { return (team == ALLIANCE) ? m_InvitedAlliance : m_InvitedHorde; }
+        uint32 GetTotalInvitedCount() const         { return (m_InvitedAlliance + m_InvitedHorde); }
 
         void SetRandom(bool isRandom) { m_IsRandom = isRandom; }
-        uint32 GetInvitedCount(uint32 team) const   { return (team == ALLIANCE) ? m_InvitedAlliance : m_InvitedHorde; }
         bool HasFreeSlots() const;
         uint32 GetFreeSlotsForTeam(uint32 Team) const;
 
-        bool isArena() const        { return m_IsArena; }
-        bool isBattleground() const { return !m_IsArena; }
-        bool isRated() const        { return m_IsRated; }
+        bool isArena() const                { return m_IsArena; }
+        bool isBattleground() const         { return !m_IsArena; }
+        bool isRated() const                { return m_IsRated; }
+        bool IsChallenge() const            { return m_IsChallenge; }
+        bool GetChallengeTeamSize() const   { return m_ChallengeTeamSize; }
 
         typedef std::map<uint64, BattlegroundPlayer> BattlegroundPlayerMap;
         BattlegroundPlayerMap const& GetPlayers() const { return m_Players; }
@@ -491,6 +494,7 @@ class Battleground
 
         static BattlegroundTeamId GetTeamIndexByTeamId(uint32 Team) { return Team == ALLIANCE ? BG_TEAM_ALLIANCE : BG_TEAM_HORDE; }
         uint32 GetPlayersCountByTeam(uint32 Team) const { return m_PlayersCount[GetTeamIndexByTeamId(Team)]; }
+        uint32 GetTotalPlayersCount() const { return (m_PlayersCount[GetTeamIndexByTeamId(ALLIANCE)] + m_PlayersCount[GetTeamIndexByTeamId(HORDE)]); }
         uint32 GetAlivePlayersCountByTeam(uint32 Team) const;   // used in arenas to correctly handle death in spirit of redemption / last stand etc. (killer = killed) cases
         void UpdatePlayersCountByTeam(uint32 Team, bool remove)
         {
@@ -512,6 +516,8 @@ class Battleground
         uint32 GetArenaMatchmakerRatingByIndex(uint32 index) const  { return m_ArenaTeamMMR[index]; }
         void CheckArenaAfterTimerConditions();
         void CheckArenaWinConditions();
+        void CheckEndConditions();
+
         void UpdateArenaWorldState();
 
         // Triggers handle
@@ -583,17 +589,11 @@ class Battleground
 
         virtual uint64 GetFlagPickerGUID(int32 /*team*/ = -1) const { return 0; }
 
-        uint8 Get_TeamA_PrematureStartPlayers() { return TeamA_PrematureStartPlayers; }
-        void Add_TeamA_PrematureStartPlayer() { TeamA_PrematureStartPlayers++; }
-        void Clear_TeamA_PrematureStartPlayers() { TeamA_PrematureStartPlayers = 0; }
-        uint8 Get_TeamB_PrematureStartPlayers() { return TeamB_PrematureStartPlayers; }
-        void Add_TeamB_PrematureStartPlayer() { TeamB_PrematureStartPlayers++; }
-        void Clear_TeamB_PrematureStartPlayers() { TeamB_PrematureStartPlayers = 0; }
-
-        void CheckForPrematureStart(Player* player);
-        void HandlePrematureStart();
-        void CleanupPrematureStart();
-        void ClearWantsPrematureStart();
+        void CalculateEarlyStartPlayersNeededPerTeam();
+        void AddEarlyStartPlayer(uint64 guid);
+        bool CheckEarlyStartConditions();
+        void HandleEarlyStart();
+        void CleanupEarlyStart();
         void RemoveReadyMarkers();
 
     protected:
@@ -650,15 +650,18 @@ class Battleground
         bool   m_InBGFreeSlotQueue;                         // used to make sure that BG is only once inserted into the BattlegroundMgr.BGFreeSlotQueue[bgTypeId] deque
         bool   m_SetDeleteThis;                             // used for safe deletion of the bg after end / all players leave
         bool   m_IsArena;
+        bool   m_IsRated;
+        bool   m_IsChallenge;
+        uint8  m_ChallengeTeamSize;
         uint8  m_Winner;                                    // 0=alliance, 1=horde, 2=none
         int32  m_StartDelayTime;
-        bool   m_IsRated;                                   // is this battle rated?
         bool   m_PrematureCountDown;
         uint32 m_PrematureCountDownTimer;
         char const* m_Name;
 
-        uint8 TeamA_PrematureStartPlayers;
-        uint8 TeamB_PrematureStartPlayers;
+        uint8 EarlyStartPlayersNeededPerTeam;
+        uint8 EarlyStartTeamASize;
+        uint8 EarlyStartTeamBSize;
         std::list<GameObject*> ReadyMarkers;
 
         /* Pre- and post-update hooks */

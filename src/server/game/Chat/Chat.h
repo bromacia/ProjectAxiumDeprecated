@@ -69,11 +69,11 @@ class ChatHandler
         virtual const char *GetTrinityString(int32 entry) const;
         virtual void SendSysMessage(const char *str);
 
-        void SendSysMessage(int32     entry);
+        void SendSysMessage(int32 entry);
         void PSendSysMessage(const char *format, ...) ATTR_PRINTF(2, 3);
-        void PSendSysMessage(int32     entry, ...);
+        void PSendSysMessage(int32 entry, ...);
         void PSendGlobalGMSysMessage(const char *format, ...) ATTR_PRINTF(2, 3);
-        void PSendGlobalGMSysMessage(int32     entry, ...);
+        void PSendGlobalGMSysMessage(int32 entry, ...);
         std::string PGetParseString(int32 entry, ...) const;
 
         bool ParseCommands(const char* text);

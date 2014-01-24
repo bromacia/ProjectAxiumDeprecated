@@ -143,12 +143,14 @@ Battleground::Battleground()
     m_InvitedHorde      = 0;
     m_ArenaType         = 0;
     m_IsArena           = false;
+    m_IsRated           = false;
+    m_IsChallenge       = false;
+    m_ChallengeTeamSize = 0;
     m_Winner            = 2;
     m_Duration          = 0;
     m_ResetStatTimer    = 0;
     m_ValidStartPositionTimer = 0;
     m_Events            = 0;
-    m_IsRated           = false;
     m_BuffChange        = false;
     m_IsRandom          = false;
     m_Name              = "";
@@ -207,8 +209,9 @@ Battleground::Battleground()
     m_StartMessageIds[BG_STARTING_EVENT_THIRD]  = LANG_BG_WS_START_HALF_MINUTE;
     m_StartMessageIds[BG_STARTING_EVENT_FOURTH] = LANG_BG_WS_HAS_BEGUN;
 
-    TeamA_PrematureStartPlayers = 0;
-    TeamB_PrematureStartPlayers = 0;
+    EarlyStartPlayersNeededPerTeam = 0;
+    EarlyStartTeamASize = 0;
+    EarlyStartTeamBSize = 0;
 }
 
 Battleground::~Battleground()
@@ -251,12 +254,12 @@ void Battleground::Update(uint32 diff)
         // this will delete arena or bg object, where any player entered
         // [[   but if you use battleground object again (more battles possible to be played on 1 instance)
         //      then this condition should be removed and code:
-        //      if (!GetInvitedCount(HORDE) && !GetInvitedCount(ALLIANCE))
+        //      if (!GetInvitedCountByTeam(HORDE) && !GetInvitedCountByTeam(ALLIANCE))
         //          this->AddToFreeBGObjectsQueue(); // not yet implemented
         //      should be used instead of current
         // ]]
         // Battleground Template instance cannot be updated, because it would be deleted
-        if (!GetInvitedCount(HORDE) && !GetInvitedCount(ALLIANCE))
+        if (!GetInvitedCountByTeam(HORDE) && !GetInvitedCountByTeam(ALLIANCE))
             m_SetDeleteThis = true;
         return;
     }
@@ -496,7 +499,7 @@ inline void Battleground::_ProcessJoin(uint32 diff)
         m_Events |= BG_STARTING_EVENT_3;
         SendMessageToAll(m_StartMessageIds[BG_STARTING_EVENT_THIRD], CHAT_MSG_BG_SYSTEM_NEUTRAL);
 
-        CleanupPrematureStart();
+        CleanupEarlyStart();
     }
     // Delay expired (atfer 2 or 1 minute)
     else if (GetStartDelayTime() <= 0 && !(m_Events & BG_STARTING_EVENT_4))
@@ -520,7 +523,7 @@ inline void Battleground::_ProcessJoin(uint32 diff)
                     WorldPacket status;
                     BattlegroundQueueTypeId bgQueueTypeId = sBattlegroundMgr->BGQueueTypeId(m_TypeID, GetArenaType());
                     uint32 queueSlot = player->GetBattlegroundQueueIndex(bgQueueTypeId);
-                    sBattlegroundMgr->BuildBattlegroundStatusPacket(&status, this, queueSlot, STATUS_IN_PROGRESS, 0, m_Duration, GetArenaType(), UI_FRAME);
+                    sBattlegroundMgr->BuildBattlegroundStatusPacket(&status, this, queueSlot, STATUS_IN_PROGRESS, 0, m_Duration, GetArenaType());
                     player->GetSession()->SendPacket(&status);
 
                     player->RemoveAurasDueToSpell(SPELL_ARENA_PREPARATION);
@@ -919,7 +922,7 @@ void Battleground::EndBattleground(uint32 winner)
         player->GetSession()->SendPacket(&data);
 
         BattlegroundQueueTypeId bgQueueTypeId = BattlegroundMgr::BGQueueTypeId(GetTypeID(), GetArenaType());
-        sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, TIME_TO_AUTOREMOVE, m_Duration, GetArenaType(), UI_FRAME);
+        sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, TIME_TO_AUTOREMOVE, m_Duration, GetArenaType());
         player->GetSession()->SendPacket(&data);
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND, 1);
     }
@@ -1032,7 +1035,7 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
             if (SendPacket)
             {
                 WorldPacket data;
-                sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_NONE, 0, 0, 0, UI_FRAME);
+                sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_NONE, 0, 0, 0);
                 player->GetSession()->SendPacket(&data);
             }
 
@@ -1126,6 +1129,8 @@ void Battleground::StartBattleground()
     // add BG to free slot queue
     AddToBGFreeSlotQueue();
 
+    CalculateEarlyStartPlayersNeededPerTeam();
+
     // add bg to update list
     // This must be done here, because we need to have already invited some players when first BG::Update() method is executed
     // and it doesn't matter if we call StartBattleground() more times, because m_Battlegrounds is a map and instance id never changes
@@ -1152,7 +1157,7 @@ void Battleground::AddPlayer(Player* player)
     // Add to list/maps
     m_Players[guid] = bp;
 
-    UpdatePlayersCountByTeam(team, false);                  // +1 player
+    UpdatePlayersCountByTeam(team, false);
 
     WorldPacket data;
     sBattlegroundMgr->BuildPlayerJoinedBattlegroundPacket(&data, player);
@@ -1165,7 +1170,7 @@ void Battleground::AddPlayer(Player* player)
     sBattlegroundMgr->BuildBattlegroundStatusPacket(&status, this, queueSlot, STATUS_IN_PROGRESS, 0, m_Duration, GetArenaType(), isArena() ? 0 : 1);
     player->GetSession()->SendPacket(&status);
 
-    player->RemoveAurasByType(SPELL_AURA_MOUNTED);
+    player->Dismount();
 
     // add arena specific auras
     if (isArena())
@@ -1353,24 +1358,42 @@ void Battleground::RemoveFromBGFreeSlotQueue()
     }
 }
 
+void Battleground::IncreaseInvitedCount(uint32 team)
+{
+    if (team == HORDE)
+        ++m_InvitedHorde;
+    else
+        ++m_InvitedAlliance;
+}
+
+void Battleground::DecreaseInvitedCount(uint32 team)
+{
+    if (team == HORDE)
+        --m_InvitedHorde;
+    else
+        --m_InvitedAlliance;
+
+    CheckEndConditions();
+}
+
 // get the number of free slots for team
 // returns the number how many players can join battleground to MaxPlayersPerTeam
 uint32 Battleground::GetFreeSlotsForTeam(uint32 Team) const
 {
     // if BG is starting ... invite anyone
     if (GetStatus() == STATUS_WAIT_JOIN)
-        return (GetInvitedCount(Team) < GetMaxPlayersPerTeam()) ? GetMaxPlayersPerTeam() - GetInvitedCount(Team) : 0;
+        return (GetInvitedCountByTeam(Team) < GetMaxPlayersPerTeam()) ? GetMaxPlayersPerTeam() - GetInvitedCountByTeam(Team) : 0;
     // if BG is already started .. do not allow to join too much players of one faction
     uint32 otherTeam;
     uint32 otherIn;
     if (Team == ALLIANCE)
     {
-        otherTeam = GetInvitedCount(HORDE);
+        otherTeam = GetInvitedCountByTeam(HORDE);
         otherIn = GetPlayersCountByTeam(HORDE);
     }
     else
     {
-        otherTeam = GetInvitedCount(ALLIANCE);
+        otherTeam = GetInvitedCountByTeam(ALLIANCE);
         otherIn = GetPlayersCountByTeam(ALLIANCE);
     }
     if (GetStatus() == STATUS_IN_PROGRESS)
@@ -1379,14 +1402,14 @@ uint32 Battleground::GetFreeSlotsForTeam(uint32 Team) const
         // default: allow 0
         uint32 diff = 0;
         // allow join one person if the sides are equal (to fill up bg to minplayersperteam)
-        if (otherTeam == GetInvitedCount(Team))
+        if (otherTeam == GetInvitedCountByTeam(Team))
             diff = 1;
         // allow join more ppl if the other side has more players
-        else if (otherTeam > GetInvitedCount(Team))
-            diff = otherTeam - GetInvitedCount(Team);
+        else if (otherTeam > GetInvitedCountByTeam(Team))
+            diff = otherTeam - GetInvitedCountByTeam(Team);
 
         // difference based on max players per team (don't allow inviting more)
-        uint32 diff2 = (GetInvitedCount(Team) < GetMaxPlayersPerTeam()) ? GetMaxPlayersPerTeam() - GetInvitedCount(Team) : 0;
+        uint32 diff2 = (GetInvitedCountByTeam(Team) < GetMaxPlayersPerTeam()) ? GetMaxPlayersPerTeam() - GetInvitedCountByTeam(Team) : 0;
         // difference based on players who already entered
         // default: allow 0
         uint32 diff3 = 0;
@@ -1397,8 +1420,8 @@ uint32 Battleground::GetFreeSlotsForTeam(uint32 Team) const
         else if (otherIn > GetPlayersCountByTeam(Team))
             diff3 = otherIn - GetPlayersCountByTeam(Team);
         // or other side has less than minPlayersPerTeam
-        else if (GetInvitedCount(Team) <= GetMinPlayersPerTeam())
-            diff3 = GetMinPlayersPerTeam() - GetInvitedCount(Team) + 1;
+        else if (GetInvitedCountByTeam(Team) <= GetMinPlayersPerTeam())
+            diff3 = GetMinPlayersPerTeam() - GetInvitedCountByTeam(Team) + 1;
 
         // return the minimum of the 3 differences
 
@@ -1887,7 +1910,7 @@ void Battleground::PlayerAddedToBGCheckIfBGIsRunning(Player* player)
     sBattlegroundMgr->BuildPvpLogDataPacket(&data, this);
     player->GetSession()->SendPacket(&data);
 
-    sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, GetEndTime(), m_Duration, GetArenaType(), UI_FRAME);
+    sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, GetEndTime(), m_Duration, GetArenaType());
     player->GetSession()->SendPacket(&data);
 }
 
@@ -1938,6 +1961,19 @@ void Battleground::CheckArenaWinConditions()
         EndBattleground(ALLIANCE);
 }
 
+void Battleground::CheckEndConditions()
+{
+    if (isArena())
+    {
+        if (!GetInvitedCountByTeam(ALLIANCE) && !GetPlayersCountByTeam(ALLIANCE))
+            EndBattleground(HORDE);
+
+        if (!GetInvitedCountByTeam(HORDE) && !GetPlayersCountByTeam(HORDE))
+            EndBattleground(ALLIANCE);
+    }
+}
+
+
 void Battleground::UpdateArenaWorldState()
 {
     UpdateWorldState(0xe10, GetAlivePlayersCountByTeam(HORDE));
@@ -1985,114 +2021,132 @@ void Battleground::RewardXPAtKill(Player* killer, Player* victim)
         killer->RewardPlayerAndGroupAtKill(victim, true);
 }
 
-void Battleground::CheckForPrematureStart(Player* player)
+void Battleground::CalculateEarlyStartPlayersNeededPerTeam()
 {
-    if (player->WantsPrematureBattleGroundStart())
-        if (uint32 BGTeam = player->GetTeam())
-        {
-            switch (BGTeam)
-            {
-                case ALLIANCE:
-                    Add_TeamA_PrematureStartPlayer();
-                    player->SetAddedToPrematureBattleGroundStartList(true);
-                    break;
-                case HORDE:
-                    Add_TeamB_PrematureStartPlayer();
-                    player->SetAddedToPrematureBattleGroundStartList(true);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-    uint8 playersNeededPerTeam = 0;
-
-    if (isArena())
-    {
-        if (sBattlegroundMgr->isArenaTesting())
-            playersNeededPerTeam = 1;
-        else
-        {
-            switch (GetArenaType())
-            {
-                case ARENA_TYPE_2v2:
-                    playersNeededPerTeam = 2;
-                    break;
-                case ARENA_TYPE_3v3:
-                    playersNeededPerTeam = 3;
-                    break;
-                case ARENA_TYPE_5v5:
-                    playersNeededPerTeam = 5;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
+    if (IsChallenge())
+        EarlyStartPlayersNeededPerTeam = GetChallengeTeamSize();
     else
     {
-        if (sBattlegroundMgr->isTesting())
-            playersNeededPerTeam = 1;
+        if (isArena())
+        {
+            if (sBattlegroundMgr->isArenaTesting())
+                EarlyStartPlayersNeededPerTeam = 1;
+            else
+            {
+                switch (GetArenaType())
+                {
+                    case ARENA_TYPE_2v2: EarlyStartPlayersNeededPerTeam = 2; break;
+                    case ARENA_TYPE_3v3: EarlyStartPlayersNeededPerTeam = 3; break;
+                    case ARENA_TYPE_5v5: EarlyStartPlayersNeededPerTeam = 5; break;
+                }
+            }
+        }
         else
         {
-            switch (GetMapId())
+            if (sBattlegroundMgr->isTesting())
+                EarlyStartPlayersNeededPerTeam = 1;
+            else
             {
-                case 489: // Warsong Gulch
-                    playersNeededPerTeam = 7;
-                    break;
-                case 529: // Arathi Basin
-                case 566: // Eye of the Storm
-                case 607: // Strand of the Ancients
-                    playersNeededPerTeam = 10;
-                    break;
-                case 30:  // Alterac Valley
-                case 628: // Isle of Conquest
-                    playersNeededPerTeam = 30;
-                    break;
-                default:
-                    break;
+                switch (GetMapId())
+                {
+                    case 489: // Warsong Gulch
+                        EarlyStartPlayersNeededPerTeam = 7;
+                        break;
+                    case 529: // Arathi Basin
+                    case 566: // Eye of the Storm
+                    case 607: // Strand of the Ancients
+                        EarlyStartPlayersNeededPerTeam = 10;
+                        break;
+                    case 30:  // Alterac Valley
+                    case 628: // Isle of Conquest
+                        EarlyStartPlayersNeededPerTeam = 30;
+                        break;
+                }
             }
         }
     }
-
-    if (Get_TeamA_PrematureStartPlayers() == playersNeededPerTeam && Get_TeamB_PrematureStartPlayers() == playersNeededPerTeam)
-        HandlePrematureStart();
 }
 
-void Battleground::HandlePrematureStart()
+void Battleground::AddEarlyStartPlayer(uint64 guid)
+{
+    Player* player = ObjectAccessor::FindPlayer(guid);
+    if (!player)
+        return;
+
+    if (player->HasGameMasterTagOn() || !player->GetArenaTeamColor())
+        return;
+
+    if (player->WantsEarlyBattlegroundStart() || player->IsAddedToEarlyBattlegroundStartList())
+    {
+        CheckEarlyStartConditions();
+        return;
+    }
+
+    switch (player->GetTeam())
+    {
+        case ALLIANCE:
+            ++EarlyStartTeamASize;
+            player->SetAddedToEarlyBattlegroundStartList(true);
+            break;
+        case HORDE:
+            ++EarlyStartTeamBSize;
+            player->SetAddedToEarlyBattlegroundStartList(true);
+            break;
+    }
+
+    player->SetWantsEarlyBattlegroundStart(true);
+    player->SendSysMessage("You are now marked as ready.");
+
+    CheckEarlyStartConditions();
+}
+
+bool Battleground::CheckEarlyStartConditions()
+{
+    if (EarlyStartTeamASize == EarlyStartPlayersNeededPerTeam && EarlyStartTeamBSize == EarlyStartPlayersNeededPerTeam)
+    {
+        HandleEarlyStart();
+        return true;
+    }
+
+    return false;
+}
+
+void Battleground::HandleEarlyStart()
 {
     m_Events |= BG_STARTING_EVENT_2;
     if (isArena())
         SetStartDelayTime(BG_START_DELAY_15S);
     else
         SetStartDelayTime(BG_START_DELAY_30S);
-    CleanupPrematureStart();
+
+    CleanupEarlyStart();
 }
 
-void Battleground::CleanupPrematureStart()
+void Battleground::CleanupEarlyStart()
 {
-    Clear_TeamA_PrematureStartPlayers();
-    Clear_TeamB_PrematureStartPlayers();
-    ClearWantsPrematureStart();
     RemoveReadyMarkers();
-}
 
-void Battleground::ClearWantsPrematureStart()
-{
+    EarlyStartTeamASize = 0;
+    EarlyStartTeamBSize = 0;
+
     for (BattlegroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
+    {
         if (Player* player = ObjectAccessor::FindPlayer(itr->first))
         {
-            player->SetWantsPrematureBattleGroundStart(false);
-            player->SetAddedToPrematureBattleGroundStartList(false);
+            player->SetWantsEarlyBattlegroundStart(false);
+            player->SetAddedToEarlyBattlegroundStartList(false);
         }
+    }
 }
 
 void Battleground::RemoveReadyMarkers()
 {
     for (std::list<GameObject*>::iterator itr = ReadyMarkers.begin(); itr != ReadyMarkers.end();)
+    {
         if (GameObject* go = *itr)
         {
             go->Delete();
             ReadyMarkers.erase(itr++);
         }
+    }
 }
