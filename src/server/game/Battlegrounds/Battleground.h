@@ -416,7 +416,7 @@ class Battleground
         bool isBattleground() const         { return !m_IsArena; }
         bool isRated() const                { return m_IsRated; }
         bool IsChallenge() const            { return m_IsChallenge; }
-        bool GetChallengeTeamSize() const   { return m_ChallengeTeamSize; }
+        uint8 GetChallengeTeamSize() const   { return m_ChallengeTeamSize; }
 
         typedef std::map<uint64, BattlegroundPlayer> BattlegroundPlayerMap;
         BattlegroundPlayerMap const& GetPlayers() const { return m_Players; }
