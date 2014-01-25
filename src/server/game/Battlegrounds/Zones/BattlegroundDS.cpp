@@ -47,19 +47,22 @@ BattlegroundDS::~BattlegroundDS()
 
 void BattlegroundDS::PostUpdateImpl(uint32 diff)
 {
-    if (getPipeKnockBackCount() < BG_DS_PIPE_KNOCKBACK_TOTAL_COUNT)
+    if (GetStatus() != STATUS_IN_PROGRESS)
+        return;
+
+    if (pipeKnockBackCount < BG_DS_PIPE_KNOCKBACK_TOTAL_COUNT)
     {
-        if (getPipeKnockBackTimer() < diff)
+        if (pipeKnockBackTimer < diff)
         {
             for (uint32 i = BG_DS_NPC_PIPE_KNOCKBACK_1; i <= BG_DS_NPC_PIPE_KNOCKBACK_2; ++i)
                 if (Creature* waterSpout = GetBgMap()->GetCreature(m_BgCreatures[i]))
                     waterSpout->CastSpell(waterSpout, BG_DS_SPELL_FLUSH, true);
 
-            setPipeKnockBackCount(getPipeKnockBackCount() + 1);
-            setPipeKnockBackTimer(BG_DS_PIPE_KNOCKBACK_DELAY);
+            ++pipeKnockBackCount;
+            pipeKnockBackTimer = BG_DS_PIPE_KNOCKBACK_DELAY;
         }
         else
-            setPipeKnockBackTimer(getPipeKnockBackTimer() - diff);
+            pipeKnockBackTimer -= diff;
     }
 }
 
@@ -77,8 +80,8 @@ void BattlegroundDS::StartingEventOpenDoors()
     for (uint8 i = BG_DS_OBJECT_BUFF_1; i <= BG_DS_OBJECT_BUFF_2; ++i)
         SpawnBGObject(i, 60);
 
-    setPipeKnockBackTimer(BG_DS_PIPE_KNOCKBACK_FIRST_DELAY);
-    setPipeKnockBackCount(0);
+    pipeKnockBackTimer = BG_DS_PIPE_KNOCKBACK_FIRST_DELAY;
+    pipeKnockBackCount = 0;
 
     // Remove effects of Demonic Circle Summon
     for (BattlegroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
@@ -141,8 +144,8 @@ void BattlegroundDS::HandleAreaTrigger(Player* Source, uint32 Trigger)
 
             // Someone has get back into the pipes and the knockback has already been performed,
             // so we reset the knockback count for kicking the player again into the arena.
-            if (getPipeKnockBackCount() >= BG_DS_PIPE_KNOCKBACK_TOTAL_COUNT)
-                setPipeKnockBackCount(0);
+            if (pipeKnockBackCount >= BG_DS_PIPE_KNOCKBACK_TOTAL_COUNT)
+                pipeKnockBackCount = 0;
             break;
         default:
             sLog->outError("WARNING: Unhandled AreaTrigger in BattlegroundDS: %u", Trigger);

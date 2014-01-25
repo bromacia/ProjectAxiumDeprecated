@@ -99,12 +99,7 @@ class BattlegroundDS : public Battleground
         bool HandlePlayerUnderMap(Player* player);
     private:
         virtual void PostUpdateImpl(uint32 diff);
-        uint32 _pipeKnockBackTimer;
-        uint8 _pipeKnockBackCount;
-    protected:
-        uint8 getPipeKnockBackCount() { return _pipeKnockBackCount; }
-        void setPipeKnockBackCount(uint8 count) { _pipeKnockBackCount = count; }
-        uint32 getPipeKnockBackTimer() { return _pipeKnockBackTimer; }
-        void setPipeKnockBackTimer(uint32 timer) { _pipeKnockBackTimer = timer; }
+        uint32 pipeKnockBackTimer;
+        uint8 pipeKnockBackCount;
 };
 #endif
