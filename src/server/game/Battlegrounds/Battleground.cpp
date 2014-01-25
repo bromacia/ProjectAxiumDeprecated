@@ -752,6 +752,7 @@ void Battleground::EndBattleground(uint32 winner)
     int32  winner_matchmaker_change = 0;
     WorldPacket data;
     int32 winmsg_id = 0;
+    bool IsRatedArena = isArena() && isRated();
 
     if (winner == ALLIANCE)
     {
@@ -772,12 +773,15 @@ void Battleground::EndBattleground(uint32 winner)
     else
         SetWinner(3);
 
+    m_Events |= BG_STARTING_EVENT_4;
+    SetStartDelayTime(0);
     SetStatus(STATUS_WAIT_LEAVE);
-    //we must set it this way, because end time is sent in packet!
     m_EndTime = TIME_TO_AUTOREMOVE;
+    CleanupEarlyStart();
+    StartingEventOpenDoors();
 
     // arena rating calculation
-    if (isArena() && isRated())
+    if (IsRatedArena)
     {
         winner_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(winner));
         loser_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(GetOtherTeam(winner)));
@@ -827,7 +831,7 @@ void Battleground::EndBattleground(uint32 winner)
         if (itr->second.OfflineRemoveTime)
         {
             //if rated arena match - make member lost!
-            if (isArena() && isRated() && winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
+            if (IsRatedArena && winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
             {
                 if (team == winner)
                     winner_arena_team->OfflineMemberLost(itr->first, loser_matchmaker_rating, winner_matchmaker_change);
@@ -846,7 +850,7 @@ void Battleground::EndBattleground(uint32 winner)
             player->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT);
 
         // Last standing - Rated 5v5 arena & be solely alive player
-        if (team == winner && isArena() && isRated() && GetArenaType() == ARENA_TYPE_5v5 && aliveWinners == 1 && player->isAlive())
+        if (team == winner && IsRatedArena && GetArenaType() == ARENA_TYPE_5v5 && aliveWinners == 1 && player->isAlive())
             player->CastSpell(player, SPELL_THE_LAST_STANDING, true);
 
         if (!player->isAlive())
@@ -865,7 +869,7 @@ void Battleground::EndBattleground(uint32 winner)
         //if (!team) team = player->GetTeam();
 
         // per player calculation
-        if (isArena() && isRated() && winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
+        if (IsRatedArena && winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
         {
             if (team == winner)
             {
@@ -925,7 +929,7 @@ void Battleground::EndBattleground(uint32 winner)
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND, 1);
     }
 
-    if (isArena() && isRated() && winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
+    if (IsRatedArena && winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
     {
         // update arena points only after increasing the player's match count!
         //obsolete: winner_arena_team->UpdateArenaPointsHelper();
