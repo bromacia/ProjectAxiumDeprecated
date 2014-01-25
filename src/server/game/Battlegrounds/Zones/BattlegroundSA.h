@@ -424,6 +424,7 @@ class BattlegroundSA : public Battleground
         /* inherited from BattlegroundClass */
         /// Called when a player join battle
         virtual void AddPlayer(Player* player);
+        virtual void AddPlayerToScoreboard(Player* player, uint32 team);
         /// Called when battle start
         virtual void StartingEventCloseDoors();
         virtual void StartingEventOpenDoors();

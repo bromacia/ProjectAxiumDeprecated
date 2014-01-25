@@ -35,6 +35,7 @@ class BattlegroundRB : public Battleground
         ~BattlegroundRB();
 
         virtual void AddPlayer(Player* player);
+        virtual void AddPlayerToScoreboard(Player* player, uint32 team);
         virtual void StartingEventCloseDoors();
         virtual void StartingEventOpenDoors();
 

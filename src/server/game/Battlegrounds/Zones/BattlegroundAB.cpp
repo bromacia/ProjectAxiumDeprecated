@@ -201,9 +201,12 @@ void BattlegroundAB::StartingEventOpenDoors()
 void BattlegroundAB::AddPlayer(Player* player)
 {
     Battleground::AddPlayer(player);
-    //create score and add it to map, default values are set in the constructor
-    BattlegroundABScore* sc = new BattlegroundABScore;
+}
 
+void BattlegroundAB::AddPlayerToScoreboard(Player* player, uint32 team)
+{
+    BattlegroundABScore* sc = new BattlegroundABScore;
+    sc->PlayerTeam = team;
     m_PlayerScores[player->GetGUID()] = sc;
 }
 

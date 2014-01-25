@@ -250,6 +250,7 @@ class BattlegroundAB : public Battleground
         ~BattlegroundAB();
 
         void AddPlayer(Player* player);
+        virtual void AddPlayerToScoreboard(Player* player, uint32 team);
         virtual void StartingEventCloseDoors();
         virtual void StartingEventOpenDoors();
         void RemovePlayer(Player* player, uint64 guid, uint32 team);

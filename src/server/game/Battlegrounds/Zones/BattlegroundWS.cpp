@@ -205,9 +205,12 @@ void BattlegroundWS::StartingEventOpenDoors()
 void BattlegroundWS::AddPlayer(Player* player)
 {
     Battleground::AddPlayer(player);
-    //create score and add it to map, default values are set in constructor
-    BattlegroundWGScore* sc = new BattlegroundWGScore;
+}
 
+void BattlegroundWS::AddPlayerToScoreboard(Player* player, uint32 team)
+{
+    BattlegroundWGScore* sc = new BattlegroundWGScore;
+    sc->PlayerTeam = team;
     m_PlayerScores[player->GetGUID()] = sc;
 }
 

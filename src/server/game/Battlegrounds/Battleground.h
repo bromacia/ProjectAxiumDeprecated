@@ -544,6 +544,7 @@ class Battleground
         virtual WorldSafeLocsEntry const* GetClosestGraveYard(Player* player);
 
         virtual void AddPlayer(Player* player);                // must be implemented in BG subclass
+        virtual void AddPlayerToScoreboard(Player* player, uint32 team);
 
         void AddOrSetPlayerToCorrectBgGroup(Player* player, uint32 team);
 
@@ -620,6 +621,7 @@ class Battleground
 
         // Player lists, those need to be accessible by inherited classes
         BattlegroundPlayerMap  m_Players;
+        BattlegroundPlayerMap  m_PlayersCache;
         // Spirit Guide guid + Player list GUIDS
         std::map<uint64, std::vector<uint64> >  m_ReviveQueue;
 

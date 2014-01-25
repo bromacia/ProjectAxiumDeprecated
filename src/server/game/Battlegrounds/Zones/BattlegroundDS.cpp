@@ -90,12 +90,14 @@ void BattlegroundDS::StartingEventOpenDoors()
 void BattlegroundDS::AddPlayer(Player* player)
 {
     Battleground::AddPlayer(player);
-    //create score and add it to map, default values are set in constructor
-    BattlegroundDSScore* sc = new BattlegroundDSScore;
-
-    m_PlayerScores[player->GetGUID()] = sc;
-
     UpdateArenaWorldState();
+}
+
+void BattlegroundDS::AddPlayerToScoreboard(Player* player, uint32 team)
+{
+    BattlegroundDSScore* sc = new BattlegroundDSScore;
+    sc->PlayerTeam = team;
+    m_PlayerScores[player->GetGUID()] = sc;
 }
 
 void BattlegroundDS::RemovePlayer(Player* /*player*/, uint64 /*guid*/, uint32 /*team*/)

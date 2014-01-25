@@ -543,8 +543,6 @@ inline void Battleground::_ProcessJoin(uint32 diff)
                         else
                             ++iter;
                     }
-
-                    UpdatePlayerScore(player, SCORE_PLAYER_TEAM, GetPlayerTeam(player->GetGUID()));
                 }
 
             CheckArenaWinConditions();
@@ -965,18 +963,18 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
     BattlegroundPlayerMap::iterator itr = m_Players.find(guid);
     if (itr != m_Players.end())
     {
-        UpdatePlayersCountByTeam(team, true);               // -1 player
+        UpdatePlayersCountByTeam(team, true); // -1 player
         m_Players.erase(itr);
         // check if the player was a participant of the match, or only entered through gm command (goname)
         participant = true;
     }
 
-    if (!isArena()) // Only delete player's scores on battlegrounds, not arenas
+    if (!isArena())
     {
         BattlegroundScoreMap::iterator itr2 = m_PlayerScores.find(guid);
         if (itr2 != m_PlayerScores.end())
         {
-            delete itr2->second;                                // delete player's score
+            delete itr2->second;
             m_PlayerScores.erase(itr2);
         }
     }
@@ -1114,6 +1112,7 @@ void Battleground::Reset()
     m_InBGFreeSlotQueue = false;
 
     m_Players.clear();
+    m_PlayersCache.clear();
 
     for (BattlegroundScoreMap::const_iterator itr = m_PlayerScores.begin(); itr != m_PlayerScores.end(); ++itr)
         delete itr->second;
@@ -1156,6 +1155,7 @@ void Battleground::AddPlayer(Player* player)
 
     // Add to list/maps
     m_Players[guid] = bp;
+    m_PlayersCache[guid] = bp;
 
     UpdatePlayersCountByTeam(team, false);
 
@@ -1253,6 +1253,10 @@ void Battleground::AddPlayer(Player* player)
 
     // Log
     sLog->outDetail("BATTLEGROUND: Player %s joined the battle.", player->GetName());
+}
+
+void Battleground::AddPlayerToScoreboard(Player* player, uint32 team)
+{
 }
 
 // this method adds player to his team's bg group, or sets his correct group if player is already in bg group

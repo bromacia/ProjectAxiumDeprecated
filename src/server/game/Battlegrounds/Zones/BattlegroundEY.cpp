@@ -341,11 +341,13 @@ void BattlegroundEY::UpdatePointsIcons(uint32 Team, uint32 Point)
 void BattlegroundEY::AddPlayer(Player* player)
 {
     Battleground::AddPlayer(player);
-    //create score and add it to map
-    BattlegroundEYScore* sc = new BattlegroundEYScore;
-
     m_PlayersNearPoint[EY_POINTS_MAX].push_back(player->GetGUID());
+}
 
+void BattlegroundEY::AddPlayerToScoreboard(Player* player, uint32 team)
+{
+    BattlegroundEYScore* sc = new BattlegroundEYScore;
+    sc->PlayerTeam = team;
     m_PlayerScores[player->GetGUID()] = sc;
 }
 

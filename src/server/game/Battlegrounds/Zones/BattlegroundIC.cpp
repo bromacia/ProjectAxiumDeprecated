@@ -295,10 +295,6 @@ bool BattlegroundIC::IsAllNodesConrolledByTeam(uint32 team) const
 void BattlegroundIC::AddPlayer(Player* player)
 {
     Battleground::AddPlayer(player);
-    //create score and add it to map, default values are set in constructor
-    BattlegroundICScore* sc = new BattlegroundICScore;
-
-    m_PlayerScores[player->GetGUID()] = sc;
 
     if (nodePoint[NODE_TYPE_QUARRY].nodeState == (player->GetTeamId() == TEAM_ALLIANCE ? NODE_STATE_CONTROLLED_A : NODE_STATE_CONTROLLED_H))
         player->CastSpell(player, SPELL_QUARRY, true);
@@ -307,6 +303,13 @@ void BattlegroundIC::AddPlayer(Player* player)
         player->CastSpell(player, SPELL_OIL_REFINERY, true);
 
     SendTransportInit(player);
+}
+
+void BattlegroundIC::AddPlayerToScoreboard(Player* player, uint32 team)
+{
+    BattlegroundICScore* sc = new BattlegroundICScore;
+    sc->PlayerTeam = team;
+    m_PlayerScores[player->GetGUID()] = sc;
 }
 
 void BattlegroundIC::RemovePlayer(Player* player, uint64 /*guid*/, uint32 /*team*/)

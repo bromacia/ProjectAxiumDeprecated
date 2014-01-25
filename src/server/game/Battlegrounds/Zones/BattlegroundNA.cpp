@@ -70,6 +70,13 @@ void BattlegroundNA::AddPlayer(Player* player)
     UpdateArenaWorldState();
 }
 
+void BattlegroundNA::AddPlayerToScoreboard(Player* player, uint32 team)
+{
+    BattlegroundNAScore* sc = new BattlegroundNAScore;
+    sc->PlayerTeam = team;
+    m_PlayerScores[player->GetGUID()] = sc;
+}
+
 void BattlegroundNA::RemovePlayer(Player* /*player*/, uint64 /*guid*/, uint32 /*team*/)
 {
     if (GetStatus() == STATUS_WAIT_LEAVE)

@@ -114,6 +114,13 @@ void BattlegroundRV::AddPlayer(Player* player)
     UpdateWorldState(BG_RV_WORLD_STATE_H, GetAlivePlayersCountByTeam(HORDE));
 }
 
+void BattlegroundRV::AddPlayerToScoreboard(Player* player, uint32 team)
+{
+    BattlegroundRVScore* sc = new BattlegroundRVScore;
+    sc->PlayerTeam = team;
+    m_PlayerScores[player->GetGUID()] = sc;
+}
+
 void BattlegroundRV::RemovePlayer(Player* /*player*/, uint64 /*guid*/, uint32 /*team*/)
 {
     if (GetStatus() == STATUS_WAIT_LEAVE)

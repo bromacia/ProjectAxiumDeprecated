@@ -62,12 +62,14 @@ void BattlegroundRL::StartingEventOpenDoors()
 void BattlegroundRL::AddPlayer(Player* player)
 {
     Battleground::AddPlayer(player);
-    //create score and add it to map, default values are set in constructor
-    BattlegroundRLScore* sc = new BattlegroundRLScore;
-
-    m_PlayerScores[player->GetGUID()] = sc;
-
     UpdateArenaWorldState();
+}
+
+void BattlegroundRL::AddPlayerToScoreboard(Player* player, uint32 team)
+{
+    BattlegroundRLScore* sc = new BattlegroundRLScore;
+    sc->PlayerTeam = team;
+    m_PlayerScores[player->GetGUID()] = sc;
 }
 
 void BattlegroundRL::RemovePlayer(Player* /*player*/, uint64 /*guid*/, uint32 /*team*/)

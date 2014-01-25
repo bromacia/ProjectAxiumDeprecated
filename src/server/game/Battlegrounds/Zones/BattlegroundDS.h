@@ -86,6 +86,7 @@ class BattlegroundDS : public Battleground
 
         /* inherited from BattlegroundClass */
         virtual void AddPlayer(Player* player);
+        virtual void AddPlayerToScoreboard(Player* player, uint32 team);
         virtual void StartingEventCloseDoors();
         virtual void StartingEventOpenDoors();
 

@@ -430,11 +430,16 @@ void BattlegroundAV::AddPlayer(Player* player)
 {
     Battleground::AddPlayer(player);
     //create score and add it to map, default values are set in constructor
-    BattlegroundAVScore* sc = new BattlegroundAVScore;
-    m_PlayerScores[player->GetGUID()] = sc;
     if (m_MaxLevel == 0)
         m_MaxLevel=(player->getLevel()%10 == 0)? player->getLevel() : (player->getLevel()-(player->getLevel()%10))+10; //TODO: just look at the code \^_^/ --but queue-info should provide this information..
 
+}
+
+void BattlegroundAV::AddPlayerToScoreboard(Player* player, uint32 team)
+{
+    BattlegroundAVScore* sc = new BattlegroundAVScore;
+    sc->PlayerTeam = team;
+    m_PlayerScores[player->GetGUID()] = sc;
 }
 
 void BattlegroundAV::EndBattleground(uint32 winner)
