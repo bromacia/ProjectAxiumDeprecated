@@ -1967,6 +1967,9 @@ void Battleground::CheckArenaWinConditions()
 
 void Battleground::CheckEndConditions()
 {
+    if (GetStatus() == STATUS_WAIT_LEAVE)
+        return;
+
     if (isArena())
     {
         if (!GetInvitedCountByTeam(ALLIANCE) && !GetPlayersCountByTeam(ALLIANCE))
