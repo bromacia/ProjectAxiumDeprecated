@@ -203,7 +203,7 @@ void ChallengeMgr::CreateBattleground(uint8 teamSize)
     if (!bracketEntry)
         return;
 
-    bg = sBattlegroundMgr->CreateNewBattleground((BattlegroundTypeId)bgTypeId, bracketEntry, arenaType, false, true);
+    bg = sBattlegroundMgr->CreateNewBattleground((BattlegroundTypeId)bgTypeId, bracketEntry, arenaType, false, bgTypeId == BATTLEGROUND_AA ? true : false);
     bg->SetRated(false);
     bg->SetChallenge(true);
     bg->SetChallengeTeamSize(teamSize);

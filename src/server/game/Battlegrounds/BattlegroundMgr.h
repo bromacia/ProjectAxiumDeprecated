@@ -80,7 +80,7 @@ class BattlegroundMgr
         Battleground* GetBattleground(uint32 InstanceID, BattlegroundTypeId bgTypeId); //there must be uint32 because MAX_BATTLEGROUND_TYPE_ID means unknown
 
         Battleground* GetBattlegroundTemplate(BattlegroundTypeId bgTypeId);
-        Battleground* CreateNewBattleground(BattlegroundTypeId bgTypeId, PvPDifficultyEntry const* bracketEntry, uint8 arenaType, bool isRated, bool IsChallenge = false);
+        Battleground* CreateNewBattleground(BattlegroundTypeId bgTypeId, PvPDifficultyEntry const* bracketEntry, uint8 arenaType, bool IsRated, bool randomMap = true);
 
         BattlegroundsMap GetAllBattlegroundsWithTypeId(BattlegroundTypeId bgTypeId);
 

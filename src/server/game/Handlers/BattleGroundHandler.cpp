@@ -354,7 +354,9 @@ void WorldSession::HandleBattlegroundQueueResultOpcode(WorldPacket &recv_data)
     if (_player->challengeInfo.ginfo)
     {
         type = _player->challengeInfo.ginfo->ArenaType;
-        bgTypeId_ = _player->challengeInfo.ginfo->BgTypeId;
+
+        if (_player->challengeInfo.ginfo->BgTypeId != BATTLEGROUND_AA)
+            bgTypeId_ = _player->challengeInfo.ginfo->BgTypeId;
     }
 
     if (!sBattlemasterListStore.LookupEntry(bgTypeId_))

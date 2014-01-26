@@ -493,7 +493,7 @@ uint32 BattlegroundMgr::CreateClientVisibleInstanceId(BattlegroundTypeId bgTypeI
 }
 
 // create a new battleground that will really be used to play
-Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId, PvPDifficultyEntry const* bracketEntry, uint8 arenaType, bool isRated, bool IsChallenge)
+Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId, PvPDifficultyEntry const* bracketEntry, uint8 arenaType, bool isRated, bool randomMap)
 {
     // get the template BG
     Battleground* bg_template = GetBattlegroundTemplate(bgTypeId);
@@ -505,8 +505,8 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId
         return NULL;
     }
 
-    bool random = false;
-    if (!IsChallenge)
+    bool randomBG = false;
+    if (randomMap)
     {
         if (isArenaTesting() && GetArenaTestingMap())
             bgTypeId = (BattlegroundTypeId)GetArenaTestingMap();
@@ -517,7 +517,7 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId
             else if (bgTypeId == BATTLEGROUND_RB)
             {
                 selectionWeights = &m_BGSelectionWeights;
-                random = true;
+                randomBG = true;
             }
         }
     }
@@ -610,7 +610,7 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId
 
     // generate a new instance id
     bg->SetInstanceID(sMapMgr->GenerateInstanceId()); // set instance id
-    bg->SetClientInstanceID(CreateClientVisibleInstanceId(random ? BATTLEGROUND_RB : bgTypeId, bracketEntry->GetBracketId()));
+    bg->SetClientInstanceID(CreateClientVisibleInstanceId(randomBG ? BATTLEGROUND_RB : bgTypeId, bracketEntry->GetBracketId()));
 
     // reset the new bg (set status to status_wait_queue from status_none)
     bg->Reset();
@@ -619,8 +619,8 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId
     bg->SetStatus(STATUS_WAIT_JOIN);
     bg->SetArenaType(arenaType);
     bg->SetRated(isRated);
-    bg->SetRandom(random);
-    bg->SetTypeID(random ? BATTLEGROUND_RB : bgTypeId);
+    bg->SetRandom(randomBG);
+    bg->SetTypeID(randomBG ? BATTLEGROUND_RB : bgTypeId);
     bg->SetRandomTypeID(bgTypeId);
 
     // Set up correct min/max player counts for scoreboards
