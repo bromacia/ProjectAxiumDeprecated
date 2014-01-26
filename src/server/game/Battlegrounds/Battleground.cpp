@@ -773,12 +773,14 @@ void Battleground::EndBattleground(uint32 winner)
     else
         SetWinner(3);
 
+    if (!(m_Events & BG_STARTING_EVENT_4))
+        StartingEventOpenDoors();
+
     m_Events |= BG_STARTING_EVENT_4;
     SetStartDelayTime(0);
     SetStatus(STATUS_WAIT_LEAVE);
     m_EndTime = TIME_TO_AUTOREMOVE;
     CleanupEarlyStart();
-    StartingEventOpenDoors();
 
     // arena rating calculation
     if (IsRatedArena)
