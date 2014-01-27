@@ -1,4 +1,5 @@
 #include "ChallengeMgr.h"
+#include "Chat.h"
 #include "Battleground.h"
 #include "BattlegroundMgr.h"
 #include "BattlegroundQueue.h"
@@ -6,23 +7,6 @@
 #include "SocialMgr.h"
 #include "Group.h"
 #include "SharedDefines.h"
-
-ChallengeMgr::ChallengeMgr()
-{
-    teamA.clear();
-    teamB.clear();
-    bg = NULL;
-    bracketEntry = NULL;
-    arenaType = 0;
-    bgTypeId = 0;
-    bgQueueTypeId = 0;
-}
-
-ChallengeMgr::~ChallengeMgr()
-{
-    delete bg;
-    delete bracketEntry;
-}
 
 void ChallengeMgr::HandleChallenge(uint64 challengerGUID, uint64 challengedGUID, uint8 map)
 {
@@ -166,17 +150,32 @@ void ChallengeMgr::HandleChallenge(uint64 challengerGUID, uint64 challengedGUID,
         case 4:  bgTypeId = BATTLEGROUND_DS; break;
         default: bgTypeId = BATTLEGROUND_AA; break;
     }
-        
+
+    Battleground* battlegroundTemplate = sBattlegroundMgr->GetBattlegroundTemplate((BattlegroundTypeId)bgTypeId);
+    if (!battlegroundTemplate)
+    {
+        challengerPlayer->SendSysMessage("Unable to find battleground template for type Id %u.", bgTypeId);
+        return;
+    }
+
+    const PvPDifficultyEntry* bracketEntry = GetBattlegroundBracketByLevel(battlegroundTemplate->GetMapId(), challengedPlayer->getLevel());
+    if (!bracketEntry)
+    {
+        challengerPlayer->SendSysMessage("Unable to find bracket entry for map %u.", battlegroundTemplate->GetMapId());
+        return;
+    }
+
+    CreateBattleground(bracketEntry, teamA.size());
+
+    BattlegroundBracketId bracketId = bracketEntry->GetBracketId();
     bgQueueTypeId = BattlegroundMgr::BGQueueTypeId((BattlegroundTypeId)bgTypeId, arenaType);
     bgQueue = &sBattlegroundMgr->m_BattlegroundQueues[bgQueueTypeId];
-
-    CreateBattleground(teamA.size());
 
     for (Players::iterator itr = teamA.begin(); itr != teamA.end(); ++itr)
     {
         if (Player* player = ObjectAccessor::FindPlayer(*itr))
         {
-            AddPlayerToBattleground(player);
+            AddPlayerToBattleground(player, bracketId);
             player->SendSysMessage("You have challenged %s.", challengedPlayer->GetName());
         }
     }
@@ -185,7 +184,7 @@ void ChallengeMgr::HandleChallenge(uint64 challengerGUID, uint64 challengedGUID,
     {
         if (Player* player = ObjectAccessor::FindPlayer(*itr))
         {
-            AddPlayerToBattleground(player);
+            AddPlayerToBattleground(player, bracketId);
             player->SendSysMessage("You have been challenged by %s.", challengerPlayer->GetName());
         }
     }
@@ -193,16 +192,19 @@ void ChallengeMgr::HandleChallenge(uint64 challengerGUID, uint64 challengedGUID,
     CleanupChallenge();
 }
 
-void ChallengeMgr::CreateBattleground(uint8 teamSize)
+void ChallengeMgr::CleanupChallenge()
 {
-    Battleground* battlegroundTemplate = sBattlegroundMgr->GetBattlegroundTemplate((BattlegroundTypeId)bgTypeId);
-    if (!battlegroundTemplate)
-        return;
+    teamA.clear();
+    teamB.clear();
+    arenaType = 0;
+    bgTypeId = 0;
+    bgQueueTypeId = 0;
+    bg = NULL;
+    bgQueue = NULL;
+}
 
-    bracketEntry = GetBattlegroundBracketByLevel(battlegroundTemplate->GetMapId(), 80);
-    if (!bracketEntry)
-        return;
-
+void ChallengeMgr::CreateBattleground(const PvPDifficultyEntry* bracketEntry, uint8 teamSize)
+{
     bg = sBattlegroundMgr->CreateNewBattleground((BattlegroundTypeId)bgTypeId, bracketEntry, arenaType, false, bgTypeId == BATTLEGROUND_AA ? true : false);
     bg->SetRated(false);
     bg->SetChallenge(true);
@@ -210,7 +212,7 @@ void ChallengeMgr::CreateBattleground(uint8 teamSize)
     bg->StartBattleground();
 }
 
-void ChallengeMgr::AddPlayerToBattleground(Player* player)
+void ChallengeMgr::AddPlayerToBattleground(Player* player, BattlegroundBracketId bracketId)
 {
     uint64 guid = player->GetGUID();
     uint32 msTime = getMSTime();
@@ -220,7 +222,7 @@ void ChallengeMgr::AddPlayerToBattleground(Player* player)
     sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_WAIT_QUEUE, 0, 0, arenaType);
     player->GetSession()->SendPacket(&data);
 
-    sBattlegroundMgr->ScheduleQueueUpdate(0, arenaType, (BattlegroundQueueTypeId)bgQueueTypeId, (BattlegroundTypeId)bgTypeId, bracketEntry->GetBracketId());
+    sBattlegroundMgr->ScheduleQueueUpdate(0, arenaType, (BattlegroundQueueTypeId)bgQueueTypeId, (BattlegroundTypeId)bgTypeId, bracketId);
 
     uint32 team = 0;
     if (IsOnTeamA(guid))
@@ -256,20 +258,8 @@ void ChallengeMgr::AddPlayerToBattleground(Player* player)
     player->challengeInfo.ginfo = ginfo;
 
     bgQueue->m_QueuedPlayers[guid] = *info;
-    bgQueue->m_QueuedGroups[bracketEntry->GetBracketId()][team == HORDE ? BG_QUEUE_PREMADE_HORDE : BG_QUEUE_PREMADE_ALLIANCE].push_back(ginfo);
+    bgQueue->m_QueuedGroups[bracketId][team == HORDE ? BG_QUEUE_PREMADE_HORDE : BG_QUEUE_PREMADE_ALLIANCE].push_back(ginfo);
     bgQueue->InviteGroupToBG(ginfo, bg);
-}
-
-void ChallengeMgr::CleanupChallenge()
-{
-    teamA.clear();
-    teamB.clear();
-    arenaType = 0;
-    bgTypeId = 0;
-    bgQueueTypeId = 0;
-    bg = NULL;
-    bracketEntry = NULL;
-    bgQueue = NULL;
 }
 
 bool ChallengeMgr::IsOnTeamA(uint64 guid)
@@ -288,4 +278,65 @@ bool ChallengeMgr::IsOnTeamB(uint64 guid)
             return true;
 
     return false;
+}
+
+ChatCommand* challenge_commandscript::GetCommands() const
+{
+    static ChatCommand commandTable[] =
+    {
+        { "challenge",          SEC_PLAYER,         false, &HandleChallengeCommand,                 "", NULL },
+        { NULL,                 0,                  false, NULL,                                    "", NULL }
+    };
+    return commandTable;
+}
+
+bool challenge_commandscript::HandleChallengeCommand(ChatHandler* handler, const char* args)
+{
+    Player* player = handler->GetSession()->GetPlayer();
+    if (!player)
+        return false;
+
+    if (!*args)
+    {
+        player->SendSysMessage("Incorrect syntax.");
+        player->SendSysMessage("Syntax: .challenge $playerName #arenaMap");
+        player->SendSysMessage("Please refer to your Player Handbook for arena map numbers and more information.");
+        handler->SetSentErrorMessage(true);
+        return false;
+    }
+
+    std::string name = strtok((char*)args, " ");
+    if (!normalizePlayerName(name))
+    {
+        player->SendSysMessage("Invalid player name.");
+        handler->SetSentErrorMessage(true);
+        return false;
+    }
+
+    uint64 guid = 0;
+    if (Player* player = sObjectAccessor->FindPlayerByName(name.c_str()))
+        guid = player->GetGUID();
+    else
+        guid = sObjectMgr->GetPlayerGUIDByName(name);
+
+    if (!guid)
+    {
+        player->SendSysMessage("No player found with the name %s.", name.c_str());
+        handler->SetSentErrorMessage(true);
+        return false;
+    }
+
+    uint8 bgTypeId = 0;
+    char* bgTypeIdArg = strtok(NULL, " ");
+
+    if (bgTypeIdArg)
+        bgTypeId = (uint8)atoi(bgTypeIdArg);
+
+    sChallengeMgr->HandleChallenge(player->GetGUID(), guid, bgTypeId);
+    return true;
+}
+
+void AddSC_challenge_commandscript()
+{
+    new challenge_commandscript();
 }
