@@ -10,6 +10,12 @@ class BattlegroundQueue;
 struct PvPDifficultyEntry;
 class ChatHandler;
 
+enum PlayerTeam
+{
+    PLAYER_TEAM_A,
+    PLAYER_TEAM_B
+};
+
 class ChallengeMgr
 {
     friend class ACE_Singleton<ChallengeMgr, ACE_Null_Mutex>;
@@ -22,20 +28,15 @@ class ChallengeMgr
         void HandleChallenge(uint64 challengerGUID, uint64 challengedGUID, uint8 map);
 
     private:
-        void CleanupChallenge();
         void CreateBattleground(const PvPDifficultyEntry* bracketEntry, uint8 teamSize);
-        void AddPlayerToBattleground(Player* player, BattlegroundBracketId bracketId);
-        bool IsOnTeamA(uint64 guid);
-        bool IsOnTeamB(uint64 guid);
+        void AddPlayersToBattleground(const PvPDifficultyEntry* bracketEntry);
+        void CleanupChallenge();
 
-        typedef std::vector<uint64> Players;
-        Players teamA;
-        Players teamB;
+        typedef std::map<uint64, PlayerTeam> Players;
+        Players players;
         uint8 arenaType;
         uint8 bgTypeId;
         Battleground* bg;
-        uint8 bgQueueTypeId;
-        BattlegroundQueue* bgQueue;
 };
 
 #define sChallengeMgr ACE_Singleton<ChallengeMgr, ACE_Null_Mutex>::instance()

@@ -109,7 +109,7 @@ void ChallengeMgr::HandleChallenge(uint64 challengerGUID, uint64 challengedGUID,
                 return;
             }
 
-            teamA.push_back(citr->guid);
+            players[citr->guid] = PLAYER_TEAM_A;
         }
 
         for (Group::member_citerator citr = membersB.begin(); citr != membersB.end(); ++citr)
@@ -128,18 +128,14 @@ void ChallengeMgr::HandleChallenge(uint64 challengerGUID, uint64 challengedGUID,
                 return;
             }
 
-            teamB.push_back(citr->guid);
+            players[citr->guid] = PLAYER_TEAM_B;
         }
-
-        if (teamA.size() != teamB.size())
-            return;
     }
     else
     {
         arenaType = ARENA_TYPE_2v2;
-
-        teamA.push_back(challengerGUID);
-        teamB.push_back(challengedGUID);
+        players[challengerGUID] = PLAYER_TEAM_A;
+        players[challengedGUID] = PLAYER_TEAM_B;
     }
 
     switch (map)
@@ -165,42 +161,9 @@ void ChallengeMgr::HandleChallenge(uint64 challengerGUID, uint64 challengedGUID,
         return;
     }
 
-    CreateBattleground(bracketEntry, teamA.size());
-
-    BattlegroundBracketId bracketId = bracketEntry->GetBracketId();
-    bgQueueTypeId = BattlegroundMgr::BGQueueTypeId((BattlegroundTypeId)bgTypeId, arenaType);
-    bgQueue = &sBattlegroundMgr->m_BattlegroundQueues[bgQueueTypeId];
-
-    for (Players::iterator itr = teamA.begin(); itr != teamA.end(); ++itr)
-    {
-        if (Player* player = ObjectAccessor::FindPlayer(*itr))
-        {
-            AddPlayerToBattleground(player, bracketId);
-            player->SendSysMessage("You have challenged %s.", challengedPlayer->GetName());
-        }
-    }
-
-    for (Players::iterator itr = teamB.begin(); itr != teamB.end(); ++itr)
-    {
-        if (Player* player = ObjectAccessor::FindPlayer(*itr))
-        {
-            AddPlayerToBattleground(player, bracketId);
-            player->SendSysMessage("You have been challenged by %s.", challengerPlayer->GetName());
-        }
-    }
-
+    CreateBattleground(bracketEntry, (players.size() / 2));
+    AddPlayersToBattleground(bracketEntry);
     CleanupChallenge();
-}
-
-void ChallengeMgr::CleanupChallenge()
-{
-    teamA.clear();
-    teamB.clear();
-    arenaType = 0;
-    bgTypeId = 0;
-    bgQueueTypeId = 0;
-    bg = NULL;
-    bgQueue = NULL;
 }
 
 void ChallengeMgr::CreateBattleground(const PvPDifficultyEntry* bracketEntry, uint8 teamSize)
@@ -212,72 +175,92 @@ void ChallengeMgr::CreateBattleground(const PvPDifficultyEntry* bracketEntry, ui
     bg->StartBattleground();
 }
 
-void ChallengeMgr::AddPlayerToBattleground(Player* player, BattlegroundBracketId bracketId)
+void ChallengeMgr::AddPlayersToBattleground(const PvPDifficultyEntry* bracketEntry)
 {
-    uint64 guid = player->GetGUID();
     uint32 msTime = getMSTime();
-    uint32 queueSlot = player->AddBattlegroundQueueId((BattlegroundQueueTypeId)bgQueueTypeId);
 
-    WorldPacket data;
-    sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, queueSlot, STATUS_WAIT_QUEUE, 0, 0, arenaType);
-    player->GetSession()->SendPacket(&data);
+    GroupQueueInfo* ginfoA               = new GroupQueueInfo;
+    ginfoA->BgTypeId                     = (BattlegroundTypeId)bgTypeId;
+    ginfoA->ArenaType                    = arenaType;
+    ginfoA->IsRated                      = false;
+    ginfoA->IsInvitedToBGInstanceGUID    = 0;
+    ginfoA->JoinTime                     = msTime;
+    ginfoA->RemoveInviteTime             = 0;
+    ginfoA->Team                         = ALLIANCE;
+    ginfoA->ArenaTeamId                  = 0;
+    ginfoA->ArenaTeamRating              = 0;
+    ginfoA->ArenaMatchmakerRating        = 0;
+    ginfoA->OTeam                        = HORDE;
+    ginfoA->OpponentsTeamRating          = 0;
+    ginfoA->OpponentsMatchmakerRating    = 0;
+    ginfoA->Players.clear();
 
+    GroupQueueInfo* ginfoB               = new GroupQueueInfo;
+    ginfoB->BgTypeId                     = (BattlegroundTypeId)bgTypeId;
+    ginfoB->ArenaType                    = arenaType;
+    ginfoB->IsRated                      = false;
+    ginfoB->IsInvitedToBGInstanceGUID    = 0;
+    ginfoB->JoinTime                     = msTime;
+    ginfoB->RemoveInviteTime             = 0;
+    ginfoB->Team                         = HORDE;
+    ginfoB->ArenaTeamId                  = 0;
+    ginfoB->ArenaTeamRating              = 0;
+    ginfoB->ArenaMatchmakerRating        = 0;
+    ginfoB->OTeam                        = ALLIANCE;
+    ginfoB->OpponentsTeamRating          = 0;
+    ginfoB->OpponentsMatchmakerRating    = 0;
+    ginfoB->Players.clear();
+
+    BattlegroundQueueTypeId bgQueueTypeId = BattlegroundMgr::BGQueueTypeId((BattlegroundTypeId)bgTypeId, bg->GetArenaType());
+    BattlegroundQueue& bgQueue = sBattlegroundMgr->m_BattlegroundQueues[bgQueueTypeId];
+
+    for (Players::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+    {
+        Player* player = ObjectAccessor::FindPlayer(itr->first);
+        if (!player)
+            continue;
+
+        switch (itr->second)
+        {
+            case PLAYER_TEAM_A:
+            {
+                PlayerQueueInfo& pQueueInfo = bgQueue.m_QueuedPlayers[itr->first];
+                pQueueInfo.LastOnlineTime   = msTime;
+                pQueueInfo.GroupInfo        = ginfoA;
+                ginfoA->Players[itr->first] = &pQueueInfo;
+                player->challengeInfo.ginfo = ginfoA;
+                break;
+            }
+            case PLAYER_TEAM_B:
+            {
+                PlayerQueueInfo& pQueueInfo = bgQueue.m_QueuedPlayers[itr->first];
+                pQueueInfo.LastOnlineTime   = msTime;
+                pQueueInfo.GroupInfo        = ginfoB;
+                ginfoB->Players[itr->first] = &pQueueInfo;
+                player->challengeInfo.ginfo = ginfoB;
+                break;
+            }
+        }
+
+        WorldPacket data;
+        sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, bg, player->AddBattlegroundQueueId((BattlegroundQueueTypeId)bgQueueTypeId), STATUS_WAIT_QUEUE, 0, 0, arenaType);
+        player->GetSession()->SendPacket(&data);
+    }
+
+    BattlegroundBracketId bracketId =  bracketEntry->GetBracketId();
+    bgQueue.m_QueuedGroups[bracketId][BG_QUEUE_PREMADE_ALLIANCE].push_back(ginfoA);
+    bgQueue.m_QueuedGroups[bracketId][BG_QUEUE_PREMADE_HORDE].push_back(ginfoB);
+    bgQueue.InviteGroupToBG(ginfoA, bg);
+    bgQueue.InviteGroupToBG(ginfoB, bg);
     sBattlegroundMgr->ScheduleQueueUpdate(0, arenaType, (BattlegroundQueueTypeId)bgQueueTypeId, (BattlegroundTypeId)bgTypeId, bracketId);
-
-    uint32 team = 0;
-    if (IsOnTeamA(guid))
-        team = ALLIANCE;
-    else if (IsOnTeamB(guid))
-        team = HORDE;
-
-    if (!team)
-        return;
-
-    GroupQueueInfo* ginfo               = new GroupQueueInfo;
-    ginfo->BgTypeId                     = (BattlegroundTypeId)bgTypeId;
-    ginfo->ArenaType                    = arenaType;
-    ginfo->IsRated                      = false;
-    ginfo->IsInvitedToBGInstanceGUID    = 0;
-    ginfo->JoinTime                     = msTime;
-    ginfo->RemoveInviteTime             = 0;
-    ginfo->Team                         = team;
-    ginfo->ArenaTeamId                  = 0;
-    ginfo->ArenaTeamRating              = 0;
-    ginfo->ArenaMatchmakerRating        = 0;
-    ginfo->OTeam                        = team == HORDE ? ALLIANCE : HORDE;
-    ginfo->OpponentsTeamRating          = 0;
-    ginfo->OpponentsMatchmakerRating    = 0;
-    ginfo->Players.clear();
-
-    PlayerQueueInfo* info   = new PlayerQueueInfo;
-    info->GroupInfo         = ginfo;
-    info->LastOnlineTime    = msTime;
-
-    ginfo->Players[guid] = info;
-
-    player->challengeInfo.ginfo = ginfo;
-
-    bgQueue->m_QueuedPlayers[guid] = *info;
-    bgQueue->m_QueuedGroups[bracketId][team == HORDE ? BG_QUEUE_PREMADE_HORDE : BG_QUEUE_PREMADE_ALLIANCE].push_back(ginfo);
-    bgQueue->InviteGroupToBG(ginfo, bg);
 }
 
-bool ChallengeMgr::IsOnTeamA(uint64 guid)
+void ChallengeMgr::CleanupChallenge()
 {
-    for (Players::iterator itr = teamA.begin(); itr != teamA.end(); ++itr)
-        if (*itr == guid)
-            return true;
-
-    return false;
-}
-
-bool ChallengeMgr::IsOnTeamB(uint64 guid)
-{
-    for (Players::iterator itr = teamB.begin(); itr != teamB.end(); ++itr)
-        if (*itr == guid)
-            return true;
-
-    return false;
+    players.clear();
+    arenaType = 0;
+    bgTypeId = 0;
+    bg = NULL;
 }
 
 ChatCommand* challenge_commandscript::GetCommands() const
