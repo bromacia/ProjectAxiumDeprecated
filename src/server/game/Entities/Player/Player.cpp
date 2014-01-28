@@ -25053,6 +25053,9 @@ void Player::ActivateSpec(uint8 spec)
     if (Pet* pet = GetPet())
         RemovePet(pet, PET_SAVE_NOT_IN_SLOT);
 
+    if (getClass() == CLASS_DEATH_KNIGHT)
+        SetLastPetNumber(0);
+
     ClearComboPointHolders();
     ClearAllReactives();
     UnsummonAllTotems();
