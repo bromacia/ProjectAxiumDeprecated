@@ -172,7 +172,6 @@ void ChallengeMgr::CreateBattleground(const PvPDifficultyEntry* bracketEntry, ui
     bg->SetRated(false);
     bg->SetChallenge(true);
     bg->SetChallengeTeamSize(teamSize);
-    bg->StartBattleground();
 }
 
 void ChallengeMgr::AddPlayersToBattleground(const PvPDifficultyEntry* bracketEntry)
@@ -252,7 +251,7 @@ void ChallengeMgr::AddPlayersToBattleground(const PvPDifficultyEntry* bracketEnt
     bgQueue.m_QueuedGroups[bracketId][BG_QUEUE_PREMADE_HORDE].push_back(ginfoB);
     bgQueue.InviteGroupToBG(ginfoA, bg);
     bgQueue.InviteGroupToBG(ginfoB, bg);
-    sBattlegroundMgr->ScheduleQueueUpdate(0, arenaType, (BattlegroundQueueTypeId)bgQueueTypeId, (BattlegroundTypeId)bgTypeId, bracketId);
+    bg->StartBattleground();
 }
 
 void ChallengeMgr::CleanupChallenge()
