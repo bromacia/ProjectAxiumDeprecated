@@ -7279,8 +7279,13 @@ void Spell::SummonGuardian(uint32 i, uint32 entry, SummonPropertiesEntry const* 
         summon->UpdateSpeed(MOVE_RUN, true);
         summon->UpdateSpeed(MOVE_WALK, true);
 
-        if (summon->GetEntry() == 19668) // Shadowfiend
+        // Shadowfiend must immediately start attacking owner's target on summon
+        // @todo: is there any generic way or flag for this?
+        if (summon->GetEntry() == 19668)
+        {
             summon->Attack(m_targets.GetUnitTarget(), true);
+            summon->GetMotionMaster()->MoveChase(m_targets.GetUnitTarget());
+        }
 
         summon->AI()->EnterEvadeMode();
 
@@ -7297,11 +7302,11 @@ void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 coun
         //This is a workaround. Do not have time to write much about it
         switch (m_spellInfo->Effects[i].TargetA.GetTarget()) 
         {
-            case TARGET_DEST_CASTER_FRONT: // Feral spirit
+            case TARGET_DEST_CASTER_FRONT:
                 {
-                    if (count == 0) // First wolf
+                    if (count == 0)
                         m_caster->GetFirstCollisionPosition(pos, 3.0f, 0.66f * static_cast<float>(2*M_PI), true);
-                    else            // Second wolf
+                    else
                         m_caster->GetFirstCollisionPosition(pos, 3.0f, 0.33f * static_cast<float>(2*M_PI), true);
                 }
                 break;

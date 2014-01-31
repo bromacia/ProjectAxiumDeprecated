@@ -39,7 +39,7 @@ typedef std::vector<uint32> SpellVct;
 class CombatAI : public CreatureAI
 {
     public:
-        explicit CombatAI(Creature* c) : CreatureAI(c) { target = NULL; }
+        explicit CombatAI(Creature* c) : CreatureAI(c) {}
 
         void InitializeAI();
         void Reset();
@@ -47,30 +47,26 @@ class CombatAI : public CreatureAI
         void SetTarget(Unit* newTarget);
         void JustDied(Unit* killer);
         void UpdateAI(const uint32 diff);
-        bool UpdateTarget();
         void SpellInterrupted(uint32 spellId, uint32 unTimeMs);
         static int Permissible(const Creature*);
     protected:
         EventMap events;
         SpellVct spells;
-        Unit* target;
 };
 
 class CasterAI : public CombatAI
 {
     public:
-        explicit CasterAI(Creature* c) : CombatAI(c) { m_attackDist = MELEE_RANGE; target = NULL; }
+        explicit CasterAI(Creature* c) : CombatAI(c) { m_attackDist = MELEE_RANGE; }
         void InitializeAI();
         void Reset();
         void EnterCombat(Unit* who);
         void SetTarget(Unit* newTarget);
         void AttackStart(Unit* victim) { AttackStartCaster(victim, m_attackDist); }
         void UpdateAI(const uint32 diff);
-        bool UpdateTarget();
         void SpellInterrupted(uint32 spellId, uint32 unTimeMs);
     private:
         float m_attackDist;
-        Unit* target;
 };
 
 struct ArcherAI : public CreatureAI

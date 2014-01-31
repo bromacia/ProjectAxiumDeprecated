@@ -34,7 +34,7 @@ void UnitAI::AttackStart(Unit* victim)
 
 void UnitAI::AttackStartCaster(Unit* victim, float dist)
 {
-    if (victim && !victim->HasBreakableCrowdControlAura(me) && me->Attack(victim, false))
+    if (victim && me->Attack(victim, false))
         me->GetMotionMaster()->MoveChase(victim, dist);
 }
 
@@ -242,7 +242,7 @@ void UnitAI::FillAISpellInfo()
                 else if (targetType == TARGET_UNIT_DEST_AREA_ENEMY)
                     UPDATE_TARGET(AITARGET_ENEMY)
 
-                if (spellInfo->Effects[j].Effect == SPELL_EFFECT_APPLY_AURA)
+                if (spellInfo->Effects[j].Effect == SPELL_EFFECT_APPLY_AURA && !spellInfo->HasEffect(SPELL_EFFECT_SCHOOL_DAMAGE))
                 {
                     if (targetType == TARGET_UNIT_TARGET_ENEMY)
                         UPDATE_TARGET(AITARGET_DEBUFF)

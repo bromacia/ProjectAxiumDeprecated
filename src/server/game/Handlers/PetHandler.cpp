@@ -407,7 +407,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                     }
                 }
 
-                if (spell->GetSpellInfo()->CastTimeEntry > 0)
+                if (spell->GetSpellInfo()->CastTimeEntry->CastTime > 0)
                 {
                     pet->GetMotionMaster()->Clear();
                     pet->StopMoving();

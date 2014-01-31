@@ -118,7 +118,7 @@ void PetAI::UpdateAI(const uint32 diff)
                         if (result == SPELL_CAST_OK)
                         {
                             me->GetMotionMaster()->Clear();
-                            if (spell->GetSpellInfo()->CastTimeEntry > 0)
+                            if (spell->GetSpellInfo()->CastTimeEntry->CastTime > 0)
                                 me->StopMoving();
 
                             me->ToCreature()->AddCreatureSpellCooldown(spell->GetSpellInfo()->Id);
@@ -558,6 +558,10 @@ bool PetAI::CanAttack(Unit* target)
 
     // Returning - check first since pets returning ignore attacks
     if (me->GetCharmInfo()->IsReturning())
+        return false;
+
+    // Pet cannot be CC'd
+    if (me->IsCrowdControlled())
         return false;
 
     // Passive - check now so we don't have to worry about passive in later checks

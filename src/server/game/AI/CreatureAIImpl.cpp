@@ -198,29 +198,18 @@ bool CreatureAI::UpdateVictimWithGaze()
 
     if (Unit* victim = me->SelectVictim())
         AttackStart(victim);
+
     return me->getVictim();
 }
 
 bool CreatureAI::UpdateVictim()
 {
-    if (!me->isInCombat() && me->GetScriptName() != "npc_shadowfiend") // Shadowfiend must start attacking immediately (victim pre-set in SummonGuardian)
-        return false;
-
-    if (!me->HasReactState(REACT_PASSIVE) || me->GetScriptName() == "npc_shadowfiend")
+    if (!me->HasReactState(REACT_PASSIVE))
     {
         if (Unit* victim = me->SelectVictim())
-        {
-            if (me->GetScriptName() == "npc_mirror_image")
-                AttackStartCaster(victim, 30.0f);
-            else
-                AttackStart(victim);
-        }
+            AttackStart(victim);
+
         return me->getVictim();
-    }
-    else if (me->getThreatManager().isThreatListEmpty())
-    {
-        EnterEvadeMode();
-        return false;
     }
 
     return true;
