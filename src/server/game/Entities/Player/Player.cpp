@@ -988,7 +988,7 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
     PlayerInfo const* info = sObjectMgr->GetPlayerInfo(createInfo->Race, createInfo->Class);
     if (!info)
     {
-        sLog->outError("Player (Name %s) has incorrect race/class pair. Can't be loaded.", m_name.c_str());
+        sLog->outError("Player::Create: Player (Name %s) has incorrect race/class pair. Can't be loaded. Race: %u Class %u", m_name.c_str(), createInfo->Race, createInfo->Class);
         return false;
     }
 
@@ -18622,7 +18622,7 @@ bool Player::_LoadHomeBind(PreparedQueryResult result)
     PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getOriginalRace(), getClass());
     if (!info)
     {
-        sLog->outError("Player (Name %s) has incorrect race/class pair. Can't be loaded.", GetName());
+        sLog->outError("Player::_LoadHomeBind: Player (Name %s) has incorrect race/class pair. Can't be loaded. Race: %u, Class: %u", GetName(), getOriginalRace(), getClass());
         return false;
     }
 
