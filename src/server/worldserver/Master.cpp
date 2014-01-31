@@ -173,18 +173,6 @@ int Master::Run()
     ACE_Based::Thread world_thread(new WorldRunnable);
     world_thread.setPriority(ACE_Based::Highest);
 
-    ACE_Based::Thread* cliThread = NULL;
-
-#ifdef _WIN32
-    if (ConfigMgr::GetBoolDefault("Console.Enable", true) && (m_ServiceStatus == -1)/* need disable console in service mode*/)
-#else
-    if (ConfigMgr::GetBoolDefault("Console.Enable", true))
-#endif
-    {
-        ///- Launch CliRunnable thread
-        cliThread = new ACE_Based::Thread(new CliRunnable);
-    }
-
     ///- Handle affinity for multiple processors and process priority on Windows
     #ifdef _WIN32
     {
@@ -251,6 +239,18 @@ int Master::Run()
         sLog->outError("Failed to start network");
         World::StopNow(ERROR_EXIT_CODE);
         // go down and shutdown the server
+    }
+
+    ACE_Based::Thread* cliThread = NULL;
+
+#ifdef _WIN32
+    if (ConfigMgr::GetBoolDefault("Console.Enable", true) && (m_ServiceStatus == -1)/* need disable console in service mode*/)
+#else
+    if (ConfigMgr::GetBoolDefault("Console.Enable", true))
+#endif
+    {
+        ///- Launch CliRunnable thread
+        cliThread = new ACE_Based::Thread(new CliRunnable);
     }
 
     // set server online (allow connecting now)
