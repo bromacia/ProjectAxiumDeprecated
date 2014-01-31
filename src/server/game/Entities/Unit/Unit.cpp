@@ -13956,8 +13956,12 @@ Unit* Creature::SelectVictim()
         return NULL;
     }
 
-    // enter in evade mode in other case
-    AI()->EnterEvadeMode();
+    // Don't enter evade mode if there is nothing to evade
+    if (!m_ThreatManager.isThreatListEmpty())
+    {
+        // enter in evade mode in other case
+        AI()->EnterEvadeMode();
+    }
 
     return NULL;
 }
