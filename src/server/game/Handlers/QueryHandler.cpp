@@ -298,7 +298,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket & recv_data)
     else
     {
         std::string Text_0[MAX_LOCALES], Text_1[MAX_LOCALES];
-        for (int i = 0; i < MAX_GOSSIP_TEXT_OPTIONS; ++i)
+        for (uint8 i = 0; i < MAX_GOSSIP_TEXT_OPTIONS; ++i)
         {
             Text_0[i]=pGossip->Options[i].Text_0;
             Text_1[i]=pGossip->Options[i].Text_1;
@@ -309,7 +309,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket & recv_data)
         {
             if (NpcTextLocale const* nl = sObjectMgr->GetNpcTextLocale(textID))
             {
-                for (int i = 0; i < MAX_LOCALES; ++i)
+                for (uint8 i = 0; i < MAX_LOCALES; ++i)
                 {
                     ObjectMgr::GetLocaleString(nl->Text_0[i], loc_idx, Text_0[i]);
                     ObjectMgr::GetLocaleString(nl->Text_1[i], loc_idx, Text_1[i]);
@@ -317,7 +317,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket & recv_data)
             }
         }
 
-        for (int i = 0; i < MAX_GOSSIP_TEXT_OPTIONS; ++i)
+        for (uint8 i = 0; i < MAX_GOSSIP_TEXT_OPTIONS; ++i)
         {
             data << pGossip->Options[i].Probability;
 
