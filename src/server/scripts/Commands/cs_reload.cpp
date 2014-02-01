@@ -98,6 +98,7 @@ public:
             { "gm_tickets",                    SEC_ADMINISTRATOR, true,  &HandleReloadGMTicketsCommand,                  "", NULL },
             { "gossip_menu",                   SEC_ADMINISTRATOR, true,  &HandleReloadGossipMenuCommand,                 "", NULL },
             { "gossip_menu_option",            SEC_ADMINISTRATOR, true,  &HandleReloadGossipMenuOptionCommand,           "", NULL },
+            { "info_text",                     SEC_ADMINISTRATOR, true,  &HandleReloadInfoTextCommand,                   "", NULL },
             { "item_enchantment_template",     SEC_ADMINISTRATOR, true,  &HandleReloadItemEnchantementsCommand,          "", NULL },
             { "item_loot_template",            SEC_ADMINISTRATOR, true,  &HandleReloadLootTemplatesItemCommand,          "", NULL },
             { "item_set_names",                SEC_ADMINISTRATOR, true,  &HandleReloadItemSetNamesCommand,               "", NULL },
@@ -117,6 +118,7 @@ public:
             { "npc_spellclick_spells",         SEC_ADMINISTRATOR, true,  &HandleReloadSpellClickSpellsCommand,           "", NULL},
             { "npc_trainer",                   SEC_ADMINISTRATOR, true,  &HandleReloadNpcTrainerCommand,                 "", NULL },
             { "npc_vendor",                    SEC_ADMINISTRATOR, true,  &HandleReloadNpcVendorCommand,                  "", NULL },
+            { "npc_text",                      SEC_ADMINISTRATOR, true,  &HandleReloadNpcTextCommand,                    "", NULL },
             { "page_text",                     SEC_ADMINISTRATOR, true,  &HandleReloadPageTextsCommand,                  "", NULL },
             { "pickpocketing_loot_template",   SEC_ADMINISTRATOR, true,  &HandleReloadLootTemplatesPickpocketingCommand, "", NULL},
             { "points_of_interest",            SEC_ADMINISTRATOR, true,  &HandleReloadPointsOfInterestCommand,           "", NULL },
@@ -567,6 +569,15 @@ public:
         return true;
     }
 
+    static bool HandleReloadInfoTextCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        sLog->outString("Re-Loading `info_text` Table!");
+        sObjectMgr->LoadInfoText();
+        sObjectMgr->LoadGossipText();
+        handler->SendGlobalGMSysMessage("DB table `info_text` reloaded.");
+        return true;
+    }
+
     static bool HandleReloadGOQuestRelationsCommand(ChatHandler* handler, const char* /*args*/)
     {
         sLog->outString("Loading Quests Relations... (`gameobject_questrelation`)");
@@ -759,6 +770,14 @@ public:
         sLog->outString("Re-Loading `npc_vendor` Table!");
         sObjectMgr->LoadVendors();
         handler->SendGlobalGMSysMessage("DB table `npc_vendor` reloaded.");
+        return true;
+    }
+
+    static bool HandleReloadNpcTextCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        sLog->outString("Re-Loading `npc_text` Table!");
+        sObjectMgr->LoadGossipText();
+        handler->SendGlobalGMSysMessage("DB table `npc_text` reloaded.");
         return true;
     }
 

@@ -229,6 +229,7 @@ void AddBattlegroundScripts()
     void AddSC_ReadyMarker();
     void AddSC_npc_teleport();
     void AddSC_npc_beastmaster();
+    void AddSC_item_playerhandbook();
 #endif
 
 void AddCustomScripts()
@@ -240,5 +241,6 @@ void AddCustomScripts()
     AddSC_ReadyMarker();
     AddSC_npc_teleport();
     AddSC_npc_beastmaster();
+    AddSC_item_playerhandbook();
 #endif
 }

@@ -1749,6 +1749,9 @@ void World::SetInitialWorldSettings()
     sLog->outString("Loading InitSpells...");
     sObjectMgr->LoadInitSpells();
 
+    sLog->outString("Loading InitSpells...");
+    sObjectMgr->LoadInfoText();
+
     ///- Load and initialize scripts
     sObjectMgr->LoadQuestStartScripts();                         // must be after load Creature/Gameobject(Template/Data) and QuestTemplate
     sObjectMgr->LoadQuestEndScripts();                           // must be after load Creature/Gameobject(Template/Data) and QuestTemplate

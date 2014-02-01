@@ -5134,9 +5134,9 @@ void ObjectMgr::LoadInstanceEncounters()
     sLog->outString();
 }
 
-GossipText const* ObjectMgr::GetGossipText(uint32 Text_ID) const
+GossipText const* ObjectMgr::GetGossipText(uint32 textId) const
 {
-    GossipTextMap::const_iterator itr = mGossipText.find(Text_ID);
+    GossipTextMap::const_iterator itr = mGossipText.find(textId);
     if (itr != mGossipText.end())
         return &itr->second;
     return NULL;
@@ -5144,8 +5144,6 @@ GossipText const* ObjectMgr::GetGossipText(uint32 Text_ID) const
 
 void ObjectMgr::LoadGossipText()
 {
-    uint32 oldMSTime = getMSTime();
-
     QueryResult result = WorldDatabase.Query("SELECT * FROM npc_text");
 
     int count = 0;
@@ -5157,6 +5155,9 @@ void ObjectMgr::LoadGossipText()
         return;
     }
 
+    mGossipText.clear();
+
+    uint32 oldMSTime = getMSTime();
     int cic;
 
     do
@@ -8942,4 +8943,37 @@ void ObjectMgr::LoadInitSpells()
 
     sLog->outString(">> Loaded InitSpells in %u ms", GetMSTimeDiffToNow(oldMSTime));
     sLog->outString();
+}
+
+void ObjectMgr::LoadInfoText()
+{
+    QueryResult result = WorldDatabase.Query("SELECT MenuId, SubMenuId, MenuTitle, npcTextId FROM info_text");
+    if (!result)
+    {
+        sLog->outErrorDb(">> Failed to load InfoText. DB table `info_text` is empty!");
+        sLog->outString();
+        return;
+    }
+
+    mInfoText.clear();
+
+    uint32 oldMSTime = getMSTime();
+
+    do
+    {
+        Field* fields = result->Fetch();
+        mInfoText[fields[0].GetUInt32()] = InfoText(fields[1].GetUInt32(), fields[2].GetString(), fields[3].GetUInt32());
+    }
+    while (result->NextRow());
+
+    sLog->outString(">> Loaded InfoText in %u ms", GetMSTimeDiffToNow(oldMSTime));
+    sLog->outString();
+}
+
+InfoText const* ObjectMgr::GetInfoText(uint32 textId) const
+{
+    InfoTextMap::const_iterator itr = mInfoText.find(textId);
+    if (itr != mInfoText.end())
+        return &itr->second;
+    return NULL;
 }

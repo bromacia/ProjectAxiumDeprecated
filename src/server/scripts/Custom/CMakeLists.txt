@@ -19,6 +19,7 @@ set(scripts_STAT_SRCS
   Custom/ReadyMarker.cpp
   Custom/npc_teleport.cpp
   Custom/npc_beastmaster.cpp
+  Custom/item_playerhandbook.cpp
 )
 
 message("  -> Prepared: Custom")

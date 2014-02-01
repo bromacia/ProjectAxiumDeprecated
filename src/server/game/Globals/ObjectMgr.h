@@ -610,6 +610,18 @@ struct InitSpell
 
 typedef std::map<uint32, InitSpell> InitSpellMap;
 
+struct InfoText
+{
+    InfoText(uint32 _SubMenuId, std::string _MenuTitle, uint32 _NpcTextId): SubMenuId(_SubMenuId), MenuTitle(_MenuTitle), NpcTextId(_NpcTextId) {}
+    InfoText() : SubMenuId(0), MenuTitle(""), NpcTextId(0) {}
+
+    uint32 SubMenuId;
+    std::string MenuTitle;
+    uint32 NpcTextId;
+};
+
+typedef std::map<uint32, InfoText> InfoTextMap;
+
 class PlayerDumpReader;
 
 class ObjectMgr
@@ -734,7 +746,8 @@ class ObjectMgr
             return mGameObjectForQuestSet.find(entry) != mGameObjectForQuestSet.end();
         }
 
-        GossipText const* GetGossipText(uint32 Text_ID) const;
+        GossipText const* GetGossipText(uint32 textId) const;
+        InfoText const* GetInfoText(uint32 textId) const;
 
         WorldSafeLocsEntry const* GetDefaultGraveYard(uint32 team);
         WorldSafeLocsEntry const* GetClosestGraveYard(float x, float y, float z, uint32 MapId, uint32 team);
@@ -1198,6 +1211,10 @@ class ObjectMgr
 
         InitSpellMap GetInitSpellMap() const { return m_initSpells; }
 
+        void LoadInfoText();
+
+        InfoTextMap GetInfoTextMap() const { return mInfoText; }
+
     private:
         // first free id for selected id type
         uint64 m_equipmentSetGuid;
@@ -1275,6 +1292,8 @@ class ObjectMgr
         InstanceTemplateContainer InstanceTemplateStore;
 
         ExtendedCost2Map extendedCost2Map;
+
+        InfoTextMap mInfoText;
 
     private:
         void LoadScripts(ScriptsType type);
