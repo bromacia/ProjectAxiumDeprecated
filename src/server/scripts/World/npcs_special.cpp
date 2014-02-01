@@ -1953,6 +1953,7 @@ class npc_ebon_gargoyle : public CreatureScript
             void FlyAway()
             {
                 despawnTimer = 4000;
+                me->CastStop();
                 me->CombatStop(true);
                 me->ApplyModFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE, true);
                 me->ApplyModFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED, true);
@@ -1987,7 +1988,10 @@ class npc_ebon_gargoyle : public CreatureScript
                     if (flyAwayTimer > diff)
                         flyAwayTimer -= diff;
                     else
+                    {
                         FlyAway();
+                        return;
+                    }
                 }
 
                 CasterAI::UpdateAI(diff);
