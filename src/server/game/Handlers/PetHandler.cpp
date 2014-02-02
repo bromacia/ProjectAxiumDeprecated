@@ -419,12 +419,15 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
             {
                 if (result == SPELL_FAILED_NO_POWER)
                 {
-                    if (Spell* queuedSpell = pet->getQueuedSpell())
-                        queuedSpell->finish(false);
+                    if (unit_target)
+                    {
+                        if (Spell* queuedSpell = pet->getQueuedSpell())
+                            queuedSpell->finish(false);
 
-                    pet->setQueuedSpell(spell);
-                    pet->setQueuedSpellTargetGuid(unit_target->GetGUID());
-                    return;
+                        pet->setQueuedSpell(spell);
+                        pet->setQueuedSpellTargetGuid(unit_target->GetGUID());
+                        return;
+                    }
                 }
 
                 if (pet->isPossessed() || pet->IsVehicle())
