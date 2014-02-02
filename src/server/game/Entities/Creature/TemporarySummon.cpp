@@ -312,10 +312,9 @@ Guardian::Guardian(SummonPropertiesEntry const* properties, Unit* owner, bool is
     memset(m_statFromOwner, 0, sizeof(float)*MAX_STATS);
     m_unitTypeMask |= UNIT_MASK_GUARDIAN;
     if (properties && properties->Type == SUMMON_TYPE_PET)
-    {
         m_unitTypeMask |= UNIT_MASK_CONTROLABLE_GUARDIAN;
-        InitCharmInfo();
-    }
+
+    InitCharmInfo();
 }
 
 void Guardian::InitStats(uint32 duration)
