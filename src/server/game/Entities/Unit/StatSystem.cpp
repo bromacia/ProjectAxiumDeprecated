@@ -1202,6 +1202,8 @@ bool Guardian::UpdateAllStats()
 
     UpdateHitAndExpertise();
 
+    UpdateHaste();
+
     return true;
 }
 
@@ -1476,15 +1478,28 @@ void Guardian::SetBonusDamage(int32 damage)
 
 void Guardian::UpdateHitAndExpertise()
 {
-    if (Player* owner = GetOwner()->ToPlayer())
-    {
-        // Melee Hit Chance
-        m_modMeleeHitChance = int32(owner->GetTotalAuraModifier(SPELL_AURA_MOD_HIT_CHANCE) + owner->GetRatingBonusValue(CR_HIT_MELEE));
+    Player* owner = GetOwner()->ToPlayer();
+    if (!owner)
+        return;
 
-        // Expertise (1% owner's hit rating -> 1% less chance to dodge/parry pet's attack)
-        m_modExpertise = int32(m_modMeleeHitChance * 32.79f * owner->GetRatingMultiplier(CR_EXPERTISE));
+    // Melee Hit Chance
+    m_modMeleeHitChance = int32(owner->GetTotalAuraModifier(SPELL_AURA_MOD_HIT_CHANCE) + owner->GetRatingBonusValue(CR_HIT_MELEE));
 
-        // Spell Hit Chance
-        m_modSpellHitChance = int32(owner->GetTotalAuraModifier(SPELL_AURA_MOD_SPELL_HIT_CHANCE) + owner->GetRatingBonusValue(CR_HIT_SPELL));
-    }
+    // Expertise (1% owner's hit rating -> 1% less chance to dodge/parry pet's attack)
+    m_modExpertise = int32(m_modMeleeHitChance * 32.79f * owner->GetRatingMultiplier(CR_EXPERTISE));
+
+    // Spell Hit Chance
+    m_modSpellHitChance = int32(owner->GetTotalAuraModifier(SPELL_AURA_MOD_SPELL_HIT_CHANCE) + owner->GetRatingBonusValue(CR_HIT_SPELL));
+}
+
+void Guardian::UpdateHaste()
+{
+    Player* owner = GetOwner()->ToPlayer();
+    if (!owner)
+        return;
+
+    ApplyAttackTimePercentMod(BASE_ATTACK, owner->GetRatingBonusValue(CR_HASTE_MELEE), true);
+    ApplyAttackTimePercentMod(OFF_ATTACK, owner->GetRatingBonusValue(CR_HASTE_MELEE), true);
+    ApplyAttackTimePercentMod(RANGED_ATTACK, owner->GetRatingBonusValue(CR_HASTE_RANGED), true);
+    ApplyCastTimePercentMod(owner->GetRatingBonusValue(CR_HASTE_SPELL), true);
 }
