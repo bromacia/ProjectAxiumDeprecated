@@ -3134,7 +3134,16 @@ void AuraEffect::HandleModPossess(AuraApplication const* aurApp, uint8 mode, boo
     if (apply)
         target->SetCharmedBy(caster, CHARM_TYPE_POSSESS, aurApp);
     else
+    {
         target->RemoveCharmedBy(caster);
+        if (Player* player = caster->ToPlayer())
+        {
+            if (player->GetPet())
+                player->PetSpellInitialize();
+            else
+                player->CharmSpellInitialize();
+        }
+    }
 
     // If target has roots, resend force root opcode on remove. We cannot add this
     // check to SetClientControl because client control is never resent after root end
