@@ -1607,7 +1607,7 @@ void GameObject::Use(Unit* user)
             Player* player = user->ToPlayer();
 
             // Prevent client crashes
-            if (player->IsMorphed())
+            if (player->GetMorphId())
             {
                 player->SendSysMessage("You can't do that while morphed");
                 return;

@@ -316,7 +316,6 @@ ChatCommand* ChatHandler::getCommandTable()
         { "appear",           SEC_GAMEMASTER,           false, OldHandler<&ChatHandler::HandleAppearCommand>,              "", NULL },
         { "summon",           SEC_GAMEMASTER,           false, OldHandler<&ChatHandler::HandleSummonCommand>,              "", NULL },
         { "commands",         SEC_PLAYER,               true,  OldHandler<&ChatHandler::HandleCommandsCommand>,            "", NULL },
-        { "demorph",          SEC_GAMEMASTER,           false, OldHandler<&ChatHandler::HandleDeMorphCommand>,             "", NULL },
         { "die",              SEC_HEAD_GAMEMASTER,      false, OldHandler<&ChatHandler::HandleDieCommand>,                 "", NULL },
         { "revive",           SEC_HEAD_GAMEMASTER,      true,  OldHandler<&ChatHandler::HandleReviveCommand>,              "", NULL },
         { "dismount",         SEC_PLAYER,               false, OldHandler<&ChatHandler::HandleDismountCommand>,            "", NULL },

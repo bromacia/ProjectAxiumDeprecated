@@ -2596,21 +2596,22 @@ class Player : public Unit, public GridObject<Player>
 
         uint32 lastEmoteTime;
 
-        void InterruptMovement();
-
         bool IsVIPAccount() const { if (GetSession()->GetSecurity() == SEC_VIP) return true; return false; }
         bool IsGameMaster() const { if (GetSession()->GetSecurity() == SEC_GAMEMASTER) return true; return false; }
         bool IsHeadGameMaster() const { if (GetSession()->GetSecurity() == SEC_HEAD_GAMEMASTER) return true; return false; }
         bool IsAdministrator() const { if (GetSession()->GetSecurity() == SEC_ADMINISTRATOR) return true; return false; }
         bool IsConsole() const { if (GetSession()->GetSecurity() == SEC_CONSOLE) return true; return false; }
 
+        void InterruptMovement();
+
         bool IsMovementBlocked() const { return blockedMovement; }
         void SetMovementBlocked(bool x) { blockedMovement = x; }
 
-        bool IsMorphed() const { return m_isMorphed; }
-        void SetMorphed(bool x) { m_isMorphed = x; }
-        bool IsNoggenfoggerMorphed() const { return m_isNoggenfoggerMorphed; }
-        void SetNoggenfoggerMorphed(bool x) { m_isNoggenfoggerMorphed = x; }
+        void Morph(uint32 displayId);
+        void Demorph(bool native = false);
+
+        uint32 GetMorphId() const { return m_MorphId; }
+        void SetMorphId(uint32 id) { m_MorphId = id; }
 
         uint8 GetSelectedTransmogItemSlot() const { return m_selectedTransmogItemSlot; }
         void SetSelectedTransmogItemSlot(uint8 slot) { m_selectedTransmogItemSlot = slot; }
@@ -3064,8 +3065,7 @@ class Player : public Unit, public GridObject<Player>
 
         bool blockedMovement;
 
-        bool m_isMorphed;
-        bool m_isNoggenfoggerMorphed;
+        uint32 m_MorphId;
 
         uint8 m_selectedTransmogItemSlot;
 

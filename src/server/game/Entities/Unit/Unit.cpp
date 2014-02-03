@@ -3363,11 +3363,6 @@ bool Unit::IsUnderWater() const
     return GetBaseMap()->IsUnderWater(GetPositionX(), GetPositionY(), GetPositionZ());
 }
 
-void Unit::DeMorph()
-{
-    SetDisplayId(GetNativeDisplayId());
-}
-
 Aura* Unit::_TryStackingOrRefreshingExistingAura(SpellInfo const* newAura, uint8 effMask, Unit* caster, int32* baseAmount /*= NULL*/, Item* castItem /*= NULL*/, uint64 casterGUID /*= 0*/)
 {
     ASSERT(casterGUID || caster);
@@ -15796,15 +15791,24 @@ void Unit::RestoreDisplayId()
             }
         }
     }
-    // transform aura was found
+
     if (handledAura)
         handledAura->HandleEffect(this, AURA_EFFECT_HANDLE_SEND_FOR_CLIENT, true);
-    // we've found shapeshift
     else if (uint32 modelId = GetModelForForm(GetShapeshiftForm()))
         SetDisplayId(modelId);
-    // no auras found - set modelid to default
     else
+    {
+        if (Player* player = ToPlayer())
+        {
+            if (uint32 morphId = player->GetMorphId())
+            {
+                SetDisplayId(morphId);
+                return;
+            }
+        }
+
         SetDisplayId(GetNativeDisplayId());
+    }
 }
 
 void Unit::ClearComboPointHolders()

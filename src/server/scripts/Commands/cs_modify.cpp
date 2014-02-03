@@ -36,37 +36,37 @@ public:
     {
         static ChatCommand modifyCommandTable[] =
         {
-            { "hp",             SEC_GAMEMASTER,     false, &HandleModifyHPCommand,            "", NULL },
-            { "mana",           SEC_GAMEMASTER,     false, &HandleModifyManaCommand,          "", NULL },
-            { "rage",           SEC_GAMEMASTER,     false, &HandleModifyRageCommand,          "", NULL },
-            { "runicpower",     SEC_GAMEMASTER,     false, &HandleModifyRunicPowerCommand,    "", NULL },
-            { "energy",         SEC_GAMEMASTER,     false, &HandleModifyEnergyCommand,        "", NULL },
-            { "money",          SEC_GAMEMASTER,     false, &HandleModifyMoneyCommand,         "", NULL },
-            { "speed",          SEC_GAMEMASTER,     false, &HandleModifySpeedCommand,         "", NULL },
-            { "swim",           SEC_GAMEMASTER,     false, &HandleModifySwimCommand,          "", NULL },
-            { "scale",          SEC_GAMEMASTER,     false, &HandleModifyScaleCommand,         "", NULL },
-            { "bit",            SEC_GAMEMASTER,     false, &HandleModifyBitCommand,           "", NULL },
-            { "bwalk",          SEC_GAMEMASTER,     false, &HandleModifyBWalkCommand,         "", NULL },
-            { "fly",            SEC_GAMEMASTER,     false, &HandleModifyFlyCommand,           "", NULL },
-            { "aspeed",         SEC_GAMEMASTER,     false, &HandleModifyASpeedCommand,        "", NULL },
-            { "faction",        SEC_GAMEMASTER,     false, &HandleModifyFactionCommand,       "", NULL },
-            { "spell",          SEC_GAMEMASTER,     false, &HandleModifySpellCommand,         "", NULL },
-            { "tp",             SEC_GAMEMASTER,     false, &HandleModifyTalentCommand,        "", NULL },
-            { "mount",          SEC_GAMEMASTER,     false, &HandleModifyMountCommand,         "", NULL },
-            { "honor",          SEC_GAMEMASTER,     false, &HandleModifyHonorCommand,         "", NULL },
-            { "rep",            SEC_GAMEMASTER,     false, &HandleModifyRepCommand,           "", NULL },
-            { "arena",          SEC_GAMEMASTER,     false, &HandleModifyArenaCommand,         "", NULL },
-            { "drunk",          SEC_GAMEMASTER,     false, &HandleModifyDrunkCommand,         "", NULL },
-            { "standstate",     SEC_GAMEMASTER,     false, &HandleModifyStandStateCommand,    "", NULL },
-            { "morph",          SEC_GAMEMASTER,     false, &HandleModifyMorphCommand,         "", NULL },
-            { "phase",          SEC_ADMINISTRATOR,  false, &HandleModifyPhaseCommand,         "", NULL },
-            { "gender",         SEC_GAMEMASTER,     false, &HandleModifyGenderCommand,        "", NULL },
-            { NULL,             0,                  false, NULL,                              "", NULL }
+            { "hp",                 SEC_GAMEMASTER,     false, &HandleModifyHPCommand,                  "", NULL },
+            { "mana",               SEC_GAMEMASTER,     false, &HandleModifyManaCommand,                "", NULL },
+            { "rage",               SEC_GAMEMASTER,     false, &HandleModifyRageCommand,                "", NULL },
+            { "runicpower",         SEC_GAMEMASTER,     false, &HandleModifyRunicPowerCommand,          "", NULL },
+            { "energy",             SEC_GAMEMASTER,     false, &HandleModifyEnergyCommand,              "", NULL },
+            { "money",              SEC_GAMEMASTER,     false, &HandleModifyMoneyCommand,               "", NULL },
+            { "speed",              SEC_GAMEMASTER,     false, &HandleModifySpeedCommand,               "", NULL },
+            { "swim",               SEC_GAMEMASTER,     false, &HandleModifySwimCommand,                "", NULL },
+            { "scale",              SEC_GAMEMASTER,     false, &HandleModifyScaleCommand,               "", NULL },
+            { "bit",                SEC_GAMEMASTER,     false, &HandleModifyBitCommand,                 "", NULL },
+            { "bwalk",              SEC_GAMEMASTER,     false, &HandleModifyBWalkCommand,               "", NULL },
+            { "fly",                SEC_GAMEMASTER,     false, &HandleModifyFlyCommand,                 "", NULL },
+            { "aspeed",             SEC_GAMEMASTER,     false, &HandleModifyASpeedCommand,              "", NULL },
+            { "faction",            SEC_GAMEMASTER,     false, &HandleModifyFactionCommand,             "", NULL },
+            { "spell",              SEC_GAMEMASTER,     false, &HandleModifySpellCommand,               "", NULL },
+            { "tp",                 SEC_GAMEMASTER,     false, &HandleModifyTalentCommand,              "", NULL },
+            { "mount",              SEC_GAMEMASTER,     false, &HandleModifyMountCommand,               "", NULL },
+            { "honor",              SEC_GAMEMASTER,     false, &HandleModifyHonorCommand,               "", NULL },
+            { "rep",                SEC_GAMEMASTER,     false, &HandleModifyRepCommand,                 "", NULL },
+            { "arena",              SEC_GAMEMASTER,     false, &HandleModifyArenaCommand,               "", NULL },
+            { "drunk",              SEC_GAMEMASTER,     false, &HandleModifyDrunkCommand,               "", NULL },
+            { "standstate",         SEC_GAMEMASTER,     false, &HandleModifyStandStateCommand,          "", NULL },
+            { "displayid",          SEC_GAMEMASTER,     false, &HandleModifyDisplayIdCommand,           "", NULL },
+            { "phase",              SEC_ADMINISTRATOR,  false, &HandleModifyPhaseCommand,               "", NULL },
+            { "gender",             SEC_GAMEMASTER,     false, &HandleModifyGenderCommand,              "", NULL },
+            { NULL,                 0,                  false, NULL,                                    "", NULL }
         };
         static ChatCommand commandTable[] =
         {
-            { "modify",         SEC_GAMEMASTER,      false, NULL,                 "", modifyCommandTable },
-            { NULL,             0,                  false, NULL,                               "", NULL }
+            { "modify",             SEC_GAMEMASTER,     false, NULL,                      "", modifyCommandTable },
+            { NULL,                 0,                  false, NULL,                                    "", NULL }
         };
         return commandTable;
     }
@@ -1217,8 +1217,7 @@ public:
         return true;
     }
 
-    //morph creature or player
-    static bool HandleModifyMorphCommand(ChatHandler* handler, const char* args)
+    static bool HandleModifyDisplayIdCommand(ChatHandler* handler, const char* args)
     {
         if (!*args)
             return false;
@@ -1228,13 +1227,10 @@ public:
         Unit* target = handler->getSelectedUnit();
         if (!target)
             target = handler->GetSession()->GetPlayer();
-
-        // check online security
         else if (target->GetTypeId() == TYPEID_PLAYER && handler->HasLowerSecurity(target->ToPlayer(), 0))
             return false;
 
         target->SetDisplayId(display_id);
-
         return true;
     }
 

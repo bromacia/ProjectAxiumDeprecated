@@ -417,7 +417,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
                     me->SetDisplayId(action.morph.modelId);
             }
             else
-                me->DeMorph();
+                me->SetDisplayId(me->GetNativeDisplayId());
             break;
         }
         case ACTION_T_SOUND:

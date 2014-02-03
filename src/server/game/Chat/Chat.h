@@ -262,7 +262,6 @@ class ChatHandler
 
         bool HandleGUIDCommand(const char* args);
         bool HandleItemMoveCommand(const char* args);
-        bool HandleDeMorphCommand(const char* args);
         bool HandlePInfoCommand(const char* args);
         bool HandleMuteCommand(const char* args);
         bool HandleUnmuteCommand(const char* args);

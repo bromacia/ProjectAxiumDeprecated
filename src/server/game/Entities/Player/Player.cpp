@@ -871,8 +871,7 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
 
     m_playerSpec = 0;
 
-    m_isMorphed = false;
-    m_isNoggenfoggerMorphed = false;
+    m_MorphId = 0;
 
     m_selectedTransmogItemSlot = 0;
     transmogItemsSaveQueue.clear();
@@ -25586,6 +25585,18 @@ void Player::InterruptMovement()
     m_movementInfo.time = getMSTime();
     GetSession()->WriteMovementInfo(&data, &m_movementInfo);
     SendMessageToSet(&data, true);
+}
+
+void Player::Morph(uint32 displayId)
+{
+    SetMorphId(displayId);
+    RestoreDisplayId();
+}
+
+void Player::Demorph(bool native)
+{
+    SetMorphId(0);
+    native ? SetDisplayId(GetNativeDisplayId()) : RestoreDisplayId();
 }
 
 void Player::_SaveTransmogItems()

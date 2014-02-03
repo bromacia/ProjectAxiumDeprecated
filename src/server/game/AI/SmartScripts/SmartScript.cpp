@@ -290,7 +290,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 }
                 else
                 {
-                    (*itr)->ToCreature()->DeMorph();
+                    (*itr)->ToCreature()->SetDisplayId((*itr)->ToCreature()->GetNativeDisplayId());
                     sLog->outDebug(LOG_FILTER_DATABASE_AI, "SmartScript::ProcessAction:: SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL: Creature entry %u, GuidLow %u demorphs.",
                         (*itr)->GetEntry(), (*itr)->GetGUIDLow());
                 }
