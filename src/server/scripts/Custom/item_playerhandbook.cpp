@@ -16,7 +16,7 @@ class item_playerhandbook : public ItemScript
                 if (!itr->second.SubMenuId)
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, itr->second.MenuTitle.c_str(), GOSSIP_SENDER_MAIN, itr->first);
 
-            player->SEND_GOSSIP_MENU(1, item->GetGUID());
+            player->SEND_GOSSIP_MENU(200000, item->GetGUID());
             return true;
         }
 
