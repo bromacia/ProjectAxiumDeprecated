@@ -2654,6 +2654,8 @@ bool SpellInfo::IsSpellDelaySpell() const
         Id == 51514 ||
         // Spirit Wolf Bash
         Id == 58861 ||
+        // Tremor Totem
+        Id == 8146 ||
 //------------Rogue----------------
         // Blind
         Id == 2094 ||
