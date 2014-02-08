@@ -1687,7 +1687,10 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
     if (aura_effmask)
     {
         if (m_caster->GetTypeId() == TYPEID_PLAYER && unit->isTotem())
-            return SPELL_MISS_IMMUNE;
+        {
+            if (!m_spellInfo->HasEffect(SPELL_EFFECT_SCHOOL_DAMAGE))
+                return SPELL_MISS_IMMUNE;
+        }
 
         // Select rank for aura with level requirements only in specific cases
         // Unit has to be target only of aura effect, both caster and target have to be players, target has to be other than unit target

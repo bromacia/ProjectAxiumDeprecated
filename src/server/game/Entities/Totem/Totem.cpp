@@ -147,8 +147,9 @@ bool Totem::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) con
             || spellInfo->Effects[i].Effect != SPELL_EFFECT_WEAPON_PERCENT_DAMAGE
             || spellInfo->Effects[i].Effect != SPELL_EFFECT_SCHOOL_DAMAGE))
         {
-            if (!spellInfo->IsPositiveEffect(i))
-                return true;
+            if (!spellInfo->HasEffect(SPELL_EFFECT_SCHOOL_DAMAGE))
+                if (!spellInfo->IsPositiveEffect(i))
+                    return true;
         }
     }
 
