@@ -100,7 +100,7 @@ void Totem::UnSummon()
     RemoveAurasDueToSpell(GetSpell());
 
     // clear owner's totem slot
-    for (int i = SUMMON_SLOT_TOTEM; i < MAX_TOTEM_SLOT; ++i)
+    for (uint8 i = SUMMON_SLOT_TOTEM; i < MAX_TOTEM_SLOT; ++i)
     {
         if (m_owner->m_SummonSlot[i] == GetGUID())
         {

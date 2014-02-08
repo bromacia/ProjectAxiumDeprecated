@@ -3373,8 +3373,8 @@ void Spell::cast(bool skipCheck)
                 if (playerPet->isAlive() && playerPet->isControlled() && (m_targets.GetTargetMask() & TARGET_FLAG_UNIT))
                     if (playerPet->IsAIEnabled)
                         if (Unit* unitTarget = m_targets.GetUnitTarget())
-                            if (target->GetGUID() != m_caster->GetGUID())
-                                AI->OwnerAttacked(unitTarget);
+                            if (unitTarget->GetGUID() != m_caster->GetGUID())
+                                playerPet->AI()->OwnerAttacked(unitTarget);
 
     }
     SetExecutedCurrently(true);

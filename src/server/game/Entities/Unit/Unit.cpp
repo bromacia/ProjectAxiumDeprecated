@@ -9786,12 +9786,13 @@ bool Unit::Attack(Unit* victim, bool meleeAttack)
 
     // Let the pet know we've started attacking someting. Handles melee attacks only
     // Spells such as auto-shot and others handled in WorldSession::HandleCastSpellOpcode
-    if (this->GetTypeId() == TYPEID_PLAYER)
+    if (GetTypeId() == TYPEID_PLAYER)
     {
-        Pet* playerPet = this->ToPlayer()->GetPet();
+        Pet* playerPet = ToPlayer()->GetPet();
 
         if (playerPet && playerPet->isAlive())
-            playerPet->AI()->OwnerAttacked(victim);
+            if (playerPet->IsAIEnabled)
+                playerPet->AI()->OwnerAttacked(victim);
     }
 
     return true;
@@ -9807,7 +9808,7 @@ bool Unit::AttackStop()
     {
         if (Pet* pet = ToPet())
         {
-            if (pet->IsAIEnabled && pet->AI() && pet->GetCharmInfo())
+            if (pet->IsAIEnabled && pet->GetCharmInfo())
             {
                 pet->InterruptNonMeleeSpells(false);
                 pet->GetCharmInfo()->SetIsCommandAttack(false);

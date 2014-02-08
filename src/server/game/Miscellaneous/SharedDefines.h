@@ -3147,7 +3147,7 @@ enum SummonType
     SUMMON_TYPE_WILD3       = 8,
     SUMMON_TYPE_VEHICLE     = 9,
     SUMMON_TYPE_VEHICLE2    = 10,
-    SUMMON_TYPE_OBJECT      = 11,
+    SUMMON_TYPE_LIGHTWELL   = 11,
 };
 
 enum EventId
