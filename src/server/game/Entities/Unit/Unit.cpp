@@ -3140,10 +3140,7 @@ void Unit::_UpdateAutoRepeatSpell()
     {
         // Check if able to cast
         if (m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->CheckCast(true) != SPELL_CAST_OK)
-        {
-            InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
             return;
-        }
 
         // we want to shoot
         Spell* spell = new Spell(this, m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->m_spellInfo, TRIGGERED_FULL_MASK);
