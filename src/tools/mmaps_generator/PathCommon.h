@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include <ace/OS_NS_sys_time.h>
 
 #include "Define.h"
 
@@ -32,8 +33,6 @@
 #ifdef __linux__
     #include <errno.h>
 #endif
-
-using namespace std;
 
 namespace MMAP
 {
@@ -75,12 +74,12 @@ namespace MMAP
         LISTFILE_OK = 1
     };
 
-    inline ListFilesResult getDirContents(vector<string> &fileList, string dirpath = ".", string filter = "*", bool includeSubDirs = false)
+    inline ListFilesResult getDirContents(std::vector<std::string> &fileList, std::string dirpath = ".", std::string filter = "*")
     {
     #ifdef WIN32
         HANDLE hFind;
         WIN32_FIND_DATA findFileInfo;
-        string directory;
+        std::string directory;
 
         directory = dirpath + "/" + filter;
 
@@ -90,8 +89,8 @@ namespace MMAP
             return LISTFILE_DIRECTORY_NOT_FOUND;
         do
         {
-            if (includeSubDirs || (findFileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
-                fileList.push_back(string(findFileInfo.cFileName));
+            if ((findFileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+                fileList.push_back(std::string(findFileInfo.cFileName));
         }
         while (FindNextFile(hFind, &findFileInfo));
 
@@ -101,7 +100,6 @@ namespace MMAP
         const char *p = dirpath.c_str();
         DIR * dirp = opendir(p);
         struct dirent * dp;
-        dirp = opendir(p);
 
         while (dirp)
         {
@@ -109,7 +107,7 @@ namespace MMAP
             if ((dp = readdir(dirp)) != NULL)
             {
                 if (matchWildcardFilter(filter.c_str(), dp->d_name))
-                    fileList.push_back(string(dp->d_name));
+                    fileList.push_back(std::string(dp->d_name));
             }
             else
                 break;
