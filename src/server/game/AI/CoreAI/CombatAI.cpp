@@ -234,11 +234,12 @@ void CasterAI::SetTarget(Unit* newTarget)
     Unit* owner = me->GetCharmerOrOwner();
     Unit* target = me->getVictim();
 
+    // Yes, this is on purpose, we do not switch the target if we already have a victim
+    if (target)
+        return;
+
     if (newTarget != me && newTarget != owner && !me->IsFriendlyTo(newTarget))
         target = newTarget;
-
-    if (!target)
-        return;
 
     if (!me->IsWithinDistInMap(target, m_attackDist))
         return;
