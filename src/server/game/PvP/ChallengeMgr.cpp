@@ -247,8 +247,6 @@ void ChallengeMgr::AddPlayersToBattleground(const PvPDifficultyEntry* bracketEnt
     }
 
     BattlegroundBracketId bracketId =  bracketEntry->GetBracketId();
-    bgQueue.m_QueuedGroups[bracketId][BG_QUEUE_PREMADE_ALLIANCE].push_back(ginfoA);
-    bgQueue.m_QueuedGroups[bracketId][BG_QUEUE_PREMADE_HORDE].push_back(ginfoB);
     bgQueue.InviteGroupToBG(ginfoA, bg);
     bgQueue.InviteGroupToBG(ginfoB, bg);
     bg->StartBattleground();

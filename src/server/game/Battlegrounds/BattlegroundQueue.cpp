@@ -1025,8 +1025,12 @@ bool BGQueueInviteEvent::Execute(uint64 /*e_time*/, uint32 /*p_time*/)
         return true;
 
     Battleground* bg = sBattlegroundMgr->GetBattleground(m_BgInstanceGUID, m_BgTypeId);
-    //if battleground ended and its instance deleted - do nothing
+    // if battleground ended and its instance deleted - do nothing
     if (!bg)
+        return true;
+
+    // player already joined the BG instance
+    if (player->GetBattleground() == bg)
         return true;
 
     BattlegroundQueueTypeId bgQueueTypeId = BattlegroundMgr::BGQueueTypeId(bg->GetTypeID(), bg->GetArenaType());
@@ -1071,6 +1075,10 @@ bool BGQueueRemoveEvent::Execute(uint64 /*e_time*/, uint32 /*p_time*/)
     Battleground* bg = sBattlegroundMgr->GetBattleground(m_BgInstanceGUID, m_BgTypeId);
     //battleground can be deleted already when we are removing queue info
     //bg pointer can be NULL! so use it carefully!
+
+    // player already joined the BG instance and was already removed from BattlegroundQueue in WorldSession::HandleBattlegroundQueueResultOpcode
+    if (bg && player->GetBattleground() == bg)
+        return true;
 
     uint32 queueSlot = player->GetBattlegroundQueueIndex(m_BgQueueTypeId);
     if (queueSlot < PLAYER_MAX_BATTLEGROUND_QUEUES)         // player is in queue, or in Battleground
