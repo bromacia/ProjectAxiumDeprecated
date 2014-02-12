@@ -1163,6 +1163,8 @@ void Battleground::AddPlayer(Player* player)
     m_Players[guid] = bp;
     m_PlayersCache[guid] = bp;
 
+    AddPlayerToScoreboard(player, team);
+
     UpdatePlayersCountByTeam(team, false);
 
     WorldPacket data;
