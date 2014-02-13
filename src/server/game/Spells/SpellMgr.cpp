@@ -3463,6 +3463,23 @@ void SpellMgr::LoadDbcDataCorrections()
                     spellInfo->SpellFamilyFlags[0] |= 0x40;
                 break;
         }
+
+
+        // Update all mount speeds to max
+        for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+        {
+            if (spellInfo->EffectApplyAuraName[j] == SPELL_AURA_MOUNTED)
+            {
+                for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                {
+                    if (spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED)
+                        spellInfo->EffectBasePoints[i] = 100;
+
+                    if (spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_INCREASE_FLIGHT_SPEED)
+                        spellInfo->EffectBasePoints[i] = 310;
+                }
+            }
+        }
     }
 
     SummonPropertiesEntry* properties = const_cast<SummonPropertiesEntry*>(sSummonPropertiesStore.LookupEntry(121));
