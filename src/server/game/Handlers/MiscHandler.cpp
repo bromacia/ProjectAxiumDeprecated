@@ -75,7 +75,14 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket & recv_data)
         _player->KillPlayer();
     }
 
-    if (_player->InBattleground() || _player->InArena())
+    if (_player->IsInMall())
+    {
+        _player->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
+        _player->ResurrectPlayer(1.0f);
+        _player->SaveToDB();
+        _player->TeleportTo(558, 72.5f, -163.0f, 15.5f, 3.1f);
+    }
+    else if (_player->InBattleground() || _player->InArena())
     {
         _player->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
         _player->BuildPlayerRepop();
