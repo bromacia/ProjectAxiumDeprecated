@@ -41,7 +41,7 @@ public:
             { "del",            SEC_GAMEMASTER,     true,  &HandleTeleDelCommand,             "", NULL },
             { "name",           SEC_GAMEMASTER,     true,  &HandleTeleNameCommand,            "", NULL },
             { "group",          SEC_GAMEMASTER,     false, &HandleTeleGroupCommand,           "", NULL },
-            { "",               SEC_GAMEMASTER,     false, &HandleTeleCommand,                "", NULL },
+            { "",               SEC_VIP,            false, &HandleTeleCommand,                "", NULL },
             { NULL,             0,                  false, NULL,                              "", NULL }
         };
         static ChatCommand commandTable[] =
