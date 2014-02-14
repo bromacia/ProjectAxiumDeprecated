@@ -13,10 +13,10 @@ class item_playerhandbook : public ItemScript
             infoTexts = sObjectMgr->GetInfoTextMap();
 
             for (InfoTextMap::const_iterator itr = infoTexts.begin(); itr != infoTexts.end(); ++itr)
-                if (!itr->second.SubMenuId)
+                if (!itr->second.MenuTitle.empty() && !itr->second.SubMenuId)
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, itr->second.MenuTitle.c_str(), GOSSIP_SENDER_MAIN, itr->first);
 
-            player->SEND_GOSSIP_MENU(200000, item->GetGUID());
+            player->SEND_GOSSIP_MENU(infoTexts.find(100)->second.NpcTextId, item->GetGUID());
             return true;
         }
 
@@ -34,7 +34,7 @@ class item_playerhandbook : public ItemScript
                 default:
                 {
                     for (InfoTextMap::const_iterator itr = infoTexts.begin(); itr != infoTexts.end(); ++itr)
-                        if (itr->second.SubMenuId == action)
+                        if (!itr->second.MenuTitle.empty() && itr->second.SubMenuId == action)
                             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, itr->second.MenuTitle.c_str(), action, itr->first);
 
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
