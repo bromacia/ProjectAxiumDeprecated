@@ -1738,8 +1738,33 @@ bool WorldObject::CanDetect(WorldObject const* obj, bool ignoreStealth) const
     if (obj->IsAlwaysDetectableFor(seer))
         return true;
 
+    if (obj->IsInMall())
+    {
+        // Players
+        if (const Player* player = obj->ToPlayer())
+            return false;
+
+        // Charmed or Owned Units
+        if (const Unit* unit = obj->ToCreature())
+            if (uint64 guid = unit->GetCharmerOrOwnerGUID())
+                if (guid != seer->GetGUID())
+                    return false;
+
+        // Owned Game Objects
+        if (const GameObject* gObj = obj->ToGameObject())
+            if (uint64 guid = gObj->GetOwnerGUID())
+                if (guid != seer->GetGUID())
+                    return false;
+
+        // Cast Created Dynamic Objects
+        if (const DynamicObject* dynObj = obj->ToDynamicObject())
+            if (uint64 guid = dynObj->GetCasterGUID())
+                if (guid != seer->GetGUID())
+                    return false;
+    }
+
     if (const Player* pObj = obj->ToPlayer())
-        if (pObj->IsInMall() || pObj->IsArenaSpectator())
+        if (pObj->IsArenaSpectator())
             return false;
 
     if (!ignoreStealth && !seer->CanDetectInvisibilityOf(obj))

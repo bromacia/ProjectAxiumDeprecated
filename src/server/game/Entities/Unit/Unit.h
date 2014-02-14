@@ -2281,8 +2281,6 @@ class Unit : public WorldObject
         ArenaTeamColor GetArenaTeamColor() { return arenaTeam; }
         void ClearArenaTeamColor() { arenaTeam = ARENA_TEAM_COLOR_NONE; }
 
-        bool IsInMall() const { return GetMapId() == 558; }
-
         Spell* m_currentSpells[CURRENT_MAX_SPELL];
 
         void SetRooted(bool apply);
