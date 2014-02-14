@@ -35,26 +35,26 @@ public:
     {
         static ChatCommand accountSetCommandTable[] =
         {
-            { "addon",          SEC_HEAD_GAMEMASTER,    true,  &HandleAccountSetAddonCommand,     "", NULL },
-            { "gmlevel",        SEC_CONSOLE,            true,  &HandleAccountSetGmLevelCommand,   "", NULL },
-            { "password",       SEC_CONSOLE,            true,  &HandleAccountSetPasswordCommand,  "", NULL },
-            { NULL,             0,                      false, NULL,                              "", NULL }
+            { "addon",          SEC_GAMEMASTER,      true,  &HandleAccountSetAddonCommand,     "", NULL },
+            { "gmlevel",        SEC_GAMEMASTER,      true,  &HandleAccountSetGmLevelCommand,   "", NULL },
+            { "password",       SEC_GAMEMASTER,      true,  &HandleAccountSetPasswordCommand,  "", NULL },
+            { NULL,             0,                   false, NULL,                              "", NULL }
         };
         static ChatCommand accountCommandTable[] =
         {
-            { "addon",          SEC_GAMEMASTER,         false, &HandleAccountAddonCommand,        "", NULL },
-            { "create",         SEC_CONSOLE,            true,  &HandleAccountCreateCommand,       "", NULL },
-            { "delete",         SEC_CONSOLE,            true,  &HandleAccountDeleteCommand,       "", NULL },
-            { "onlinelist",     SEC_CONSOLE,            true,  &HandleAccountOnlineListCommand,   "", NULL },
-            { "lock",           SEC_PLAYER,             false, &HandleAccountLockCommand,         "", NULL },
-            { "set",            SEC_HEAD_GAMEMASTER,    true,  NULL,            "", accountSetCommandTable },
-            { "password",       SEC_PLAYER,             false, &HandleAccountPasswordCommand,     "", NULL },
-            { "",               SEC_PLAYER,             false, &HandleAccountCommand,             "", NULL },
-            { NULL,             0,                      false, NULL,                              "", NULL }
+            { "addon",          SEC_GAMEMASTER,      false, &HandleAccountAddonCommand,        "", NULL },
+            { "create",         SEC_GAMEMASTER,      true,  &HandleAccountCreateCommand,       "", NULL },
+            { "delete",         SEC_GAMEMASTER,      true,  &HandleAccountDeleteCommand,       "", NULL },
+            { "onlinelist",     SEC_GAMEMASTER,      true,  &HandleAccountOnlineListCommand,   "", NULL },
+            { "lock",           SEC_GAMEMASTER,      false, &HandleAccountLockCommand,         "", NULL },
+            { "set",            SEC_GAMEMASTER,      true,  NULL,            "", accountSetCommandTable },
+            { "password",       SEC_GAMEMASTER,      false, &HandleAccountPasswordCommand,     "", NULL },
+            { "",               SEC_GAMEMASTER,      false, &HandleAccountCommand,             "", NULL },
+            { NULL,             0,                   false, NULL,                              "", NULL }
         };
         static ChatCommand commandTable[] =
         {
-            { "account",        SEC_PLAYER,         true,  NULL,     "", accountCommandTable  },
+            { "account",        SEC_GAMEMASTER,     true,  NULL,     "", accountCommandTable  },
             { NULL,             0,                  false, NULL,                     "", NULL }
         };
         return commandTable;

@@ -37,16 +37,16 @@ public:
     {
         static ChatCommand learnAllMyCommandTable[] =
         {
-            { "class",          SEC_ADMINISTRATOR,  false, &HandleLearnAllMyClassCommand,      "", NULL },
-            { "pettalents",     SEC_ADMINISTRATOR,  false, &HandleLearnAllMyPetTalentsCommand, "", NULL },
-            { "spells",         SEC_ADMINISTRATOR,  false, &HandleLearnAllMySpellsCommand,     "", NULL },
-            { "talents",        SEC_ADMINISTRATOR,  false, &HandleLearnAllMyTalentsCommand,    "", NULL },
+            { "class",          SEC_GAMEMASTER,     false, &HandleLearnAllMyClassCommand,      "", NULL },
+            { "pettalents",     SEC_GAMEMASTER,     false, &HandleLearnAllMyPetTalentsCommand, "", NULL },
+            { "spells",         SEC_GAMEMASTER,     false, &HandleLearnAllMySpellsCommand,     "", NULL },
+            { "talents",        SEC_GAMEMASTER,     false, &HandleLearnAllMyTalentsCommand,    "", NULL },
             { NULL,             0,                  false, NULL,                               "", NULL }
         };
 
         static ChatCommand learnAllCommandTable[] =
         {
-            { "my",             SEC_ADMINISTRATOR,  false, NULL,            "",  learnAllMyCommandTable },
+            { "my",             SEC_GAMEMASTER,     false, NULL,            "",  learnAllMyCommandTable },
             { "gm",             SEC_GAMEMASTER,     false, &HandleLearnAllGMCommand,           "", NULL },
             { "crafts",         SEC_GAMEMASTER,     false, &HandleLearnAllCraftsCommand,       "", NULL },
             { "default",        SEC_GAMEMASTER,     false, &HandleLearnAllDefaultCommand,      "", NULL },
@@ -57,8 +57,8 @@ public:
 
         static ChatCommand learnCommandTable[] =
         {
-            { "all",            SEC_ADMINISTRATOR,  false, NULL,              "",  learnAllCommandTable },
-            { "",               SEC_ADMINISTRATOR,  false, &HandleLearnCommand,                "", NULL },
+            { "all",            SEC_GAMEMASTER,     false, NULL,              "",  learnAllCommandTable },
+            { "",               SEC_GAMEMASTER,     false, &HandleLearnCommand,                "", NULL },
             { NULL,             0,                  false, NULL,                               "", NULL }
         };
 

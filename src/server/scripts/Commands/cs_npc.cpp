@@ -42,7 +42,7 @@ public:
             { "move",           SEC_GAMEMASTER,     false, &HandleNpcAddMoveCommand,           "", NULL },
             { "temp",           SEC_GAMEMASTER,     false, &HandleNpcAddTempSpawnCommand,      "", NULL },
             //{ TODO: fix or remove this command
-            { "weapon",         SEC_ADMINISTRATOR,  false, &HandleNpcAddWeaponCommand,         "", NULL },
+            { "weapon",         SEC_GAMEMASTER,     false, &HandleNpcAddWeaponCommand,         "", NULL },
             //}
             { "",               SEC_GAMEMASTER,     false, &HandleNpcAddCommand,               "", NULL },
             { NULL,             0,                  false, NULL,                               "", NULL }
@@ -55,8 +55,8 @@ public:
         };
         static ChatCommand npcSetCommandTable[] =
         {
-            { "allowmove",      SEC_ADMINISTRATOR,  false, &HandleNpcSetAllowMovementCommand,  "", NULL },
-            { "entry",          SEC_ADMINISTRATOR,  false, &HandleNpcSetEntryCommand,          "", NULL },
+            { "allowmove",      SEC_GAMEMASTER,     false, &HandleNpcSetAllowMovementCommand,  "", NULL },
+            { "entry",          SEC_GAMEMASTER,     false, &HandleNpcSetEntryCommand,          "", NULL },
             { "factionid",      SEC_GAMEMASTER,     false, &HandleNpcSetFactionIdCommand,      "", NULL },
             { "flag",           SEC_GAMEMASTER,     false, &HandleNpcSetFlagCommand,           "", NULL },
             { "level",          SEC_GAMEMASTER,     false, &HandleNpcSetLevelCommand,          "", NULL },
@@ -74,9 +74,9 @@ public:
         };
         static ChatCommand npcCommandTable[] =
         {
-            { "info",           SEC_ADMINISTRATOR,  false, &HandleNpcInfoCommand,              "", NULL },
+            { "info",           SEC_GAMEMASTER,     false, &HandleNpcInfoCommand,              "", NULL },
             { "move",           SEC_GAMEMASTER,     false, &HandleNpcMoveCommand,              "", NULL },
-            { "playemote",      SEC_ADMINISTRATOR,  false, &HandleNpcPlayEmoteCommand,         "", NULL },
+            { "playemote",      SEC_GAMEMASTER,     false, &HandleNpcPlayEmoteCommand,         "", NULL },
             { "say",            SEC_GAMEMASTER,     false, &HandleNpcSayCommand,               "", NULL },
             { "textemote",      SEC_GAMEMASTER,     false, &HandleNpcTextEmoteCommand,         "", NULL },
             { "whisper",        SEC_GAMEMASTER,     false, &HandleNpcWhisperCommand,           "", NULL },

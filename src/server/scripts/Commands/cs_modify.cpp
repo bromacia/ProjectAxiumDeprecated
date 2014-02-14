@@ -59,7 +59,7 @@ public:
             { "standstate",         SEC_GAMEMASTER,     false, &HandleModifyStandStateCommand,          "", NULL },
             { "displayid",          SEC_GAMEMASTER,     false, &HandleModifyDisplayIdCommand,           "", NULL },
             { "mountid",            SEC_GAMEMASTER,     false, &HandleModifyMountIdCommand,             "", NULL },
-            { "phase",              SEC_ADMINISTRATOR,  false, &HandleModifyPhaseCommand,               "", NULL },
+            { "phase",              SEC_GAMEMASTER,     false, &HandleModifyPhaseCommand,               "", NULL },
             { "gender",             SEC_GAMEMASTER,     false, &HandleModifyGenderCommand,              "", NULL },
             { NULL,                 0,                  false, NULL,                                    "", NULL }
         };

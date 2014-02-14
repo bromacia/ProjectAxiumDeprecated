@@ -37,8 +37,8 @@ public:
     {
         static ChatCommand teleCommandTable[] =
         {
-            { "add",            SEC_ADMINISTRATOR,  false, &HandleTeleAddCommand,             "", NULL },
-            { "del",            SEC_ADMINISTRATOR,  true,  &HandleTeleDelCommand,             "", NULL },
+            { "add",            SEC_GAMEMASTER,     false, &HandleTeleAddCommand,             "", NULL },
+            { "del",            SEC_GAMEMASTER,     true,  &HandleTeleDelCommand,             "", NULL },
             { "name",           SEC_GAMEMASTER,     true,  &HandleTeleNameCommand,            "", NULL },
             { "group",          SEC_GAMEMASTER,     false, &HandleTeleGroupCommand,           "", NULL },
             { "",               SEC_GAMEMASTER,     false, &HandleTeleCommand,                "", NULL },
@@ -46,7 +46,7 @@ public:
         };
         static ChatCommand commandTable[] =
         {
-            { "tele",           SEC_GAMEMASTER,      false, NULL,                   "", teleCommandTable },
+            { "tele",           SEC_VIP,            false, NULL,                   "", teleCommandTable },
             { NULL,             0,                  false, NULL,                               "", NULL }
         };
         return commandTable;

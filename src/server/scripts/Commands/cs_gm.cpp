@@ -37,9 +37,9 @@ public:
     {
         static ChatCommand gmCommandTable[] =
         {
-            { "fly",            SEC_ADMINISTRATOR,  false, &HandleGMFlyCommand,               "", NULL },
+            { "fly",            SEC_GAMEMASTER,     false, &HandleGMFlyCommand,               "", NULL },
             { "ingame",         SEC_PLAYER,         true,  &HandleGMListIngameCommand,        "", NULL },
-            { "list",           SEC_ADMINISTRATOR,  true,  &HandleGMListFullCommand,          "", NULL },
+            { "list",           SEC_GAMEMASTER,     true,  &HandleGMListFullCommand,          "", NULL },
             { "invisible",      SEC_GAMEMASTER,     false, &HandleGMInvisibleCommand,         "", NULL },
             { "",               SEC_GAMEMASTER,     false, &HandleGMCommand,                  "", NULL },
             { NULL,             0,                  false, NULL,                              "", NULL }

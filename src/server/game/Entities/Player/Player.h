@@ -2598,7 +2598,6 @@ class Player : public Unit, public GridObject<Player>
 
         bool IsVIPAccount() const { if (GetSession()->GetSecurity() == SEC_VIP) return true; return false; }
         bool IsGameMaster() const { if (GetSession()->GetSecurity() == SEC_GAMEMASTER) return true; return false; }
-        bool IsHeadGameMaster() const { if (GetSession()->GetSecurity() == SEC_HEAD_GAMEMASTER) return true; return false; }
         bool IsAdministrator() const { if (GetSession()->GetSecurity() == SEC_ADMINISTRATOR) return true; return false; }
         bool IsConsole() const { if (GetSession()->GetSecurity() == SEC_CONSOLE) return true; return false; }
 

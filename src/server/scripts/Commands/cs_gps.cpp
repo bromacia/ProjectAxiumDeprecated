@@ -37,8 +37,8 @@ public:
     {
         static ChatCommand commandTable[] =
         {
-            { "gps",      SEC_ADMINISTRATOR,  false, &HandleGPSCommand,                  "", NULL },
-            { "wpgps",    SEC_ADMINISTRATOR,  false, &HandleWPGPSCommand,                "", NULL },
+            { "gps",      SEC_GAMEMASTER,     false, &HandleGPSCommand,                  "", NULL },
+            { "wpgps",    SEC_GAMEMASTER,     false, &HandleWPGPSCommand,                "", NULL },
             { NULL,       0,                  false, NULL,                               "", NULL }
         };
         return commandTable;

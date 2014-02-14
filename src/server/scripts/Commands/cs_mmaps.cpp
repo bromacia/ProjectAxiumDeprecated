@@ -19,18 +19,18 @@ class mmaps_commandscript : public CommandScript
         {
             static ChatCommand mmapsCommandTable[] =
             {
-                { "path",           SEC_ADMINISTRATOR,      false, &HandleMmapsPathCommand,             "", NULL },
-                { "loc",            SEC_ADMINISTRATOR,      false, &HandleMmapsLocCommand,              "", NULL },
-                { "loadedtiles",    SEC_ADMINISTRATOR,      false, &HandleMmapsLoadedTilesCommand,      "", NULL },
-                { "stats",          SEC_ADMINISTRATOR,      false, &HandleMmapsStatsCommand,            "", NULL },
-                { "testarea",       SEC_ADMINISTRATOR,      false, &HandleMmapsTestArea,                "", NULL },
-                { "movebypath",     SEC_ADMINISTRATOR,      false, &HandleMmapsMoveByPath,              "", NULL },
+                { "path",           SEC_GAMEMASTER,         false, &HandleMmapsPathCommand,             "", NULL },
+                { "loc",            SEC_GAMEMASTER,         false, &HandleMmapsLocCommand,              "", NULL },
+                { "loadedtiles",    SEC_GAMEMASTER,         false, &HandleMmapsLoadedTilesCommand,      "", NULL },
+                { "stats",          SEC_GAMEMASTER,         false, &HandleMmapsStatsCommand,            "", NULL },
+                { "testarea",       SEC_GAMEMASTER,         false, &HandleMmapsTestArea,                "", NULL },
+                { "movebypath",     SEC_GAMEMASTER,         false, &HandleMmapsMoveByPath,              "", NULL },
                 { NULL,             0,                      false, NULL,                                "", NULL }
             };
 
             static ChatCommand commandTable[] =
             {
-                { "mmaps",          SEC_ADMINISTRATOR,      true,  NULL,                  "", mmapsCommandTable  },
+                { "mmaps",          SEC_GAMEMASTER,         true,  NULL,                  "", mmapsCommandTable  },
                 { NULL,             0,                      false, NULL,                                "", NULL }
             };
             return commandTable;
