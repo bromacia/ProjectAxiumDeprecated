@@ -24,6 +24,18 @@ void ChallengeMgr::HandleChallenge(uint64 challengerGUID, uint64 challengedGUID,
         return;
     }
 
+    if (challengerPlayer->IsFrozen())
+    {
+        challengerPlayer->SendSysMessage("You can't challenge another player while frozen.");
+        return;
+    }
+
+    if (challengedPlayer->IsFrozen())
+    {
+        challengerPlayer->SendSysMessage("The player you're trying to challenge is frozen.");
+        return;
+    }
+
     if (challengedPlayer->HasGameMasterTagOn())
     {
         challengerPlayer->SendSysMessage("You can't challenge Game Masters.");
