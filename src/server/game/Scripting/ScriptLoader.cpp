@@ -225,7 +225,7 @@ void AddBattlegroundScripts()
 #ifdef SCRIPTS
     void AddSC_Transmogrification();
     void AddSC_MallMgr();
-    void AddSC_ArenaSpectateMgr();
+    void AddSC_ArenaMgr();
     void AddSC_ReadyMarker();
     void AddSC_npc_teleport();
     void AddSC_npc_beastmaster();
@@ -237,7 +237,7 @@ void AddCustomScripts()
 #ifdef SCRIPTS
     AddSC_Transmogrification();
     AddSC_MallMgr();
-    AddSC_ArenaSpectateMgr();
+    AddSC_ArenaMgr();
     AddSC_ReadyMarker();
     AddSC_npc_teleport();
     AddSC_npc_beastmaster();

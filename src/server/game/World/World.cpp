@@ -1327,11 +1327,15 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_CONFUSED_MOVEMENT_GENERATOR_RESET_TIME] = ConfigMgr::GetIntDefault("ConfusedMovementGeneratorResetTime", 100);
     m_int_configs[CONFIG_FLEEING_MOVEMENT_GENERATOR_RESET_TIME]  = ConfigMgr::GetIntDefault("FleeingMovementGeneratorResetTime", 1000);
 
-    m_int_configs[CONFIG_SPELL_DELAY_SPELL_TIME] = ConfigMgr::GetIntDefault("SpellDelaySpellTime", 100);
-    m_int_configs[CONFIG_MOVEMENT_DELAY_SPELL_TIME] = ConfigMgr::GetIntDefault("MovementDelaySpellTime", 10);
-    m_int_configs[CONFIG_SILENCE_DELAY_SPELL_TIME] = ConfigMgr::GetIntDefault("SilenceDelaySpellTime", 10);
-    m_int_configs[CONFIG_MISC_DELAY_SPELL_TIME] = ConfigMgr::GetIntDefault("MiscDelaySpellTime", 100);
-    m_int_configs[CONFIG_COMBAT_DELAY]           = ConfigMgr::GetIntDefault("CombatDelay", 700);
+    m_int_configs[CONFIG_SPELL_DELAY_SPELL_TIME]        = ConfigMgr::GetIntDefault("SpellDelaySpellTime", 100);
+    m_int_configs[CONFIG_MOVEMENT_DELAY_SPELL_TIME]     = ConfigMgr::GetIntDefault("MovementDelaySpellTime", 10);
+    m_int_configs[CONFIG_SILENCE_DELAY_SPELL_TIME]      = ConfigMgr::GetIntDefault("SilenceDelaySpellTime", 10);
+    m_int_configs[CONFIG_MISC_DELAY_SPELL_TIME]         = ConfigMgr::GetIntDefault("MiscDelaySpellTime", 100);
+    m_int_configs[CONFIG_COMBAT_DELAY]                  = ConfigMgr::GetIntDefault("CombatDelay", 100);
+
+    m_int_configs[CONFIG_REQUIRED_2V2_CHARTER_SIGNATURES] = ConfigMgr::GetIntDefault("ArenaCharter.2v2RequiredSignatures", 1);
+    m_int_configs[CONFIG_REQUIRED_3V3_CHARTER_SIGNATURES] = ConfigMgr::GetIntDefault("ArenaCharter.3v3RequiredSignatures", 2);
+    m_int_configs[CONFIG_REQUIRED_5V5_CHARTER_SIGNATURES] = ConfigMgr::GetIntDefault("ArenaCharter.5v5RequiredSignatures", 4);
 
     sScriptMgr->OnConfigLoad(reload);
 }

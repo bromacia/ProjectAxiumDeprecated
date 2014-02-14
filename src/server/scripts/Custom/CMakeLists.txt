@@ -14,8 +14,8 @@ set(scripts_STAT_SRCS
   Custom/TransmogMgr.h
   Custom/MallMgr.cpp
   Custom/MallMgr.h
-  Custom/ArenaSpectateMgr.cpp
-  Custom/ArenaSpectateMgr.h
+  Custom/ArenaMgr.cpp
+  Custom/ArenaMgr.h
   Custom/ReadyMarker.cpp
   Custom/npc_teleport.cpp
   Custom/npc_beastmaster.cpp

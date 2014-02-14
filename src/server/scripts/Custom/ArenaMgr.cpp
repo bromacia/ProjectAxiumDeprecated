@@ -1,13 +1,15 @@
-#include "ArenaSpectateMgr.h"
+#include "ArenaMgr.h"
 
-ArenaSpectateMgr::ArenaSpectateMgr() : CreatureScript("ArenaSpectateNPC")
+ArenaMgr::ArenaMgr() : CreatureScript("ArenaNPC")
 {
 }
 
-bool ArenaSpectateMgr::OnGossipHello(Player* player, Creature* creature)
+bool ArenaMgr::OnGossipHello(Player* player, Creature* creature)
 {
     CreateArenasMap();
 
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Create An Arena Team", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_CREATE_TEAM);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Queue For Arena", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_QUEUE);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate 2v2 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_2V2_MATCHES);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate 3v3 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_3V3_MATCHES);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate 5v5 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_5V5_MATCHES);
@@ -16,7 +18,7 @@ bool ArenaSpectateMgr::OnGossipHello(Player* player, Creature* creature)
     return true;
 }
 
-bool ArenaSpectateMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+bool ArenaMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
 {
     player->PlayerTalkClass->ClearMenus();
 
@@ -29,6 +31,16 @@ bool ArenaSpectateMgr::OnGossipSelect(Player* player, Creature* creature, uint32
                 case GOSSIP_SENDER_MAIN:
                 {
                     OnGossipHello(player, creature);
+                    break;
+                }
+                case ARENA_SPECTATE_MENU_CREATE_TEAM:
+                {
+                    HandleCreateTeam(player, creature);
+                    break;
+                }
+                case ARENA_SPECTATE_MENU_QUEUE:
+                {
+                    HandleQueue(player);
                     break;
                 }
                 case ARENA_SPECTATE_MENU_2V2_MATCHES:
@@ -65,13 +77,50 @@ bool ArenaSpectateMgr::OnGossipSelect(Player* player, Creature* creature, uint32
     return true;
 }
 
-bool ArenaSpectateMgr::OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code)
+bool ArenaMgr::OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code)
 {
     switch (action) { case ARENA_SPECTATE_MENU_SPECTATE_PLAYER: HandleSpectatePlayer(player, code); break; }
     return true;
 }
 
-void ArenaSpectateMgr::HandleShowMatches(Player* player, Creature* creature, uint32 sender, uint32 action)
+void ArenaMgr::HandleCreateTeam(Player* player, Creature* creature)
+{
+    player->CLOSE_GOSSIP_MENU();
+
+    WorldPacket data(SMSG_PETITION_SHOWLIST, 81);
+    data << player->GetGUID();
+    data << uint8(3);                                                               // count
+    // 2v2
+    data << uint32(1);                                                              // index
+    data << uint32(23560);                                                          // charter entry
+    data << uint32(16161);                                                          // charter display id
+    data << uint32(0);                                                              // charter cost
+    data << uint32(2);                                                              // unknown
+    data << uint32(sWorld->getIntConfig(CONFIG_REQUIRED_2V2_CHARTER_SIGNATURES));   // required signs?
+    // 3v3
+    data << uint32(2);                                                              // index
+    data << uint32(23561);                                                          // charter entry
+    data << uint32(16161);                                                          // charter display id
+    data << uint32(0);                                                              // charter cost
+    data << uint32(3);                                                              // unknown
+    data << uint32(sWorld->getIntConfig(CONFIG_REQUIRED_3V3_CHARTER_SIGNATURES));   // required signs?
+    // 5v5
+    data << uint32(3);                                                              // index
+    data << uint32(23562);                                                          // charter entry
+    data << uint32(16161);                                                          // charter display id
+    data << uint32(0);                                                              // charter cost
+    data << uint32(5);                                                              // unknown
+    data << uint32(sWorld->getIntConfig(CONFIG_REQUIRED_5V5_CHARTER_SIGNATURES));   // required signs?
+    player->GetSession()->SendPacket(&data);
+}
+
+void ArenaMgr::HandleQueue(Player* player)
+{
+    player->CLOSE_GOSSIP_MENU();
+    player->GetSession()->SendBattlegGroundList(player->GetGUID(), BATTLEGROUND_AA);
+}
+
+void ArenaMgr::HandleShowMatches(Player* player, Creature* creature, uint32 sender, uint32 action)
 {
     ChatHandler handler = ChatHandler(player);
     CreateArenasMap();
@@ -188,7 +237,7 @@ void ArenaSpectateMgr::HandleShowMatches(Player* player, Creature* creature, uin
     player->SEND_GOSSIP_MENU(1, creature->GetGUID());
 }
 
-void ArenaSpectateMgr::HandleSpectatePlayer(Player* player, const char* cPlayerName)
+void ArenaMgr::HandleSpectatePlayer(Player* player, const char* cPlayerName)
 {
     ChatHandler handler = ChatHandler(player);
     CreateArenasMap();
@@ -228,7 +277,7 @@ void ArenaSpectateMgr::HandleSpectatePlayer(Player* player, const char* cPlayerN
     AddPlayerToArena(player, arenaId);
 }
 
-void ArenaSpectateMgr::AddPlayerToArena(Player* player, uint32 action)
+void ArenaMgr::AddPlayerToArena(Player* player, uint32 action)
 {
     ChatHandler handler = ChatHandler(player);
     CreateArenasMap();
@@ -266,7 +315,7 @@ void ArenaSpectateMgr::AddPlayerToArena(Player* player, uint32 action)
     arena->HandlePlayerUnderMap(player);
 }
 
-bool ArenaSpectateMgr::CheckBattleground(Battleground* bg)
+bool ArenaMgr::CheckBattleground(Battleground* bg)
 {
     if (bg->GetStatus() != STATUS_IN_PROGRESS)
         return false;
@@ -277,7 +326,7 @@ bool ArenaSpectateMgr::CheckBattleground(Battleground* bg)
     return true;
 }
 
-void ArenaSpectateMgr::CreateArenasMap()
+void ArenaMgr::CreateArenasMap()
 {
     arenasMap.clear();
 
@@ -314,7 +363,7 @@ void ArenaSpectateMgr::CreateArenasMap()
             arenasMap[itr->first] = itr->second;
 }
 
-void AddSC_ArenaSpectateMgr()
+void AddSC_ArenaMgr()
 {
-    new ArenaSpectateMgr();
+    new ArenaMgr();
 }

@@ -10,7 +10,9 @@
 
 enum ArenaOptions
 {
-    ARENA_SPECTATE_MENU_2V2_MATCHES = 2,
+    ARENA_SPECTATE_MENU_CREATE_TEAM = 2,
+    ARENA_SPECTATE_MENU_QUEUE,
+    ARENA_SPECTATE_MENU_2V2_MATCHES,
     ARENA_SPECTATE_MENU_3V3_MATCHES,
     ARENA_SPECTATE_MENU_5V5_MATCHES,
     ARENA_SPECTATE_MENU_SPECTATE_PLAYER,
@@ -20,13 +22,15 @@ enum ArenaOptions
 
 #define MAX_RESULTS_PER_PAGE 50
 
-class ArenaSpectateMgr : public CreatureScript
+class ArenaMgr : public CreatureScript
 {
     public:
-        ArenaSpectateMgr();
+        ArenaMgr();
         bool OnGossipHello(Player* player, Creature* creature);
         bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action);
         bool OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code);
+        void HandleCreateTeam(Player* player, Creature* creature);
+        void HandleQueue(Player* player);
         void HandleShowMatches(Player* player, Creature* creature, uint32 sender, uint32 action);
         void HandleSpectateMatch(Player* player, Creature* creature, uint32 action);
         void HandleSpectatePlayer(Player* player, const char* cPlayerName);

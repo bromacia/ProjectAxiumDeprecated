@@ -33,6 +33,7 @@ class utility_commandscript : public CommandScript
                 { "bank",             SEC_PLAYER,         false, &HandleBankCommand,                      "", NULL },
                 { "mailbox",          SEC_PLAYER,         false, &HandleMailboxCommand,                   "", NULL },
                 { "arenaqueue",       SEC_PLAYER,         false, &HandleArenaQueueCommand,                "", NULL },
+                { "arenateam",        SEC_PLAYER,         false, &HandleArenaTeamCommand,                 "", NULL },
                 { "mmr",              SEC_PLAYER,         false, &HandleMMRCommand,                       "", NULL },
                 { "commentator",      SEC_GAMEMASTER,     false, &HandleCommentatorCommand,               "", NULL },
                 { NULL,               0,                  false, NULL,                                    "", NULL }
@@ -774,6 +775,37 @@ class utility_commandscript : public CommandScript
         static bool HandleArenaQueueCommand(ChatHandler* handler, const char* /*args*/)
         {
             handler->GetSession()->SendBattlegGroundList(handler->GetSession()->GetPlayer()->GetGUID(), BATTLEGROUND_AA);
+            return true;
+        }
+
+        static bool HandleArenaTeamCommand(ChatHandler* handler, const char* /*args*/)
+        {
+            Player* player = handler->GetSession()->GetPlayer();
+            WorldPacket data(SMSG_PETITION_SHOWLIST, 81);
+            data << player->GetGUID();
+            data << uint8(3);                                                               // count
+            // 2v2
+            data << uint32(1);                                                              // index
+            data << uint32(23560);                                                          // charter entry
+            data << uint32(16161);                                                          // charter display id
+            data << uint32(0);                                                              // charter cost
+            data << uint32(2);                                                              // unknown
+            data << uint32(sWorld->getIntConfig(CONFIG_REQUIRED_2V2_CHARTER_SIGNATURES));   // required signs?
+            // 3v3
+            data << uint32(2);                                                              // index
+            data << uint32(23561);                                                          // charter entry
+            data << uint32(16161);                                                          // charter display id
+            data << uint32(0);                                                              // charter cost
+            data << uint32(3);                                                              // unknown
+            data << uint32(sWorld->getIntConfig(CONFIG_REQUIRED_3V3_CHARTER_SIGNATURES));   // required signs?
+            // 5v5
+            data << uint32(3);                                                              // index
+            data << uint32(23562);                                                          // charter entry
+            data << uint32(16161);                                                          // charter display id
+            data << uint32(0);                                                              // charter cost
+            data << uint32(5);                                                              // unknown
+            data << uint32(sWorld->getIntConfig(CONFIG_REQUIRED_5V5_CHARTER_SIGNATURES));   // required signs?
+            player->GetSession()->SendPacket(&data);
             return true;
         }
 
