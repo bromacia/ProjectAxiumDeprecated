@@ -17412,6 +17412,10 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     if (!GetItemCount(6948, true))
         StoreNewItemInBestSlots(6948, 1);
 
+    // Player Handbook
+    if (!GetItemCount(34838, true))
+        StoreNewItemInBestSlots(34838, 1);
+
     // Master Totem
     if (getClass() == CLASS_SHAMAN)
         if (!GetItemCount(5175, true))
@@ -17419,15 +17423,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     // VIP Swift Spectral Tiger
     if (IsVIPAccount())
-    {
         if (!HasSpell(42777))
-        {
-            if (!IsInWorld())
-                addSpell(42777, true, true, true, false);
-            else
-                learnSpell(42777, true);
-        }
-    }
+            addSpell(42777, true, true, false, false, false, true);
 
     return true;
 }
