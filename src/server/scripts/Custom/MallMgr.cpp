@@ -2,6 +2,8 @@
 
 bool MallMgr::OnGossipHello(Player* player, Creature* creature)
 {
+    bool IsHunter = player->getClass() == CLASS_HUNTER ? true : false;
+
     player->PlayerTalkClass->ClearMenus();
 
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_crate_01:30|t General Goods", GOSSIP_SENDER_MAIN, MALL_MENU_GENERAL_GOODS);
@@ -11,10 +13,13 @@ bool MallMgr::OnGossipHello(Player* player, Creature* creature)
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_jewelcrafting_pyrestone_02:30|t Gems", GOSSIP_SENDER_MAIN, MALL_MENU_GEMS);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_mount_bigblizzardbear:30|t Mounts", GOSSIP_SENDER_MAIN, MALL_MENU_MOUNTS);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_inscription_minorglyph00:30|t Glyphs", GOSSIP_SENDER_MAIN, MALL_MENU_GLYPHS);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\spell_arcane_mindmastery:30|t Reset Talents", GOSSIP_SENDER_MAIN, MALL_MENU_RESET_TALENTS);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_shirt_guildtabard_01:30|t Guild", GOSSIP_SENDER_MAIN, MALL_MENU_GUILD);
 
-    if (player->GetSpecsCount() < 2)
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\achievement_general:30|t Learn Dual Specialization", GOSSIP_SENDER_MAIN, MALL_MENU_LEARN_DUAL_SPEC);
+    if (IsHunter)
+    {
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_hunter_beasttaming:30|t Pets", GOSSIP_SENDER_MAIN, MALL_MENU_PETS);
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_box_petcarrier_01:30|t Stable", GOSSIP_SENDER_MAIN, MALL_MENU_STABLE);
+    }
 
     if (player->getClass() == CLASS_ROGUE && player->HasSpell(51713))
         if (player->HasAura(51713) && player->GetAura(51713, player->GetGUID())->GetDuration() == -1)
@@ -22,7 +27,14 @@ bool MallMgr::OnGossipHello(Player* player, Creature* creature)
         else
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_rogue_shadowdance:30|t Setup Shadow Dance Bar", GOSSIP_SENDER_MAIN, MALL_MENU_SETUP_SHADOW_DANCE);
 
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_shirt_guildtabard_01:30|t Guild", GOSSIP_SENDER_MAIN, MALL_MENU_GUILD);
+    if (player->GetSpecsCount() < 2)
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\achievement_general:30|t Learn Dual Specialization", GOSSIP_SENDER_MAIN, MALL_MENU_LEARN_DUAL_SPEC);
+
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\spell_arcane_mindmastery:30|t Reset Talents", GOSSIP_SENDER_MAIN, MALL_MENU_RESET_TALENTS);
+
+    if (IsHunter)
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_hunter_longevity:30|t Reset Pet Talents", GOSSIP_SENDER_MAIN, MALL_MENU_RESET_PET_TALENTS);
+
     player->SEND_GOSSIP_MENU(1, creature->GetGUID());
     return true;
 }
@@ -45,11 +57,14 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
                 case MALL_MENU_GEMS:                ShowInventory(player, creature, INVENTORY_LIST_GEMS);          break;
                 case MALL_MENU_MOUNTS:              ShowInventory(player, creature, INVENTORY_LIST_MOUNTS);        break;
                 case MALL_MENU_GLYPHS:              ShowInventory(player, creature, INVENTORY_LIST_GLYPHS);        break;
-                case MALL_MENU_RESET_TALENTS:       HandleResetTalents(player, creature);                          break;
-                case MALL_MENU_LEARN_DUAL_SPEC:     HandleLearnDualSpecialization(player, creature);               break;
+                case MALL_MENU_GUILD:               HandleGuild(player, creature, MALL_MENU_GUILD);                break;
+                case MALL_MENU_PETS:                ShowPets(player, creature, MALL_MENU_PETS);                    break;
+                case MALL_MENU_STABLE:              HandleStable(player, creature);                                break;
                 case MALL_MENU_SETUP_SHADOW_DANCE:  HandleSetupShadowDanceBar(player, creature);                   break;
                 case MALL_MENU_FINISH_SHADOW_DANCE: HandleFinishShadowDanceBar(player, creature);                  break;
-                case MALL_MENU_GUILD:               HandleGuild(player, creature, MALL_MENU_GUILD);                break;
+                case MALL_MENU_LEARN_DUAL_SPEC:     HandleLearnDualSpecialization(player, creature);               break;
+                case MALL_MENU_RESET_TALENTS:       HandleResetTalents(player, creature);                          break;
+                case MALL_MENU_RESET_PET_TALENTS:   HandleResetPetTalents(player);                                 break;
             }
             break;
         }
@@ -143,6 +158,18 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
         case ENCHANT_OPTION_RANGED:
         {
             EnchantItem(player, creature, action, sender);
+            break;
+        }
+        case MALL_MENU_PETS:
+        {
+            ShowPets(player, creature, action);
+            break;
+        }
+        case PET_OPTION_CUNNING:
+        case PET_OPTION_FEROCITY:
+        case PET_OPTION_TENACITY:
+        {
+            CreatePet(player, creature, action);
             break;
         }
         case MALL_MENU_GUILD:
@@ -676,53 +703,6 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 enchantO
     return true;
 }
 
-bool MallMgr::HandleResetTalents(Player* player, Creature* creature)
-{
-    player->SendTalentWipeConfirm(creature->GetGUID());
-    player->CLOSE_GOSSIP_MENU();
-    return true;
-}
-
-bool MallMgr::HandleLearnDualSpecialization(Player* player, Creature* creature)
-{
-    player->SetSaveTimer(sWorld->getIntConfig(CONFIG_INTERVAL_SAVE));
-    player->learnSpell(63644, false);
-    player->learnSpell(63645, false);
-    player->UpdateSpecCount(2);
-    player->SaveToDB();
-    player->CLOSE_GOSSIP_MENU();
-    return true;
-}
-
-bool MallMgr::HandleSetupShadowDanceBar(Player* player, Creature* creature)
-{
-    if (player->HasSpell(51713))
-    {
-        player->InterruptMovement();
-        player->GetMotionMaster()->MoveFall();
-        player->SetControlled(true, UNIT_STATE_ROOT);
-        player->AddAura(SPELL_SERVERSIDE_SILENCE, player);
-        if (!player->HasAura(51713))
-            player->AddAura(51713, player);
-        if (Aura* ShadowDance = player->GetAura(51713, player->GetGUID()))
-            ShadowDance->SetDurationAndMaxDuration(-1);
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\achievement_reputation_01:30|t I'm Finished", GOSSIP_SENDER_MAIN, MALL_MENU_FINISH_SHADOW_DANCE);
-        player->SEND_GOSSIP_MENU(1, creature->GetGUID());
-    }
-    else
-        player->CLOSE_GOSSIP_MENU();
-    return true;
-}
-
-bool MallMgr::HandleFinishShadowDanceBar(Player* player, Creature* creature)
-{
-    player->SetControlled(false, UNIT_STATE_ROOT);
-    player->RemoveAura(SPELL_SERVERSIDE_SILENCE);
-    player->RemoveAura(51713);
-    OnGossipHello(player, creature);
-    return true;
-}
-
 bool MallMgr::HandleGuild(Player* player, Creature* creature, uint32 guildOption)
 {
     switch (guildOption)
@@ -762,6 +742,147 @@ bool MallMgr::HandleGuild(Player* player, Creature* creature, uint32 guildOption
         }
     }
 
+    return true;
+}
+
+bool MallMgr::HandleStable(Player* player, Creature* creature)
+{
+    player->CLOSE_GOSSIP_MENU();
+    player->GetSession()->SendStablePet(creature->GetGUID());
+    return true;
+}
+
+bool MallMgr::ShowPets(Player* player, Creature* creature, uint32 petOption)
+{
+    switch (petOption)
+    {
+        case MALL_MENU_PETS:
+        {
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Create Cunning Pet", MALL_MENU_PETS, PET_OPTION_CUNNING);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Create Ferocity Pet", MALL_MENU_PETS, PET_OPTION_FEROCITY);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Create Tenacity Pet", MALL_MENU_PETS, PET_OPTION_TENACITY);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
+            player->SEND_GOSSIP_MENU(1, creature->GetGUID());
+            break;
+        }
+        case PET_OPTION_CUNNING:
+        {
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Bat", PET_OPTION_CUNNING, PET_CUNNING_BAT);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Bird of Prey", PET_OPTION_CUNNING, PET_CUNNING_BIRD_OF_PREY);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Chimaera", PET_OPTION_CUNNING, PET_CUNNING_CHIMAERA);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Dragonhawk", PET_OPTION_CUNNING, PET_CUNNING_DRAGONHAWK);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Nether Ray", PET_OPTION_CUNNING, PET_CUNNING_NETHER_RAY);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Ravager", PET_OPTION_CUNNING, PET_CUNNING_RAVAGER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Serpent", PET_OPTION_CUNNING, PET_CUNNING_SERPENT);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Silithid", PET_OPTION_CUNNING, PET_CUNNING_SILITHID);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spider", PET_OPTION_CUNNING, PET_CUNNING_SPIDER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spore Bat", PET_OPTION_CUNNING, PET_CUNNING_SPORE_BAT);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Wind Serpent", PET_OPTION_CUNNING, PET_CUNNING_WIND_SERPENT);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_PETS);
+            player->SEND_GOSSIP_MENU(1, creature->GetGUID());
+            break;
+        }
+        case PET_OPTION_FEROCITY:
+        {
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Arcturis", PET_OPTION_FEROCITY, PET_FEROCITY_ARCTURIS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Cat", PET_OPTION_FEROCITY, PET_FEROCITY_CAT);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Carrion Bird", PET_OPTION_FEROCITY, PET_FEROCITY_CARRION_BIRD);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Core Hound", PET_OPTION_FEROCITY, PET_FEROCITY_CORE_HOUND);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Devilsaur", PET_OPTION_FEROCITY, PET_FEROCITY_DEVILSAUR);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Gondria", PET_OPTION_FEROCITY, PET_FEROCITY_GONDRIA);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Hyena", PET_OPTION_FEROCITY, PET_FEROCITY_HYENA);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Loque'nahak", PET_OPTION_FEROCITY, PET_FEROCITY_LOQUENAHAK);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Moth", PET_OPTION_FEROCITY, PET_FEROCITY_MOTH);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Raptor", PET_OPTION_FEROCITY, PET_FEROCITY_RAPTOR);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Skoll", PET_OPTION_FEROCITY, PET_FEROCITY_SKOLL);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Tallstrider", PET_OPTION_FEROCITY, PET_FEROCITY_TALLSTRIDER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Wasp", PET_OPTION_FEROCITY, PET_FEROCITY_WASP);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Wolf", PET_OPTION_FEROCITY, PET_FEROCITY_WOLF);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_PETS);
+            player->SEND_GOSSIP_MENU(1, creature->GetGUID());
+            break;
+        }
+        case PET_OPTION_TENACITY:
+        {
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Bear", PET_OPTION_TENACITY, PET_TENACITY_BEAR);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Boar", PET_OPTION_TENACITY, PET_TENACITY_BOAR);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Crab", PET_OPTION_TENACITY, PET_TENACITY_CRAB);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Crocolisk", PET_OPTION_TENACITY, PET_TENACITY_CROCOLISK);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Gorilla", PET_OPTION_TENACITY, PET_TENACITY_GORILLA);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Rhino", PET_OPTION_TENACITY, PET_TENACITY_RHINO);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Scorpid", PET_OPTION_TENACITY, PET_TENACITY_SCORPID);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Turtle", PET_OPTION_TENACITY, PET_TENACITY_TURTLE);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Warp Stalker", PET_OPTION_TENACITY, PET_TENACITY_WARP_STALKER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Worm", PET_OPTION_TENACITY, PET_TENACITY_WORM);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_PETS);
+            player->SEND_GOSSIP_MENU(1, creature->GetGUID());
+            break;
+        }
+    }
+
+    return true;
+}
+
+bool MallMgr::HandleSetupShadowDanceBar(Player* player, Creature* creature)
+{
+    if (player->HasSpell(51713))
+    {
+        player->InterruptMovement();
+        player->GetMotionMaster()->MoveFall();
+        player->SetControlled(true, UNIT_STATE_ROOT);
+        player->AddAura(SPELL_SERVERSIDE_SILENCE, player);
+        if (!player->HasAura(51713))
+            player->AddAura(51713, player);
+        if (Aura* ShadowDance = player->GetAura(51713, player->GetGUID()))
+            ShadowDance->SetDurationAndMaxDuration(-1);
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\achievement_reputation_01:30|t I'm Finished", GOSSIP_SENDER_MAIN, MALL_MENU_FINISH_SHADOW_DANCE);
+        player->SEND_GOSSIP_MENU(1, creature->GetGUID());
+    }
+    else
+        player->CLOSE_GOSSIP_MENU();
+    return true;
+}
+
+bool MallMgr::HandleFinishShadowDanceBar(Player* player, Creature* creature)
+{
+    player->SetControlled(false, UNIT_STATE_ROOT);
+    player->RemoveAura(SPELL_SERVERSIDE_SILENCE);
+    player->RemoveAura(51713);
+    OnGossipHello(player, creature);
+    return true;
+}
+
+bool MallMgr::HandleLearnDualSpecialization(Player* player, Creature* creature)
+{
+    player->SetSaveTimer(sWorld->getIntConfig(CONFIG_INTERVAL_SAVE));
+    player->learnSpell(63644, false);
+    player->learnSpell(63645, false);
+    player->UpdateSpecCount(2);
+    player->SaveToDB();
+    OnGossipHello(player, creature);
+    return true;
+}
+
+bool MallMgr::HandleResetTalents(Player* player, Creature* creature)
+{
+    player->CLOSE_GOSSIP_MENU();
+    player->SendTalentWipeConfirm(creature->GetGUID());
+    return true;
+}
+
+bool MallMgr::HandleResetPetTalents(Player* player)
+{
+    player->CLOSE_GOSSIP_MENU();
+
+    Pet* pet = player->GetPet();
+    if (!pet)
+    {
+        player->SendSysMessage("You don't have a pet");
+        return false;
+    }
+
+    pet->resetTalents();
+    player->SendTalentsInfoData(true);
     return true;
 }
 
@@ -953,6 +1074,44 @@ bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
     player->SetSkill(skill, 6, 450, 450);
     player->PlayerTalkClass->ClearMenus();
     HandleProfessions(player, creature);
+    return true;
+}
+
+bool MallMgr::CreatePet(Player* player, Creature* creature, uint32 petId)
+{
+    player->CLOSE_GOSSIP_MENU();
+
+    if (IsExoticPet(petId))
+        if (!player->CanTameExoticPets())
+        {
+            player->SendSysMessage("You can't create an exotic pet until you've specced into Beast Mastery.");
+            return false;
+        }
+
+    Pet* pet = player->CreateTamedPetFrom(petId, 0);
+    if (!pet)
+    {
+        player->SendSysMessage("Unable to create pet from Id: %u", petId);
+        return false;
+    }
+
+    if (Pet* playerPet = player->GetPet())
+    {
+        player->StopCastingCharm();
+        player->RemovePet(playerPet, PET_SAVE_AS_DELETED, false);
+    }
+
+    pet->GetMap()->AddToMap(pet->ToCreature());
+    player->SetMinion(pet, true);
+    pet->InitTalentForLevel();
+    player->PetSpellInitialize();
+    pet->SetPower(POWER_HAPPINESS, MAX_HAPPINESS);
+    pet->UpdateAllStats();
+    pet->SavePetToDB(PET_SAVE_AS_CURRENT);
+    pet->GetMotionMaster()->MoveFollow(player, PET_FOLLOW_DIST, pet->GetFollowAngle());
+    pet->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
+
+    player->SendSysMessage("Pet added.");
     return true;
 }
 

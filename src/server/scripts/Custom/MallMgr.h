@@ -11,11 +11,14 @@ enum MallOptions
     MALL_MENU_APPAREL,
     MALL_MENU_MOUNTS,
     MALL_MENU_GLYPHS,
-    MALL_MENU_RESET_TALENTS,
-    MALL_MENU_LEARN_DUAL_SPEC,
+    MALL_MENU_GUILD,
+    MALL_MENU_PETS,
+    MALL_MENU_STABLE,
     MALL_MENU_SETUP_SHADOW_DANCE,
     MALL_MENU_FINISH_SHADOW_DANCE,
-    MALL_MENU_GUILD,
+    MALL_MENU_LEARN_DUAL_SPEC,
+    MALL_MENU_RESET_TALENTS,
+    MALL_MENU_RESET_PET_TALENTS,
 
     MALL_GEAR_RELENTLESS_GLADIATOR,
     MALL_GEAR_TRIAL_OF_THE_CRUSADER,
@@ -46,6 +49,10 @@ enum MallOptions
     ENCHANT_OPTION_MAIN_HAND,
     ENCHANT_OPTION_OFF_HAND,
     ENCHANT_OPTION_RANGED,
+
+    PET_OPTION_CUNNING,
+    PET_OPTION_FEROCITY,
+    PET_OPTION_TENACITY,
 
     GUILD_OPTION_CREATE,
     GUILD_OPTION_DESIGN,
@@ -203,6 +210,47 @@ enum EnchantId
     ENCHANT_CLOAK_DARKGLOW_EMBROIDERY = 3728,
 };
 
+enum PetId
+{
+    PET_CUNNING_BAT = 26622,
+    PET_CUNNING_BIRD_OF_PREY = 27244,
+    PET_CUNNING_CHIMAERA = 21033,
+    PET_CUNNING_DRAGONHAWK = 18155,
+    PET_CUNNING_NETHER_RAY = 21901,
+    PET_CUNNING_RAVAGER = 16934,
+    PET_CUNNING_SERPENT = 19784,
+    PET_CUNNING_SILITHID = 14473,
+    PET_CUNNING_SPIDER = 17683,
+    PET_CUNNING_SPORE_BAT = 18128,
+    PET_CUNNING_WIND_SERPENT = 28477,
+
+    PET_FEROCITY_ARCTURIS = 38453,
+    PET_FEROCITY_CAT = 10737,
+    PET_FEROCITY_CARRION_BIRD = 21515,
+    PET_FEROCITY_CORE_HOUND = 21108,
+    PET_FEROCITY_DEVILSAUR = 20931,
+    PET_FEROCITY_GONDRIA = 33776,
+    PET_FEROCITY_HYENA = 4690,
+    PET_FEROCITY_LOQUENAHAK = 32517,
+    PET_FEROCITY_MOTH = 25498,
+    PET_FEROCITY_RAPTOR = 20729,
+    PET_FEROCITY_SKOLL = 35189,
+    PET_FEROCITY_TALLSTRIDER = 3068,
+    PET_FEROCITY_WASP = 28086,
+    PET_FEROCITY_WOLF = 17280,
+
+    PET_TENACITY_BEAR = 24217,
+    PET_TENACITY_BOAR = 4512,
+    PET_TENACITY_CRAB = 23929,
+    PET_TENACITY_CROCOLISK = 28002,
+    PET_TENACITY_GORILLA = 6514,
+    PET_TENACITY_RHINO = 30445,
+    PET_TENACITY_SCORPID = 5823,
+    PET_TENACITY_TURTLE = 4397,
+    PET_TENACITY_WARP_STALKER = 23163,
+    PET_TENACITY_WORM = 26359,
+};
+
 class MallMgr : public CreatureScript
 {
     public:
@@ -212,14 +260,18 @@ class MallMgr : public CreatureScript
         bool HandleGear(Player* player, Creature* creature, uint32 gearOption);
         bool HandleProfessions(Player* player, Creature* creature);
         bool HandleEnchants(Player* player, Creature* creature, uint32 action);
-        bool HandleResetTalents(Player* player, Creature* creature);
-        bool HandleLearnDualSpecialization(Player* player, Creature* creature);
+        bool HandleGuild(Player* player, Creature* creature, uint32 guildOption);
+        bool HandleStable(Player* player, Creature* creature);
+        bool ShowPets(Player* player, Creature* creature, uint32 petOption);
         bool HandleSetupShadowDanceBar(Player* player, Creature* creature);
         bool HandleFinishShadowDanceBar(Player* player, Creature* creature);
-        bool HandleGuild(Player* player, Creature* creature, uint32 guildOption);
+        bool HandleLearnDualSpecialization(Player* player, Creature* creature);
+        bool HandleResetTalents(Player* player, Creature* creature);
+        bool HandleResetPetTalents(Player* player);
         bool ShowInventory(Player* player, Creature* creature, uint32 invListOption);
         bool EnchantItem(Player* player, Creature* creature, uint16 enchantId, uint8 enchantOption);
         bool LearnSkill(Player* player, Creature* creature, uint16 skill);
+        bool CreatePet(Player* player, Creature* creature, uint32 petId);
     private:
         bool SelectArmorType(Player* player, Creature* creature, uint32 sender);
         bool CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate, uint32 invListOption);
@@ -299,5 +351,18 @@ class MallMgr : public CreatureScript
                 case SKILL_TAILORING:      return "Tailoring";
                 default:                   return "Error";
             }
+        }
+        bool IsExoticPet(uint32 petId)
+        {
+            return petId == PET_FEROCITY_ARCTURIS ||
+                petId == PET_CUNNING_CHIMAERA ||
+                petId == PET_FEROCITY_CORE_HOUND ||
+                petId == PET_FEROCITY_DEVILSAUR ||
+                petId == PET_FEROCITY_GONDRIA ||
+                petId == PET_FEROCITY_LOQUENAHAK ||
+                petId == PET_TENACITY_RHINO ||
+                petId == PET_CUNNING_SILITHID ||
+                petId == PET_FEROCITY_SKOLL ||
+                petId == PET_TENACITY_WORM;
         }
 };

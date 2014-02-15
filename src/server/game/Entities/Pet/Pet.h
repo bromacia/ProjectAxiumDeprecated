@@ -165,7 +165,6 @@ class Pet : public Guardian
                 return Creature::canSwim();
         }
 
-        void LoseHappiness();
         HappinessState GetHappinessState();
         void GivePetXP(uint32 xp);
         void GivePetLevel(uint8 level);
@@ -238,7 +237,6 @@ class Pet : public Guardian
         Player* GetOwner() { return m_owner; }
     protected:
         Player* m_owner;
-        uint32  m_happinessTimer;
         PetType m_petType;
         int32   m_duration;                                 // time until unsummon (used mostly for summoned guardians and not used for controlled pets)
         uint64  m_auraRaidUpdateMask;

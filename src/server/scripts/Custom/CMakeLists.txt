@@ -18,7 +18,6 @@ set(scripts_STAT_SRCS
   Custom/ArenaMgr.h
   Custom/ReadyMarker.cpp
   Custom/npc_teleport.cpp
-  Custom/npc_beastmaster.cpp
   Custom/item_playerhandbook.cpp
 )
 

@@ -35,8 +35,8 @@
 
 Pet::Pet(Player* owner, PetType type) : Guardian(NULL, owner, true),
 m_usedTalentCount(0), m_removed(false), m_owner(owner),
-m_happinessTimer(10000), m_petType(type), m_duration(0),
-m_auraRaidUpdateMask(0), m_loading(false), m_declinedname(NULL)
+m_petType(type), m_duration(0), m_auraRaidUpdateMask(0),
+m_loading(false), m_declinedname(NULL)
 {
     m_unitTypeMask |= UNIT_MASK_PET;
     if (type == HUNTER_PET)
@@ -215,7 +215,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber, bool c
             SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
                                                             // this enables popup window (pet abandon, cancel)
             SetMaxPower(POWER_HAPPINESS, GetCreatePowers(POWER_HAPPINESS));
-            SetPower(POWER_HAPPINESS, 1000000);
+            SetPower(POWER_HAPPINESS, MAX_HAPPINESS);
             setPowerType(POWER_FOCUS);
             break;
         default:
@@ -552,18 +552,6 @@ void Pet::Update(uint32 diff)
                     }
                 }
             }
-
-            if (getPetType() != HUNTER_PET)
-                break;
-
-            if (m_happinessTimer <= diff)
-            {
-                LoseHappiness();
-                m_happinessTimer = 7500;
-            }
-            else
-                m_happinessTimer -= diff;
-
             break;
         }
         default:
@@ -609,11 +597,6 @@ void Creature::Regenerate(Powers power)
     addvalue += GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_POWER_REGEN, power) * (isHunterPet()? PET_FOCUS_REGEN_INTERVAL : CREATURE_REGEN_INTERVAL) / (5 * IN_MILLISECONDS);
 
     ModifyPower(power, int32(addvalue));
-}
-
-void Pet::LoseHappiness()
-{
-    ModifyPower(POWER_HAPPINESS, 1000000);
 }
 
 HappinessState Pet::GetHappinessState()
@@ -734,7 +717,7 @@ bool Pet::CreateBaseAtTamed(CreatureTemplate const* cinfo, Map* map, uint32 phas
         return false;
 
     SetMaxPower(POWER_HAPPINESS, GetCreatePowers(POWER_HAPPINESS));
-    SetPower(POWER_HAPPINESS, 166500);
+    SetPower(POWER_HAPPINESS, MAX_HAPPINESS);
     setPowerType(POWER_FOCUS);
     SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, 0);
     SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
