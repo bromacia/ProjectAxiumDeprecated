@@ -88,7 +88,7 @@ void ArenaMgr::HandleCreateTeam(Player* player, Creature* creature)
     player->CLOSE_GOSSIP_MENU();
 
     WorldPacket data(SMSG_PETITION_SHOWLIST, 81);
-    data << player->GetGUID();
+    data << creature->GetGUID();
     data << uint8(3);                                                               // count
     // 2v2
     data << uint32(1);                                                              // index

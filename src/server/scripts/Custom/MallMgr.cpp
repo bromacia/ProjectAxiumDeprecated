@@ -22,6 +22,7 @@ bool MallMgr::OnGossipHello(Player* player, Creature* creature)
         else
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_rogue_shadowdance:30|t Setup Shadow Dance Bar", GOSSIP_SENDER_MAIN, MALL_MENU_SETUP_SHADOW_DANCE);
 
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_shirt_guildtabard_01:30|t Guild", GOSSIP_SENDER_MAIN, MALL_MENU_GUILD);
     player->SEND_GOSSIP_MENU(1, creature->GetGUID());
     return true;
 }
@@ -48,6 +49,7 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
                 case MALL_MENU_LEARN_DUAL_SPEC:     HandleLearnDualSpecialization(player, creature);               break;
                 case MALL_MENU_SETUP_SHADOW_DANCE:  HandleSetupShadowDanceBar(player, creature);                   break;
                 case MALL_MENU_FINISH_SHADOW_DANCE: HandleFinishShadowDanceBar(player, creature);                  break;
+                case MALL_MENU_GUILD:               HandleGuild(player, creature, MALL_MENU_GUILD);                break;
             }
             break;
         }
@@ -143,14 +145,19 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
             EnchantItem(player, creature, action, sender);
             break;
         }
+        case MALL_MENU_GUILD:
+        {
+            HandleGuild(player, creature, action);
+            break;
+        }
     }
 
     return true;
 }
 
-bool MallMgr::HandleGear(Player* player, Creature* creature, uint32 action)
+bool MallMgr::HandleGear(Player* player, Creature* creature, uint32 gearOption)
 {
-    switch (action)
+    switch (gearOption)
     {
         case MALL_MENU_GEAR:
         {
@@ -248,9 +255,9 @@ bool MallMgr::HandleProfessions(Player* player, Creature* creature)
     return true;
 }
 
-bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 action)
+bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 enchantOption)
 {
-    switch (action)
+    switch (enchantOption)
     {
         case MALL_MENU_ENCHANTS:
         {
@@ -716,7 +723,49 @@ bool MallMgr::HandleFinishShadowDanceBar(Player* player, Creature* creature)
     return true;
 }
 
-bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 action)
+bool MallMgr::HandleGuild(Player* player, Creature* creature, uint32 guildOption)
+{
+    switch (guildOption)
+    {
+        case MALL_MENU_GUILD:
+        {
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Create a Guild", MALL_MENU_GUILD, GUILD_OPTION_CREATE);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Edit Tabard Design", MALL_MENU_GUILD, GUILD_OPTION_DESIGN);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
+            player->SEND_GOSSIP_MENU(1, creature->GetGUID());
+            break;
+        }
+        case GUILD_OPTION_CREATE:
+        {
+            player->CLOSE_GOSSIP_MENU();
+
+            WorldPacket data(SMSG_PETITION_SHOWLIST, 33);
+            data << creature->GetGUID();
+            data << uint8(1);                                                   // count
+            data << uint32(1);                                                  // index
+            data << uint32(5863);                                               // charter entry
+            data << uint32(16161);                                              // charter display id
+            data << uint32(0);                                                  // charter cost
+            data << uint32(0);                                                  // unknown
+            data << uint32(sWorld->getIntConfig(CONFIG_MIN_PETITION_SIGNS));    // required signs?
+            player->GetSession()->SendPacket(&data);
+            break;
+        }
+        case GUILD_OPTION_DESIGN:
+        {
+            player->CLOSE_GOSSIP_MENU();
+
+            WorldPacket data(MSG_TABARDVENDOR_ACTIVATE, 8);
+            data << creature->GetGUID();
+            player->GetSession()->SendPacket(&data);
+            break;
+        }
+    }
+
+    return true;
+}
+
+bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 invListOption)
 {
     player->CLOSE_GOSSIP_MENU();
 
@@ -741,7 +790,7 @@ bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 action)
         {
             if (const ItemTemplate* vItemTemplate = sObjectMgr->GetItemTemplate(vItem->item))
             {
-                if (!CheckVendorItem(player, vItemTemplate, action))
+                if (!CheckVendorItem(player, vItemTemplate, invListOption))
                     continue;
 
                 ++count;
@@ -907,7 +956,7 @@ bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
     return true;
 }
 
-bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate, uint32 action)
+bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate, uint32 invListOption)
 {
     // Don't allow Nibelung to be purchased until the proc is fixed
     if (IsPhraseInString(vItemTemplate->Name1, "Nibelung"))
@@ -926,7 +975,7 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
     if (!(vItemTemplate->AllowableClass & player->getClassMask()))
         return false;
 
-    switch (action)
+    switch (invListOption)
     {
         case INVENTORY_LIST_GENERAL_GOODS:
         {

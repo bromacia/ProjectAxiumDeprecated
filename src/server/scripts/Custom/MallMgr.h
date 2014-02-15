@@ -15,6 +15,7 @@ enum MallOptions
     MALL_MENU_LEARN_DUAL_SPEC,
     MALL_MENU_SETUP_SHADOW_DANCE,
     MALL_MENU_FINISH_SHADOW_DANCE,
+    MALL_MENU_GUILD,
 
     MALL_GEAR_RELENTLESS_GLADIATOR,
     MALL_GEAR_TRIAL_OF_THE_CRUSADER,
@@ -45,6 +46,9 @@ enum MallOptions
     ENCHANT_OPTION_MAIN_HAND,
     ENCHANT_OPTION_OFF_HAND,
     ENCHANT_OPTION_RANGED,
+
+    GUILD_OPTION_CREATE,
+    GUILD_OPTION_DESIGN,
 };
 
 enum InventoryListOption
@@ -205,19 +209,20 @@ class MallMgr : public CreatureScript
         MallMgr() : CreatureScript("MallNPC") {}
         bool OnGossipHello(Player* player, Creature* creature);
         bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action);
-        bool HandleGear(Player* player, Creature* creature, uint32 action);
+        bool HandleGear(Player* player, Creature* creature, uint32 gearOption);
         bool HandleProfessions(Player* player, Creature* creature);
         bool HandleEnchants(Player* player, Creature* creature, uint32 action);
         bool HandleResetTalents(Player* player, Creature* creature);
         bool HandleLearnDualSpecialization(Player* player, Creature* creature);
         bool HandleSetupShadowDanceBar(Player* player, Creature* creature);
         bool HandleFinishShadowDanceBar(Player* player, Creature* creature);
-        bool ShowInventory(Player* player, Creature* creature, uint32 action);
+        bool HandleGuild(Player* player, Creature* creature, uint32 guildOption);
+        bool ShowInventory(Player* player, Creature* creature, uint32 invListOption);
         bool EnchantItem(Player* player, Creature* creature, uint16 enchantId, uint8 enchantOption);
         bool LearnSkill(Player* player, Creature* creature, uint16 skill);
     private:
         bool SelectArmorType(Player* player, Creature* creature, uint32 sender);
-        bool CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate, uint32 action);
+        bool CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate, uint32 invListOption);
         bool CheckSkill(Player* player, uint16 skill);
         bool CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate, uint16 enchantId, uint8 slot);
         uint8 GetItemSlotByEnchantOption(uint8 invType)
