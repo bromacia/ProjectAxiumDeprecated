@@ -1756,11 +1756,9 @@ bool WorldObject::CanDetect(WorldObject const* obj, bool ignoreStealth) const
                 if (guid != seer->GetGUID())
                     return false;
 
-        // Cast Created Dynamic Objects
+        // Dynamic Objects
         if (const DynamicObject* dynObj = obj->ToDynamicObject())
-            if (uint64 guid = dynObj->GetCasterGUID())
-                if (guid != seer->GetGUID())
-                    return false;
+            return false;
     }
 
     if (const Player* pObj = obj->ToPlayer())
