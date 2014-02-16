@@ -227,8 +227,8 @@ void AddBattlegroundScripts()
     void AddSC_MallMgr();
     void AddSC_ArenaMgr();
     void AddSC_ReadyMarker();
-    void AddSC_npc_teleport();
-    void AddSC_item_playerhandbook();
+    void AddSC_TeleportNPC();
+    void AddSC_PlayerHandbook();
 #endif
 
 void AddCustomScripts()
@@ -238,7 +238,7 @@ void AddCustomScripts()
     AddSC_MallMgr();
     AddSC_ArenaMgr();
     AddSC_ReadyMarker();
-    AddSC_npc_teleport();
-    AddSC_item_playerhandbook();
+    AddSC_TeleportNPC();
+    AddSC_PlayerHandbook();
 #endif
 }

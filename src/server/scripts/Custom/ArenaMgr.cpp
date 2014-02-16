@@ -8,12 +8,12 @@ bool ArenaMgr::OnGossipHello(Player* player, Creature* creature)
 {
     CreateArenasMap();
 
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Create An Arena Team", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_CREATE_TEAM);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Queue For Arena", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_QUEUE);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate 2v2 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_2V2_MATCHES);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate 3v3 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_3V3_MATCHES);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate 5v5 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_5V5_MATCHES);
-    player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, "Spectate a Player", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_SPECTATE_PLAYER, "", 0, true);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_letter_17:30|t Create An Arena Team", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_CREATE_TEAM);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_dualwield:30|t Queue For Arena", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_QUEUE);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\Achievement_arena_2v2_2:30|t Spectate 2v2 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_2V2_MATCHES);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\Achievement_arena_3v3_2:30|t Spectate 3v3 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_3V3_MATCHES);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\Achievement_arena_5v5_2:30|t Spectate 5v5 Matches", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_5V5_MATCHES);
+    player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_grouplooking:30|t Spectate a Player", GOSSIP_SENDER_MAIN, ARENA_SPECTATE_MENU_SPECTATE_PLAYER, "", 0, true);
     player->SEND_GOSSIP_MENU(1, creature->GetGUID());
     return true;
 }

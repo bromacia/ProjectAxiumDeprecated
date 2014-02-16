@@ -3,10 +3,10 @@
 #include "Player.h"
 #include "Item.h"
 
-class item_playerhandbook : public ItemScript
+class PlayerHandbook: public ItemScript
 {
     public:
-        item_playerhandbook() : ItemScript("item_playerhandbook") {}
+        PlayerHandbook() : ItemScript("PlayerHandbook") {}
 
         bool OnGossipHello(Player* player, Item* item)
         {
@@ -52,7 +52,7 @@ class item_playerhandbook : public ItemScript
         InfoTextMap infoTexts;
 };
 
-void AddSC_item_playerhandbook()
+void AddSC_PlayerHandbook()
 {
-    new item_playerhandbook();
+    new PlayerHandbook();
 }

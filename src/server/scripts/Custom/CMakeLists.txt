@@ -17,8 +17,8 @@ set(scripts_STAT_SRCS
   Custom/ArenaMgr.cpp
   Custom/ArenaMgr.h
   Custom/ReadyMarker.cpp
-  Custom/npc_teleport.cpp
-  Custom/item_playerhandbook.cpp
+  Custom/TeleportNPC.cpp
+  Custom/PlayerHandbook.cpp
 )
 
 message("  -> Prepared: Custom")

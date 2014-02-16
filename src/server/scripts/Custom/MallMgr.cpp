@@ -7,13 +7,13 @@ bool MallMgr::OnGossipHello(Player* player, Creature* creature)
     player->PlayerTalkClass->ClearMenus();
 
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_crate_01:30|t General Goods", GOSSIP_SENDER_MAIN, MALL_MENU_GENERAL_GOODS);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_chest_cloth_74:30|t Gear", GOSSIP_SENDER_MAIN, MALL_MENU_GEAR);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_warrior_improveddisciplines:30|t Gear", GOSSIP_SENDER_MAIN, MALL_MENU_GEAR);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_gizmo_gnomishflameturret:30|t Professions", GOSSIP_SENDER_MAIN, MALL_MENU_PROFESSIONS);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_rod_enchantedadamantite:30|t Enchants", GOSSIP_SENDER_MAIN, MALL_MENU_ENCHANTS);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_jewelcrafting_pyrestone_02:30|t Gems", GOSSIP_SENDER_MAIN, MALL_MENU_GEMS);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_mount_bigblizzardbear:30|t Mounts", GOSSIP_SENDER_MAIN, MALL_MENU_MOUNTS);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_inscription_minorglyph00:30|t Glyphs", GOSSIP_SENDER_MAIN, MALL_MENU_GLYPHS);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_shirt_guildtabard_01:30|t Guild", GOSSIP_SENDER_MAIN, MALL_MENU_GUILD);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\Inv_bannerpvp_03:30|t Guild", GOSSIP_SENDER_MAIN, MALL_MENU_GUILD);
 
     if (IsHunter)
     {
@@ -188,51 +188,51 @@ bool MallMgr::HandleGear(Player* player, Creature* creature, uint32 gearOption)
     {
         case MALL_MENU_GEAR:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Relentless Gladiator", MALL_MENU_GEAR, MALL_GEAR_RELENTLESS_GLADIATOR);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Trial of the Crusader", MALL_MENU_GEAR, MALL_GEAR_TRIAL_OF_THE_CRUSADER);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Wrathful Gladiator", MALL_MENU_GEAR, MALL_GEAR_WRATHFUL_GLADIATOR);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Icecrown Citadel", MALL_MENU_GEAR, MALL_GEAR_ICECROWN_CITADEL);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Apparel", MALL_MENU_GEAR, MALL_GEAR_APPAREL);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_helmet_147:30|t Relentless Gladiator", MALL_MENU_GEAR, MALL_GEAR_RELENTLESS_GLADIATOR);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_gauntlets_78a:30|t Trial of the Crusader", MALL_MENU_GEAR, MALL_GEAR_TRIAL_OF_THE_CRUSADER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_chest_cloth_83:30|t Wrathful Gladiator", MALL_MENU_GEAR, MALL_GEAR_WRATHFUL_GLADIATOR);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_shoulder_116black:30|t Icecrown Citadel", MALL_MENU_GEAR, MALL_GEAR_ICECROWN_CITADEL);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_shirt_12:30|t Apparel", MALL_MENU_GEAR, MALL_GEAR_APPAREL);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
         }
         case MALL_GEAR_RELENTLESS_GLADIATOR:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mainsets & Offsets", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_MAINSETS_AND_OFFSETS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Accessories", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_ACCESSORIES);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Weapons", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_WEAPONS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Trinkets", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_TRINKETS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_chest_cloth_74:30|t Mainsets & Offsets", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_MAINSETS_AND_OFFSETS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_jewelry_ring_60:30|t Accessories", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_ACCESSORIES);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_mace_111:30|t Weapons", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_WEAPONS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_jewelry_necklace_37:30|t Trinkets", MALL_GEAR_RELENTLESS_GLADIATOR, GEAR_OPTION_TRINKETS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_GEAR);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
         }
         case MALL_GEAR_TRIAL_OF_THE_CRUSADER:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mainsets & Offsets", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_MAINSETS_AND_OFFSETS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Accessories", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_ACCESSORIES);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Weapons", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_WEAPONS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Trinkets", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_TRINKETS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_chest_cloth_75:30|t Mainsets & Offsets", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_MAINSETS_AND_OFFSETS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_jewelry_necklace_45:30|t Accessories", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_ACCESSORIES);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_sword_142:30|t Weapons", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_WEAPONS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_scarab_crystal:30|t Trinkets", MALL_GEAR_TRIAL_OF_THE_CRUSADER, GEAR_OPTION_TRINKETS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_GEAR);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
         }
         case MALL_GEAR_WRATHFUL_GLADIATOR:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mainsets & Offsets", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_MAINSETS_AND_OFFSETS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Accessories", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_ACCESSORIES);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Weapons", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_WEAPONS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Trinkets", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_TRINKETS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_chest_leather_24:30|t Mainsets & Offsets", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_MAINSETS_AND_OFFSETS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_jewelry_necklace_36:30|t Accessories", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_ACCESSORIES);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_axe_115:30|t Weapons", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_WEAPONS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_jewelry_trinketpvp_02:30|t Trinkets", MALL_GEAR_WRATHFUL_GLADIATOR, GEAR_OPTION_TRINKETS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_GEAR);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
         }
         case MALL_GEAR_ICECROWN_CITADEL:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mainsets & Offsets", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_MAINSETS_AND_OFFSETS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Accessories", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_ACCESSORIES);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Weapons", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_WEAPONS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Trinkets", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_TRINKETS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_chest_plate_25:30|t Mainsets & Offsets", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_MAINSETS_AND_OFFSETS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_jewelry_ring_81:30|t Accessories", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_ACCESSORIES);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\Inv_axe_112:30|t Weapons", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_WEAPONS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_jewelry_trinket_04:30|t Trinkets", MALL_GEAR_ICECROWN_CITADEL, GEAR_OPTION_TRINKETS);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_GEAR);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
@@ -250,16 +250,16 @@ bool MallMgr::HandleGear(Player* player, Creature* creature, uint32 gearOption)
 bool MallMgr::SelectArmorType(Player* player, Creature* creature, uint32 sender)
 {
     if (player->HasSpell(9078))
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Cloth", sender, GEAR_OPTION_CLOTH);
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_chest_cloth_21:30|t Cloth", sender, GEAR_OPTION_CLOTH);
 
     if (player->HasSpell(9077))
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Leather", sender, GEAR_OPTION_LEATHER);
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_chest_leather_09:30|t Leather", sender, GEAR_OPTION_LEATHER);
 
     if (player->HasSpell(8737))
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mail", sender, GEAR_OPTION_MAIL);
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_chest_chain_05:30|t Mail", sender, GEAR_OPTION_MAIL);
 
     if (player->HasSpell(750))
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Plate", sender, GEAR_OPTION_PLATE);
+        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_chest_plate01:30|t Plate", sender, GEAR_OPTION_PLATE);
 
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", MALL_MENU_GEAR, sender);
     player->SEND_GOSSIP_MENU(1, creature->GetGUID());
@@ -268,15 +268,15 @@ bool MallMgr::SelectArmorType(Player* player, Creature* creature, uint32 sender)
 
 bool MallMgr::HandleProfessions(Player* player, Creature* creature)
 {
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Alchemy", MALL_MENU_PROFESSIONS, SKILL_ALCHEMY);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Blacksmithing", MALL_MENU_PROFESSIONS, SKILL_BLACKSMITHING);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Enchanting", MALL_MENU_PROFESSIONS, SKILL_ENCHANTING);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Engineering", MALL_MENU_PROFESSIONS, SKILL_ENGINEERING);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Herbalism", MALL_MENU_PROFESSIONS, SKILL_HERBALISM);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Inscription", MALL_MENU_PROFESSIONS, SKILL_INSCRIPTION);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Jewelcrafting", MALL_MENU_PROFESSIONS, SKILL_JEWELCRAFTING);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Leatherworking", MALL_MENU_PROFESSIONS, SKILL_LEATHERWORKING);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Tailoring", MALL_MENU_PROFESSIONS, SKILL_TAILORING);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\trade_alchemy:30|t Alchemy", MALL_MENU_PROFESSIONS, SKILL_ALCHEMY);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\trade_blacksmithing:30|t Blacksmithing", MALL_MENU_PROFESSIONS, SKILL_BLACKSMITHING);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\trade_engraving:30|t Enchanting", MALL_MENU_PROFESSIONS, SKILL_ENCHANTING);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\trade_engineering:30|t Engineering", MALL_MENU_PROFESSIONS, SKILL_ENGINEERING);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\trade_herbalism:30|t Herbalism", MALL_MENU_PROFESSIONS, SKILL_HERBALISM);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_inscription_tradeskill01:30|t Inscription", MALL_MENU_PROFESSIONS, SKILL_INSCRIPTION);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_gem_01:30|t Jewelcrafting", MALL_MENU_PROFESSIONS, SKILL_JEWELCRAFTING);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_armorkit_17:30|t Leatherworking", MALL_MENU_PROFESSIONS, SKILL_LEATHERWORKING);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\trade_tailoring:30|t Tailoring", MALL_MENU_PROFESSIONS, SKILL_TAILORING);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
     player->SEND_GOSSIP_MENU(1, creature->GetGUID());
     return true;
@@ -288,25 +288,53 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 enchantO
     {
         case MALL_MENU_ENCHANTS:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Head", MALL_MENU_ENCHANTS, ENCHANT_OPTION_HEAD);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Shoulders", MALL_MENU_ENCHANTS, ENCHANT_OPTION_SHOULDERS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Chest", MALL_MENU_ENCHANTS, ENCHANT_OPTION_CHEST);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Gloves", MALL_MENU_ENCHANTS, ENCHANT_OPTION_GLOVES);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Legs", MALL_MENU_ENCHANTS, ENCHANT_OPTION_LEGS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Bracers", MALL_MENU_ENCHANTS, ENCHANT_OPTION_BRACERS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Belt", MALL_MENU_ENCHANTS, ENCHANT_OPTION_BELT);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Boots", MALL_MENU_ENCHANTS, ENCHANT_OPTION_BOOTS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Cloak", MALL_MENU_ENCHANTS, ENCHANT_OPTION_CLOAK);
+            if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD))
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_desecrated_platehelm:30|t Head", MALL_MENU_ENCHANTS, ENCHANT_OPTION_HEAD);
+
+            if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_SHOULDERS))
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_desecrated_plateshoulder:30|t Shoulders", MALL_MENU_ENCHANTS, ENCHANT_OPTION_SHOULDERS);
+
+            if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_CHEST))
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_desecrated_platechest:30|t Chest", MALL_MENU_ENCHANTS, ENCHANT_OPTION_CHEST);
+
+            if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HANDS))
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_desecrated_plategloves:30|t Gloves", MALL_MENU_ENCHANTS, ENCHANT_OPTION_GLOVES);
+
+            if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_LEGS))
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_desecrated_platepants:30|t Legs", MALL_MENU_ENCHANTS, ENCHANT_OPTION_LEGS);
+
+            if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_WRISTS))
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_desecrated_platebracer:30|t Bracers", MALL_MENU_ENCHANTS, ENCHANT_OPTION_BRACERS);
+
+            if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_WAIST))
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_desecrated_platebelt:30|t Belt", MALL_MENU_ENCHANTS, ENCHANT_OPTION_BELT);
+
+            if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FEET))
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_desecrated_plateboots:30|t Boots", MALL_MENU_ENCHANTS, ENCHANT_OPTION_BOOTS);
+
+            if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_BACK))
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_cape_11:30|t Cloak", MALL_MENU_ENCHANTS, ENCHANT_OPTION_CLOAK);
 
             if (player->GetSkillValue(SKILL_ENCHANTING) >= 450)
             {
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Ring 1", MALL_MENU_ENCHANTS, ENCHANT_OPTION_RING1);
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Ring 2", MALL_MENU_ENCHANTS, ENCHANT_OPTION_RING2);
+                if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FINGER1))
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_jewelry_ring_22:30|t Ring 1", MALL_MENU_ENCHANTS, ENCHANT_OPTION_RING1);
+
+                if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_FINGER2))
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_jewelry_ring_22:30|t Ring 2", MALL_MENU_ENCHANTS, ENCHANT_OPTION_RING2);
             }
 
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Main Hand", MALL_MENU_ENCHANTS, ENCHANT_OPTION_MAIN_HAND);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Off Hand", MALL_MENU_ENCHANTS, ENCHANT_OPTION_OFF_HAND);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Ranged", MALL_MENU_ENCHANTS, ENCHANT_OPTION_RANGED);
+            if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_sword_04:30|t Main Hand", MALL_MENU_ENCHANTS, ENCHANT_OPTION_MAIN_HAND);
+
+            if (Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
+                if (item->GetTemplate()->InventoryType != INVTYPE_HOLDABLE)
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_shield_04:30|t Off Hand", MALL_MENU_ENCHANTS, ENCHANT_OPTION_OFF_HAND);
+
+            if (Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED))
+                if (item->GetTemplate()->InventoryType != INVTYPE_RELIC && item->GetTemplate()->SubClass != ITEM_SUBCLASS_WEAPON_WAND)
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_weapon_crossbow_04:30|t Ranged", MALL_MENU_ENCHANTS, ENCHANT_OPTION_RANGED);
+
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
@@ -636,6 +664,13 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 enchantO
                 return false;
             }
 
+            if (pItemTemplate->InventoryType == INVTYPE_HOLDABLE)
+            {
+                player->SendSysMessage("Incorrect weapon type equipped");
+                player->CLOSE_GOSSIP_MENU();
+                return false;
+            }
+
             if (pItemTemplate->InventoryType == INVTYPE_2HWEAPON)
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+110 Attack Power", ENCHANT_OPTION_MAIN_HAND, ENCHANT_2H_WEAPON_MASSACRE);
 
@@ -692,6 +727,21 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 enchantO
                 return false;
             }
 
+            const ItemTemplate* pItemTemplate = pItem->GetTemplate();
+            if (!pItemTemplate)
+            {
+                player->SendSysMessage("Unable to get template data for the item in your off hand slot");
+                player->CLOSE_GOSSIP_MENU();
+                return false;
+            }
+
+            if (pItemTemplate->InventoryType == INVTYPE_RELIC || pItemTemplate->SubClass == ITEM_SUBCLASS_WEAPON_WAND)
+            {
+                player->SendSysMessage("Incorrect weapon type equipped");
+                player->CLOSE_GOSSIP_MENU();
+                return false;
+            }
+
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+40 Ranged Critical Strike", ENCHANT_OPTION_RANGED, ENCHANT_RANGED_HEARTSEEKER_SCOPE);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+40 Ranged Haste", ENCHANT_OPTION_RANGED, ENCHANT_RANGED_SUN_SCOPE);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "+15 Ranged Weapon Damage", ENCHANT_OPTION_RANGED, ENCHANT_RANGED_DIAMOND_CUT_REFRACTOR_SCOPE);
@@ -709,8 +759,8 @@ bool MallMgr::HandleGuild(Player* player, Creature* creature, uint32 guildOption
     {
         case MALL_MENU_GUILD:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Create a Guild", MALL_MENU_GUILD, GUILD_OPTION_CREATE);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Edit Tabard Design", MALL_MENU_GUILD, GUILD_OPTION_DESIGN);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\Inv_misc_groupneedmore:30|t Create a Guild", MALL_MENU_GUILD, GUILD_OPTION_CREATE);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\Inv_shirt_guildtabard_01:30|t Edit Tabard Design", MALL_MENU_GUILD, GUILD_OPTION_DESIGN);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
@@ -758,62 +808,62 @@ bool MallMgr::ShowPets(Player* player, Creature* creature, uint32 petOption)
     {
         case MALL_MENU_PETS:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Create Cunning Pet", MALL_MENU_PETS, PET_OPTION_CUNNING);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Create Ferocity Pet", MALL_MENU_PETS, PET_OPTION_FEROCITY);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Create Tenacity Pet", MALL_MENU_PETS, PET_OPTION_TENACITY);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_hunter_combatexperience:30|t Create Cunning Pet", MALL_MENU_PETS, PET_OPTION_CUNNING);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_druid_swipe:30|t Create Ferocity Pet", MALL_MENU_PETS, PET_OPTION_FEROCITY);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Bear:30|t Create Tenacity Pet", MALL_MENU_PETS, PET_OPTION_TENACITY);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
         }
         case PET_OPTION_CUNNING:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Bat", PET_OPTION_CUNNING, PET_CUNNING_BAT);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Bird of Prey", PET_OPTION_CUNNING, PET_CUNNING_BIRD_OF_PREY);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Chimaera", PET_OPTION_CUNNING, PET_CUNNING_CHIMAERA);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Dragonhawk", PET_OPTION_CUNNING, PET_CUNNING_DRAGONHAWK);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Nether Ray", PET_OPTION_CUNNING, PET_CUNNING_NETHER_RAY);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Ravager", PET_OPTION_CUNNING, PET_CUNNING_RAVAGER);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Serpent", PET_OPTION_CUNNING, PET_CUNNING_SERPENT);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Silithid", PET_OPTION_CUNNING, PET_CUNNING_SILITHID);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spider", PET_OPTION_CUNNING, PET_CUNNING_SPIDER);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spore Bat", PET_OPTION_CUNNING, PET_CUNNING_SPORE_BAT);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Wind Serpent", PET_OPTION_CUNNING, PET_CUNNING_WIND_SERPENT);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Bat:30|t Bat", PET_OPTION_CUNNING, PET_CUNNING_BAT);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Owl:30|t Bird of Prey", PET_OPTION_CUNNING, PET_CUNNING_BIRD_OF_PREY);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Chimera:30|t Chimaera", PET_OPTION_CUNNING, PET_CUNNING_CHIMAERA);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_DragonHawk:30|t Dragonhawk", PET_OPTION_CUNNING, PET_CUNNING_DRAGONHAWK);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_NetherRay:30|t Nether Ray", PET_OPTION_CUNNING, PET_CUNNING_NETHER_RAY);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Ravager:30|t Ravager", PET_OPTION_CUNNING, PET_CUNNING_RAVAGER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\spell_Nature_GuardianWard:30|t Serpent", PET_OPTION_CUNNING, PET_CUNNING_SERPENT);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Silithid:30|t Silithid", PET_OPTION_CUNNING, PET_CUNNING_SILITHID);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Spider:30|t Spider", PET_OPTION_CUNNING, PET_CUNNING_SPIDER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Sporebat:30|t Spore Bat", PET_OPTION_CUNNING, PET_CUNNING_SPORE_BAT);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_WindSerpent:30|t Wind Serpent", PET_OPTION_CUNNING, PET_CUNNING_WIND_SERPENT);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_PETS);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
         }
         case PET_OPTION_FEROCITY:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Arcturis", PET_OPTION_FEROCITY, PET_FEROCITY_ARCTURIS);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Cat", PET_OPTION_FEROCITY, PET_FEROCITY_CAT);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Carrion Bird", PET_OPTION_FEROCITY, PET_FEROCITY_CARRION_BIRD);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Core Hound", PET_OPTION_FEROCITY, PET_FEROCITY_CORE_HOUND);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Devilsaur", PET_OPTION_FEROCITY, PET_FEROCITY_DEVILSAUR);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Gondria", PET_OPTION_FEROCITY, PET_FEROCITY_GONDRIA);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Hyena", PET_OPTION_FEROCITY, PET_FEROCITY_HYENA);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Loque'nahak", PET_OPTION_FEROCITY, PET_FEROCITY_LOQUENAHAK);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Moth", PET_OPTION_FEROCITY, PET_FEROCITY_MOTH);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Raptor", PET_OPTION_FEROCITY, PET_FEROCITY_RAPTOR);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Skoll", PET_OPTION_FEROCITY, PET_FEROCITY_SKOLL);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Tallstrider", PET_OPTION_FEROCITY, PET_FEROCITY_TALLSTRIDER);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Wasp", PET_OPTION_FEROCITY, PET_FEROCITY_WASP);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Wolf", PET_OPTION_FEROCITY, PET_FEROCITY_WOLF);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_racial_bearform:30|t Arcturis", PET_OPTION_FEROCITY, PET_FEROCITY_ARCTURIS);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Cat:30|t Cat", PET_OPTION_FEROCITY, PET_FEROCITY_CAT);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Vulture:30|t Carrion Bird", PET_OPTION_FEROCITY, PET_FEROCITY_CARRION_BIRD);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_CoreHound:30|t Core Hound", PET_OPTION_FEROCITY, PET_FEROCITY_CORE_HOUND);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Devilsaur:30|t Devilsaur", PET_OPTION_FEROCITY, PET_FEROCITY_DEVILSAUR);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_druid_catform:30|t Gondria", PET_OPTION_FEROCITY, PET_FEROCITY_GONDRIA);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Hyena:30|t Hyena", PET_OPTION_FEROCITY, PET_FEROCITY_HYENA);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_druid_healinginstincts:30|t Loque'nahak", PET_OPTION_FEROCITY, PET_FEROCITY_LOQUENAHAK);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Moth:30|t Moth", PET_OPTION_FEROCITY, PET_FEROCITY_MOTH);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Raptor:30|t Raptor", PET_OPTION_FEROCITY, PET_FEROCITY_RAPTOR);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\spell_shaman_feralspirit:30|t Skoll", PET_OPTION_FEROCITY, PET_FEROCITY_SKOLL);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_TallStrider:30|t Tallstrider", PET_OPTION_FEROCITY, PET_FEROCITY_TALLSTRIDER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Wasp:30|t Wasp", PET_OPTION_FEROCITY, PET_FEROCITY_WASP);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Wolf:30|t Wolf", PET_OPTION_FEROCITY, PET_FEROCITY_WOLF);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_PETS);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
         }
         case PET_OPTION_TENACITY:
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Bear", PET_OPTION_TENACITY, PET_TENACITY_BEAR);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Boar", PET_OPTION_TENACITY, PET_TENACITY_BOAR);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Crab", PET_OPTION_TENACITY, PET_TENACITY_CRAB);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Crocolisk", PET_OPTION_TENACITY, PET_TENACITY_CROCOLISK);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Gorilla", PET_OPTION_TENACITY, PET_TENACITY_GORILLA);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Rhino", PET_OPTION_TENACITY, PET_TENACITY_RHINO);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Scorpid", PET_OPTION_TENACITY, PET_TENACITY_SCORPID);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Turtle", PET_OPTION_TENACITY, PET_TENACITY_TURTLE);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Warp Stalker", PET_OPTION_TENACITY, PET_TENACITY_WARP_STALKER);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Worm", PET_OPTION_TENACITY, PET_TENACITY_WORM);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Bear:30|t Bear", PET_OPTION_TENACITY, PET_TENACITY_BEAR);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Boar:30|t Boar", PET_OPTION_TENACITY, PET_TENACITY_BOAR);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Crab:30|t Crab", PET_OPTION_TENACITY, PET_TENACITY_CRAB);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Crocolisk:30|t Crocolisk", PET_OPTION_TENACITY, PET_TENACITY_CROCOLISK);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Gorilla:30|t Gorilla", PET_OPTION_TENACITY, PET_TENACITY_GORILLA);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Rhino:30|t Rhino", PET_OPTION_TENACITY, PET_TENACITY_RHINO);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Scorpid:30|t Scorpid", PET_OPTION_TENACITY, PET_TENACITY_SCORPID);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Turtle:30|t Turtle", PET_OPTION_TENACITY, PET_TENACITY_TURTLE);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_WarpStalker:30|t Warp Stalker", PET_OPTION_TENACITY, PET_TENACITY_WARP_STALKER);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_Hunter_Pet_Worm:30|t Worm", PET_OPTION_TENACITY, PET_TENACITY_WORM);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, MALL_MENU_PETS);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             break;
@@ -833,8 +883,10 @@ bool MallMgr::HandleSetupShadowDanceBar(Player* player, Creature* creature)
         player->AddAura(SPELL_SERVERSIDE_SILENCE, player);
         if (!player->HasAura(51713))
             player->AddAura(51713, player);
+
         if (Aura* ShadowDance = player->GetAura(51713, player->GetGUID()))
             ShadowDance->SetDurationAndMaxDuration(-1);
+
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\achievement_reputation_01:30|t I'm Finished", GOSSIP_SENDER_MAIN, MALL_MENU_FINISH_SHADOW_DANCE);
         player->SEND_GOSSIP_MENU(1, creature->GetGUID());
     }
