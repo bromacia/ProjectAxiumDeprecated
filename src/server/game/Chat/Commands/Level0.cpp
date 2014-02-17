@@ -124,7 +124,6 @@ bool ChatHandler::HandleDismountCommand(const char* /*args*/)
     }
 
     m_session->GetPlayer()->Dismount();
-    m_session->GetPlayer()->RemoveAurasByType(SPELL_AURA_MOUNTED);
     return true;
 }
 

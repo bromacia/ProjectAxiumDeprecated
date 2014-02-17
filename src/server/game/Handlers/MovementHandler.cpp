@@ -181,7 +181,7 @@ void WorldSession::HandleMoveWorldportAckOpcode()
 
     // mount allow check
     if (!allowMount)
-        _player->RemoveAurasByType(SPELL_AURA_MOUNTED);
+        _player->Dismount();
 
     // update zone immediately, otherwise leave channel will cause crash in mtmap
     uint32 newzone, newarea;

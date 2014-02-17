@@ -510,7 +510,7 @@ void WorldSession::HandleListStabledPetsOpcode(WorldPacket & recv_data)
 
     // remove mounts this fix bug where getting pet from stable while mounted deletes pet.
     if (GetPlayer()->IsMounted())
-        GetPlayer()->RemoveAurasByType(SPELL_AURA_MOUNTED);
+        GetPlayer()->Dismount();
 
     SendStablePet(npcGUID);
 }

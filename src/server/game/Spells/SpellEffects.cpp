@@ -830,13 +830,13 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                     return;
                 case 25860:                                 // Reindeer Transformation
                 {
-                    if (!m_caster->HasAuraType(SPELL_AURA_MOUNTED))
+                    if (!m_caster->IsMounted())
                         return;
 
                     float flyspeed = m_caster->GetSpeedRate(MOVE_FLIGHT);
                     float speed = m_caster->GetSpeedRate(MOVE_RUN);
 
-                    m_caster->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    m_caster->Dismount();
 
                     //5 different spells used depending on mounted speed and if mount can fly or not
                     if (flyspeed >= 4.1f)
@@ -1008,9 +1008,9 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                 case 49357:                                 // Brewfest Mount Transformation
                     if (m_caster->GetTypeId() != TYPEID_PLAYER)
                         return;
-                    if (!m_caster->HasAuraType(SPELL_AURA_MOUNTED))
+                    if (!m_caster->IsMounted())
                         return;
-                    m_caster->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    m_caster->Dismount();
                     // Ram for Alliance, Kodo for Horde
                     if (m_caster->ToPlayer()->GetTeam() == ALLIANCE)
                     {
@@ -1034,9 +1034,9 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                 case 52845:                                 // Brewfest Mount Transformation (Faction Swap)
                     if (m_caster->GetTypeId() != TYPEID_PLAYER)
                         return;
-                    if (!m_caster->HasAuraType(SPELL_AURA_MOUNTED))
+                    if (!m_caster->IsMounted())
                         return;
-                    m_caster->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    m_caster->Dismount();
                     // Ram for Horde, Kodo for Alliance
                     if (m_caster->ToPlayer()->GetTeam() == HORDE)
                     {
@@ -4705,7 +4705,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         return;
 
                     // Prevent stacking of mounts and client crashes upon dismounting
-                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    unitTarget->Dismount();
 
                     // Triggered spell id dependent on riding skill and zone
                     bool canFly = true;
@@ -4750,7 +4750,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         return;
 
                     // Prevent stacking of mounts and client crashes upon dismounting
-                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    unitTarget->Dismount();
 
                     // Triggered spell id dependent on riding skill and zone
                     bool canFly = true;
@@ -4985,7 +4985,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         return;
 
                     // Prevent stacking of mounts and client crashes upon dismounting
-                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    unitTarget->Dismount();
 
                     // Triggered spell id dependent on riding skill
                     if (uint16 skillval = unitTarget->ToPlayer()->GetSkillValue(SKILL_RIDING))
@@ -5056,7 +5056,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         return;
 
                     // Prevent stacking of mounts and client crashes upon dismounting
-                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    unitTarget->Dismount();
 
                     // Triggered spell id dependent on riding skill
                     if (uint16 skillval = unitTarget->ToPlayer()->GetSkillValue(SKILL_RIDING))
@@ -5085,7 +5085,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         return;
 
                     // Prevent stacking of mounts and client crashes upon dismounting
-                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    unitTarget->Dismount();
                     unitTarget->CastSpell(unitTarget, 66122, true);
                     return;
                 }
@@ -5095,7 +5095,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         return;
 
                     // Prevent stacking of mounts and client crashes upon dismounting
-                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    unitTarget->Dismount();
 
                     // Triggered spell id dependent on riding skill and zone
                     bool canFly = true;
@@ -5141,7 +5141,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         return;
 
                     // Prevent stacking of mounts and client crashes upon dismounting
-                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    unitTarget->Dismount();
 
                     // Triggered spell id dependent on riding skill and zone
                     bool canFly = true;
@@ -5186,7 +5186,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         return;
 
                     // Prevent stacking of mounts and client crashes upon dismounting
-                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    unitTarget->Dismount();
 
                     // Triggered spell id dependent on riding skill and zone
                     bool canFly = true;
@@ -5231,7 +5231,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         return;
 
                     // Prevent stacking of mounts and client crashes upon dismounting
-                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    unitTarget->Dismount();
 
                     // Triggered spell id dependent on riding skill and zone
                     bool canFly = true;
@@ -5281,7 +5281,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         return;
 
                     // Prevent stacking of mounts
-                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                    unitTarget->Dismount();
 
                     // Triggered spell id dependent on riding skill
                     if (uint16 skillval = unitTarget->ToPlayer()->GetSkillValue(SKILL_RIDING))

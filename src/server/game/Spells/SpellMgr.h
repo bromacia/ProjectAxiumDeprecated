@@ -32,14 +32,20 @@ class Unit;
 class ProcEventInfo;
 struct SkillLineAbilityEntry;
 
+enum SpellId
+{
+    SPELL_SERVERSIDE_SILENCE = 2,
+    SPELL_GURUBASHI_BANISH = 16713,
+};
+
 // only used in code
 enum SpellCategories
 {
-    SPELLCATEGORY_HEALTH_MANA_POTIONS = 4,
-    SPELLCATEGORY_DEVOUR_MAGIC        = 12,
-    SPELLCATEGORY_JUDGEMENT           = 1210,               // Judgement (seal trigger)
-    SPELLCATEGORY_FOOD             = 11,
-    SPELLCATEGORY_DRINK            = 59,
+    SPELLCATEGORY_HEALTH_MANA_POTIONS   = 4,
+    SPELLCATEGORY_DEVOUR_MAGIC          = 12,
+    SPELLCATEGORY_JUDGEMENT             = 1210,               // Judgement (seal trigger)
+    SPELLCATEGORY_FOOD                  = 11,
+    SPELLCATEGORY_DRINK                 = 59,
 };
 
 //SpellFamilyFlags
@@ -605,8 +611,6 @@ DiminishingReturnsType GetDiminishingReturnsGroupType(DiminishingGroup group);
 DiminishingLevels GetDiminishingReturnsMaxLevel(DiminishingGroup group);
 int32 GetDiminishingReturnsLimitDuration(DiminishingGroup group, SpellInfo const* spellproto);
 bool IsDiminishingReturnsGroupDurationLimited(DiminishingGroup group);
-
-#define SPELL_SERVERSIDE_SILENCE 2
 
 class SpellMgr
 {

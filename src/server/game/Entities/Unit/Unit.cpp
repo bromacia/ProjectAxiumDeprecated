@@ -345,7 +345,12 @@ void Unit::Update(uint32 p_time)
         {
             // m_combatTime set at aura start and it will be freeze until aura removing
             if (m_combatTime <= p_time)
+            {
                 ClearInCombat();
+
+                if (Player* player = ToPlayer())
+                    player->lastCombatTime = getMSTime();
+            }
             else
                 m_combatTime -= p_time;
         }
@@ -2071,6 +2076,9 @@ void Unit::CalcHealAbsorb(Unit* victim, const SpellInfo* healSpell, uint32 &heal
 void Unit::AttackerStateUpdate(Unit* victim, WeaponAttackType attType, bool extra)
 {
     if (HasUnitState(UNIT_STATE_CANNOT_AUTOATTACK) || HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED))
+        return;
+
+    if (HasAura(SPELL_GURUBASHI_BANISH))
         return;
 
     if (!victim->isAlive())
@@ -9856,8 +9864,6 @@ void Unit::CombatStop(bool includingCast)
     if (GetTypeId() == TYPEID_PLAYER)
         ToPlayer()->SendAttackSwingCancelAttack();     // melee and ranged forced attack cancel
     ClearInCombat();
-    if (Player* player = ToPlayer())
-        player->lastCombatTime = getMSTime();
 }
 
 void Unit::CombatStopWithPets(bool includingCast)
@@ -12851,6 +12857,7 @@ void Unit::Dismount()
         RemoveVehicleKit();
     }
 
+    RemoveAurasByType(SPELL_AURA_MOUNTED);
     RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_NOT_MOUNTED);
 
     // only resummon old pet if the player is already added to a map
@@ -13029,6 +13036,9 @@ bool Unit::isTargetableForAttack(bool checkFakeDeath) const
     if (GetTypeId() == TYPEID_PLAYER && ToPlayer()->HasGameMasterTagOn())
         return false;
 
+    if (HasAura(SPELL_GURUBASHI_BANISH))
+        return false;
+
     return !HasUnitState(UNIT_STATE_UNATTACKABLE) && (!checkFakeDeath || !HasUnitState(UNIT_STATE_DIED));
 }
 
@@ -13081,6 +13091,9 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell, Wo
         || (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) && target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC))
         // check if this is a world trigger cast - GOs are using world triggers to cast their spells, so we need to ignore their immunity flag here, this is a temp workaround, needs removal when go cast is implemented properly
         || (GetEntry() != WORLD_TRIGGER && target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) && HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC)))
+        return false;
+
+    if (target->HasAura(SPELL_GURUBASHI_BANISH))
         return false;
 
     // CvC case - can attack each other only when one of them is hostile
@@ -18118,7 +18131,6 @@ void Unit::_EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* a
         player->StopCastingCharm();
         player->StopCastingBindSight();
         Dismount();
-        RemoveAurasByType(SPELL_AURA_MOUNTED);
 
         // drop flag at invisible in bg
         if (Battleground* bg = player->GetBattleground())

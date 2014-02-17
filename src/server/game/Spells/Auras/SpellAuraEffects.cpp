@@ -2362,7 +2362,7 @@ void AuraEffect::HandleAuraTransform(AuraApplication const* aurApp, uint8 mode, 
 
             //dismount polymorphed target (after patch 2.4.2)
             if (target->IsMounted())
-                target->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                target->Dismount();
         }
     }
     else
@@ -2854,14 +2854,7 @@ void AuraEffect::HandleAuraMounted(AuraApplication const* aurApp, uint8 mode, bo
         target->Mount(displayID, ci->VehicleId, GetMiscValue());
     }
     else
-    {
         target->Dismount();
-        //some mounts like Headless Horseman's Mount or broom stick are skill based spell
-        // need to remove ALL arura related to mounts, this will stop client crash with broom stick
-        // and never endless flying after using Headless Horseman's Mount
-        if (mode & AURA_EFFECT_HANDLE_REAL)
-            target->RemoveAurasByType(SPELL_AURA_MOUNTED);
-    }
 }
 
 void AuraEffect::HandleAuraAllowFlight(AuraApplication const* aurApp, uint8 mode, bool apply) const

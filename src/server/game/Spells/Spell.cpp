@@ -5830,8 +5830,12 @@ SpellCastResult Spell::CheckCast(bool strict)
     }
 
     // Silence (serverside spell)
-    if (m_caster->HasAura(SPELL_SERVERSIDE_SILENCE))
+    if (m_caster->HasAura(SPELL_SERVERSIDE_SILENCE) || m_caster->HasAura(SPELL_GURUBASHI_BANISH))
         return SPELL_FAILED_SILENCED;
+
+    if (Player* player = m_caster->ToPlayer())
+        if (player->IsArenaSpectator())
+            return SPELL_FAILED_SILENCED;
 
     // Spells that cant be used while rooted (Shadowstep, Charge, Intercept, Intervene, Feral Charge Cat/Bear)
     if (m_spellInfo->Id == 36554 || m_spellInfo->Id == 11578 || m_spellInfo->Id == 20252 || m_spellInfo->Id == 3411 || m_spellInfo->Id == 16979 || m_spellInfo->Id == 49376)

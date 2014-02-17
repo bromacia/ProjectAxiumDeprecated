@@ -3405,9 +3405,6 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectBasePoints[2] = 0;
                 spellInfo->EffectImplicitTargetA[2] = TARGET_UNIT_CASTER;
                 break;
-            case 10855: // Lag - Gnomish Lag Machine
-                spellInfo->Attributes &= ~SPELL_ATTR0_NOT_SHAPESHIFT;
-                break;
             case 49206: // Summon Gargoyle
                 spellInfo->Effect[1] = 0;
                 spellInfo->Effect[2] = 0;
@@ -3439,8 +3436,24 @@ void SpellMgr::LoadDbcDataCorrections()
             case 23881: // Bloodthirst
                 spellInfo->EffectImplicitTargetA[1] = 1;
                 break;
-            case 7321: // Chilled
+            case 7321:  // Chilled (Frost Armor)
                 spellInfo->EffectMechanic[0] = 11;
+                break;
+            case SPELL_GURUBASHI_BANISH:
+                spellInfo->SchoolMask = 1;
+                spellInfo->DmgClass = 0;
+                spellInfo->PreventionType = 0;
+                spellInfo->Attributes |= SPELL_ATTR0_NEGATIVE_1;
+                spellInfo->AttributesEx = 0;
+                spellInfo->rangeIndex = 1;
+                spellInfo->DurationIndex = 9; // 30 Seconds
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
+                spellInfo->Effect[1] = SPELL_EFFECT_APPLY_AURA;
+                spellInfo->EffectBasePoints[1] = 1;
+                spellInfo->EffectMiscValue[1] = 127;
+                spellInfo->EffectApplyAuraName[1] = SPELL_AURA_SCHOOL_IMMUNITY;
+                spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
+                break;
             default:
                 break;
         }

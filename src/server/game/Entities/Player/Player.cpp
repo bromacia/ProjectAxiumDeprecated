@@ -20595,7 +20595,7 @@ bool Player::ActivateTaxiPathTo(std::vector<uint32> const& nodes, Creature* npc 
     // cast case or scripted call case
     else
     {
-        RemoveAurasByType(SPELL_AURA_MOUNTED);
+        Dismount();
 
         if (IsInDisallowedMountForm())
             RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT);
@@ -25888,13 +25888,7 @@ bool Player::CanAppearToTarget(Player* target)
         }
         case SEC_VIP:
         {
-            if (lastAppearTime + 10000 > msTime)
-            {
-                SendSysMessage("You can only appear once every 10 seconds.");
-                SendSysMessage("Remaining Time: %u seconds", ((lastAppearTime + 10000) - msTime) / IN_MILLISECONDS);
-                return false;
-            }
-
+            // Zone Checks
             if (InBattleground() || InArena())
             {
                 SendSysMessage("You can't appear while in a battleground or arena.");
@@ -25907,22 +25901,15 @@ bool Player::CanAppearToTarget(Player* target)
                 return false;
             }
 
-            if (isInCombat())
+            if (IsInStranglethornVale())
             {
-                SendSysMessage("You can't appear while in combat.");
+                SendSysMessage("You can't appear while in Stranglethorn Vale.");
                 return false;
             }
 
-            if (lastCombatTime + 10000 > msTime)
+            if (target->IsInStranglethornVale())
             {
-                SendSysMessage("You can only appear 10 seconds after leaving combat.");
-                SendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - msTime) / IN_MILLISECONDS);
-                return false;
-            }
-
-            if (target->HasAuraType(SPELL_AURA_MOD_STEALTH) || target->HasAuraType(SPELL_AURA_MOD_INVISIBILITY))
-            {
-                SendSysMessage("You can't appear to sleathed or invisible players.");
+                SendSysMessage("You can't appear to players in Stranglethorn Vale.");
                 return false;
             }
 
@@ -25938,6 +25925,14 @@ bool Player::CanAppearToTarget(Player* target)
                 return false;
             }
 
+            // Security Checks
+            if (target->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
+            {
+                SendSysMessage("You can't appear to Axium-Gaming staff members.");
+                return false;
+            }
+
+            // State Checks
             if (IsDueling())
             {
                 SendSysMessage("You can't appear while dueling.");
@@ -25950,9 +25945,36 @@ bool Player::CanAppearToTarget(Player* target)
                 return false;
             }
 
-            if (target->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
+            if (isInCombat())
             {
-                SendSysMessage("You can't appear to Axium-Gaming staff members.");
+                SendSysMessage("You can't appear while in combat.");
+                return false;
+            }
+
+            if (target->isInCombat())
+            {
+                SendSysMessage("You can't appear to players who in combat.");
+                return false;
+            }
+
+            if (target->HasAuraType(SPELL_AURA_MOD_STEALTH) || target->HasAuraType(SPELL_AURA_MOD_INVISIBILITY))
+            {
+                SendSysMessage("You can't appear to sleathed or invisible players.");
+                return false;
+            }
+
+            // Time Checks
+            if (lastAppearTime + 10000 > msTime)
+            {
+                SendSysMessage("You can only appear once every 10 seconds.");
+                SendSysMessage("Remaining Time: %u seconds", ((lastAppearTime + 10000) - msTime) / IN_MILLISECONDS);
+                return false;
+            }
+
+            if (lastCombatTime + 10000 > msTime)
+            {
+                SendSysMessage("You can only appear 10 seconds after leaving combat.");
+                SendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - msTime) / IN_MILLISECONDS);
                 return false;
             }
         }
@@ -25975,16 +25997,23 @@ bool Player::CanTeleportTo(const GameTele* tele)
         }
         case SEC_VIP:
         {
-            if (lastTeleportTime + 10000 > msTime)
-            {
-                SendSysMessage("You can only teleport once every 10 seconds.");
-                SendSysMessage("Remaining Time: %u seconds", ((lastTeleportTime + 10000) - msTime) / IN_MILLISECONDS);
-                return false;
-            }
-
+            // Zone Checks
             if (InBattleground() || InArena())
             {
                 SendSysMessage("You can't appear while in a battleground or arena.");
+                return false;
+            }
+
+            if (IsInStranglethornVale())
+            {
+                SendSysMessage("You can't teleport while in Stranglethorn Vale.");
+                return false;
+            }
+
+            // State Checks
+            if (IsDueling())
+            {
+                SendSysMessage("You can't teleport while dueling.");
                 return false;
             }
 
@@ -25994,16 +26023,18 @@ bool Player::CanTeleportTo(const GameTele* tele)
                 return false;
             }
 
-            if (lastCombatTime + 10000 > msTime)
+            // Time Checks
+            if (lastTeleportTime + 10000 > msTime)
             {
-                SendSysMessage("You can only appear 10 seconds after leaving combat.");
-                SendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - msTime / IN_MILLISECONDS));
+                SendSysMessage("You can only teleport once every 10 seconds.");
+                SendSysMessage("Remaining Time: %u seconds", ((lastTeleportTime + 10000) - msTime) / IN_MILLISECONDS);
                 return false;
             }
 
-            if (IsDueling())
+            if (lastCombatTime + 10000 > msTime)
             {
-                SendSysMessage("You can't teleport while dueling.");
+                SendSysMessage("You can only teleport 10 seconds after leaving combat.");
+                SendSysMessage("Remaining Time: %u seconds", ((lastCombatTime + 10000) - msTime) / IN_MILLISECONDS);
                 return false;
             }
         }
@@ -26017,7 +26048,6 @@ void Player::SetArenaSpectatorState(bool apply)
     if (apply)
     {
         m_arenaSpectator = true;
-        AddAura(SPELL_SERVERSIDE_SILENCE, this);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -26033,7 +26063,6 @@ void Player::SetArenaSpectatorState(bool apply)
     else
     {
         m_arenaSpectator = false;
-        RemoveAura(SPELL_SERVERSIDE_SILENCE);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);

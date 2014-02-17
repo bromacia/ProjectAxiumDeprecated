@@ -1760,6 +1760,10 @@ bool WorldObject::CanDetect(WorldObject const* obj, bool ignoreStealth) const
         if (const DynamicObject* dynObj = obj->ToDynamicObject())
             return false;
     }
+    else if (obj->IsInStranglethornVale())
+        if (const Unit* unit = obj->ToUnit())
+            if (unit->HasAura(SPELL_GURUBASHI_BANISH))
+                return false;
 
     if (const Player* pObj = obj->ToPlayer())
         if (pObj->IsArenaSpectator())
