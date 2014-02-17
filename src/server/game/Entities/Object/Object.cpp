@@ -1745,7 +1745,7 @@ bool WorldObject::CanDetect(WorldObject const* obj, bool ignoreStealth) const
             return false;
 
         // Charmed or Owned Units
-        if (const Unit* unit = obj->ToCreature())
+        if (const Unit* unit = obj->ToUnit())
             if (uint64 guid = unit->GetCharmerOrOwnerGUID())
                 if (guid != seer->GetGUID())
                     return false;
