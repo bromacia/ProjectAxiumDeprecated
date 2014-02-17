@@ -1815,6 +1815,92 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         }
     }
 
+    // Spell more powerful overwrite
+    if (!m_spellInfo->_IsPositiveSpell() && m_spellAura)
+    {
+        uint8 effIndex;
+        bool found = false;
+
+        for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+        {
+            if (unit->HasAuraType(AuraType(m_spellInfo->Effects[j].ApplyAuraName)))
+            {
+                found = true;
+                effIndex = j;
+                break;
+            }
+        }
+
+        if (found)
+        {
+            std::list<uint32> deleteQueue;
+
+            Unit::AuraEffectList const& uAuraList = unit->GetAuraEffectsByType(AuraType(m_spellInfo->Effects[effIndex].ApplyAuraName));
+            for (Unit::AuraEffectList::const_iterator itr = uAuraList.begin(); itr != uAuraList.end(); ++itr)
+            {
+                SpellInfo const* auraSpellInfo = (*itr)->GetSpellInfo();
+                if (!auraSpellInfo)
+                    continue;
+
+                // Don't allow the same spell to overwrite it's self (already done later in the core)
+                if (m_spellInfo->Id == auraSpellInfo->Id)
+                    continue;
+
+                // Don't overwrite spells with no mechanic
+                uint32 spellMechanic = MECHANIC_NONE;
+                uint32 auraMechanic = MECHANIC_NONE;
+
+                if (m_spellInfo->Mechanic != MECHANIC_NONE)
+                    spellMechanic = m_spellInfo->Mechanic;
+                else if (m_spellInfo->Effects[effIndex].Mechanic != MECHANIC_NONE)
+                    spellMechanic = m_spellInfo->Effects[effIndex].Mechanic;
+
+                if (auraSpellInfo->Mechanic != MECHANIC_NONE)
+                    auraMechanic = auraSpellInfo->Mechanic;
+                else if (auraSpellInfo->Effects[(*itr)->GetEffIndex()].Mechanic != MECHANIC_NONE)
+                    auraMechanic = auraSpellInfo->Effects[(*itr)->GetEffIndex()].Mechanic;
+
+                // Only allow the overwriting of the same effect mechanic
+                if (spellMechanic != auraMechanic
+                    || spellMechanic == MECHANIC_NONE
+                    || auraMechanic == MECHANIC_NONE)
+                    continue;
+
+                bool isPeriodic = false;
+                for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                {
+                    if ((m_spellAura->GetEffect(i) && m_spellAura->GetEffect(i)->IsPeriodic())
+                        || ((*itr)->GetBase()->GetEffect(i) && (*itr)->GetBase()->GetEffect(i)->IsPeriodic()))
+                        isPeriodic = true;
+                }
+
+                if (isPeriodic)
+                    continue;
+
+                int32 auraEffectBasePoints = (*itr)->GetAmount();
+                int32 spellEffectBasePoints = m_spellAura->GetEffect(effIndex)->GetAmount();
+
+                if (auraEffectBasePoints < 0) // Negitive base points comparison, e.g. slows (we want the lowest number)
+                {
+                    if (spellEffectBasePoints <= auraEffectBasePoints)
+                        deleteQueue.push_back(auraSpellInfo->Id);
+                    else
+                        m_spellAura->Remove();
+                }
+                else // Positive base point comparison, this is the part i'm not exactly sure is correct.
+                {
+                    if (spellEffectBasePoints >= auraEffectBasePoints)
+                        deleteQueue.push_back(auraSpellInfo->Id);
+                    else
+                        m_spellAura->Remove();
+                }
+            }
+
+            for (std::list<uint32>::iterator itr = deleteQueue.begin(); itr != deleteQueue.end(); ++itr)
+                unit->RemoveAura((*itr));
+        }
+    }
+
     for (uint8 effectNumber = 0; effectNumber < MAX_SPELL_EFFECTS; ++effectNumber)
         if (effectMask & (1 << effectNumber))
             HandleEffects(unit, NULL, NULL, effectNumber, SPELL_EFFECT_HANDLE_HIT_TARGET);
@@ -4947,6 +5033,25 @@ SpellCastResult Spell::CheckCast(bool strict)
         return SPELL_FAILED_CUSTOM_ERROR;
     }
 
+    // Spell failed more powerful check
+    if (Unit* target = m_targets.GetUnitTarget())
+    {
+        if (!m_spellInfo->_IsPositiveSpell() && target->HasAura(m_spellInfo->Id))
+        {
+            Aura* targetAura = target->GetAura(m_spellInfo->Id);
+            int32 targetAuraDuration = targetAura->GetDuration();
+
+            int32 drDuration = targetAura->CalcMaxDuration(); // We can use the same aura for calculating max duration since it's the same spell
+            m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, false);
+            m_diminishLevel = target->GetDiminishing(m_diminishGroup);
+            int32 limitduration = GetDiminishingReturnsLimitDuration(m_diminishGroup, m_spellInfo);
+            target->ApplyDiminishingToDuration(m_diminishGroup, drDuration, m_caster, m_diminishLevel, limitduration);
+
+            if (targetAuraDuration > drDuration)
+                return SPELL_FAILED_MORE_POWERFUL;
+        }
+    }
+
     // Check global cooldown
     if (strict && !(_triggeredCastFlags & TRIGGERED_IGNORE_GCD) && HasGlobalCooldown() && m_spellInfo->Id != 15473 && m_spellInfo->Id != 46584)
         return SPELL_FAILED_NOT_READY;
@@ -5042,7 +5147,6 @@ SpellCastResult Spell::CheckCast(bool strict)
             (IsAutoRepeat() || (m_spellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_SEATED) != 0))
             return SPELL_FAILED_MOVING;
     }
-
 
     Vehicle* vehicle = m_caster->GetVehicle();
     if (vehicle && !(_triggeredCastFlags & TRIGGERED_IGNORE_CASTER_MOUNTED_OR_ON_VEHICLE))
