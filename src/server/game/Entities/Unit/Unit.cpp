@@ -14139,24 +14139,22 @@ void Unit::ModSpellCastTime(SpellInfo const* spellProto, int32 & castTime, Spell
         return;
 
     // Custom Cast Times
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+    if ((spellProto->HasEffect(SPELL_EFFECT_ENCHANT_ITEM) ||            // Enchants
+        spellProto->HasEffect(SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC) ||   // Enhancements
+        spellProto->HasEffect(SPELL_EFFECT_APPLY_GLYPH)) ||             // Glyphs
+        HasAura(32727) || HasAura(44521))                               // Arena Preparation & Preparation
     {
-        if ((spellProto->Effects[i].Effect == SPELL_EFFECT_ENCHANT_ITEM || // Enchants
-            spellProto->Effects[i].Effect == SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC || // Enhancements
-            spellProto->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH) || // Glyphs
-            HasAura(32727) || HasAura(44521)) // Arena Preparation & Preparation
+        if (Player* player = ToPlayer())
         {
-            if (Player* player = ToPlayer())
-            {
-                if (Battleground* bg = player->GetBattleground())
-                {
-                    if (bg->GetStartDelayTime() <= 5000) // Full cast time with 5 seconds left until gate opens
-                        continue;
-                }
-            }
+            if (Battleground* bg = player->GetBattleground())
+                if (bg->GetStartDelayTime() <= 5000) // Full cast time with 5 seconds left until gate opens
+                    return;
 
-            castTime = 0;
+            if (player->IsDueling())
+                return;
         }
+
+        castTime = 0;
     }
 }
 
