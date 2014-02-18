@@ -3311,6 +3311,29 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
         return;
     }
 
+    // Spell failed more powerful check for spells with no cast time
+    if (Unit* target = m_targets.GetUnitTarget())
+    {
+        if (!m_spellInfo->CastTimeEntry->CastTime && !m_spellInfo->_IsPositiveSpell() && target->HasAura(m_spellInfo->Id))
+        {
+            Aura* targetAura = target->GetAura(m_spellInfo->Id);
+            int32 targetAuraDuration = targetAura->GetDuration();
+
+            int32 drDuration = targetAura->CalcMaxDuration(); // We can use the same aura for calculating max duration since it's the same spell
+            m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, false);
+            m_diminishLevel = target->GetDiminishing(m_diminishGroup);
+            int32 limitduration = GetDiminishingReturnsLimitDuration(m_diminishGroup, m_spellInfo);
+            target->ApplyDiminishingToDuration(m_diminishGroup, drDuration, m_caster, m_diminishLevel, limitduration);
+
+            if (targetAuraDuration > drDuration)
+            {
+                SendCastResult(SPELL_FAILED_MORE_POWERFUL);
+                finish(false);
+                return;
+            }
+        }
+    }
+
     // Prepare data for triggers
     prepareDataForTriggerSystem(triggeredByAura);
 
@@ -3497,6 +3520,38 @@ void Spell::cast(bool skipCheck)
             finish(false);
             SetExecutedCurrently(false);
             return;
+        }
+
+        // Spell failed more powerful check for spells with cast time
+        if (Unit* target = m_targets.GetUnitTarget())
+        {
+            if (m_spellInfo->CastTimeEntry->CastTime && !m_spellInfo->_IsPositiveSpell() && target->HasAura(m_spellInfo->Id))
+            {
+                Aura* targetAura = target->GetAura(m_spellInfo->Id);
+                int32 targetAuraDuration = targetAura->GetDuration();
+
+                int32 drDuration = targetAura->CalcMaxDuration(); // We can use the same aura for calculating max duration since it's the same spell
+                m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, false);
+                m_diminishLevel = target->GetDiminishing(m_diminishGroup);
+                int32 limitduration = GetDiminishingReturnsLimitDuration(m_diminishGroup, m_spellInfo);
+                target->ApplyDiminishingToDuration(m_diminishGroup, drDuration, m_caster, m_diminishLevel, limitduration);
+
+                if (targetAuraDuration > drDuration)
+                {
+                    SendCastResult(SPELL_FAILED_MORE_POWERFUL);
+                    SendInterrupted(0);
+
+                    if (m_caster->GetTypeId() == TYPEID_PLAYER)
+                    {
+                        m_caster->ToPlayer()->RestoreSpellMods(this);
+                        m_caster->ToPlayer()->SetSpellModTakingSpell(this, false);
+                    }
+
+                    finish(false);
+                    SetExecutedCurrently(false);
+                    return;
+                }
+            }
         }
 
         // additional check after cast bar completes (must not be in CheckCast)
@@ -5031,25 +5086,6 @@ SpellCastResult Spell::CheckCast(bool strict)
     {
         m_customError = SPELL_CUSTOM_ERROR_GM_ONLY;
         return SPELL_FAILED_CUSTOM_ERROR;
-    }
-
-    // Spell failed more powerful check
-    if (Unit* target = m_targets.GetUnitTarget())
-    {
-        if (!m_spellInfo->_IsPositiveSpell() && target->HasAura(m_spellInfo->Id))
-        {
-            Aura* targetAura = target->GetAura(m_spellInfo->Id);
-            int32 targetAuraDuration = targetAura->GetDuration();
-
-            int32 drDuration = targetAura->CalcMaxDuration(); // We can use the same aura for calculating max duration since it's the same spell
-            m_diminishGroup = GetDiminishingReturnsGroupForSpell(m_spellInfo, false);
-            m_diminishLevel = target->GetDiminishing(m_diminishGroup);
-            int32 limitduration = GetDiminishingReturnsLimitDuration(m_diminishGroup, m_spellInfo);
-            target->ApplyDiminishingToDuration(m_diminishGroup, drDuration, m_caster, m_diminishLevel, limitduration);
-
-            if (targetAuraDuration > drDuration)
-                return SPELL_FAILED_MORE_POWERFUL;
-        }
     }
 
     // Check global cooldown
