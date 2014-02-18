@@ -16,15 +16,9 @@ class TeleportNPC : public CreatureScript
         {
             player->PlayerTalkClass->ClearMenus();
 
-            if (!player->IsInMall())
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\achievement_boss_zuramat:30|t Mall", GOSSIP_SENDER_MAIN, TELEPORT_MALL);
-
-            if (!player->IsInDuelingZone())
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\achievement_zone_howlingfjord_03:30|t Dueling Zone", GOSSIP_SENDER_MAIN, TELEPORT_DUEL);
-
-            if (!player->IsInGurubashiArena())
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_armorkit_14:30|t Gurubashi Arena", GOSSIP_SENDER_MAIN, TELEPORT_GURUBASHI);
-
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\achievement_boss_zuramat:30|t Mall", GOSSIP_SENDER_MAIN, TELEPORT_MALL);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\achievement_zone_howlingfjord_03:30|t Dueling Zone", GOSSIP_SENDER_MAIN, TELEPORT_DUEL);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_armorkit_14:30|t Gurubashi Arena", GOSSIP_SENDER_MAIN, TELEPORT_GURUBASHI);
             player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             return true;
         }
