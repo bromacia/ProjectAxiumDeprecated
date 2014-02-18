@@ -6081,17 +6081,6 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (!m_caster->ToPlayer()->IsWithinLOS(fireTotem->GetPositionX(), fireTotem->GetPositionY(), fireTotem->GetPositionZ()))
                 return SPELL_FAILED_LINE_OF_SIGHT;
 
-    // Duel Checks
-    if (m_caster->IsDueling())
-        if (Player* player = m_caster->ToPlayer())
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
-                // Dont allow glyphs to be added while in duels
-                if (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_APPLY_GLYPH)
-                {
-                    player->GetSession()->SendAreaTriggerMessage("You can't do that while dueling");
-                    return SPELL_FAILED_DONT_REPORT;
-                }
-
     // Don't allow Death Grip to be casted while the caster is falling
     if (m_spellInfo->Id == 49576)
         if (Player* player = m_caster->ToPlayer())
