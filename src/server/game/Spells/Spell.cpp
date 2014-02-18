@@ -5994,6 +5994,13 @@ SpellCastResult Spell::CheckCast(bool strict)
                 player->HasUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW))
                 return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
+        // Don't allow flying mounts during duels
+        if (m_spellInfo->HasAura(SPELL_AURA_MOD_INCREASE_FLIGHT_SPEED) ||
+            m_spellInfo->HasAura(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED) ||
+            m_spellInfo->HasAura(SPELL_AURA_FLY))
+            if (player->IsDueling() && !player->HasGameMasterTagOn())
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
         // Pet Checks
         if (Pet* pet = player->GetPet())
         {
