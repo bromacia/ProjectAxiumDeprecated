@@ -5969,13 +5969,73 @@ SpellCastResult Spell::CheckCast(bool strict)
         }
     }
 
+    // Player Checks
+    if (Player* player = m_caster->ToPlayer())
+    {
+        if (player->IsArenaSpectator())
+            return SPELL_FAILED_SILENCED;
+
+        // Don't allow PvP Trinket or Every Man for Himself to be casted
+        // if Will of the Forsaken Cooldown Trigger (WOTF) has been triggerd
+        if (m_spellInfo->Id == 42292 || m_spellInfo->Id == 59752)
+            if (player->HasSpellCooldown(72757))
+                return SPELL_FAILED_NOT_READY;
+
+        // Don't allow Will of the Forsaken to be casted
+        // if Will of the Forsaken Cooldown Trigger has been triggerd
+        if (m_spellInfo->Id == 7744)
+            if (player->HasSpellCooldown(72752))
+                return SPELL_FAILED_NOT_READY;
+
+        // Don't allow Death Grip to be casted while the caster is falling
+        if (m_spellInfo->Id == 49576)
+            if (player->IsFalling() || player->IsJumping() ||
+                player->HasUnitMovementFlag(MOVEMENTFLAG_FALLING) ||
+                player->HasUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW))
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+        // Pet Checks
+        if (Pet* pet = player->GetPet())
+        {
+            // Don't allow health funnel to be casted if the pet isnt within LoS of the owner
+            if (m_spellInfo->AttributesEx2 & SPELL_ATTR2_HEALTH_FUNNEL)
+                if (!player->IsWithinLOSInMap(pet))
+                    return SPELL_FAILED_LINE_OF_SIGHT;
+
+            // Don't allow Master's Call to be cast if the hunter's pet is dead
+            if (m_spellInfo->Id == 53271)
+                if (pet->isDead() || pet->IsCrowdControlled())
+                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+            // Don't allow Heart of the Phoenix to be cast if the hunter's pet is alive
+            if (m_spellInfo->Id == 54114)
+                if (!pet->isDead())
+                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+            // Don't allow Bestial Wrath or Master's call to be casted while the player's pet isnt within LoS of the player
+            if (m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471 || m_spellInfo->Id == 53271)
+                if (!m_caster->ToPlayer()->IsWithinLOS(pet->GetPositionX(), pet->GetPositionY(), pet->GetPositionZ()))
+                    return SPELL_FAILED_LINE_OF_SIGHT;
+        }
+    }
+
+    // Target Checks
+    if (Unit* target = m_targets.GetUnitTarget())
+    {
+        // Don't allow bandage to be casted if the caster or target has Recently Bandaged aura
+        if (m_spellInfo->SpellIconID == 104 && m_spellInfo->Mechanic == MECHANIC_BANDAGE)
+            if (target->HasAura(11196))
+                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+        // Don't allow levitate to be casted if the player is mounted
+        if (m_spellInfo->Id == 1706)
+            if (target->IsMounted())
+                return SPELL_FAILED_NOT_ON_MOUNTED;
+    }
+
     // Silence (serverside spell)
     if (m_caster->HasAura(SPELL_SERVERSIDE_SILENCE) || m_caster->HasAura(SPELL_GURUBASHI_BANISH))
         return SPELL_FAILED_SILENCED;
-
-    if (Player* player = m_caster->ToPlayer())
-        if (player->IsArenaSpectator())
-            return SPELL_FAILED_SILENCED;
 
     // Spells that cant be used while rooted (Shadowstep, Charge, Intercept, Intervene, Feral Charge Cat/Bear)
     if (m_spellInfo->Id == 36554 || m_spellInfo->Id == 11578 || m_spellInfo->Id == 20252 || m_spellInfo->Id == 3411 || m_spellInfo->Id == 16979 || m_spellInfo->Id == 49376)
@@ -5984,109 +6044,35 @@ SpellCastResult Spell::CheckCast(bool strict)
         else if (m_caster->IsCrowdControlled())
             return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
-    // Don't allow health funnel to be casted if the pet isnt within LoS of the owner
-    if (m_spellInfo->AttributesEx2 & SPELL_ATTR2_HEALTH_FUNNEL)
-        if (Player* player = m_caster->ToPlayer())
-            if (Pet* pet = player->GetPet())
-                if (!m_caster->IsWithinLOSInMap(pet))
-                    return SPELL_FAILED_LINE_OF_SIGHT;
-
-    // Don't allow bandage to be casted if the caster or target has Recently Bandaged aura
-    if (m_spellInfo->SpellIconID == 104 && m_spellInfo->Mechanic == MECHANIC_BANDAGE)
-        if (Unit* target = m_targets.GetUnitTarget())
-            if (target->HasAura(11196))
-                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-
     // Don't allow anything to be cast while in Cyclone besides PvP Trinket or Ever Man for Himself
     if (m_spellInfo->Id != 42292 && m_spellInfo->Id != 65547 && m_spellInfo->Id != 59752 &&
         m_spellInfo->Id != 19574 && m_spellInfo->Id != 34471)
-        if (Player* player = m_caster->ToPlayer())
-            if (player->HasAura(33786))
-                return SPELL_FAILED_DONT_REPORT;
-
-    // Don't allow anything to be casted if the target has Zangarmarsh Banish aura
-    if (Player* player = m_caster->ToPlayer())
-        if (player->HasAura(30231))
-            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-
-    // Don't allow any procs from Frostbite if the target is already frozen
-    if (m_spellInfo->Id == 12494)
-        if (Unit* target = m_targets.GetUnitTarget())
-            if (target->HasAuraType(SPELL_AURA_MOD_ROOT))
-                return SPELL_FAILED_DONT_REPORT;
-
-    // Don't allow Master's Call to be cast if the hunter's pet is dead
-    if (m_spellInfo->Id == 53271)
-        if (Unit* pet = m_caster->ToPlayer()->GetPet())
-            if (pet->isDead() || pet->IsCrowdControlled())
-                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-
-    // Don't allow Heart of the Phoenix to be cast if the hunter's pet is alive
-    if (m_spellInfo->Id == 54114)
-        if (Unit* pet = m_caster->ToPlayer()->GetPet())
-            if (!pet->isDead())
-                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-
-    // Don't allow Stealth or Invisibility to be casted while the target is Flared
-    if (m_spellInfo->Id == 1784 || m_spellInfo->Id == 66
-        || (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252)
-        || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 103))
-        if (Player* player = m_caster->ToPlayer())
-            if (player->HasAura(1543))
-                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+        if (m_caster->HasAura(33786))
+            return SPELL_FAILED_DONT_REPORT;
 
     // Don't allow Heroism or Bloodlust to be casted if the caster has Exhaustion or Sated
     if (m_spellInfo->Id == 32182 || m_spellInfo->Id == 2825)
-        if (Player* player = m_caster->ToPlayer())
-            if (player->HasAura(57723) || player->HasAura(57724))
-                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+        if (m_caster->HasAura(57723) || m_caster->HasAura(57724))
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
-    // Don't allow levitate to be casted if the player is mounted
-    if (m_spellInfo->Id == 1706)
-        if (Unit* target = m_targets.GetUnitTarget())
-            if (target->IsMounted())
-                return SPELL_FAILED_NOT_ON_MOUNTED;
-
-    // Don't allow PvP Trinket or Every Man for Himself to be casted
-    // if Will of the Forsaken Cooldown Trigger (WOTF) has been triggerd
-    if (m_spellInfo->Id == 42292 || m_spellInfo->Id == 59752)
-        if (Player* player = m_caster->ToPlayer())
-            if (player->HasSpellCooldown(72757))
-                return SPELL_FAILED_NOT_READY;
-
-    // Don't allow Will of the Forsaken to be casted
-    // if Will of the Forsaken Cooldown Trigger has been triggerd
-    if (m_spellInfo->Id == 7744)
-        if (Player* player = m_caster->ToPlayer())
-            if (player->HasSpellCooldown(72752))
-                return SPELL_FAILED_NOT_READY;
+    // Don't allow Stealth or Invisibility to be casted while the target is Flared
+    if (m_spellInfo->Id == 1784 || m_spellInfo->Id == 66 ||
+        (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 252) ||
+        (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 103))
+        if (m_caster->HasAura(1543))
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
     // Don't allow movement effects to be used while the player is in Arena or Battleground Preparation
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
-        if (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_LEAP || m_spellInfo->Effects[i].Effect == SPELL_EFFECT_CHARGE ||
-            m_spellInfo->Effects[i].Effect == SPELL_EFFECT_TELEPORT_UNITS || m_spellInfo->Effects[i].Effect == SPELL_EFFECT_JUMP_DEST)
-            if (Player* playerCaster = m_caster->ToPlayer())
-                if (playerCaster->HasAura(32727) || playerCaster->HasAura(44521))
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-
-    // Don't allow Bestial Wrath or Master's call to be casted while the player's pet isnt within LoS of the player
-    if (m_spellInfo->Id == 19574 || m_spellInfo->Id == 34471 || m_spellInfo->Id == 53271)
-        if (Pet* pet = m_caster->ToPlayer()->GetPet())
-            if (!m_caster->ToPlayer()->IsWithinLOS(pet->GetPositionX(), pet->GetPositionY(), pet->GetPositionZ()))
-                return SPELL_FAILED_LINE_OF_SIGHT;
+    if (m_spellInfo->HasEffect(SPELL_EFFECT_LEAP) || m_spellInfo->HasEffect(SPELL_EFFECT_CHARGE) ||
+        m_spellInfo->HasEffect(SPELL_EFFECT_TELEPORT_UNITS) || m_spellInfo->HasEffect(SPELL_EFFECT_JUMP_DEST))
+        if (m_caster->HasAura(32727) || m_caster->HasAura(44521))
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
     // Don't allow Fire Nova to be casted while the player's fire totem isnt within LoS of the player
     if (m_spellInfo->SpellFamilyName == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[0] == 0x8000000)
-        if (Creature* fireTotem = m_caster->ToPlayer()->GetMap()->GetCreature(m_caster->ToPlayer()->m_SummonSlot[1])->ToTotem())
+        if (Creature* fireTotem = m_caster->GetMap()->GetCreature(m_caster->ToPlayer()->m_SummonSlot[1])->ToTotem())
             if (!m_caster->ToPlayer()->IsWithinLOS(fireTotem->GetPositionX(), fireTotem->GetPositionY(), fireTotem->GetPositionZ()))
                 return SPELL_FAILED_LINE_OF_SIGHT;
-
-    // Don't allow Death Grip to be casted while the caster is falling
-    if (m_spellInfo->Id == 49576)
-        if (Player* player = m_caster->ToPlayer())
-            if (player->IsFalling() || player->IsJumping() ||
-                player->HasUnitMovementFlag(MOVEMENTFLAG_FALLING) || player->HasUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW))
-                return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
     // Blazing Hippogryph
     if (m_spellInfo->Id == 74856)
