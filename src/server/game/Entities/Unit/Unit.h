@@ -1244,8 +1244,9 @@ class Unit : public WorldObject
         typedef std::list<AuraApplication *> AuraApplicationList;
         typedef std::list<DiminishingReturn> Diminishing;
         typedef std::set<uint32> ComboPointHolderSet;
-
         typedef std::map<uint8, AuraApplication*> VisibleAuraMap;
+        typedef std::map<uint64, uint32> CombatDelayVictims;
+        typedef std::list<uint64> CombatDelayAttackers;
 
         virtual ~Unit();
 
@@ -1582,10 +1583,11 @@ class Unit : public WorldObject
         bool isInCombat()  const { return HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT); }
         void SetInCombatWith(Unit* target);
         void CombatStart(Unit* target, bool initialAggro = true);
-        void SetInCombatState(bool PvP, Unit* target = NULL, bool ignoreDelay = false);
+        void SetInCombatState(bool PvP, Unit* target = NULL, bool delayed = true);
         void ClearInCombat();
         uint32 GetCombatTime() const { return m_combatTime; }
-        uint32 GetCombatDelayTime() const { return m_combatDelayTime; }
+        const CombatDelayVictims& GetCombatDelayVictims() { return combatDelayVictims; }
+        const CombatDelayAttackers& GetCombatDelayAttackers() { return combatDelayAttackers; }
 
         bool HasAuraTypeWithFamilyFlags(AuraType auraType, uint32 familyName, uint32 familyFlags) const;
         bool virtual HasSpell(uint32 /*spellID*/) const { return false; }
@@ -2385,7 +2387,8 @@ class Unit : public WorldObject
 
         uint32 m_state;                                     // Even derived shouldn't modify
         uint32 m_combatTime;
-        uint32 m_combatDelayTime;
+        CombatDelayVictims combatDelayVictims;
+        CombatDelayAttackers combatDelayAttackers;
         uint64 m_sharedCombatTargetGUID;
         uint32 m_lastManaUse;                               // msecs
         TimeTrackerSmall m_movesplineTimer;

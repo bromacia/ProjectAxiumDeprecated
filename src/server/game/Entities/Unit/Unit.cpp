@@ -232,7 +232,6 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
     m_positiveCastTimePrecent = 1.0f;
 
     m_combatTime = 0;
-    m_combatDelayTime = 0;
     m_sharedCombatTargetGUID = 0;
     m_lastManaUse = 0;
 
@@ -356,16 +355,27 @@ void Unit::Update(uint32 p_time)
         }
     }
 
-    if (m_combatDelayTime)
+    for (CombatDelayVictims::iterator itr = combatDelayVictims.begin(); itr != combatDelayVictims.end();)
     {
-        if (m_combatDelayTime <= p_time)
+        if (itr->second)
         {
-            Unit* target = ObjectAccessor::FindUnit(m_sharedCombatTargetGUID);
-            SetInCombatState(true, target, true);
-            m_combatDelayTime = 0;
+            if (Unit* target = ObjectAccessor::FindUnit(itr->first))
+            {
+                if (itr->second <= p_time)
+                {
+                    SetInCombatState(true, target, false);
+                    combatDelayVictims.erase(itr++);
+                    target->combatDelayAttackers.remove(GetGUID());
+                }
+                else
+                {
+                    itr->second -= p_time;
+                    ++itr;
+                }
+            }
+            else
+                combatDelayVictims.erase(itr++);
         }
-        else
-            m_combatDelayTime -= p_time;
     }
 
     // not implemented before 3.0.2
@@ -12931,18 +12941,17 @@ void Unit::CombatStart(Unit* target, bool initialAggro)
     }
 }
 
-void Unit::SetInCombatState(bool PvP, Unit* target, bool ignoreDelay)
+void Unit::SetInCombatState(bool PvP, Unit* target, bool delayed)
 {
     // only alive units can be in combat
     if (!isAlive())
         return;
 
     // Combat handled in Unit::Update
-    if (!ignoreDelay && !m_combatTime && PvP)
+    if (delayed && !m_combatTime && PvP && !combatDelayVictims[target->GetGUID()])
     {
-        if (!m_combatDelayTime)
-            m_combatDelayTime = sWorld->getIntConfig(CONFIG_COMBAT_DELAY);
-
+        combatDelayVictims[target->GetGUID()] = sWorld->getIntConfig(CONFIG_COMBAT_DELAY);
+        target->combatDelayAttackers.push_back(GetGUID());
         return;
     }
 
@@ -12950,7 +12959,7 @@ void Unit::SetInCombatState(bool PvP, Unit* target, bool ignoreDelay)
         m_combatTime = 5000;
 
     if (target)
-        target->SetInCombatState(PvP, NULL, true);
+        target->SetInCombatState(PvP, NULL, false);
 
     if (isInCombat() || HasUnitState(UNIT_STATE_EVADE))
         return;
@@ -12993,9 +13002,16 @@ void Unit::SetInCombatState(bool PvP, Unit* target, bool ignoreDelay)
 void Unit::ClearInCombat()
 {
     m_combatTime = 0;
-    m_combatDelayTime = 0;
     m_sharedCombatTargetGUID = 0;
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
+
+    for (CombatDelayAttackers::iterator itr = combatDelayAttackers.begin(); itr != combatDelayAttackers.end();)
+    {
+        if (Unit* target = ObjectAccessor::FindUnit(*itr))
+            target->combatDelayVictims.erase(target->combatDelayVictims.find(GetGUID()));
+
+        combatDelayAttackers.erase(itr++);
+    }
 
     // Player's state will be cleared in Player::UpdateContestedPvP
     if (Creature* creature = ToCreature())
