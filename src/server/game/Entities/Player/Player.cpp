@@ -21053,7 +21053,7 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
 
     VendorItem const* crItem = NULL;
 
-    if (creature->IsTransmogrifier() || creature->IsMallNPC())
+    if (creature->IsTransmogrifier() || creature->IsMallNPC() || creature->IsVanityRewardsNPC())
         crItem = vItems->GetItemByItemId(item);
     else
         crItem = vItems->GetItemByVendorSlot(vendorslot);

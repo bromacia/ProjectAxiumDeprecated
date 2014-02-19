@@ -2517,7 +2517,7 @@ bool Creature::IsTransmogrifier() const
     return GetScriptName() == "Transmogrifier";
 }
 
-bool Creature::IsClassTrainer() const
+bool Creature::IsVanityRewardsNPC() const
 {
-    return GetScriptName() == "npc_class_trainer";
+    return GetScriptName() == "VanityRewards";
 }

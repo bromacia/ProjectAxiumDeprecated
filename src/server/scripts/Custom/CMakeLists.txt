@@ -19,6 +19,7 @@ set(scripts_STAT_SRCS
   Custom/ReadyMarker.cpp
   Custom/TeleportNPC.cpp
   Custom/PlayerHandbook.cpp
+  Custom/VanityRewardsNPC.cpp
 )
 
 message("  -> Prepared: Custom")

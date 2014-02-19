@@ -463,7 +463,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapCreature
         bool IsVipVendor() const { return GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_VIP_VENDOR; }
         bool IsMallNPC() const;
         bool IsTransmogrifier() const;
-        bool IsClassTrainer() const;
+        bool IsVanityRewardsNPC() const;
         bool canWalk() const { return GetCreatureInfo()->InhabitType & INHABIT_GROUND; }
         virtual bool canSwim() const { return GetCreatureInfo()->InhabitType & INHABIT_WATER; }
         //bool canFly()  const { return GetCreatureInfo()->InhabitType & INHABIT_AIR; }

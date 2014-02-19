@@ -229,6 +229,7 @@ void AddBattlegroundScripts()
     void AddSC_ReadyMarker();
     void AddSC_TeleportNPC();
     void AddSC_PlayerHandbook();
+    void AddSC_VanityRewardsNPC();
 #endif
 
 void AddCustomScripts()
@@ -240,5 +241,6 @@ void AddCustomScripts()
     AddSC_ReadyMarker();
     AddSC_TeleportNPC();
     AddSC_PlayerHandbook();
+    AddSC_VanityRewardsNPC();
 #endif
 }
