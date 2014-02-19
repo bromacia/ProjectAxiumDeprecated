@@ -89,10 +89,10 @@ enum TransmogEnchantId
     TRANSMOG_ENCHANT_NO_VISUAL      = 10000
 };
 
-class Transmogrification : public CreatureScript
+class Transmogrifier : public CreatureScript
 {
     public:
-        Transmogrification();
+        Transmogrifier();
         bool OnGossipHello(Player* player, Creature* creature);
         bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action);
         void ShowIndividualTransmogOptions(Player* player, Creature* creature);

@@ -1,6 +1,6 @@
-#include "MallMgr.h"
+#include "MallInOne.h"
 
-bool MallMgr::OnGossipHello(Player* player, Creature* creature)
+bool MallInOne::OnGossipHello(Player* player, Creature* creature)
 {
     bool IsHunter = player->getClass() == CLASS_HUNTER ? true : false;
 
@@ -39,7 +39,7 @@ bool MallMgr::OnGossipHello(Player* player, Creature* creature)
     return true;
 }
 
-bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+bool MallInOne::OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
 {
     player->PlayerTalkClass->ClearMenus();
 
@@ -182,7 +182,7 @@ bool MallMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, 
     return true;
 }
 
-bool MallMgr::HandleGear(Player* player, Creature* creature, uint32 gearOption)
+bool MallInOne::HandleGear(Player* player, Creature* creature, uint32 gearOption)
 {
     switch (gearOption)
     {
@@ -247,7 +247,7 @@ bool MallMgr::HandleGear(Player* player, Creature* creature, uint32 gearOption)
     return true;
 }
 
-bool MallMgr::SelectArmorType(Player* player, Creature* creature, uint32 sender)
+bool MallInOne::SelectArmorType(Player* player, Creature* creature, uint32 sender)
 {
     if (player->HasSpell(9078))
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_chest_cloth_21:30|t Cloth", sender, GEAR_OPTION_CLOTH);
@@ -266,7 +266,7 @@ bool MallMgr::SelectArmorType(Player* player, Creature* creature, uint32 sender)
     return true;
 }
 
-bool MallMgr::HandleProfessions(Player* player, Creature* creature)
+bool MallInOne::HandleProfessions(Player* player, Creature* creature)
 {
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\trade_alchemy:30|t Alchemy", MALL_MENU_PROFESSIONS, SKILL_ALCHEMY);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\trade_blacksmithing:30|t Blacksmithing", MALL_MENU_PROFESSIONS, SKILL_BLACKSMITHING);
@@ -282,7 +282,7 @@ bool MallMgr::HandleProfessions(Player* player, Creature* creature)
     return true;
 }
 
-bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 enchantOption)
+bool MallInOne::HandleEnchants(Player* player, Creature* creature, uint32 enchantOption)
 {
     switch (enchantOption)
     {
@@ -753,7 +753,7 @@ bool MallMgr::HandleEnchants(Player* player, Creature* creature, uint32 enchantO
     return true;
 }
 
-bool MallMgr::HandleGuild(Player* player, Creature* creature, uint32 guildOption)
+bool MallInOne::HandleGuild(Player* player, Creature* creature, uint32 guildOption)
 {
     switch (guildOption)
     {
@@ -795,14 +795,14 @@ bool MallMgr::HandleGuild(Player* player, Creature* creature, uint32 guildOption
     return true;
 }
 
-bool MallMgr::HandleStable(Player* player, Creature* creature)
+bool MallInOne::HandleStable(Player* player, Creature* creature)
 {
     player->CLOSE_GOSSIP_MENU();
     player->GetSession()->SendStablePet(creature->GetGUID());
     return true;
 }
 
-bool MallMgr::ShowPets(Player* player, Creature* creature, uint32 petOption)
+bool MallInOne::ShowPets(Player* player, Creature* creature, uint32 petOption)
 {
     switch (petOption)
     {
@@ -873,7 +873,7 @@ bool MallMgr::ShowPets(Player* player, Creature* creature, uint32 petOption)
     return true;
 }
 
-bool MallMgr::HandleSetupShadowDanceBar(Player* player, Creature* creature)
+bool MallInOne::HandleSetupShadowDanceBar(Player* player, Creature* creature)
 {
     if (player->HasSpell(51713))
     {
@@ -895,7 +895,7 @@ bool MallMgr::HandleSetupShadowDanceBar(Player* player, Creature* creature)
     return true;
 }
 
-bool MallMgr::HandleFinishShadowDanceBar(Player* player, Creature* creature)
+bool MallInOne::HandleFinishShadowDanceBar(Player* player, Creature* creature)
 {
     player->SetControlled(false, UNIT_STATE_ROOT);
     player->RemoveAura(SPELL_SERVERSIDE_SILENCE);
@@ -904,7 +904,7 @@ bool MallMgr::HandleFinishShadowDanceBar(Player* player, Creature* creature)
     return true;
 }
 
-bool MallMgr::HandleLearnDualSpecialization(Player* player, Creature* creature)
+bool MallInOne::HandleLearnDualSpecialization(Player* player, Creature* creature)
 {
     player->SetSaveTimer(sWorld->getIntConfig(CONFIG_INTERVAL_SAVE));
     player->learnSpell(63644, false);
@@ -915,14 +915,14 @@ bool MallMgr::HandleLearnDualSpecialization(Player* player, Creature* creature)
     return true;
 }
 
-bool MallMgr::HandleResetTalents(Player* player, Creature* creature)
+bool MallInOne::HandleResetTalents(Player* player, Creature* creature)
 {
     player->CLOSE_GOSSIP_MENU();
     player->SendTalentWipeConfirm(creature->GetGUID());
     return true;
 }
 
-bool MallMgr::HandleResetPetTalents(Player* player)
+bool MallInOne::HandleResetPetTalents(Player* player)
 {
     player->CLOSE_GOSSIP_MENU();
 
@@ -938,7 +938,7 @@ bool MallMgr::HandleResetPetTalents(Player* player)
     return true;
 }
 
-bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 invListOption)
+bool MallInOne::ShowInventory(Player* player, Creature* creature, uint32 invListOption)
 {
     player->CLOSE_GOSSIP_MENU();
 
@@ -993,7 +993,7 @@ bool MallMgr::ShowInventory(Player* player, Creature* creature, uint32 invListOp
     return true;
 }
 
-bool MallMgr::EnchantItem(Player* player, Creature* creature, uint16 enchantId, uint8 enchantOption)
+bool MallInOne::EnchantItem(Player* player, Creature* creature, uint16 enchantId, uint8 enchantOption)
 {
     uint8 slot = GetItemSlotByEnchantOption(enchantOption);
     if (slot > EQUIPMENT_SLOT_RANGED)
@@ -1078,7 +1078,7 @@ bool MallMgr::EnchantItem(Player* player, Creature* creature, uint16 enchantId, 
     return true;
 }
 
-bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
+bool MallInOne::LearnSkill(Player* player, Creature* creature, uint16 skill)
 {
     if (player->GetSkillValue(skill) == 450)
     {
@@ -1129,7 +1129,7 @@ bool MallMgr::LearnSkill(Player* player, Creature* creature, uint16 skill)
     return true;
 }
 
-bool MallMgr::CreatePet(Player* player, Creature* creature, uint32 petId)
+bool MallInOne::CreatePet(Player* player, Creature* creature, uint32 petId)
 {
     player->CLOSE_GOSSIP_MENU();
 
@@ -1167,7 +1167,7 @@ bool MallMgr::CreatePet(Player* player, Creature* creature, uint32 petId)
     return true;
 }
 
-bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate, uint32 invListOption)
+bool MallInOne::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate, uint32 invListOption)
 {
     // Don't allow Nibelung to be purchased until the proc is fixed
     if (IsPhraseInString(vItemTemplate->Name1, "Nibelung"))
@@ -1624,7 +1624,7 @@ bool MallMgr::CheckVendorItem(Player* player, const ItemTemplate* vItemTemplate,
     return true;
 }
 
-bool MallMgr::CheckSkill(Player* player, uint16 skill)
+bool MallInOne::CheckSkill(Player* player, uint16 skill)
 {
     uint8 skillCount = 0;
 
@@ -1672,7 +1672,7 @@ bool MallMgr::CheckSkill(Player* player, uint16 skill)
     return true;
 }
 
-bool MallMgr::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate, uint16 enchantId, uint8 slot)
+bool MallInOne::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate, uint16 enchantId, uint8 slot)
 {
     switch (enchantId)
     {
@@ -2251,7 +2251,7 @@ bool MallMgr::CheckEnchantItem(Player* player, const ItemTemplate* pItemTemplate
     return true;
 }
 
-void AddSC_MallMgr()
+void AddSC_MallInOne()
 {
-    new MallMgr();
+    new MallInOne();
 }

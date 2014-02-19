@@ -1,24 +1,24 @@
-#include "TransmogMgr.h"
+#include "Transmogrifier.h"
 
-Transmogrification::Transmogrification() : CreatureScript("Transmogrifier")
+Transmogrifier::Transmogrifier() : CreatureScript("Transmogrifier")
 {
 }
 
-bool Transmogrification::OnGossipHello(Player* player, Creature* creature)
+bool Transmogrifier::OnGossipHello(Player* player, Creature* creature)
 {
     player->SetSelectedTransmogItemSlot(0);
 
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\Inv_helmet_94:30|t Individual", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_SHOW_INDIVIDUAL);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\Inv_weapon_shortblade_54:30|t Enchants", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_SHOW_ENCHANTS);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_Enchant_Disenchant:30|t Remove Item Transmogrifications", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_DualWieldSpecialization:30|t Remove Enchant Transmogrifications", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_SHOW_REMOVE_ENCHANT_TRANSMOG_OPTIONS);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\spell_Shadow_SacrificialShield:30|t Remove All Transmogrifications", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_SELECT_REMOVE_EVERYTHING);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_Enchant_Disenchant:30|t Remove Item Transmogrifiers", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\ability_DualWieldSpecialization:30|t Remove Enchant Transmogrifiers", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_SHOW_REMOVE_ENCHANT_TRANSMOG_OPTIONS);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\spell_Shadow_SacrificialShield:30|t Remove All Transmogrifiers", GOSSIP_SENDER_MAIN, TRANSMOG_ACTION_SELECT_REMOVE_EVERYTHING);
 
     player->SEND_GOSSIP_MENU(1, creature->GetGUID());
     return true;
 }
 
-bool Transmogrification::OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+bool Transmogrifier::OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
 {
     player->PlayerTalkClass->ClearMenus();
 
@@ -63,7 +63,7 @@ bool Transmogrification::OnGossipSelect(Player* player, Creature* creature, uint
     return true;
 }
 
-void Transmogrification::ShowIndividualTransmogOptions(Player* player, Creature* creature)
+void Transmogrifier::ShowIndividualTransmogOptions(Player* player, Creature* creature)
 {
     if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD))
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface\\icons\\inv_misc_desecrated_platehelm:30|t Head", TRANSMOG_ACTION_SHOW_INDIVIDUAL, TRANSMOG_ACTION_SHOW_INDIVIDUAL_HEAD);
@@ -106,7 +106,7 @@ void Transmogrification::ShowIndividualTransmogOptions(Player* player, Creature*
     player->SetSelectedTransmogItemSlot(0);
 }
 
-void Transmogrification::ShowTransmogEnchants(Player* player, Creature* creature)
+void Transmogrifier::ShowTransmogEnchants(Player* player, Creature* creature)
 {
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Mongoose", TRANSMOG_ACTION_SHOW_ENCHANTS, TRANSMOG_ENCHANT_MONGOOSE);
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Executioner", TRANSMOG_ACTION_SHOW_ENCHANTS, TRANSMOG_ENCHANT_EXECUTIONER);
@@ -133,7 +133,7 @@ void Transmogrification::ShowTransmogEnchants(Player* player, Creature* creature
     player->SEND_GOSSIP_MENU(1, creature->GetGUID());
 }
 
-void Transmogrification::ShowRemoveTransmogItemOptions(Player* player, Creature* creature)
+void Transmogrifier::ShowRemoveTransmogItemOptions(Player* player, Creature* creature)
 {
     if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_HEAD))
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Head", TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS, TRANSMOG_ACTION_SELECT_REMOVE_HEAD);
@@ -169,15 +169,15 @@ void Transmogrification::ShowRemoveTransmogItemOptions(Player* player, Creature*
         if (item->GetTemplate()->InventoryType != INVTYPE_RELIC)
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Ranged", TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS, TRANSMOG_ACTION_SELECT_REMOVE_RANGED);
 
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Remove All Armor Transmogrifications", TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS, TRANSMOG_ACTION_SELECT_REMOVE_ALL_ARMOR);
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Remove All Weapon Transmogrifications", TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS, TRANSMOG_ACTION_SELECT_REMOVE_ALL_WEAPON);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Remove All Armor Transmogrifiers", TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS, TRANSMOG_ACTION_SELECT_REMOVE_ALL_ARMOR);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Remove All Weapon Transmogrifiers", TRANSMOG_ACTION_SHOW_REMOVE_ITEM_TRANSMOG_OPTIONS, TRANSMOG_ACTION_SELECT_REMOVE_ALL_WEAPON);
 
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
 
     player->SEND_GOSSIP_MENU(1, creature->GetGUID());
 }
 
-void Transmogrification::ShowRemoveTransmogEnchantOptions(Player* player, Creature* creature)
+void Transmogrifier::ShowRemoveTransmogEnchantOptions(Player* player, Creature* creature)
 {
     if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
         player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Main Hand", TRANSMOG_ACTION_SHOW_REMOVE_ENCHANT_TRANSMOG_OPTIONS, TRANSMOG_ACTION_SELECT_REMOVE_MAINHAND_ENCHANT);
@@ -186,14 +186,14 @@ void Transmogrification::ShowRemoveTransmogEnchantOptions(Player* player, Creatu
         if (item->GetTemplate()->Class == ITEM_CLASS_WEAPON)
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Off Hand", TRANSMOG_ACTION_SHOW_REMOVE_ENCHANT_TRANSMOG_OPTIONS, TRANSMOG_ACTION_SELECT_REMOVE_OFFHAND_ENCHANT);
 
-    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Remove All Enchant Transmogrifications", TRANSMOG_ACTION_SHOW_REMOVE_ENCHANT_TRANSMOG_OPTIONS, TRANSMOG_ACTION_SELECT_REMOVE_ALL_ENCHANT);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Remove All Enchant Transmogrifiers", TRANSMOG_ACTION_SHOW_REMOVE_ENCHANT_TRANSMOG_OPTIONS, TRANSMOG_ACTION_SELECT_REMOVE_ALL_ENCHANT);
 
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Back", GOSSIP_SENDER_MAIN, GOSSIP_SENDER_MAIN);
 
     player->SEND_GOSSIP_MENU(1, creature->GetGUID());
 }
 
-void Transmogrification::SelectIndividualTransmog(Player* player, Creature* creature, uint16 action)
+void Transmogrifier::SelectIndividualTransmog(Player* player, Creature* creature, uint16 action)
 {
     uint8 itemSlot = GetItemSlotByAction(action);
     player->SetSelectedTransmogItemSlot(itemSlot);
@@ -264,7 +264,7 @@ void Transmogrification::SelectIndividualTransmog(Player* player, Creature* crea
     player->GetSession()->SendPacket(&data);
 }
 
-void Transmogrification::TransmogrifyEnchant(Player* player, uint16 action)
+void Transmogrifier::TransmogrifyEnchant(Player* player, uint16 action)
 {
     if (action && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != 0)
     {
@@ -301,7 +301,7 @@ void Transmogrification::TransmogrifyEnchant(Player* player, uint16 action)
     player->CLOSE_GOSSIP_MENU();
 }
 
-void Transmogrification::RemoveItemTransmog(Player* player, uint16 action)
+void Transmogrifier::RemoveItemTransmog(Player* player, uint16 action)
 {
     uint8 itemSlot = GetItemSlotByAction(action);
 
@@ -318,7 +318,7 @@ void Transmogrification::RemoveItemTransmog(Player* player, uint16 action)
     player->CLOSE_GOSSIP_MENU();
 }
 
-void Transmogrification::RemoveEnchantTransmog(Player* player, uint16 action)
+void Transmogrifier::RemoveEnchantTransmog(Player* player, uint16 action)
 {
     uint8 itemSlot = GetItemSlotByAction(action);
 
@@ -336,7 +336,7 @@ void Transmogrification::RemoveEnchantTransmog(Player* player, uint16 action)
     player->CLOSE_GOSSIP_MENU();
 }
 
-void Transmogrification::RemoveAllArmorTransmog(Player* player)
+void Transmogrifier::RemoveAllArmorTransmog(Player* player)
 {
     for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
     {
@@ -364,7 +364,7 @@ void Transmogrification::RemoveAllArmorTransmog(Player* player)
     player->CLOSE_GOSSIP_MENU();
 }
 
-void Transmogrification::RemoveAllWeaponTransmog(Player* player)
+void Transmogrifier::RemoveAllWeaponTransmog(Player* player)
 {
     for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
     {
@@ -387,7 +387,7 @@ void Transmogrification::RemoveAllWeaponTransmog(Player* player)
     player->CLOSE_GOSSIP_MENU();
 }
 
-void Transmogrification::RemoveAllEnchantTransmog(Player* player)
+void Transmogrifier::RemoveAllEnchantTransmog(Player* player)
 {
     for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
     {
@@ -411,7 +411,7 @@ void Transmogrification::RemoveAllEnchantTransmog(Player* player)
     player->CLOSE_GOSSIP_MENU();
 }
 
-void Transmogrification::RemoveAllTransmog(Player* player)
+void Transmogrifier::RemoveAllTransmog(Player* player)
 {
     for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
     {
@@ -455,7 +455,7 @@ void Transmogrification::RemoveAllTransmog(Player* player)
     player->CLOSE_GOSSIP_MENU();
 }
 
-void AddSC_Transmogrification()
+void AddSC_Transmogrifier()
 {
-    new Transmogrification();
+    new Transmogrifier();
 }

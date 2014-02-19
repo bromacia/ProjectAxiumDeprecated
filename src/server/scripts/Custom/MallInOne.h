@@ -251,10 +251,10 @@ enum PetId
     PET_TENACITY_WORM = 26359,
 };
 
-class MallMgr : public CreatureScript
+class MallInOne : public CreatureScript
 {
     public:
-        MallMgr() : CreatureScript("MallNPC") {}
+        MallInOne() : CreatureScript("MallInOne") {}
         bool OnGossipHello(Player* player, Creature* creature);
         bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action);
         bool HandleGear(Player* player, Creature* creature, uint32 gearOption);

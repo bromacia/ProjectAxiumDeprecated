@@ -74,8 +74,8 @@
 #include <cmath>
 #include "AccountMgr.h"
 #include "DuelMgr.h"
-#include "../../../scripts/Custom/MallMgr.h"
-#include "../../../scripts/Custom/TransmogMgr.h"
+#include "../../../scripts/Custom/MallInOne.h"
+#include "../../../scripts/Custom/Transmogrifier.h"
 
 #define ZONE_UPDATE_INTERVAL (1*IN_MILLISECONDS)
 
@@ -21053,7 +21053,7 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
 
     VendorItem const* crItem = NULL;
 
-    if (creature->IsTransmogrifier() || creature->IsMallNPC() || creature->IsVanityRewardsNPC())
+    if (creature->IsTransmogrifier() || creature->IsMallInOne() || creature->IsVanityRewards())
         crItem = vItems->GetItemByItemId(item);
     else
         crItem = vItems->GetItemByVendorSlot(vendorslot);

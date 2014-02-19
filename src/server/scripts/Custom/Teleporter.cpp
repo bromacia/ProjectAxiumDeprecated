@@ -7,10 +7,10 @@ enum TeleportOption
     TELEPORT_GURUBASHI,
 };
 
-class TeleportNPC : public CreatureScript
+class Teleporter : public CreatureScript
 {
     public:
-        TeleportNPC() : CreatureScript("TeleportNPC") {}
+        Teleporter() : CreatureScript("Teleporter") {}
 
         bool OnGossipHello(Player* player, Creature* creature)
         {
@@ -54,7 +54,7 @@ class TeleportNPC : public CreatureScript
         }
 };
 
-void AddSC_TeleportNPC()
+void AddSC_Teleporter()
 {
-    new TeleportNPC();
+    new Teleporter();
 }

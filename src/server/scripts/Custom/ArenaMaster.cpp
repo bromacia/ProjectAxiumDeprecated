@@ -1,10 +1,10 @@
-#include "ArenaMgr.h"
+#include "ArenaMaster.h"
 
-ArenaMgr::ArenaMgr() : CreatureScript("ArenaNPC")
+ArenaMaster::ArenaMaster() : CreatureScript("ArenaMaster")
 {
 }
 
-bool ArenaMgr::OnGossipHello(Player* player, Creature* creature)
+bool ArenaMaster::OnGossipHello(Player* player, Creature* creature)
 {
     CreateArenasMap();
 
@@ -18,7 +18,7 @@ bool ArenaMgr::OnGossipHello(Player* player, Creature* creature)
     return true;
 }
 
-bool ArenaMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+bool ArenaMaster::OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
 {
     player->PlayerTalkClass->ClearMenus();
 
@@ -77,13 +77,13 @@ bool ArenaMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender,
     return true;
 }
 
-bool ArenaMgr::OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code)
+bool ArenaMaster::OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code)
 {
     switch (action) { case ARENA_SPECTATE_MENU_SPECTATE_PLAYER: HandleSpectatePlayer(player, code); break; }
     return true;
 }
 
-void ArenaMgr::HandleCreateTeam(Player* player, Creature* creature)
+void ArenaMaster::HandleCreateTeam(Player* player, Creature* creature)
 {
     player->CLOSE_GOSSIP_MENU();
 
@@ -114,13 +114,13 @@ void ArenaMgr::HandleCreateTeam(Player* player, Creature* creature)
     player->GetSession()->SendPacket(&data);
 }
 
-void ArenaMgr::HandleQueue(Player* player)
+void ArenaMaster::HandleQueue(Player* player)
 {
     player->CLOSE_GOSSIP_MENU();
     player->GetSession()->SendBattlegGroundList(player->GetGUID(), BATTLEGROUND_AA);
 }
 
-void ArenaMgr::HandleShowMatches(Player* player, Creature* creature, uint32 sender, uint32 action)
+void ArenaMaster::HandleShowMatches(Player* player, Creature* creature, uint32 sender, uint32 action)
 {
     ChatHandler handler = ChatHandler(player);
     CreateArenasMap();
@@ -237,7 +237,7 @@ void ArenaMgr::HandleShowMatches(Player* player, Creature* creature, uint32 send
     player->SEND_GOSSIP_MENU(1, creature->GetGUID());
 }
 
-void ArenaMgr::HandleSpectatePlayer(Player* player, const char* cPlayerName)
+void ArenaMaster::HandleSpectatePlayer(Player* player, const char* cPlayerName)
 {
     ChatHandler handler = ChatHandler(player);
     CreateArenasMap();
@@ -277,7 +277,7 @@ void ArenaMgr::HandleSpectatePlayer(Player* player, const char* cPlayerName)
     AddPlayerToArena(player, arenaId);
 }
 
-void ArenaMgr::AddPlayerToArena(Player* player, uint32 action)
+void ArenaMaster::AddPlayerToArena(Player* player, uint32 action)
 {
     ChatHandler handler = ChatHandler(player);
     CreateArenasMap();
@@ -315,7 +315,7 @@ void ArenaMgr::AddPlayerToArena(Player* player, uint32 action)
     arena->HandlePlayerUnderMap(player);
 }
 
-bool ArenaMgr::CheckBattleground(Battleground* bg)
+bool ArenaMaster::CheckBattleground(Battleground* bg)
 {
     if (bg->GetStatus() != STATUS_IN_PROGRESS)
         return false;
@@ -326,7 +326,7 @@ bool ArenaMgr::CheckBattleground(Battleground* bg)
     return true;
 }
 
-void ArenaMgr::CreateArenasMap()
+void ArenaMaster::CreateArenasMap()
 {
     arenasMap.clear();
 
@@ -363,7 +363,7 @@ void ArenaMgr::CreateArenasMap()
             arenasMap[itr->first] = itr->second;
 }
 
-void AddSC_ArenaMgr()
+void AddSC_ArenaMaster()
 {
-    new ArenaMgr();
+    new ArenaMaster();
 }

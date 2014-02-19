@@ -7,10 +7,10 @@ enum VanityRewardOption
     VANITY_REWARD_OPTION_ITEMS,
 };
 
-class VanityRewardsNPC : public CreatureScript
+class VanityRewards : public CreatureScript
 {
     public:
-        VanityRewardsNPC() : CreatureScript("VanityRewards") {}
+        VanityRewards() : CreatureScript("VanityRewards") {}
 
         bool OnGossipHello(Player* player, Creature* creature)
         {
@@ -131,7 +131,7 @@ class VanityRewardsNPC : public CreatureScript
         }
 };
 
-void AddSC_VanityRewardsNPC()
+void AddSC_VanityRewards()
 {
-    new VanityRewardsNPC();
+    new VanityRewards();
 }

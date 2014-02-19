@@ -2507,9 +2507,9 @@ void Creature::SetLevitate(bool enable)
     SendMessageToSet(&data, true);
 }
 
-bool Creature::IsMallNPC() const
+bool Creature::IsMallInOne() const
 {
-    return GetScriptName() == "MallNPC";
+    return GetScriptName() == "MallInOne";
 }
 
 bool Creature::IsTransmogrifier() const
@@ -2517,7 +2517,7 @@ bool Creature::IsTransmogrifier() const
     return GetScriptName() == "Transmogrifier";
 }
 
-bool Creature::IsVanityRewardsNPC() const
+bool Creature::IsVanityRewards() const
 {
     return GetScriptName() == "VanityRewards";
 }

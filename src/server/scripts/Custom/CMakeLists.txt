@@ -10,16 +10,16 @@
 
 set(scripts_STAT_SRCS
   ${scripts_STAT_SRCS}
-  Custom/TransmogMgr.cpp
-  Custom/TransmogMgr.h
-  Custom/MallMgr.cpp
-  Custom/MallMgr.h
-  Custom/ArenaMgr.cpp
-  Custom/ArenaMgr.h
+  Custom/Transmogrifier.cpp
+  Custom/Transmogrifier.h
+  Custom/MallInOne.cpp
+  Custom/MallInOne.h
+  Custom/ArenaMaster.cpp
+  Custom/ArenaMaster.h
   Custom/ReadyMarker.cpp
-  Custom/TeleportNPC.cpp
+  Custom/Teleporter.cpp
   Custom/PlayerHandbook.cpp
-  Custom/VanityRewardsNPC.cpp
+  Custom/VanityRewards.cpp
 )
 
 message("  -> Prepared: Custom")

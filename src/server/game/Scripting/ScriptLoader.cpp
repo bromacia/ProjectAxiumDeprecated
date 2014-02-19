@@ -223,24 +223,24 @@ void AddBattlegroundScripts()
 
 // Custom
 #ifdef SCRIPTS
-    void AddSC_Transmogrification();
-    void AddSC_MallMgr();
-    void AddSC_ArenaMgr();
+    void AddSC_Transmogrifier();
+    void AddSC_MallInOne();
+    void AddSC_ArenaMaster();
     void AddSC_ReadyMarker();
-    void AddSC_TeleportNPC();
+    void AddSC_Teleporter();
     void AddSC_PlayerHandbook();
-    void AddSC_VanityRewardsNPC();
+    void AddSC_VanityRewards();
 #endif
 
 void AddCustomScripts()
 {
 #ifdef SCRIPTS
-    AddSC_Transmogrification();
-    AddSC_MallMgr();
-    AddSC_ArenaMgr();
+    AddSC_Transmogrifier();
+    AddSC_MallInOne();
+    AddSC_ArenaMaster();
     AddSC_ReadyMarker();
-    AddSC_TeleportNPC();
+    AddSC_Teleporter();
     AddSC_PlayerHandbook();
-    AddSC_VanityRewardsNPC();
+    AddSC_VanityRewards();
 #endif
 }

@@ -22,10 +22,10 @@ enum ArenaOptions
 
 #define MAX_RESULTS_PER_PAGE 50
 
-class ArenaMgr : public CreatureScript
+class ArenaMaster : public CreatureScript
 {
     public:
-        ArenaMgr();
+        ArenaMaster();
         bool OnGossipHello(Player* player, Creature* creature);
         bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action);
         bool OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code);
