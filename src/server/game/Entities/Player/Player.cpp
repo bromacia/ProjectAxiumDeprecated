@@ -892,6 +892,9 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
 
     m_isFrozen = false;
 
+    m_weeklyArenaPoints = 0;
+    m_arenaPointsCap = 0;
+
     m_2v2MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
     m_3v3MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
     m_5v5MMR = sWorld->getIntConfig(CONFIG_ARENA_START_MATCHMAKER_RATING);
@@ -1049,9 +1052,7 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
     SetInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, uint32(-1));
 
     SetUInt32Value(PLAYER_BYTES, (createInfo->Skin | (createInfo->Face << 8) | (createInfo->HairStyle << 16) | (createInfo->HairColor << 24)));
-    SetUInt32Value(PLAYER_BYTES_2, (createInfo->FacialHair |
-                                   (0x00 << 8) |
-                                   (0x00 << 16)));
+    SetUInt32Value(PLAYER_BYTES_2, (createInfo->FacialHair | (0x00 << 8) | (0x00 << 16)));
     SetByteValue(PLAYER_BYTES_3, 0, createInfo->Gender);
     SetByteValue(PLAYER_BYTES_3, 3, 0);                     // BattlefieldArenaFaction (0 or 1)
 
@@ -1085,8 +1086,10 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
     InitRunes();
 
     SetUInt32Value(PLAYER_FIELD_COINAGE, sWorld->getIntConfig(CONFIG_START_PLAYER_MONEY));
-    SetHonorPoints(sWorld->getIntConfig(CONFIG_START_HONOR_POINTS));
+
     SetArenaPoints(sWorld->getIntConfig(CONFIG_START_ARENA_POINTS));
+    m_arenaPointsCap = sWorld->getIntConfig(CONFIG_ARENA_POINTS_CAP_MINIMUM_CAP);
+    SetHonorPoints(sWorld->getIntConfig(CONFIG_START_HONOR_POINTS));
 
     // start with every map explored
     if (sWorld->getBoolConfig(CONFIG_START_ALL_EXPLORED))
@@ -16675,12 +16678,12 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     //"position_x, position_y, position_z, map, orientation, taximask, cinematic, totaltime, leveltime, rest_bonus, logout_time, is_logout_resting, resettalents_cost, "
     // 25                 26       27       28       29       30         31           32             33        34    35      36                 37         38
     //"resettalents_time, trans_x, trans_y, trans_z, trans_o, transguid, extra_flags, stable_slots, at_login, zone, online, death_expire_time, taxi_path, instance_mode_mask, "
-    // 39           40                41                 42                    43          44          45              46           47               48              49
-    //"arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk, "
-    // 50      51      52      53      54      55      56      57      58           59         60          61             62              63      64           65
-    //"health, power1, power2, power3, power4, power5, power6, power7, instance_id, speccount, activespec, exploredZones, equipmentCache, ammoId, knownTitles, actionBars, "
-    // 66               67   68
-    //"grantableLevels, vip, isFrozen "
+    // 39               40                41              42                43                44                    45          46          47              48
+    //"weekArenaPoints, totalArenaPoints, arenaPointsCap, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todayKills, yesterdayKills, chosenTitle, "
+    // 49               50              51     52      53      54      55      56      57      58      59      60           61         62          63
+    //"knownCurrencies, watchedFaction, drunk, health, power1, power2, power3, power4, power5, power6, power7, instance_id, speccount, activespec, exploredZones, "
+    // 64              65      66           67          68               69   70
+    //"equipmentCache, ammoId, knownTitles, actionBars, grantableLevels, vip, isFrozen "
     //"FROM characters WHERE guid = '%u'", guid);
     PreparedQueryResult result = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
@@ -16751,8 +16754,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     SetUInt32Value(UNIT_FIELD_LEVEL, fields[6].GetUInt8());
     SetUInt32Value(PLAYER_XP, fields[7].GetUInt32());
 
-    _LoadIntoDataField(fields[61].GetCString(), PLAYER_EXPLORED_ZONES_1, PLAYER_EXPLORED_ZONES_SIZE);
-    _LoadIntoDataField(fields[64].GetCString(), PLAYER_FIELD_KNOWN_TITLES, KNOWN_TITLES_SIZE*2);
+    _LoadIntoDataField(fields[63].GetCString(), PLAYER_EXPLORED_ZONES_1, PLAYER_EXPLORED_ZONES_SIZE);
+    _LoadIntoDataField(fields[66].GetCString(), PLAYER_FIELD_KNOWN_TITLES, KNOWN_TITLES_SIZE*2);
 
     SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, DEFAULT_WORLD_OBJECT_SIZE);
     SetFloatValue(UNIT_FIELD_COMBATREACH, 1.5f);
@@ -16768,16 +16771,16 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     SetUInt32Value(PLAYER_BYTES, fields[9].GetUInt32());
     SetUInt32Value(PLAYER_BYTES_2, fields[10].GetUInt32());
-    SetUInt32Value(PLAYER_BYTES_3, (fields[49].GetUInt16() & 0xFFFE) | fields[5].GetUInt8());
+    SetUInt32Value(PLAYER_BYTES_3, (fields[51].GetUInt16() & 0xFFFE) | fields[5].GetUInt8());
     SetUInt32Value(PLAYER_FLAGS, fields[11].GetUInt32());
-    SetInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, fields[48].GetUInt32());
+    SetInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, fields[50].GetUInt32());
 
-    SetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, fields[47].GetUInt64());
+    SetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, fields[49].GetUInt64());
 
-    SetUInt32Value(PLAYER_AMMO_ID, fields[63].GetUInt32());
+    SetUInt32Value(PLAYER_AMMO_ID, fields[65].GetUInt32());
 
     // set which actionbars the client has active - DO NOT REMOVE EVER AGAIN (can be changed though, if it does change fieldwise)
-    SetByteValue(PLAYER_FIELD_BYTES, 2, fields[65].GetUInt8());
+    SetByteValue(PLAYER_FIELD_BYTES, 2, fields[67].GetUInt8());
 
     InitDisplayIds();
 
@@ -16804,7 +16807,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     uint32 transGUID = uint32(fields[30].GetUInt64());   // field type is uint64 but lowguid is saved
     Relocate(fields[12].GetFloat(), fields[13].GetFloat(), fields[14].GetFloat(), fields[16].GetFloat());
     uint32 mapId = fields[15].GetUInt16();
-    uint32 instanceId = fields[58].GetUInt8();
+    uint32 instanceId = fields[60].GetUInt8();
 
     uint32 dungeonDiff = fields[38].GetUInt32() & 0x0F;
     if (dungeonDiff >= MAX_DUNGEON_DIFFICULTY)
@@ -16825,7 +16828,9 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     _LoadMatchMakerRating();
     _LoadPvPStats();
 
-    SetArenaPoints(fields[39].GetUInt32());
+    m_weeklyArenaPoints = fields[39].GetUInt32();
+    SetArenaPoints(fields[40].GetUInt32());
+    m_arenaPointsCap = fields[41].GetUInt32();
 
     // check arena teams integrity
     for (uint8 arena_slot = 0; arena_slot < MAX_ARENA_SLOT; ++arena_slot)
@@ -16843,12 +16848,12 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
             SetArenaTeamInfoField(arena_slot, ArenaTeamInfoType(j), 0);
     }
 
-    SetHonorPoints(fields[40].GetUInt32());
-    SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, fields[41].GetUInt32());
-    SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, fields[42].GetUInt32());
-    SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, fields[43].GetUInt32());
-    SetUInt16Value(PLAYER_FIELD_KILLS, 0, fields[44].GetUInt16());
-    SetUInt16Value(PLAYER_FIELD_KILLS, 1, fields[45].GetUInt16());
+    SetHonorPoints(fields[42].GetUInt32());
+    SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, fields[43].GetUInt32());
+    SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, fields[44].GetUInt32());
+    SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, fields[45].GetUInt32());
+    SetUInt16Value(PLAYER_FIELD_KILLS, 0, fields[46].GetUInt16());
+    SetUInt16Value(PLAYER_FIELD_KILLS, 1, fields[47].GetUInt16());
 
     _LoadBoundInstances(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADBOUNDINSTANCES));
     _LoadInstanceTimeRestrictions(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADINSTANCELOCKTIMES));
@@ -17170,8 +17175,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     //mails are loaded only when needed ;-) - when player in game click on mailbox.
     //_LoadMail();
 
-    m_specsCount = fields[59].GetUInt8();
-    m_activeSpec = fields[60].GetUInt8();
+    m_specsCount = fields[61].GetUInt8();
+    m_activeSpec = fields[62].GetUInt8();
 
     // sanity check
     if (m_specsCount > MAX_TALENT_SPECS || m_activeSpec > MAX_TALENT_SPEC || m_specsCount < MIN_TALENT_SPECS)
@@ -17219,7 +17224,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     // check PLAYER_CHOSEN_TITLE compatibility with PLAYER_FIELD_KNOWN_TITLES
     // note: PLAYER_FIELD_KNOWN_TITLES updated at quest status loaded
-    uint32 curTitle = fields[46].GetUInt32();
+    uint32 curTitle = fields[48].GetUInt32();
     if (curTitle && !HasTitle(curTitle))
         curTitle = 0;
 
@@ -17242,7 +17247,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     UpdateAllStats();
 
     // restore remembered power/health values (but not more max values)
-    uint32 savedHealth = fields[50].GetUInt32();
+    uint32 savedHealth = fields[52].GetUInt32();
     SetHealth(savedHealth > GetMaxHealth() ? GetMaxHealth() : savedHealth);
     for (uint8 i = 0; i < MAX_POWERS; ++i)
     {
@@ -17291,7 +17296,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     }
 
     // RaF stuff.
-    m_grantableLevels = fields[66].GetUInt32();
+    m_grantableLevels = fields[68].GetUInt32();
 
     if (m_grantableLevels > 0)
         SetByteValue(PLAYER_FIELD_BYTES, 1, 0x01);
@@ -17304,9 +17309,9 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     _LoadTransmogSets();
 
-    m_vip = fields[67].GetBool();
+    m_vip = fields[69].GetBool();
 
-    m_isFrozen = fields[68].GetBool();
+    m_isFrozen = fields[70].GetBool();
 
     m_playerSpec = GetTalentSpec();
 
@@ -18745,7 +18750,9 @@ void Player::SaveToDB(bool create /*=false*/)
         ss << m_taxi.SaveTaxiDestinationsToString();
 
         stmt->setString(index++, ss.str());
+        stmt->setUInt32(index++, m_weeklyArenaPoints);
         stmt->setUInt32(index++, GetArenaPoints());
+        stmt->setUInt32(index++, m_arenaPointsCap);
         stmt->setUInt32(index++, GetHonorPoints());
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION));
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION));
@@ -25717,15 +25724,15 @@ bool Player::CheckExtendedCost2(const ItemTemplate* vItemTemplate)
     ExtendedCost2 extendedCost2 = sObjectMgr->GetExtendedCost2Map()[vItemTemplate->ExtendedCost2];
 
     if (extendedCost2.Required_2v2_Rating)
-        if (sPvPMgr->GetLifetime2v2RatingByGUIDLow(GetGUIDLow()) < extendedCost2.Required_2v2_Rating)
+        if (sPvPMgr->GetLifetime2v2Rating(GetGUID()) < extendedCost2.Required_2v2_Rating)
             return false;
 
     if (extendedCost2.Required_3v3_Rating)
-        if (sPvPMgr->GetLifetime3v3RatingByGUIDLow(GetGUIDLow()) < extendedCost2.Required_3v3_Rating)
+        if (sPvPMgr->GetLifetime3v3Rating(GetGUID()) < extendedCost2.Required_3v3_Rating)
             return false;
 
     if (extendedCost2.Required_5v5_Rating)
-        if (sPvPMgr->GetLifetime5v5RatingByGUIDLow(GetGUIDLow()) < extendedCost2.Required_5v5_Rating)
+        if (sPvPMgr->GetLifetime5v5Rating(GetGUID()) < extendedCost2.Required_5v5_Rating)
             return false;
 
     if (extendedCost2.Required_Title)

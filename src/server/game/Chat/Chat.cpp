@@ -358,7 +358,6 @@ ChatCommand* ChatHandler::getCommandTable()
         { "cometome",         SEC_GAMEMASTER,    false, OldHandler<&ChatHandler::HandleComeToMeCommand>,            "", NULL },
         { "damage",           SEC_GAMEMASTER,    false, OldHandler<&ChatHandler::HandleDamageCommand>,              "", NULL },
         { "combatstop",       SEC_GAMEMASTER,    false, OldHandler<&ChatHandler::HandleCombatStopCommand>,          "", NULL },
-        { "flusharenapoints", SEC_GAMEMASTER,    false, OldHandler<&ChatHandler::HandleFlushArenaPointsCommand>,    "", NULL },
         { "repairitems",      SEC_GAMEMASTER,    true,  OldHandler<&ChatHandler::HandleRepairitemsCommand>,         "", NULL },
         { "waterwalk",        SEC_GAMEMASTER,    false, OldHandler<&ChatHandler::HandleWaterwalkCommand>,           "", NULL },
         { "freeze",           SEC_GAMEMASTER,    false, OldHandler<&ChatHandler::HandleFreezeCommand>,              "", NULL },

@@ -175,8 +175,6 @@ class ArenaTeam
         void OfflineMemberWon(uint64 guid, uint32 againstMatchmakerRating, int32 MatchmakerRatingChange);
         void OfflineMemberLost(uint64 guid, uint32 againstMatchmakerRating, int32 MatchmakerRatingChange = -12);
 
-        void UpdateArenaPointsHelper(std::map<uint32, uint32> & PlayerPoints);
-
         void FinishWeek();
         void FinishGame(int32 mod);
 

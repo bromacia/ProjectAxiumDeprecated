@@ -4412,12 +4412,6 @@ bool ChatHandler::HandleSendMessageCommand(const char* args)
     return true;
 }
 
-bool ChatHandler::HandleFlushArenaPointsCommand(const char* /*args*/)
-{
-    sArenaTeamMgr->DistributeArenaPoints();
-    return true;
-}
-
 bool ChatHandler::HandleChannelSetOwnership(const char* args)
 {
     if (!*args)

@@ -161,21 +161,6 @@ void BattlegroundMgr::Update(uint32 diff)
         else
             m_NextRatingDiscardUpdate -= diff;
     }
-    if (sWorld->getBoolConfig(CONFIG_ARENA_AUTO_DISTRIBUTE_POINTS))
-    {
-        if (m_AutoDistributionTimeChecker < diff)
-        {
-            if (time(NULL) > m_NextAutoDistributionTime)
-            {
-                sArenaTeamMgr->DistributeArenaPoints();
-                m_NextAutoDistributionTime = m_NextAutoDistributionTime + BATTLEGROUND_ARENA_POINT_DISTRIBUTION_DAY * sWorld->getIntConfig(CONFIG_ARENA_AUTO_DISTRIBUTE_INTERVAL_DAYS);
-                sWorld->setWorldState(WS_ARENA_DISTRIBUTION_TIME, uint64(m_NextAutoDistributionTime));
-            }
-            m_AutoDistributionTimeChecker = 600000; // check 10 minutes
-        }
-        else
-            m_AutoDistributionTimeChecker -= diff;
-    }
 }
 
 void BattlegroundMgr::BuildBattlegroundStatusPacket(WorldPacket* data, Battleground* bg, uint8 QueueSlot, uint8 StatusID, uint32 Time1, uint32 Time2, uint8 arenatype, uint8 uiFrame)

@@ -680,12 +680,10 @@ void ArenaTeam::FinishGame(int32 mod)
 
     // Update team's rank, start with rank 1 and increase until no team with more rating was found
     Stats.Rank = 1;
-    ArenaTeamMgr::ArenaTeamContainer::const_iterator i = sArenaTeamMgr->GetArenaTeamMapBegin();
-    for (; i != sArenaTeamMgr->GetArenaTeamMapEnd(); ++i)
-    {
-        if (i->second->GetType() == Type && i->second->GetStats().Rating > Stats.Rating)
+    ArenaTeamMgr::ArenaTeamContainer arenaTeamStore = sArenaTeamMgr->GetArenaTeamStore();
+    for (ArenaTeamMgr::ArenaTeamContainer::const_iterator itr = arenaTeamStore.begin(); itr != arenaTeamStore.end(); ++itr)
+        if (itr->second->GetType() == Type && itr->second->GetStats().Rating > Stats.Rating)
             ++Stats.Rank;
-    }
 }
 
 int32 ArenaTeam::WonAgainst(uint32 Own_MMRating, uint32 Opponent_MMRating, int32& rating_change)
@@ -727,10 +725,34 @@ int32 ArenaTeam::LostAgainst(uint32 Own_MMRating, uint32 Opponent_MMRating, int3
 void ArenaTeam::MemberWon(Player* player, uint32 againstMatchmakerRating, int32 MatchmakerRatingChange)
 {
     // called for each participant after winning a match
-    for (MemberList::iterator itr = Members.begin(); itr !=  Members.end(); ++itr)
+    for (MemberList::iterator itr = Members.begin(); itr != Members.end(); ++itr)
     {
         if (itr->Guid == player->GetGUID())
         {
+            uint32 arenaPointsCap = player->GetArenaPointsCap();
+            if (!arenaPointsCap)
+            {
+                arenaPointsCap = sPvPMgr->CalculateArenaPointsCap(itr->Guid);
+
+                if (arenaPointsCap < sWorld->getIntConfig(CONFIG_ARENA_POINTS_CAP_MINIMUM_CAP))
+                    arenaPointsCap = sWorld->getIntConfig(CONFIG_ARENA_POINTS_CAP_MINIMUM_CAP);
+
+                sPvPMgr->SetArenaPointsCap(itr->Guid, arenaPointsCap);
+            }
+
+            uint32 weeklyArenaPoints = player->GetWeeklyArenaPoints();
+            if (weeklyArenaPoints >= arenaPointsCap)
+            {
+                uint32 arenaPointsGain = (float)((arenaPointsCap / sWorld->getIntConfig(CONFIG_ARENA_POINTS_CAP_REQUIRED_GAMES)) + 0.5f);
+                weeklyArenaPoints += arenaPointsGain;
+
+                if (weeklyArenaPoints > arenaPointsCap)
+                    weeklyArenaPoints = arenaPointsCap;
+
+                sPvPMgr->SetWeeklyArenaPoints(itr->Guid, weeklyArenaPoints);
+                player->SendSysMessage("You have been awarded %u arena points for winning an arena match.", arenaPointsGain);
+            }
+
             // Update personal rating
             int32 mod = GetRatingMod(itr->PersonalRating, againstMatchmakerRating, true);
             itr->ModifyPersonalRating(player, mod, GetType());
@@ -754,7 +776,7 @@ void ArenaTeam::MemberWon(Player* player, uint32 againstMatchmakerRating, int32 
 void ArenaTeam::MemberLost(Player* player, uint32 againstMatchmakerRating, int32 MatchmakerRatingChange)
 {
     // Called for each participant of a match after losing
-    for (MemberList::iterator itr = Members.begin(); itr !=  Members.end(); ++itr)
+    for (MemberList::iterator itr = Members.begin(); itr != Members.end(); ++itr)
     {
         if (itr->Guid == player->GetGUID())
         {
@@ -780,10 +802,33 @@ void ArenaTeam::MemberLost(Player* player, uint32 againstMatchmakerRating, int32
 void ArenaTeam::OfflineMemberWon(uint64 guid, uint32 againstMatchmakerRating, int32 MatchmakerRatingChange)
 {
     // Called for offline player after ending rated arena match!
-    for (MemberList::iterator itr = Members.begin(); itr !=  Members.end(); ++itr)
+    for (MemberList::iterator itr = Members.begin(); itr != Members.end(); ++itr)
     {
         if (itr->Guid == guid)
         {
+            uint32 arenaPointsCap = sPvPMgr->GetArenaPointsCap(itr->Guid);
+            if (!arenaPointsCap)
+            {
+                arenaPointsCap = sPvPMgr->CalculateArenaPointsCap(itr->Guid);
+
+                if (arenaPointsCap < sWorld->getIntConfig(CONFIG_ARENA_POINTS_CAP_MINIMUM_CAP))
+                    arenaPointsCap = sWorld->getIntConfig(CONFIG_ARENA_POINTS_CAP_MINIMUM_CAP);
+
+                sPvPMgr->SetArenaPointsCap(itr->Guid, arenaPointsCap);
+            }
+
+            uint32 weeklyArenaPoints = sPvPMgr->GetWeeklyArenaPoints(itr->Guid);
+            if (weeklyArenaPoints >= arenaPointsCap)
+            {
+                uint32 arenaPointsGain = (float)((arenaPointsCap / sWorld->getIntConfig(CONFIG_ARENA_POINTS_CAP_REQUIRED_GAMES)) + 0.5f);
+                weeklyArenaPoints += arenaPointsGain;
+
+                if (weeklyArenaPoints > arenaPointsCap)
+                    weeklyArenaPoints = arenaPointsCap;
+
+                sPvPMgr->SetWeeklyArenaPoints(itr->Guid, weeklyArenaPoints);
+            }
+
             // Update personal rating
             int32 mod = GetRatingMod(itr->PersonalRating, againstMatchmakerRating, true);
             itr->ModifyPersonalRating(NULL, mod, GetType());
@@ -804,7 +849,7 @@ void ArenaTeam::OfflineMemberWon(uint64 guid, uint32 againstMatchmakerRating, in
 void ArenaTeam::OfflineMemberLost(uint64 guid, uint32 againstMatchmakerRating, int32 MatchmakerRatingChange)
 {
     // Called for offline player after ending rated arena match!
-    for (MemberList::iterator itr = Members.begin(); itr !=  Members.end(); ++itr)
+    for (MemberList::iterator itr = Members.begin(); itr != Members.end(); ++itr)
     {
         if (itr->Guid == guid)
         {
@@ -820,36 +865,6 @@ void ArenaTeam::OfflineMemberLost(uint64 guid, uint32 againstMatchmakerRating, i
             itr->SeasonGames += 1;
             return;
         }
-    }
-}
-
-void ArenaTeam::UpdateArenaPointsHelper(std::map<uint32, uint32>& playerPoints)
-{
-    // Called after a match has ended and the stats are already modified
-    // Helper function for arena point distribution (this way, when distributing, no actual calculation is required, just a few comparisons)
-    // 10 played games per week is a minimum
-    if (Stats.WeekGames < 10)
-        return;
-
-    // To get points, a player has to participate in at least 30% of the matches
-    uint32 requiredGames = (uint32)ceil(Stats.WeekGames * 0.3f);
-
-    for (MemberList::const_iterator itr = Members.begin(); itr !=  Members.end(); ++itr)
-    {
-        // The player participated in enough games, update his points
-        uint32 pointsToAdd = 0;
-        if (itr->WeekGames >= requiredGames)
-            pointsToAdd = GetPoints(itr->PersonalRating);
-
-        std::map<uint32, uint32>::iterator plr_itr = playerPoints.find(GUID_LOPART(itr->Guid));
-        if (plr_itr != playerPoints.end())
-        {
-            // Check if there is already more points
-            if (plr_itr->second < pointsToAdd)
-                playerPoints[GUID_LOPART(itr->Guid)] = pointsToAdd;
-        }
-        else
-            playerPoints[GUID_LOPART(itr->Guid)] = pointsToAdd;
     }
 }
 
@@ -892,44 +907,44 @@ void ArenaTeam::SaveToDB()
         {
             case 2: // 2v2
             {
-                sPvPMgr->Set2v2MMRByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
+                sPvPMgr->Set2v2MMR(itr->Guid, itr->MatchMakerRating);
                     
-                if (itr->PersonalRating > sPvPMgr->GetLifetime2v2RatingByGUIDLow(GUID_LOPART(itr->Guid)))
-                    sPvPMgr->SetLifetime2v2RatingByGUIDLow(GUID_LOPART(itr->Guid), itr->PersonalRating);
+                if (itr->PersonalRating > sPvPMgr->GetLifetime2v2Rating(itr->Guid))
+                    sPvPMgr->SetLifetime2v2Rating(itr->Guid, itr->PersonalRating);
 
-                if (itr->MatchMakerRating > sPvPMgr->GetLifetime2v2RatingByGUIDLow(GUID_LOPART(itr->Guid)))
-                    sPvPMgr->SetLifetime2v2RatingByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
+                if (itr->MatchMakerRating > sPvPMgr->GetLifetime2v2Rating(itr->Guid))
+                    sPvPMgr->SetLifetime2v2Rating(itr->Guid, itr->MatchMakerRating);
 
-                sPvPMgr->SetLifetime2v2WinsByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime2v2WinsByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonWins);
-                sPvPMgr->SetLifetime2v2GamesByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime2v2GamesByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonGames);
+                sPvPMgr->SetLifetime2v2Wins(itr->Guid, sPvPMgr->GetLifetime2v2Wins(itr->Guid) + itr->SeasonWins);
+                sPvPMgr->SetLifetime2v2Games(itr->Guid, sPvPMgr->GetLifetime2v2Games(itr->Guid) + itr->SeasonGames);
                 break;
             }
             case 3: // 3v3
             {
-                sPvPMgr->Set3v3MMRByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
+                sPvPMgr->Set3v3MMR(itr->Guid, itr->MatchMakerRating);
                     
-                if (itr->PersonalRating > sPvPMgr->GetLifetime3v3RatingByGUIDLow(GUID_LOPART(itr->Guid)))
-                    sPvPMgr->SetLifetime3v3RatingByGUIDLow(GUID_LOPART(itr->Guid), itr->PersonalRating);
+                if (itr->PersonalRating > sPvPMgr->GetLifetime3v3Rating(itr->Guid))
+                    sPvPMgr->SetLifetime3v3Rating(itr->Guid, itr->PersonalRating);
 
-                if (itr->MatchMakerRating > sPvPMgr->GetLifetime3v3RatingByGUIDLow(GUID_LOPART(itr->Guid)))
-                    sPvPMgr->SetLifetime3v3RatingByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
+                if (itr->MatchMakerRating > sPvPMgr->GetLifetime3v3Rating(itr->Guid))
+                    sPvPMgr->SetLifetime3v3Rating(itr->Guid, itr->MatchMakerRating);
 
-                sPvPMgr->SetLifetime3v3WinsByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime3v3WinsByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonWins);
-                sPvPMgr->SetLifetime3v3GamesByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime3v3GamesByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonGames);
+                sPvPMgr->SetLifetime3v3Wins(itr->Guid, sPvPMgr->GetLifetime3v3Wins(itr->Guid) + itr->SeasonWins);
+                sPvPMgr->SetLifetime3v3Games(itr->Guid, sPvPMgr->GetLifetime3v3Games(itr->Guid) + itr->SeasonGames);
                 break;
             }
             case 5: // 5v5
             {
-                sPvPMgr->Set5v5MMRByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
+                sPvPMgr->Set5v5MMR(itr->Guid, itr->MatchMakerRating);
                     
-                if (itr->PersonalRating > sPvPMgr->GetLifetime5v5RatingByGUIDLow(GUID_LOPART(itr->Guid)))
-                    sPvPMgr->SetLifetime5v5RatingByGUIDLow(GUID_LOPART(itr->Guid), itr->PersonalRating);
+                if (itr->PersonalRating > sPvPMgr->GetLifetime5v5Rating(itr->Guid))
+                    sPvPMgr->SetLifetime5v5Rating(itr->Guid, itr->PersonalRating);
 
-                if (itr->MatchMakerRating > sPvPMgr->GetLifetime5v5RatingByGUIDLow(GUID_LOPART(itr->Guid)))
-                    sPvPMgr->SetLifetime5v5RatingByGUIDLow(GUID_LOPART(itr->Guid), itr->MatchMakerRating);
+                if (itr->MatchMakerRating > sPvPMgr->GetLifetime5v5Rating(itr->Guid))
+                    sPvPMgr->SetLifetime5v5Rating(itr->Guid, itr->MatchMakerRating);
 
-                sPvPMgr->SetLifetime5v5WinsByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime5v5WinsByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonWins);
-                sPvPMgr->SetLifetime5v5GamesByGUIDLow(GUID_LOPART(itr->Guid), sPvPMgr->GetLifetime5v5GamesByGUIDLow(GUID_LOPART(itr->Guid)) + itr->SeasonGames);
+                sPvPMgr->SetLifetime5v5Wins(itr->Guid, sPvPMgr->GetLifetime5v5Wins(itr->Guid) + itr->SeasonWins);
+                sPvPMgr->SetLifetime5v5Games(itr->Guid, sPvPMgr->GetLifetime5v5Games(itr->Guid) + itr->SeasonGames);
                 break;
             }
         }

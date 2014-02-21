@@ -38,6 +38,7 @@ void AddSC_SmartSCripts();
 //Commands
 void AddSC_account_commandscript();
 void AddSC_achievement_commandscript();
+void AddSC_arena_commandscript();
 void AddSC_challenge_commandscript();
 void AddSC_debug_commandscript();
 void AddSC_event_commandscript();
@@ -133,6 +134,7 @@ void AddCommandScripts()
 {
     AddSC_account_commandscript();
     AddSC_achievement_commandscript();
+    AddSC_arena_commandscript();
     AddSC_challenge_commandscript();
     AddSC_debug_commandscript();
     AddSC_event_commandscript();

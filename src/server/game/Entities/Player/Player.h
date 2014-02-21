@@ -2124,6 +2124,10 @@ class Player : public Unit, public GridObject<Player>
         uint32 GetMaxPersonalArenaRatingRequirement(uint32 minarenaslot) const;
         void SetHonorPoints(uint32 value);
         void SetArenaPoints(uint32 value);
+        uint32 GetWeeklyArenaPoints() const { return m_weeklyArenaPoints; }
+        void SetWeeklyArenaPoints(uint32 value) { m_weeklyArenaPoints = value; }
+        uint32 GetArenaPointsCap() const { return m_arenaPointsCap; }
+        void SetArenaPointsCap(uint32 value) { m_arenaPointsCap = value; }
 
         //End of PvP System
 
@@ -3078,6 +3082,9 @@ class Player : public Unit, public GridObject<Player>
         bool m_vip;
 
         bool m_isFrozen;
+
+        uint32 m_weeklyArenaPoints;
+        uint32 m_arenaPointsCap;
 
         uint16 m_2v2MMR;
         uint16 m_3v3MMR;

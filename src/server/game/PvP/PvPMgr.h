@@ -46,39 +46,46 @@ class PvPMgr
         ~PvPMgr() {}
 
     public:
-        uint16 Get2v2MMRByGUIDLow(uint32 GUIDLow) const;
-        void Set2v2MMRByGUIDLow(uint32 GUIDLow, uint16 mmr);
-        uint16 Get3v3MMRByGUIDLow(uint32 GUIDLow) const;
-        void Set3v3MMRByGUIDLow(uint32 GUIDLow, uint16 mmr);
-        uint16 Get5v5MMRByGUIDLow(uint32 GUIDLow) const;
-        void Set5v5MMRByGUIDLow(uint32 GUIDLow, uint16 mmr);
+        uint32 CalculateArenaPointsCap(uint64 guid);
 
-        uint16 GetLifetime2v2RatingByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetime2v2RatingByGUIDLow(uint32 GUIDLow, uint16 rating);
-        uint16 GetLifetime2v2MMRByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetime2v2MMRByGUIDLow(uint32 GUIDLow, uint16 mmr);
-        uint16 GetLifetime2v2WinsByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetime2v2WinsByGUIDLow(uint32 GUIDLow, uint16 wins);
-        uint16 GetLifetime2v2GamesByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetime2v2GamesByGUIDLow(uint32 GUIDLow, uint16 games);
+        uint32 GetWeeklyArenaPoints(uint64 guid) const;
+        void SetWeeklyArenaPoints(uint64, uint32 arenaPoints);
+        uint32 GetArenaPointsCap(uint64 guid) const;
+        void SetArenaPointsCap(uint64, uint32 arenaPointsCap);
 
-        uint16 GetLifetime3v3RatingByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetime3v3RatingByGUIDLow(uint32 GUIDLow, uint16 rating);
-        uint16 GetLifetime3v3MMRByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetime3v3MMRByGUIDLow(uint32 GUIDLow, uint16 mmr);
-        uint16 GetLifetime3v3WinsByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetime3v3WinsByGUIDLow(uint32 GUIDLow, uint16 wins);
-        uint16 GetLifetime3v3GamesByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetime3v3GamesByGUIDLow(uint32 GUIDLow, uint16 games);
+        uint16 Get2v2MMR(uint64 guid) const;
+        void Set2v2MMR(uint64 guid, uint16 mmr);
+        uint16 Get3v3MMR(uint64 guid) const;
+        void Set3v3MMR(uint64 guid, uint16 mmr);
+        uint16 Get5v5MMR(uint64 guid) const;
+        void Set5v5MMR(uint64 guid, uint16 mmr);
 
-        uint16 GetLifetime5v5RatingByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetime5v5RatingByGUIDLow(uint32 GUIDLow, uint16 rating);
-        uint16 GetLifetime5v5MMRByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetime5v5MMRByGUIDLow(uint32 GUIDLow, uint16 mmr);
-        uint16 GetLifetime5v5WinsByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetime5v5WinsByGUIDLow(uint32 GUIDLow, uint16 wins);
-        uint16 GetLifetime5v5GamesByGUIDLow(uint32 GUIDLow) const;
-        void SetLifetime5v5GamesByGUIDLow(uint32 GUIDLow, uint16 games);
+        uint16 GetLifetime2v2Rating(uint64 guid) const;
+        void SetLifetime2v2Rating(uint64 guid, uint16 rating);
+        uint16 GetLifetime2v2MMR(uint64 guid) const;
+        void SetLifetime2v2MMR(uint64 guid, uint16 mmr);
+        uint16 GetLifetime2v2Wins(uint64 guid) const;
+        void SetLifetime2v2Wins(uint64 guid, uint16 wins);
+        uint16 GetLifetime2v2Games(uint64 guid) const;
+        void SetLifetime2v2Games(uint64 guid, uint16 games);
+
+        uint16 GetLifetime3v3Rating(uint64 guid) const;
+        void SetLifetime3v3Rating(uint64 guid, uint16 rating);
+        uint16 GetLifetime3v3MMR(uint64 guid) const;
+        void SetLifetime3v3MMR(uint64 guid, uint16 mmr);
+        uint16 GetLifetime3v3Wins(uint64 guid) const;
+        void SetLifetime3v3Wins(uint64 guid, uint16 wins);
+        uint16 GetLifetime3v3Games(uint64 guid) const;
+        void SetLifetime3v3Games(uint64 guid, uint16 games);
+
+        uint16 GetLifetime5v5Rating(uint64 guid) const;
+        void SetLifetime5v5Rating(uint64 guid, uint16 rating);
+        uint16 GetLifetime5v5MMR(uint64 guid) const;
+        void SetLifetime5v5MMR(uint64 guid, uint16 mmr);
+        uint16 GetLifetime5v5Wins(uint64 guid) const;
+        void SetLifetime5v5Wins(uint64 guid, uint16 wins);
+        uint16 GetLifetime5v5Games(uint64 guid) const;
+        void SetLifetime5v5Games(uint64 guid, uint16 games);
 };
 
 #define sPvPMgr ACE_Singleton<PvPMgr, ACE_Null_Mutex>::instance()
