@@ -26007,7 +26007,7 @@ bool Player::CanTeleportTo(const GameTele* tele)
             // Zone Checks
             if (InBattleground() || InArena())
             {
-                SendSysMessage("You can't appear while in a battleground or arena.");
+                SendSysMessage("You can't teleport while in a battleground or arena.");
                 return false;
             }
 
@@ -26026,7 +26026,7 @@ bool Player::CanTeleportTo(const GameTele* tele)
 
             if (isInCombat())
             {
-                SendSysMessage("You can't appear while in combat.");
+                SendSysMessage("You can't teleport while in combat.");
                 return false;
             }
 
