@@ -13005,10 +13005,15 @@ void Unit::ClearInCombat()
     m_sharedCombatTargetGUID = 0;
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
 
+    combatDelayVictims.clear();
     for (CombatDelayAttackers::iterator itr = combatDelayAttackers.begin(); itr != combatDelayAttackers.end();)
     {
         if (Unit* target = ObjectAccessor::FindUnit(*itr))
-            target->combatDelayVictims.erase(target->combatDelayVictims.find(GetGUID()));
+        {
+            CombatDelayVictims::iterator itr2 = target->combatDelayVictims.find(GetGUID());
+            if (itr2 != target->combatDelayVictims.end())
+                target->combatDelayVictims.erase(itr2);
+        }
 
         combatDelayAttackers.erase(itr++);
     }
