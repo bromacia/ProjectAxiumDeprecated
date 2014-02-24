@@ -699,7 +699,7 @@ void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement) 
         sWorld->SendGlobalMessage(&data);
     }
     // if player is in world he can tell his friends about new achievement
-    else if (GetPlayer()->IsInWorld())
+    else if (GetPlayer()->IsInWorld() && !GetPlayer()->IsInMall())
     {
         CellCoord p = Trinity::ComputeCellCoord(GetPlayer()->GetPositionX(), GetPlayer()->GetPositionY());
 
@@ -718,7 +718,11 @@ void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement) 
     data << uint32(achievement->ID);
     data << uint32(secsToTimeBitFields(time(NULL)));
     data << uint32(0);
-    GetPlayer()->SendMessageToSetInRange(&data, sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_SAY), true);
+
+    if (GetPlayer()->IsInMall())
+        GetPlayer()->GetSession()->SendPacket(&data);
+    else
+        GetPlayer()->SendMessageToSetInRange(&data, sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_SAY), true);
 }
 
 void AchievementMgr::SendCriteriaUpdate(AchievementCriteriaEntry const* entry, CriteriaProgress const* progress, uint32 timeElapsed, bool timedCompleted) const
