@@ -548,9 +548,7 @@ void WorldSession::HandleSellItemOpcode(WorldPacket & recv_data)
 
         // special case at auto sell (sell all)
         if (count == 0)
-        {
             count = pItem->GetCount();
-        }
         else
         {
             // prevent sell more items that exist in stack (possible only not from client)
@@ -564,6 +562,12 @@ void WorldSession::HandleSellItemOpcode(WorldPacket & recv_data)
         ItemTemplate const* pProto = pItem->GetTemplate();
         if (pProto)
         {
+            if (IsPhraseInString(pProto->Name1, "Player Handbook"))
+            {
+                _player->SendSellError(SELL_ERR_UNK, creature, itemguid, 0);
+                return;
+            }
+
             if (count < pItem->GetCount())               // need split items
             {
                 Item* pNewItem = pItem->CloneItem(count, _player);
