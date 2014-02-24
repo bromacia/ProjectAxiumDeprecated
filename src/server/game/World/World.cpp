@@ -1337,7 +1337,7 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_REQUIRED_3V3_CHARTER_SIGNATURES] = ConfigMgr::GetIntDefault("ArenaCharter.3v3RequiredSignatures", 2);
     m_int_configs[CONFIG_REQUIRED_5V5_CHARTER_SIGNATURES] = ConfigMgr::GetIntDefault("ArenaCharter.5v5RequiredSignatures", 4);
 
-    m_int_configs[CONFIG_ARENA_POINTS_CAP_MINIMUM_CAP] = ConfigMgr::GetIntDefault("ArenaPointsCap.MinimumCap", 4000);
+    m_int_configs[CONFIG_ARENA_POINTS_CAP_MINIMUM_CAP] = ConfigMgr::GetIntDefault("ArenaPointsCap.MinimumCap", 2000);
     m_int_configs[CONFIG_ARENA_POINTS_CAP_REQUIRED_GAMES] = ConfigMgr::GetIntDefault("ArenaPointsCap.RequiredGames", 100);
 
     sScriptMgr->OnConfigLoad(reload);
