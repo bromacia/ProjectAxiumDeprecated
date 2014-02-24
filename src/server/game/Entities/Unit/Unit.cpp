@@ -12947,55 +12947,63 @@ void Unit::SetInCombatState(bool PvP, Unit* target, bool delayed)
     if (!isAlive())
         return;
 
+    if (!target)
+        return;
+
     // Combat handled in Unit::Update
-    if (delayed && !m_combatTime && PvP && !combatDelayVictims[target->GetGUID()])
+    if (delayed)
     {
-        combatDelayVictims[target->GetGUID()] = sWorld->getIntConfig(CONFIG_COMBAT_DELAY);
-        target->combatDelayAttackers.push_back(GetGUID());
-        return;
+        if (!m_combatTime && PvP && !combatDelayVictims[target->GetGUID()])
+        {
+            combatDelayVictims[target->GetGUID()] = sWorld->getIntConfig(CONFIG_COMBAT_DELAY);
+            target->combatDelayAttackers.push_back(GetGUID());
+            return;
+        }
     }
-
-    if (PvP)
-        m_combatTime = 5000;
-
-    if (target)
-        target->SetInCombatState(PvP, NULL, false);
-
-    if (isInCombat() || HasUnitState(UNIT_STATE_EVADE))
-        return;
-
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
-
-    if (IsSitState())
-        SetStandState(UNIT_STAND_STATE_STAND);
-
-    if (Creature* creature = ToCreature())
+    else
     {
-        // Set home position at place of engaging combat for escorted creatures
-        if ((IsAIEnabled && creature->AI()->IsEscorted()) ||
-            GetMotionMaster()->GetCurrentMovementGeneratorType() == WAYPOINT_MOTION_TYPE ||
-            GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
-            creature->SetHomePosition(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+        if (PvP)
+            m_combatTime = 5000;
 
         if (target)
+            target->SetInCombatState(PvP, NULL, false);
+
+        if (isInCombat() || HasUnitState(UNIT_STATE_EVADE))
+            return;
+
+        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
+
+        if (IsSitState())
+            SetStandState(UNIT_STAND_STATE_STAND);
+
+        if (Creature* creature = ToCreature())
         {
-            if (IsAIEnabled)
+            // Set home position at place of engaging combat for escorted creatures
+            if ((IsAIEnabled && creature->AI()->IsEscorted()) ||
+                GetMotionMaster()->GetCurrentMovementGeneratorType() == WAYPOINT_MOTION_TYPE ||
+                GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
+                creature->SetHomePosition(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+
+            if (target)
             {
-                creature->AI()->EnterCombat(target);
-                RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC); // unit has engaged in combat, remove immunity so players can fight back
+                if (IsAIEnabled)
+                {
+                    creature->AI()->EnterCombat(target);
+                    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC); // unit has engaged in combat, remove immunity so players can fight back
+                }
+                if (creature->GetFormation())
+                    creature->GetFormation()->MemberAttackStart(creature, target);
             }
-            if (creature->GetFormation())
-                creature->GetFormation()->MemberAttackStart(creature, target);
+
+            if (!(creature->GetCreatureInfo()->type_flags & CREATURE_TYPEFLAGS_MOUNTED_COMBAT))
+                Dismount();
         }
 
-        if (!(creature->GetCreatureInfo()->type_flags & CREATURE_TYPEFLAGS_MOUNTED_COMBAT))
-            Dismount();
-    }
-
-    for (Unit::ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
-    {
-        (*itr)->SetInCombatState(PvP, target);
-        (*itr)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_IN_COMBAT);
+        for (Unit::ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
+        {
+            (*itr)->SetInCombatState(PvP, target);
+            (*itr)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_IN_COMBAT);
+        }
     }
 }
 
