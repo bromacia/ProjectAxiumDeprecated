@@ -12947,18 +12947,19 @@ void Unit::SetInCombatState(bool PvP, Unit* target, bool delayed)
     if (!isAlive())
         return;
 
-    if (!target)
-        return;
-
     // Combat handled in Unit::Update
     if (delayed)
     {
+        if (!target)
+            return;
+
         if (!m_combatTime && PvP && !combatDelayVictims[target->GetGUID()])
         {
             combatDelayVictims[target->GetGUID()] = sWorld->getIntConfig(CONFIG_COMBAT_DELAY);
             target->combatDelayAttackers.push_back(GetGUID());
-            return;
         }
+        else
+            SetInCombatState(PvP, target, false);
     }
     else
     {
