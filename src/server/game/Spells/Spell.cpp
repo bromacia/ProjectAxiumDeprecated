@@ -1816,7 +1816,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
     }
 
     // Spell more powerful overwrite
-    if (!m_spellInfo->_IsPositiveSpell() && m_spellAura)
+    /*if (!m_spellInfo->_IsPositiveSpell() && m_spellAura)
     {
         uint8 effIndex;
         bool found = false;
@@ -1899,7 +1899,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             for (std::list<uint32>::iterator itr = deleteQueue.begin(); itr != deleteQueue.end(); ++itr)
                 unit->RemoveAura((*itr));
         }
-    }
+    }*/
 
     for (uint8 effectNumber = 0; effectNumber < MAX_SPELL_EFFECTS; ++effectNumber)
         if (effectMask & (1 << effectNumber))
