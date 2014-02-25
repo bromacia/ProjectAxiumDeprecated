@@ -668,7 +668,6 @@ class Spell
 
         bool m_skipCheck;
         uint8 m_auraScaleMask;
-        PathFinderMovementGenerator* m_preGeneratedPath;
 
         ByteBuffer * m_effectExecuteData[MAX_SPELL_EFFECTS];
 

@@ -160,7 +160,8 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
     m_vehicleKit(NULL),
     m_unitTypeMask(UNIT_MASK_NONE),
     m_HostileRefManager(this),
-    movespline(new Movement::MoveSpline())
+    movespline(new Movement::MoveSpline()),
+    m_preGeneratedPath(new PathFinderMovementGenerator(this))
 {
 #ifdef _MSC_VER
 #pragma warning(default:4355)
@@ -306,6 +307,7 @@ Unit::~Unit()
     delete m_charmInfo;
     delete m_vehicleKit;
     delete movespline;
+    delete m_preGeneratedPath;
 
     ASSERT(!m_duringRemoveFromWorld);
     ASSERT(!m_attacking);

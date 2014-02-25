@@ -28,10 +28,18 @@
 ////////////////// PathFinderMovementGenerator //////////////////
 PathFinderMovementGenerator::PathFinderMovementGenerator(Unit* const owner) : _polyLength(0), _type(PATHFIND_BLANK),
 _useStraightPath(false), _forceDestination(false), _pointPathLimit(MAX_POINT_PATH_LENGTH),
-_sourceUnit(owner), _navMesh(NULL), _navMeshQuery(NULL), _usingOffMesh(false)
+_sourceUnit(owner), _navMesh(NULL), _navMeshQuery(NULL), _usingOffMesh(false), _init(false)
 {
-    sLog->outDebug(LOG_FILTER_MAPS, "++ PathFinderMovementGenerator::PathFinderMovementGenerator for %u \n", _sourceUnit->GetGUIDLow());
 
+}
+
+PathFinderMovementGenerator::~PathFinderMovementGenerator()
+{
+
+}
+
+void PathFinderMovementGenerator::Init()
+{
     uint32 mapId = _sourceUnit->GetMapId();
     if (MMAP::MMapFactory::IsPathfindingEnabled(mapId))
     {
@@ -41,15 +49,14 @@ _sourceUnit(owner), _navMesh(NULL), _navMeshQuery(NULL), _usingOffMesh(false)
     }
 
     _createFilter();
-}
-
-PathFinderMovementGenerator::~PathFinderMovementGenerator()
-{
-    sLog->outDebug(LOG_FILTER_MAPS, "++ PathFinderMovementGenerator::~PathFinderMovementGenerator() for %u \n", _sourceUnit->GetGUIDLow());
+    _init = true;
 }
 
 bool PathFinderMovementGenerator::Calculate(float destX, float destY, float destZ, bool forceDest)
 {
+    if (!_init)
+        Init();
+
     if (!Trinity::IsValidMapCoord(destX, destY, destZ) ||
         !Trinity::IsValidMapCoord(_sourceUnit->GetPositionX(), _sourceUnit->GetPositionY(), _sourceUnit->GetPositionZ()))
         return false;

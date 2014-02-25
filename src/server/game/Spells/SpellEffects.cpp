@@ -6301,7 +6301,7 @@ void Spell::EffectCharge(SpellEffIndex /*effIndex*/)
     if (effectHandleMode == SPELL_EFFECT_HANDLE_LAUNCH_TARGET)
     {
         // Spell is not using explicit target - no generated path
-        if (m_preGeneratedPath->GetPathType() == PATHFIND_BLANK)
+        if (m_caster->m_preGeneratedPath->GetPathType() == PATHFIND_BLANK)
         {
             Position pos;
             unitTarget->GetContactPoint(m_caster, pos.m_positionX, pos.m_positionY, pos.m_positionZ);
@@ -6309,7 +6309,7 @@ void Spell::EffectCharge(SpellEffIndex /*effIndex*/)
             m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
         }
         else
-            m_caster->GetMotionMaster()->MoveCharge(0, 0, 0, SPEED_CHARGE, EVENT_CHARGE, false, m_preGeneratedPath);
+            m_caster->GetMotionMaster()->MoveCharge(0, 0, 0, SPEED_CHARGE, EVENT_CHARGE, false, m_caster->m_preGeneratedPath);
     }
 
     if (effectHandleMode == SPELL_EFFECT_HANDLE_HIT_TARGET)

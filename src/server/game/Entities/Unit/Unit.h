@@ -2268,6 +2268,7 @@ class Unit : public WorldObject
 
         // Movement info
         Movement::MoveSpline* movespline;
+        PathFinderMovementGenerator* m_preGeneratedPath;
 
         float m_positiveCastTimePrecent;
 

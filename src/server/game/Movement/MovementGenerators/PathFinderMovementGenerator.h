@@ -102,7 +102,11 @@ class PathFinderMovementGenerator
         const dtNavMesh*        _navMesh;          // the nav mesh
         const dtNavMeshQuery*   _navMeshQuery;     // the nav mesh query used to find the path
 
+        bool _init;
+
         dtQueryFilter _filter;                     // use single filter for all movements, update it when needed
+
+        void Init();
 
         void _setStartPosition(Vector3 point) { _startPosition = point; }
         void _setEndPosition(Vector3 point) { _actualEndPosition = point; _endPosition = point; }
