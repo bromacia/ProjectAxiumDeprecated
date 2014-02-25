@@ -2693,7 +2693,7 @@ bool SpellInfo::IsSpellDelaySpell() const
         // Polymorph
         (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[0] == 0x1000000) ||
         // Deep Freeze
-        Id == 44572 ||
+        (SpellFamilyName == SPELLFAMILY_MAGE && SpellIconID == 2939) ||
         // Dragon's Breath
         (SpellFamilyName == SPELLFAMILY_MAGE && SpellFamilyFlags[0] == 0x800000) ||
         // Fire Blast
