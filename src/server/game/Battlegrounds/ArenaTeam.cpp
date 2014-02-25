@@ -741,7 +741,7 @@ void ArenaTeam::MemberWon(Player* player, uint32 againstMatchmakerRating, int32 
             }
 
             uint32 weeklyArenaPoints = player->GetWeeklyArenaPoints();
-            if (weeklyArenaPoints >= arenaPointsCap)
+            if (weeklyArenaPoints < arenaPointsCap)
             {
                 uint32 arenaPointsGain = (float)((arenaPointsCap / sWorld->getIntConfig(CONFIG_ARENA_POINTS_CAP_REQUIRED_GAMES)) + 0.5f);
                 weeklyArenaPoints += arenaPointsGain;
@@ -818,7 +818,7 @@ void ArenaTeam::OfflineMemberWon(uint64 guid, uint32 againstMatchmakerRating, in
             }
 
             uint32 weeklyArenaPoints = sPvPMgr->GetWeeklyArenaPoints(itr->Guid);
-            if (weeklyArenaPoints >= arenaPointsCap)
+            if (weeklyArenaPoints < arenaPointsCap)
             {
                 uint32 arenaPointsGain = (float)((arenaPointsCap / sWorld->getIntConfig(CONFIG_ARENA_POINTS_CAP_REQUIRED_GAMES)) + 0.5f);
                 weeklyArenaPoints += arenaPointsGain;
