@@ -7123,9 +7123,10 @@ bool Spell::CheckEffectTarget(Unit const* target, uint32 eff) const
 
                 caster->GetPosition(x, y, z);
             }
-            
-            if (!target->IsWithinLOS(x, y, z))
-                return false;
+
+            if (!target->HasAuraType(SPELL_AURA_SPELL_MAGNET))
+                if (!target->IsWithinLOS(x, y, z))
+                    return false;
 
             break;
     }
