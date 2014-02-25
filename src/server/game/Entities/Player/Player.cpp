@@ -7361,7 +7361,7 @@ void Player::ModifyArenaPoints(int32 value, SQLTransaction* trans /*=NULL*/)
     SetArenaPoints(uint32(newValue));
 
     if (trans && !trans->null())
-        (*trans)->PAppend("UPDATE characters SET arenaPoints=%u WHERE guid=%u", newValue, GetGUIDLow());
+        (*trans)->PAppend("UPDATE characters SET totalArenaPoints=%u WHERE guid=%u", newValue, GetGUIDLow());
 }
 
 uint32 Player::GetGuildIdFromDB(uint64 guid)
