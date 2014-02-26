@@ -49,8 +49,9 @@ class CombatAI : public CreatureAI
         void UpdateAI(const uint32 diff);
         void SpellInterrupted(uint32 spellId, uint32 unTimeMs);
         static int Permissible(const Creature*);
-    protected:
+        
         EventMap events;
+    protected:
         SpellVct spells;
 };
 

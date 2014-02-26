@@ -207,6 +207,9 @@ void CasterAI::EnterCombat(Unit* who)
     if (spells.empty())
         return;
 
+    if (!events.empty())
+        return;
+
     uint32 spell = rand()%spells.size();
     uint32 count = 0;
     for (SpellVct::iterator itr = spells.begin(); itr != spells.end(); ++itr, ++count)
@@ -320,7 +323,7 @@ void CasterAI::UpdateAI(const uint32 diff)
         uint32 cooldown = me->GetCurrentSpellCastTime(spellId) + GetAISpellInfo(spellId)->realCooldown;
         events.ScheduleEvent(spellId, cooldown);
     }
-    else if (!events.GetEvent())
+    else if (events.empty())
     {
         uint32 spell = rand() % spells.size();
         uint32 count = 0;

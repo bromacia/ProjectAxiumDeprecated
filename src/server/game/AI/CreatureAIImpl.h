@@ -311,7 +311,7 @@ const T& RAND(const T& v1, const T& v2, const T& v3, const T& v4, const T& v5, c
     }
 }
 
-class EventMap : private std::map<uint32, uint32>
+class EventMap : public std::map<uint32, uint32>
 {
     public:
         EventMap() : _time(0), _phase(0) {}
