@@ -553,10 +553,14 @@ NavTerrain PathFinderMovementGenerator::_getNavTerrain(float x, float y, float z
 
 bool PathFinderMovementGenerator::_haveTile(const Vector3 &p) const
 {
-    int tx, ty;
+    int tx = -1, ty = -1;
     float point[VERTEX_SIZE] = {p.y, p.z, p.x};
 
     _navMesh->calcTileLoc(point, &tx, &ty);
+
+    if (tx < 0 || ty < 0)
+        return false;
+
     return (_navMesh->getTileAt(tx, ty) != NULL);
 }
 
