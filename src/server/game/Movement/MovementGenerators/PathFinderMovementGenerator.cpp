@@ -57,6 +57,8 @@ bool PathFinderMovementGenerator::Calculate(float destX, float destY, float dest
     if (!_init)
         Init();
 
+    _clear();
+
     if (!Trinity::IsValidMapCoord(destX, destY, destZ) ||
         !Trinity::IsValidMapCoord(_sourceUnit->GetPositionX(), _sourceUnit->GetPositionY(), _sourceUnit->GetPositionZ()))
         return false;
