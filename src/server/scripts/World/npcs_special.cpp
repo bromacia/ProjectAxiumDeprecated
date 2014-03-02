@@ -1742,6 +1742,9 @@ public:
             if (!UpdateVictim())
                 return;
 
+            if (!me->getVictim())
+                return;
+
             if (me->getVictim()->HasBreakableCrowdControlAura(me))
             {
                 me->InterruptNonMeleeSpells(false);
