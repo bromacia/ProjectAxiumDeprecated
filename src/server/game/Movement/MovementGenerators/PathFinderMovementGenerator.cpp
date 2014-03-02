@@ -28,7 +28,7 @@
 ////////////////// PathFinderMovementGenerator //////////////////
 PathFinderMovementGenerator::PathFinderMovementGenerator(Unit* const owner) : _polyLength(0), _type(PATHFIND_BLANK),
 _useStraightPath(false), _forceDestination(false), _pointPathLimit(MAX_POINT_PATH_LENGTH),
-_sourceUnit(owner), _navMesh(NULL), _navMeshQuery(NULL), _usingOffMesh(false), _init(false)
+_sourceUnit(owner), _navMesh(NULL), _navMeshQuery(NULL), _usingOffMesh(false), _init(false), mapId(0)
 {
 
 }
@@ -40,7 +40,7 @@ PathFinderMovementGenerator::~PathFinderMovementGenerator()
 
 void PathFinderMovementGenerator::Init()
 {
-    uint32 mapId = _sourceUnit->GetMapId();
+    mapId = _sourceUnit->GetMapId();
     if (MMAP::MMapFactory::IsPathfindingEnabled(mapId))
     {
         MMAP::MMapManager* mmap = MMAP::MMapFactory::createOrGetMMapManager();
@@ -54,7 +54,7 @@ void PathFinderMovementGenerator::Init()
 
 bool PathFinderMovementGenerator::Calculate(float destX, float destY, float destZ, bool forceDest)
 {
-    if (!_init)
+    if (!_init) // Should already be set, but just incase
         Init();
 
     _clear();

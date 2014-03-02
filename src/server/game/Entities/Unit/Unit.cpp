@@ -14752,6 +14752,7 @@ void Unit::AddToWorld()
     if (!IsInWorld())
     {
         WorldObject::AddToWorld();
+        m_preGeneratedPath->Init();
     }
 }
 
