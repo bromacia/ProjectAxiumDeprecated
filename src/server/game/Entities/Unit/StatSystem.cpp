@@ -1498,8 +1498,30 @@ void Guardian::UpdateHaste()
     if (!owner)
         return;
 
-    ApplyAttackTimePercentMod(BASE_ATTACK, owner->GetRatingBonusValue(CR_HASTE_MELEE), true);
-    ApplyAttackTimePercentMod(OFF_ATTACK, owner->GetRatingBonusValue(CR_HASTE_MELEE), true);
-    ApplyAttackTimePercentMod(RANGED_ATTACK, owner->GetRatingBonusValue(CR_HASTE_RANGED), true);
-    ApplyCastTimePercentMod(owner->GetRatingBonusValue(CR_HASTE_SPELL), true);
+    // Switch statements for possible future additions if needed
+    bool updateMeleeHaste = false;
+    switch (GetEntry())
+    {
+        case ENTRY_GHOUL:
+            updateMeleeHaste = true;
+            break;
+    }
+
+    bool updateSpellHaste = false;
+    switch (GetEntry())
+    {
+        case ENTRY_GARGOYLE:
+            updateSpellHaste = true;
+            break;
+    }
+
+    if (updateMeleeHaste)
+    {
+        ApplyAttackTimePercentMod(BASE_ATTACK, owner->GetRatingBonusValue(CR_HASTE_MELEE), true);
+        ApplyAttackTimePercentMod(OFF_ATTACK, owner->GetRatingBonusValue(CR_HASTE_MELEE), true);
+        ApplyAttackTimePercentMod(RANGED_ATTACK, owner->GetRatingBonusValue(CR_HASTE_RANGED), true);
+    }
+
+    if (updateSpellHaste)
+        ApplyCastTimePercentMod(owner->GetRatingBonusValue(CR_HASTE_SPELL), true);
 }
