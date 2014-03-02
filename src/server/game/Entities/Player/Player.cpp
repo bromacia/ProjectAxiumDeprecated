@@ -17251,7 +17251,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     SetHealth(savedHealth > GetMaxHealth() ? GetMaxHealth() : savedHealth);
     for (uint8 i = 0; i < MAX_POWERS; ++i)
     {
-        uint32 savedPower = fields[51+i].GetUInt32();
+        uint32 savedPower = fields[53+i].GetUInt32();
         SetPower(Powers(i), savedPower > GetMaxPower(Powers(i)) ? GetMaxPower(Powers(i)) : savedPower);
     }
 
