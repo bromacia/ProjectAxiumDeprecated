@@ -270,6 +270,7 @@ Unit::Unit(bool isWorldObject): WorldObject(isWorldObject),
     m_queuedSpellTargetGuid = 0;
 
     m_oldShapeshiftForm = FORM_NONE;
+    m_speedModifier = 1.0f;
 }
 
 ////////////////////////////////////////////////////////////
@@ -454,7 +455,7 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
     bool arrived = movespline->Finalized();
 
     if (arrived)
-        InterruptSpline(true);
+        InterruptSpline();
 
     m_movesplineTimer.Update(t_diff);
     if (m_movesplineTimer.Passed() || arrived)
@@ -488,17 +489,10 @@ void Unit::UpdateSplinePosition()
     UpdatePosition(loc.x, loc.y, loc.z, loc.orientation);
 }
 
-void Unit::InterruptSpline(bool updateSpeed)
+void Unit::InterruptSpline()
 {
     m_movementInfo.RemoveMovementFlag(MovementFlags(MOVEMENTFLAG_SPLINE_ENABLED|MOVEMENTFLAG_FORWARD));
     movespline->_Interrupt();
-
-    if (updateSpeed)
-    {
-        UpdateSpeed(MOVE_RUN, false);
-        UpdateSpeed(MOVE_SWIM, false);
-        UpdateSpeed(MOVE_FLIGHT, false);
-    }
 }
 
 void Unit::resetAttackTimer(WeaponAttackType type)
@@ -612,11 +606,7 @@ bool Unit::HasBreakableCrowdControlAura(Unit* caster) const
         if (!spellInfo->IsCrowdControlSpell())
             continue;
 
-        if (!(spellInfo->Attributes & SPELL_ATTR0_BREAKABLE_BY_DAMAGE) &&
-            !(spellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_VICTIM) &&
-            !(spellInfo->ProcFlags & (PROC_FLAG_TAKEN_MELEE_AUTO_ATTACK | PROC_FLAG_TAKEN_SPELL_MELEE_DMG_CLASS |
-            PROC_FLAG_TAKEN_RANGED_AUTO_ATTACK | PROC_FLAG_TAKEN_SPELL_RANGED_DMG_CLASS |
-            PROC_FLAG_TAKEN_SPELL_NONE_DMG_CLASS_NEG | PROC_FLAG_TAKEN_SPELL_MAGIC_DMG_CLASS_NEG)))
+        if (!itr->second->GetBase()->IsBreakableByAnyDamage())
             continue;
 
         return true;
@@ -13410,15 +13400,6 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
 
     Unit* owner = GetCharmerOrOwner();
 
-    bool isMounted = false;
-    if (GetTypeId() == TYPEID_UNIT)
-    {
-        if (owner)
-            isMounted = owner->IsMounted();
-    }
-    else
-        isMounted = IsMounted();
-
     switch (mtype)
     {
         // Only apply debuffs
@@ -13430,13 +13411,13 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
             return;
         case MOVE_RUN:
         {
-            if (isMounted && !isPet()) // Use on mount auras
+            if (IsMounted() && !isPet()) // Use on mount auras
             {
                 main_speed_mod  = GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED);
                 stack_bonus     = GetTotalAuraMultiplier(SPELL_AURA_MOD_MOUNTED_SPEED_ALWAYS);
                 non_stack_bonus += GetMaxPositiveAuraModifier(SPELL_AURA_MOD_MOUNTED_SPEED_NOT_STACK) / 100.0f;
             }
-            else if (isMounted && isPet() && owner)
+            else if (owner && owner->IsMounted() && isPet())
             {
                 main_speed_mod  = owner->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED);
                 stack_bonus     = owner->GetTotalAuraMultiplier(SPELL_AURA_MOD_MOUNTED_SPEED_ALWAYS);
@@ -13457,7 +13438,7 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
         }
         case MOVE_FLIGHT:
         {
-            if (GetTypeId() == TYPEID_UNIT && IsControlledByPlayer()) // not sure if good for pet
+            if (GetTypeId() == TYPEID_UNIT && IsControlledByPlayer())
             {
                 main_speed_mod  = GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_VEHICLE_FLIGHT_SPEED);
                 stack_bonus     = GetTotalAuraMultiplier(SPELL_AURA_MOD_VEHICLE_SPEED_ALWAYS);
@@ -13470,10 +13451,15 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
 
                 main_speed_mod = std::max(main_speed_mod, owner_speed_mod);
             }
-            else if (isMounted)
+            else if (IsMounted())
             {
                 main_speed_mod  = GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
                 stack_bonus     = GetTotalAuraMultiplier(SPELL_AURA_MOD_MOUNTED_FLIGHT_SPEED_ALWAYS);
+            }
+            else if (owner && owner->IsMounted() && isPet())
+            {
+                main_speed_mod  = owner->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
+                stack_bonus     = owner->GetTotalAuraMultiplier(SPELL_AURA_MOD_MOUNTED_FLIGHT_SPEED_ALWAYS);
             }
             else             // Use not mount (shapeshift for example) auras (should stack)
                 main_speed_mod  = GetTotalAuraModifier(SPELL_AURA_MOD_INCREASE_FLIGHT_SPEED) + GetTotalAuraModifier(SPELL_AURA_MOD_INCREASE_VEHICLE_FLIGHT_SPEED);
@@ -13489,10 +13475,6 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
             sLog->outError("Unit::UpdateSpeed: Unsupported move type (%d)", mtype);
             return;
     }
-
-    if (isPet() && mtype == MOVE_RUN)
-        if (HasAura(19596)) // Boar's Speed
-            main_speed_mod = 30;
 
     // now we ready for speed calculation
     float speed = std::max(non_stack_bonus, stack_bonus);
@@ -13543,9 +13525,22 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
                 speed = min_speed;
         }
     }
+
+    if (isPet() && owner)
+        speed *= owner->m_speedModifier;
+    else
+        speed *= m_speedModifier;
+
     SetSpeed(mtype, speed, forced);
     if (mtype == MOVE_RUN)
         SetSpeed(MOVE_WALK, speed, forced);
+
+    // Everytime owners speed is updated, we must update all controlled speeds as well to sync
+    for (ControlList::const_iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
+    {
+        if ((*itr)->isPet())
+            (*itr)->UpdateSpeed(mtype, forced);
+    }
 }
 
 float Unit::GetSpeed(UnitMoveType mtype) const
@@ -13555,8 +13550,8 @@ float Unit::GetSpeed(UnitMoveType mtype) const
 
 void Unit::SetSpeed(UnitMoveType mtype, float rate, bool forced)
 {
-    if (rate < 0)
-        rate = 0.0f;
+    //if (rate < 0)
+    //    rate = 0.0f;
 
     // Update speed only on change
     if (m_speed_rate[mtype] == rate)
@@ -13622,10 +13617,6 @@ void Unit::SetSpeed(UnitMoveType mtype, float rate, bool forced)
             // register forced speed changes for WorldSession::HandleForceSpeedChangeAck
             // and do it only for real sent packets and use run for run/mounted as client expected
             ++ToPlayer()->m_forced_speed_changes[mtype];
-
-            if (!isInCombat())
-                if (Pet* pet = ToPlayer()->GetPet())
-                    pet->SetSpeed(mtype, m_speed_rate[mtype], forced);
         }
 
         switch (mtype)

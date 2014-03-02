@@ -41,6 +41,7 @@ class PetAI : public CreatureAI
         void MovementInform(uint32 moveType, uint32 data);
         void OwnerDamagedBy(Unit* attacker);
         void OwnerAttacked(Unit* target);
+        void SpellCastFailed(Unit* target, SpellCastResult result, Spell* spell);
 
     private:
         bool _isVisible(Unit*) const;

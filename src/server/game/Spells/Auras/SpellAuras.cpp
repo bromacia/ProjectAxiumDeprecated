@@ -2127,6 +2127,21 @@ void Aura::TriggerProcOnEvent(AuraApplication* aurApp, ProcEventInfo& eventInfo)
         Remove();
 }
 
+// Auras that will instantly break on any damage received
+bool Aura::IsBreakableByAnyDamage()
+{
+    const SpellInfo* spellInfo = GetSpellInfo();
+
+    if ((spellInfo->Attributes & SPELL_ATTR0_BREAKABLE_BY_DAMAGE) ||
+        (spellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_VICTIM) ||
+        (spellInfo->ProcFlags & (PROC_FLAG_TAKEN_MELEE_AUTO_ATTACK | PROC_FLAG_TAKEN_SPELL_MELEE_DMG_CLASS |
+        PROC_FLAG_TAKEN_RANGED_AUTO_ATTACK | PROC_FLAG_TAKEN_SPELL_RANGED_DMG_CLASS |
+        PROC_FLAG_TAKEN_SPELL_NONE_DMG_CLASS_NEG | PROC_FLAG_TAKEN_SPELL_MAGIC_DMG_CLASS_NEG)))
+        return true;
+
+    return false;
+}
+
 void Aura::_DeleteRemovedApplications()
 {
     while (!m_removedApplications.empty())

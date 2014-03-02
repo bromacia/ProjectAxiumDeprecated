@@ -1815,6 +1815,21 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         }
     }
 
+    if (m_spellAura && m_spellAura->IsBreakableByAnyDamage())
+    {
+        if (Unit* owner = m_spellAura->GetUnitOwner())
+        {
+            Unit::AttackerSet const& attackers = owner->getAttackers();
+            for (Unit::AttackerSet::const_iterator itr = attackers.begin(); itr != attackers.end();)
+            {
+                if ((*itr)->isPet())
+                    (*(itr++))->AttackStop();
+                else
+                    ++itr;
+            }
+        }
+    }
+
     // Spell more powerful overwrite
     /*if (!m_spellInfo->_IsPositiveSpell() && m_spellAura)
     {
@@ -3519,6 +3534,11 @@ void Spell::cast(bool skipCheck)
             }
             finish(false);
             SetExecutedCurrently(false);
+
+            if (Pet* pet = m_caster->ToPet())
+                if (pet->IsAIEnabled)
+                    pet->AI()->SpellCastFailed(m_targets.GetUnitTarget(), castResult, this);
+
             return;
         }
 

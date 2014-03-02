@@ -2094,11 +2094,11 @@ class Unit : public WorldObject
         uint32 CalcSpellResistance(Unit* pVictim, SpellSchoolMask schoolMask, bool binary, SpellInfo const* spellInfo) const;
         void CalcHealAbsorb(Unit* pVictim, const SpellInfo* spellProto, uint32 &healAmount, uint32 &absorb);
 
-        void  UpdateSpeed(UnitMoveType mtype, bool forced);
+        void UpdateSpeed(UnitMoveType mtype, bool forced);
         float GetSpeed(UnitMoveType mtype) const;
         float GetSpeedRate(UnitMoveType mtype) const { return m_speed_rate[mtype]; }
         void SetSpeed(UnitMoveType mtype, float rate, bool forced = false);
-        float m_TempSpeed;
+        float m_speedModifier;
 
         void SetHover(bool on);
         bool isHover() const { return HasAuraType(SPELL_AURA_HOVER); }
@@ -2288,7 +2288,7 @@ class Unit : public WorldObject
 
         void SetRooted(bool apply);
 
-        void InterruptSpline(bool updateSpeed = false);
+        void InterruptSpline();
 
     protected:
         explicit Unit (bool isWorldObject);

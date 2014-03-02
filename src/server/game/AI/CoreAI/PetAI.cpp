@@ -161,14 +161,6 @@ void PetAI::UpdateAI(const uint32 diff)
 
     if (me->getVictim() && me->getVictim()->isAlive())
     {
-        if (me->getVictim()->HasBreakableCrowdControlAura(me))
-        {
-            me->InterruptNonMeleeSpells(false);
-            me->getHostileRefManager().deleteReferences();
-            me->AttackStop();
-            return;
-        }
-
         if (!owner->canSeeOrDetect(me->getVictim()))
             _stopAttack();
 
@@ -584,4 +576,22 @@ bool PetAI::CanAttack(Unit* target)
 
     // default, though we shouldn't ever get here
     return false;
+}
+
+void PetAI::SpellCastFailed(Unit* target, SpellCastResult result, Spell* spell)
+{
+    if (!target)
+        return;
+
+    if (result != SPELL_FAILED_OUT_OF_RANGE && result != SPELL_FAILED_LINE_OF_SIGHT)
+        return;
+
+    // Create a new spell since the old spell failed and will be deleted
+    SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spell->GetSpellInfo()->Id);
+    Spell* newSpell = new Spell(me, spellInfo, TRIGGERED_NONE);
+
+    me->setIsRunningToTarget(true);
+    me->setQueuedSpell(newSpell);
+    me->setQueuedSpellTargetGuid(target->GetGUID());
+    me->GetMotionMaster()->MoveChase(target);
 }

@@ -325,7 +325,7 @@ void FleeingMovementGenerator<Player>::Finalize(Player &owner)
     owner.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
     owner.ClearUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
     owner.StopMoving();
-    owner.InterruptSpline(true);
+    owner.InterruptSpline();
 
     if (owner.isPossessed())
     {
@@ -345,7 +345,7 @@ void FleeingMovementGenerator<Creature>::Finalize(Creature &owner)
     owner.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
     owner.ClearUnitState(UNIT_STATE_FLEEING | UNIT_STATE_FLEEING_MOVE);
     owner.StopMoving();
-    owner.InterruptSpline(true);
+    owner.InterruptSpline();
 
     if (owner.GetTypeId() == TYPEID_UNIT && owner.getVictim())
         owner.SetTarget(owner.getVictim()->GetGUID());

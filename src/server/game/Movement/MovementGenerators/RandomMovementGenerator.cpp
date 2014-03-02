@@ -156,7 +156,7 @@ void RandomMovementGenerator<Creature>::Finalize(Creature &creature)
 {
     creature.ClearUnitState(UNIT_STATE_ROAMING|UNIT_STATE_ROAMING_MOVE);
     creature.SetWalk(false);
-    creature.InterruptSpline(true);
+    creature.InterruptSpline();
 }
 
 template<>

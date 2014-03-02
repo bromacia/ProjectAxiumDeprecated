@@ -201,7 +201,7 @@ void ConfusedMovementGenerator<Player>::Finalize(Player &unit)
     unit.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
     unit.ClearUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
     unit.StopMoving();
-    unit.InterruptSpline(true);
+    unit.InterruptSpline();
 
     if (unit.isPossessed())
     {
@@ -221,7 +221,7 @@ void ConfusedMovementGenerator<Creature>::Finalize(Creature &unit)
     unit.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
     unit.ClearUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
     unit.StopMoving();
-    unit.InterruptSpline(true);
+    unit.InterruptSpline();
 
     if (unit.getVictim())
         unit.SetTarget(unit.getVictim()->GetGUID());

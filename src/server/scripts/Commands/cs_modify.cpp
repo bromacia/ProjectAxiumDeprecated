@@ -43,12 +43,8 @@ public:
             { "energy",             SEC_GAMEMASTER,     false, &HandleModifyEnergyCommand,              "", NULL },
             { "money",              SEC_GAMEMASTER,     false, &HandleModifyMoneyCommand,               "", NULL },
             { "speed",              SEC_GAMEMASTER,     false, &HandleModifySpeedCommand,               "", NULL },
-            { "swim",               SEC_GAMEMASTER,     false, &HandleModifySwimCommand,                "", NULL },
             { "scale",              SEC_GAMEMASTER,     false, &HandleModifyScaleCommand,               "", NULL },
             { "bit",                SEC_GAMEMASTER,     false, &HandleModifyBitCommand,                 "", NULL },
-            { "bwalk",              SEC_GAMEMASTER,     false, &HandleModifyBWalkCommand,               "", NULL },
-            { "fly",                SEC_GAMEMASTER,     false, &HandleModifyFlyCommand,                 "", NULL },
-            { "aspeed",             SEC_GAMEMASTER,     false, &HandleModifyASpeedCommand,              "", NULL },
             { "faction",            SEC_GAMEMASTER,     false, &HandleModifyFactionCommand,             "", NULL },
             { "spell",              SEC_GAMEMASTER,     false, &HandleModifySpellCommand,               "", NULL },
             { "tp",                 SEC_GAMEMASTER,     false, &HandleModifyTalentCommand,              "", NULL },
@@ -413,7 +409,7 @@ public:
     }
 
     //Edit Player TP
-    static bool HandleModifyTalentCommand (ChatHandler* handler, const char* args)
+    static bool HandleModifyTalentCommand(ChatHandler* handler, const char* args)
     {
         if (!*args)
             return false;
@@ -458,46 +454,6 @@ public:
         return false;
     }
 
-    //Edit Player Aspeed
-    static bool HandleModifyASpeedCommand(ChatHandler* handler, const char* args)
-    {
-        if (!*args)
-            return false;
-
-        float ASpeed = (float)atof((char*)args);
-        Player* target = handler->getSelectedPlayer();
-        if (!target)
-        {
-            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        // check online security
-        if (handler->HasLowerSecurity(target, 0))
-            return false;
-
-        std::string targetNameLink = handler->GetNameLink(target);
-
-        if (target->isInFlight())
-        {
-            handler->PSendSysMessage(LANG_CHAR_IN_FLIGHT, targetNameLink.c_str());
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        handler->PSendSysMessage(LANG_YOU_CHANGE_ASPEED, ASpeed, targetNameLink.c_str());
-        if (handler->needReportToTarget(target))
-            target->SendSysMessage(LANG_YOURS_ASPEED_CHANGED, handler->GetNameLink().c_str(), ASpeed);
-
-        target->SetSpeed(MOVE_WALK,    ASpeed, true);
-        target->SetSpeed(MOVE_RUN,     ASpeed, true);
-        target->SetSpeed(MOVE_SWIM,    ASpeed, true);
-        //target->SetSpeed(MOVE_TURN,    ASpeed, true);
-        target->SetSpeed(MOVE_FLIGHT,     ASpeed, true);
-        return true;
-    }
-
     //Edit Player Speed
     static bool HandleModifySpeedCommand(ChatHandler* handler, const char* args)
     {
@@ -526,138 +482,15 @@ public:
             return false;
         }
 
-        handler->PSendSysMessage(LANG_YOU_CHANGE_SPEED, Speed, targetNameLink.c_str());
+        handler->PSendSysMessage(LANG_YOU_CHANGE_ASPEED, Speed, targetNameLink.c_str());
         if (handler->needReportToTarget(target))
-            target->SendSysMessage(LANG_YOURS_SPEED_CHANGED, handler->GetNameLink().c_str(), Speed);
+            target->SendSysMessage(LANG_YOURS_ASPEED_CHANGED, handler->GetNameLink().c_str(), Speed);
 
-        target->SetSpeed(MOVE_RUN, Speed, true);
-
-        return true;
-    }
-
-    //Edit Player Swim Speed
-    static bool HandleModifySwimCommand(ChatHandler* handler, const char* args)
-    {
-        if (!*args)
-            return false;
-
-        float Swim = (float)atof((char*)args);
-
-        if (Swim > 50.0f || Swim < 0.1f)
-        {
-            handler->SendSysMessage(LANG_BAD_VALUE);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        Player* target = handler->getSelectedPlayer();
-        if (!target)
-        {
-            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        // check online security
-        if (handler->HasLowerSecurity(target, 0))
-            return false;
-
-        std::string targetNameLink = handler->GetNameLink(target);
-
-        if (target->isInFlight())
-        {
-            handler->PSendSysMessage(LANG_CHAR_IN_FLIGHT, targetNameLink.c_str());
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        handler->PSendSysMessage(LANG_YOU_CHANGE_SWIM_SPEED, Swim, targetNameLink.c_str());
-        if (handler->needReportToTarget(target))
-            target->SendSysMessage(LANG_YOURS_SWIM_SPEED_CHANGED, handler->GetNameLink().c_str(), Swim);
-
-        target->SetSpeed(MOVE_SWIM, Swim, true);
-
-        return true;
-    }
-
-    //Edit Player Walk Speed
-    static bool HandleModifyBWalkCommand(ChatHandler* handler, const char* args)
-    {
-        if (!*args)
-            return false;
-
-        float BSpeed = (float)atof((char*)args);
-
-        if (BSpeed > 50.0f || BSpeed < 0.1f)
-        {
-            handler->SendSysMessage(LANG_BAD_VALUE);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        Player* target = handler->getSelectedPlayer();
-        if (!target)
-        {
-            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        // check online security
-        if (handler->HasLowerSecurity(target, 0))
-            return false;
-
-        std::string targetNameLink = handler->GetNameLink(target);
-
-        if (target->isInFlight())
-        {
-            handler->PSendSysMessage(LANG_CHAR_IN_FLIGHT, targetNameLink.c_str());
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        handler->PSendSysMessage(LANG_YOU_CHANGE_BACK_SPEED, BSpeed, targetNameLink.c_str());
-        if (handler->needReportToTarget(target))
-            target->SendSysMessage(LANG_YOURS_BACK_SPEED_CHANGED, handler->GetNameLink().c_str(), BSpeed);
-
-        target->SetSpeed(MOVE_RUN_BACK, BSpeed, true);
-
-        return true;
-    }
-
-    //Edit Player Fly
-    static bool HandleModifyFlyCommand(ChatHandler* handler, const char* args)
-    {
-        if (!*args)
-            return false;
-
-        float FSpeed = (float)atof((char*)args);
-
-        if (FSpeed > 50.0f || FSpeed < 0.1f)
-        {
-            handler->SendSysMessage(LANG_BAD_VALUE);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        Player* target = handler->getSelectedPlayer();
-        if (!target)
-        {
-            handler->SendSysMessage(LANG_NO_CHAR_SELECTED);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        // check online security
-        if (handler->HasLowerSecurity(target, 0))
-            return false;
-
-        handler->PSendSysMessage(LANG_YOU_CHANGE_FLY_SPEED, FSpeed, handler->GetNameLink(target).c_str());
-        if (handler->needReportToTarget(target))
-            target->SendSysMessage(LANG_YOURS_FLY_SPEED_CHANGED, handler->GetNameLink().c_str(), FSpeed);
-
-        target->SetSpeed(MOVE_FLIGHT, FSpeed, true);
-
+        target->m_speedModifier = Speed;
+        target->UpdateSpeed(MOVE_WALK, true);
+        target->UpdateSpeed(MOVE_RUN, true);
+        target->UpdateSpeed(MOVE_SWIM, true);
+        target->UpdateSpeed(MOVE_FLIGHT, true);
         return true;
     }
 

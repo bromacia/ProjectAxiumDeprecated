@@ -144,6 +144,9 @@ class CreatureAI : public UnitAI
         // Called when owner attacks something
         virtual void OwnerAttacked(Unit* /*target*/) {}
 
+        // Called when spell cast failed
+        virtual void SpellCastFailed(Unit* /*target*/, SpellCastResult /*result*/, Spell* /*spell*/) {}
+
         /// == Triggered Actions Requested ==================
 
         // Called when creature attack expected (if creature can and no have current victim)

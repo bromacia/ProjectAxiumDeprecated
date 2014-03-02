@@ -198,6 +198,7 @@ class Aura
         bool IsProcTriggeredOnEvent(AuraApplication* aurApp, ProcEventInfo& eventInfo) const;
         float CalcProcChance(SpellProcEntry const& procEntry, ProcEventInfo& eventInfo) const;
         void TriggerProcOnEvent(AuraApplication* aurApp, ProcEventInfo& eventInfo);
+        bool IsBreakableByAnyDamage();
 
         // AuraScript
         void LoadScripts();
