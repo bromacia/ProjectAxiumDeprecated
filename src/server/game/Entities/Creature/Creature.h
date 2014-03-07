@@ -173,7 +173,7 @@ struct CreatureTemplate
 };
 
 // Benchmarked: Faster than std::map (insert/find)
-typedef UNORDERED_MAP<uint32, CreatureTemplate> CreatureTemplateContainer;
+typedef std::map<uint32, CreatureTemplate> CreatureTemplateContainer;
 
 // Represents max amount of expansions.
 // TODO: Add MAX_EXPANSION constant.
