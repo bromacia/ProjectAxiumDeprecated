@@ -348,8 +348,11 @@ void BattlegroundQueue::RemovePlayer(uint64 guid, bool decreaseInvitedCount)
 
     if (Player* player = ObjectAccessor::FindPlayer(itr->first))
     {
-        delete player->challengeInfo.ginfo;
-        player->challengeInfo.ginfo = NULL;
+        if (player->challengeInfo.ginfo)
+        {
+            delete player->challengeInfo.ginfo;
+            player->challengeInfo.ginfo = NULL;
+        }
     }
 
     // remove player queue info
