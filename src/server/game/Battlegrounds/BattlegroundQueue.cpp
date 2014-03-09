@@ -283,8 +283,6 @@ uint32 BattlegroundQueue::GetAverageQueueWaitTime(GroupQueueInfo* ginfo, Battleg
 //remove player from queue and from group info, if group info is empty then remove it too
 void BattlegroundQueue::RemovePlayer(uint64 guid, bool decreaseInvitedCount)
 {
-    //Player* player = ObjectAccessor::FindPlayer(guid);
-
     int32 bracket_id = -1;                                     // signed for proper for-loop finish
     QueuedPlayersMap::iterator itr;
 
@@ -295,6 +293,9 @@ void BattlegroundQueue::RemovePlayer(uint64 guid, bool decreaseInvitedCount)
         sLog->outError("BattlegroundQueue: couldn't find player to remove GUID: %u", GUID_LOPART(guid));
         return;
     }
+
+    // WARNING: Can be null! Always check before use
+    Player* player = ObjectAccessor::FindPlayer(itr->first);
 
     GroupQueueInfo* group = itr->second.GroupInfo;
     GroupsQueueType::iterator group_itr, group_itr_tmp;
@@ -324,7 +325,7 @@ void BattlegroundQueue::RemovePlayer(uint64 guid, bool decreaseInvitedCount)
     }
 
     //player can't be in queue without group, but just in case
-    if (bracket_id == -1)
+    if (bracket_id == -1 && !(player && player->challengeInfo.ginfo))
     {
         sLog->outError("BattlegroundQueue: ERROR Cannot find groupinfo for player GUID: %u", GUID_LOPART(guid));
         return;
@@ -346,13 +347,10 @@ void BattlegroundQueue::RemovePlayer(uint64 guid, bool decreaseInvitedCount)
         if (Battleground* bg = sBattlegroundMgr->GetBattleground(group->IsInvitedToBGInstanceGUID, group->BgTypeId == BATTLEGROUND_AA ? BATTLEGROUND_TYPE_NONE : group->BgTypeId))
             bg->DecreaseInvitedCount(group->Team);
 
-    if (Player* player = ObjectAccessor::FindPlayer(itr->first))
+    if (player && player->challengeInfo.ginfo)
     {
-        if (player->challengeInfo.ginfo)
-        {
-            delete player->challengeInfo.ginfo;
-            player->challengeInfo.ginfo = NULL;
-        }
+        delete player->challengeInfo.ginfo;
+        player->challengeInfo.ginfo = NULL;
     }
 
     // remove player queue info

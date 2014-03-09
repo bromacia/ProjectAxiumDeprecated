@@ -773,7 +773,7 @@ void Battleground::EndBattleground(uint32 winner)
     else
         SetWinner(3);
 
-    if (!(m_Events & BG_STARTING_EVENT_4))
+    if (!(m_Events & BG_STARTING_EVENT_4) && !m_Players.empty())
         StartingEventOpenDoors();
 
     m_Events |= BG_STARTING_EVENT_4;
@@ -1963,9 +1963,15 @@ void Battleground::CheckArenaAfterTimerConditions()
 void Battleground::CheckArenaWinConditions()
 {
     if (!GetAlivePlayersCountByTeam(ALLIANCE) && GetPlayersCountByTeam(HORDE))
+    {
         EndBattleground(HORDE);
+        return;
+    }
     else if (GetPlayersCountByTeam(ALLIANCE) && !GetAlivePlayersCountByTeam(HORDE))
+    {
         EndBattleground(ALLIANCE);
+        return;
+    }
 }
 
 void Battleground::CheckEndConditions()
@@ -1975,11 +1981,24 @@ void Battleground::CheckEndConditions()
 
     if (isArena())
     {
-        if (!GetInvitedCountByTeam(ALLIANCE) && !GetPlayersCountByTeam(ALLIANCE))
+        if (m_Players.empty())
+        {
+            EndBattleground(WINNER_NONE);
+            return;
+        }
+
+        // Check this logic of this, there's no way this works correctly.
+        /*if (!GetInvitedCountByTeam(ALLIANCE) && !GetPlayersCountByTeam(ALLIANCE))
+        {
             EndBattleground(HORDE);
+            return;
+        }
 
         if (!GetInvitedCountByTeam(HORDE) && !GetPlayersCountByTeam(HORDE))
+        {
             EndBattleground(ALLIANCE);
+            return;
+        }*/
     }
 }
 
