@@ -54,6 +54,8 @@ class WorldServerSignalHandler : public Trinity::SignalHandler
     public:
         virtual void HandleSignal(int SigNum)
         {
+            sLog->outError("World Server Received Signal: %i", SigNum);
+
             switch (SigNum)
             {
                 case SIGINT:

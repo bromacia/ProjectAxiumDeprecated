@@ -79,6 +79,8 @@ void WorldRunnable::run()
         #endif
     }
 
+    sLog->outError("WorldRunnable::run: World server is shutting down...");
+
     sScriptMgr->OnShutdown();
 
     sWorld->KickAll();                                       // save and kick all players
