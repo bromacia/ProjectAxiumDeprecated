@@ -477,6 +477,7 @@ void WorldSession::HandleBattlegroundQueueResultOpcode(WorldPacket &recv_data)
             _player->SetBattlegroundId(bg->GetInstanceID(), bgTypeId);
             // set the destination team
             _player->SetBGTeam(ginfo.Team);
+            bg->UpdatePlayerScore(_player, SCORE_PLAYER_TEAM, ginfo.Team);
             // bg->HandleBeforeTeleportToBattleground(_player);
             sBattlegroundMgr->SendToBattleground(_player, ginfo.IsInvitedToBGInstanceGUID, bgTypeId);
             // add only in HandleMoveWorldPortAck()

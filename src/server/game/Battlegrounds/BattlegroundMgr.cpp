@@ -51,7 +51,7 @@
 /***            BATTLEGROUND MANAGER                   ***/
 /*********************************************************/
 
-BattlegroundMgr::BattlegroundMgr() : m_AutoDistributionTimeChecker(0), m_ArenaTesting(false), m_ArenaTestingMap(0)
+BattlegroundMgr::BattlegroundMgr() : m_AutoDistributionTimeChecker(0), m_ArenaTesting(false)
 {
     for (uint8 i = BATTLEGROUND_TYPE_NONE; i < MAX_BATTLEGROUND_TYPE_ID; i++)
         m_Battlegrounds[i].clear();
@@ -491,26 +491,22 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeId
     }
 
     bool randomBG = false;
+
     if (randomMap)
     {
-        if (isArenaTesting() && GetArenaTestingMap())
-            bgTypeId = (BattlegroundTypeId)GetArenaTestingMap();
-        else
+        if (bg_template->isArena())
+            selectionWeights = &m_ArenaSelectionWeights;
+        else if (bgTypeId == BATTLEGROUND_RB)
         {
-            if (bg_template->isArena())
-                selectionWeights = &m_ArenaSelectionWeights;
-            else if (bgTypeId == BATTLEGROUND_RB)
-            {
-                selectionWeights = &m_BGSelectionWeights;
-                randomBG = true;
-            }
+            selectionWeights = &m_BGSelectionWeights;
+            randomBG = true;
         }
     }
 
     if (selectionWeights)
     {
         if (selectionWeights->empty())
-           return NULL;
+            return NULL;
         uint32 Weight = 0;
         uint32 selectedWeight = 0;
         bgTypeId = BATTLEGROUND_TYPE_NONE;
@@ -1007,18 +1003,10 @@ void BattlegroundMgr::ToggleTesting()
         sWorld->SendWorldText(LANG_DEBUG_BG_OFF);
 }
 
-void BattlegroundMgr::ToggleArenaTesting(uint32 BgID)
+void BattlegroundMgr::ToggleArenaTesting()
 {
     m_ArenaTesting = !m_ArenaTesting;
-    m_ArenaTestingMap = BgID;
-    if (m_ArenaTesting)
-    {
-        sWorld->SendWorldText(LANG_DEBUG_ARENA_ON);
-        if (BgID)
-            sWorld->SendWorldText(LANG_DEBUG_ARENA_ON_MAP, BgID);
-    }
-    else
-        sWorld->SendWorldText(LANG_DEBUG_ARENA_OFF);
+    m_ArenaTesting ? sWorld->SendWorldText(LANG_DEBUG_ARENA_ON) : sWorld->SendWorldText(LANG_DEBUG_ARENA_OFF);
 }
 
 void BattlegroundMgr::SetHolidayWeekends(uint32 mask)

@@ -826,109 +826,103 @@ void Battleground::EndBattleground(uint32 winner)
     }
 
     uint8 aliveWinners = GetAlivePlayersCountByTeam(winner);
-    for (BattlegroundPlayerMap::iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
+    for (BattlegroundPlayerMap::iterator itr = m_PlayersCache.begin(); itr != m_PlayersCache.end(); ++itr)
     {
         uint32 team = itr->second.Team;
-
-        if (itr->second.OfflineRemoveTime)
-        {
-            //if rated arena match - make member lost!
-            if (IsRatedArena && winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
-            {
-                if (team == winner)
-                    winner_arena_team->OfflineMemberLost(itr->first, loser_matchmaker_rating, winner_matchmaker_change);
-                else
-                    loser_arena_team->OfflineMemberLost(itr->first, winner_matchmaker_rating, loser_matchmaker_change);
-            }
-            continue;
-        }
-
         Player* player = _GetPlayer(itr, "EndBattleground");
-        if (!player)
-            continue;
 
-        // should remove spirit of redemption
-        if (player->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
-            player->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT);
-
-        // Last standing - Rated 5v5 arena & be solely alive player
-        if (team == winner && IsRatedArena && GetArenaType() == ARENA_TYPE_5v5 && aliveWinners == 1 && player->isAlive())
-            player->CastSpell(player, SPELL_THE_LAST_STANDING, true);
-
-        if (!player->isAlive())
+        if (player)
         {
-            player->ResurrectPlayer(1.0f);
-            player->SpawnCorpseBones();
-        }
-        else
-        {
-            //needed cause else in av some creatures will kill the players at the end
-            player->CombatStop();
-            player->getHostileRefManager().deleteReferences();
-        }
+            // should remove spirit of redemption
+            if (player->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
+                player->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT);
 
-        //this line is obsolete - team is set ALWAYS
-        //if (!team) team = player->GetTeam();
+            // Last standing - Rated 5v5 arena & be solely alive player
+            if (team == winner && IsRatedArena && GetArenaType() == ARENA_TYPE_5v5 && aliveWinners == 1 && player->isAlive())
+                player->CastSpell(player, SPELL_THE_LAST_STANDING, true);
 
-        // per player calculation
-        if (IsRatedArena && winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
-        {
-            if (team == winner)
+            if (!player->isAlive())
             {
-                // update achievement BEFORE personal rating update
-                if (ArenaTeamMember* member = winner_arena_team->GetMember(player->GetGUID()))
-                {
-                    uint32 rating = player->GetArenaPersonalRating(winner_arena_team->GetSlot());
-                    player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA, rating ? rating : 1);
-                }
-
-                winner_arena_team->MemberWon(player, loser_matchmaker_rating, winner_matchmaker_change);
+                player->ResurrectPlayer(1.0f);
+                player->SpawnCorpseBones();
             }
             else
             {
-                loser_arena_team->MemberLost(player, winner_matchmaker_rating, loser_matchmaker_change);
-
-                // Arena lost => reset the win_rated_arena having the "no_lose" condition
-                player->GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA, ACHIEVEMENT_CRITERIA_CONDITION_NO_LOSE);
+                //needed cause else in av some creatures will kill the players at the end
+                player->CombatStop();
+                player->getHostileRefManager().deleteReferences();
             }
-        }
 
-        uint32 winner_kills = player->GetRandomWinner() ? BG_REWARD_WINNER_HONOR_LAST : BG_REWARD_WINNER_HONOR_FIRST;
-        uint32 loser_kills = player->GetRandomWinner() ? BG_REWARD_LOSER_HONOR_LAST : BG_REWARD_LOSER_HONOR_FIRST;
-        uint32 winner_arena = player->GetRandomWinner() ? BG_REWARD_WINNER_ARENA_LAST : BG_REWARD_WINNER_ARENA_FIRST;
+            //this line is obsolete - team is set ALWAYS
+            //if (!team) team = player->GetTeam();
 
-        // Reward winner team
-        if (team == winner)
-        {
-            if (IsRandom() || BattlegroundMgr::IsBGWeekend(GetTypeID()))
+            // per player calculation
+            if (IsRatedArena && winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
             {
-                UpdatePlayerScore(player, SCORE_BONUS_HONOR, GetBonusHonorFromKill(winner_kills));
-                if (CanAwardArenaPoints())
-                    player->ModifyArenaPoints(winner_arena);
-                if (!player->GetRandomWinner())
-                    player->SetRandomWinner(true);
+                if (team == winner)
+                {
+                    // update achievement BEFORE personal rating update
+                    if (ArenaTeamMember* member = winner_arena_team->GetMember(player->GetGUID()))
+                    {
+                        uint32 rating = player->GetArenaPersonalRating(winner_arena_team->GetSlot());
+                        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA, rating ? rating : 1);
+                    }
+
+                    winner_arena_team->MemberWon(player, loser_matchmaker_rating, winner_matchmaker_change);
+                }
+                else
+                {
+                    loser_arena_team->MemberLost(player, winner_matchmaker_rating, loser_matchmaker_change);
+
+                    // Arena lost => reset the win_rated_arena having the "no_lose" condition
+                    player->GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA, ACHIEVEMENT_CRITERIA_CONDITION_NO_LOSE);
+                }
             }
 
-            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_BG, 1);
+            uint32 winner_kills = player->GetRandomWinner() ? BG_REWARD_WINNER_HONOR_LAST : BG_REWARD_WINNER_HONOR_FIRST;
+            uint32 loser_kills = player->GetRandomWinner() ? BG_REWARD_LOSER_HONOR_LAST : BG_REWARD_LOSER_HONOR_FIRST;
+            uint32 winner_arena = player->GetRandomWinner() ? BG_REWARD_WINNER_ARENA_LAST : BG_REWARD_WINNER_ARENA_FIRST;
+
+            // Reward winner team
+            if (team == winner)
+            {
+                if (IsRandom() || BattlegroundMgr::IsBGWeekend(GetTypeID()))
+                {
+                    UpdatePlayerScore(player, SCORE_BONUS_HONOR, GetBonusHonorFromKill(winner_kills));
+
+                    if (CanAwardArenaPoints())
+                        player->ModifyArenaPoints(winner_arena);
+
+                    if (!player->GetRandomWinner())
+                        player->SetRandomWinner(true);
+                }
+
+                player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_BG, 1);
+            }
+            else
+                if (IsRandom() || BattlegroundMgr::IsBGWeekend(GetTypeID()))
+                    UpdatePlayerScore(player, SCORE_BONUS_HONOR, GetBonusHonorFromKill(loser_kills));
+
+            player->ResetAllPowers();
+            player->CombatStopWithPets(true);
+
+            player->InterruptMovement();
+            player->SetClientControl(player, 0);
+
+            sBattlegroundMgr->BuildPvpLogDataPacket(&data, this);
+            player->GetSession()->SendPacket(&data);
+
+            BattlegroundQueueTypeId bgQueueTypeId = BattlegroundMgr::BGQueueTypeId(GetTypeID(), GetArenaType());
+            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, TIME_TO_AUTOREMOVE, m_Duration, GetArenaType());
+            player->GetSession()->SendPacket(&data);
+            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND, 1);
         }
         else
-        {
-            if (IsRandom() || BattlegroundMgr::IsBGWeekend(GetTypeID()))
-                UpdatePlayerScore(player, SCORE_BONUS_HONOR, GetBonusHonorFromKill(loser_kills));
-        }
-
-        player->ResetAllPowers();
-        player->CombatStopWithPets(true);
-
-        BlockMovement(player);
-
-        sBattlegroundMgr->BuildPvpLogDataPacket(&data, this);
-        player->GetSession()->SendPacket(&data);
-
-        BattlegroundQueueTypeId bgQueueTypeId = BattlegroundMgr::BGQueueTypeId(GetTypeID(), GetArenaType());
-        sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, TIME_TO_AUTOREMOVE, m_Duration, GetArenaType());
-        player->GetSession()->SendPacket(&data);
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND, 1);
+            if (IsRatedArena && winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
+                if (team == winner)
+                    winner_arena_team->OfflineMemberWon(itr->first, loser_matchmaker_rating, winner_matchmaker_change);
+                else
+                    loser_arena_team->OfflineMemberLost(itr->first, winner_matchmaker_rating, loser_matchmaker_change);
     }
 
     if (IsRatedArena && winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
@@ -956,15 +950,11 @@ uint32 Battleground::GetBonusHonorFromKill(uint32 kills) const
     return Trinity::Honor::hk_honor_at_level(maxLevel, float(kills));
 }
 
-void Battleground::BlockMovement(Player* player)
-{
-    player->SetClientControl(player, 0);                          // movement disabled NOTE: the effect will be automatically removed by client when the player is teleported from the battleground, so no need to send with uint8(1) in RemovePlayerAtLeave()
-}
-
 void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPacket)
 {
     uint32 team = GetPlayerTeam(guid);
     bool participant = false;
+    bool IsArena = isArena();
     // Remove from lists/maps
     BattlegroundPlayerMap::iterator itr = m_Players.find(guid);
     if (itr != m_Players.end())
@@ -975,7 +965,7 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         participant = true;
     }
 
-    if (!isArena())
+    if (!IsArena)
     {
         BattlegroundScoreMap::iterator itr2 = m_PlayerScores.find(guid);
         if (itr2 != m_PlayerScores.end())
@@ -992,6 +982,9 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
     // should remove spirit of redemption
     if (player)
     {
+        if (IsArena)
+            UpdatePlayerScore(player, SCORE_PLAYER_TEAM, player->GetArenaTeamColor() == ARENA_TEAM_COLOR_GOLD ? ALLIANCE : HORDE);
+
         if (player->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
             player->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT);
 
@@ -1020,22 +1013,9 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         {
             player->ClearAfkReports();
 
-            if (!team) team = player->GetTeam();
+            if (!team)
+                team = player->GetTeam();
 
-            // if arena, remove the specific arena auras
-            if (isArena())
-            {
-                bgTypeId=BATTLEGROUND_AA;                   // set the bg type to all arenas (it will be used for queue refreshing)
-
-                if (isRated() && GetStatus() == STATUS_IN_PROGRESS)
-                {
-                    //left a rated match while the encounter was in progress, consider as loser
-                    ArenaTeam* winner_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(GetOtherTeam(team)));
-                    ArenaTeam* loser_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(team));
-                    if (winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
-                        loser_arena_team->MemberLost(player, GetArenaMatchmakerRating(GetOtherTeam(team)));
-                }
-            }
             if (SendPacket)
             {
                 WorldPacket data;
@@ -1045,18 +1025,6 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
 
             // this call is important, because player, when joins to battleground, this method is not called, so it must be called when leaving bg
             player->RemoveBattlegroundQueueId(bgQueueTypeId);
-        }
-        else
-        // removing offline participant
-        {
-            if (isRated() && GetStatus() == STATUS_IN_PROGRESS)
-            {
-                //left a rated match while the encounter was in progress, consider as loser
-                ArenaTeam* others_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(GetOtherTeam(team)));
-                ArenaTeam* players_arena_team = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(team));
-                if (others_arena_team && players_arena_team)
-                    players_arena_team->OfflineMemberLost(guid, GetArenaMatchmakerRating(GetOtherTeam(team)));
-            }
         }
 
         // remove from raid group if player is member
@@ -1163,7 +1131,7 @@ void Battleground::AddPlayer(Player* player)
     m_Players[guid] = bp;
     m_PlayersCache[guid] = bp;
 
-    AddPlayerToScoreboard(player, team);
+    UpdatePlayerScore(player, SCORE_PLAYER_TEAM, team);
 
     UpdatePlayersCountByTeam(team, false);
 
@@ -1912,7 +1880,8 @@ void Battleground::PlayerAddedToBGCheckIfBGIsRunning(Player* player)
     WorldPacket data;
     BattlegroundQueueTypeId bgQueueTypeId = BattlegroundMgr::BGQueueTypeId(GetTypeID(), GetArenaType());
 
-    BlockMovement(player);
+    player->InterruptMovement();
+    player->SetClientControl(player, 0);
 
     sBattlegroundMgr->BuildPvpLogDataPacket(&data, this);
     player->GetSession()->SendPacket(&data);

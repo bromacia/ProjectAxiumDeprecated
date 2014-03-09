@@ -750,6 +750,7 @@ void ArenaTeam::MemberWon(Player* player, uint32 againstMatchmakerRating, int32 
                     weeklyArenaPoints = arenaPointsCap;
 
                 sPvPMgr->SetWeeklyArenaPoints(itr->Guid, weeklyArenaPoints);
+                player->ModifyArenaPoints(arenaPointsGain);
                 player->SendSysMessage("You have been awarded %u arena points for winning an arena match.", arenaPointsGain);
             }
 
@@ -826,7 +827,12 @@ void ArenaTeam::OfflineMemberWon(uint64 guid, uint32 againstMatchmakerRating, in
                 if (weeklyArenaPoints > arenaPointsCap)
                     weeklyArenaPoints = arenaPointsCap;
 
+                QueryResult result = CharacterDatabase.PQuery("SELECT totalArenaPoints FROM characters WHERE guid = '%u'", GUID_LOPART(guid));
+                if (!result)
+                    return;
+
                 sPvPMgr->SetWeeklyArenaPoints(itr->Guid, weeklyArenaPoints);
+                CharacterDatabase.PExecute("UPDATE characters SET totalArenaPoints= '%u' WHERE guid= '%u'", ((*result)[0].GetUInt32() + arenaPointsGain), GUID_LOPART(guid));
             }
 
             // Update personal rating

@@ -784,13 +784,9 @@ public:
         return true;
     }
 
-    static bool HandleDebugArenaCommand(ChatHandler* /*handler*/, char const* args)
+    static bool HandleDebugArenaCommand(ChatHandler* /*handler*/, char const* /*args*/)
     {
-        uint32 BgID = 0;
-        if (*args)
-            BgID = atoi(args);
-
-        sBattlegroundMgr->ToggleArenaTesting(BgID);
+        sBattlegroundMgr->ToggleArenaTesting();
         return true;
     }
 

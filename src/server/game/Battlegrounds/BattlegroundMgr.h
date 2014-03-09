@@ -107,7 +107,7 @@ class BattlegroundMgr
         uint32 GetPrematureFinishTime() const;
 
         void InitAutomaticArenaPointDistribution();
-        void ToggleArenaTesting(uint32 BgID);
+        void ToggleArenaTesting();
         void ToggleTesting();
 
         void SetHolidayWeekends(uint32 mask);
@@ -122,8 +122,6 @@ class BattlegroundMgr
 
         bool isArenaTesting() const { return m_ArenaTesting; }
         bool isTesting() const { return m_Testing; }
-
-        uint32 GetArenaTestingMap() { return m_ArenaTestingMap; }
 
         static bool IsArenaType(BattlegroundTypeId bgTypeId);
         static bool IsBattlegroundType(BattlegroundTypeId bgTypeId) { return !IsArenaType(bgTypeId); }
@@ -148,7 +146,6 @@ class BattlegroundMgr
         time_t m_NextAutoDistributionTime;
         uint32 m_AutoDistributionTimeChecker;
         bool   m_ArenaTesting;
-        uint32 m_ArenaTestingMap;
         bool   m_Testing;
 };
 
