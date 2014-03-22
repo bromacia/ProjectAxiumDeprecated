@@ -848,8 +848,6 @@ Player::Player(WorldSession* session): Unit(true), m_achievementMgr(this), m_rep
     m_lastFallTime = 0;
     m_lastFallZ = 0;
 
-    m_grantableLevels = 0;
-
     m_ControlledByPlayer = true;
 
     sWorld->IncreasePlayerCount();
@@ -16682,8 +16680,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     //"weekArenaPoints, totalArenaPoints, arenaPointsCap, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todayKills, yesterdayKills, chosenTitle, "
     // 49               50              51     52      53      54      55      56      57      58      59      60           61         62          63
     //"knownCurrencies, watchedFaction, drunk, health, power1, power2, power3, power4, power5, power6, power7, instance_id, speccount, activespec, exploredZones, "
-    // 64              65      66           67          68               69   70
-    //"equipmentCache, ammoId, knownTitles, actionBars, grantableLevels, vip, isFrozen "
+    // 64              65      66           67          68   69
+    //"equipmentCache, ammoId, knownTitles, actionBars, vip, isFrozen "
     //"FROM characters WHERE guid = '%u'", guid);
     PreparedQueryResult result = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
@@ -17295,12 +17293,6 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         }
     }
 
-    // RaF stuff.
-    m_grantableLevels = fields[68].GetUInt32();
-
-    if (m_grantableLevels > 0)
-        SetByteValue(PLAYER_FIELD_BYTES, 1, 0x01);
-
     _LoadDeclinedNames(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADDECLINEDNAMES));
 
     m_achievementMgr.CheckAllAchievementCriteria();
@@ -17309,9 +17301,9 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     _LoadTransmogSets();
 
-    m_vip = fields[69].GetBool();
+    m_vip = fields[68].GetBool();
 
-    m_isFrozen = fields[70].GetBool();
+    m_isFrozen = fields[69].GetBool();
 
     m_playerSpec = GetTalentSpec();
 
@@ -18802,7 +18794,6 @@ void Player::SaveToDB(bool create /*=false*/)
 
         stmt->setString(index++, ss.str());
         stmt->setUInt8(index++, GetByteValue(PLAYER_FIELD_BYTES, 2));
-        stmt->setUInt32(index++, m_grantableLevels);
     }
     else
     {
@@ -18913,7 +18904,6 @@ void Player::SaveToDB(bool create /*=false*/)
 
         stmt->setString(index++, ss.str());
         stmt->setUInt8(index++, GetByteValue(PLAYER_FIELD_BYTES, 2));
-        stmt->setUInt32(index++, m_grantableLevels);
 
         stmt->setUInt8(index++, IsInWorld() ? 1 : 0);
 
@@ -20970,7 +20960,7 @@ inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 c
 
     ModifyMoney(-price);
 
-    if (crItem->ExtendedCost && !(IsVIP() && pVendor->IsVipVendor()))
+    if (crItem->ExtendedCost && !(GetSession()->GetSecurity() >= SEC_VIP && pVendor->IsVipVendor()))
     {
         ItemExtendedCostEntry const* iece = sItemExtendedCostStore.LookupEntry(crItem->ExtendedCost);
         if (iece->reqhonorpoints)
@@ -21004,7 +20994,7 @@ inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 c
         if (!bStore)
             AutoUnequipOffhandIfNeed();
 
-        if (pProto->Flags & ITEM_PROTO_FLAG_REFUNDABLE && crItem->ExtendedCost && pProto->GetMaxStackSize() == 1 && !(IsVIP() && pVendor->IsVipVendor()))
+        if (pProto->Flags & ITEM_PROTO_FLAG_REFUNDABLE && crItem->ExtendedCost && pProto->GetMaxStackSize() == 1 && !(GetSession()->GetSecurity() >= SEC_VIP && pVendor->IsVipVendor()))
         {
             it->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
             it->SetRefundRecipient(GetGUIDLow());
@@ -21093,7 +21083,7 @@ bool Player::BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 
         return false;
     }
 
-    if (crItem->ExtendedCost && !(IsVIP() && creature->IsVipVendor()))
+    if (crItem->ExtendedCost && !(GetSession()->GetSecurity() >= SEC_VIP && creature->IsVipVendor()))
     {
         ItemExtendedCostEntry const* iece = sItemExtendedCostStore.LookupEntry(crItem->ExtendedCost);
         if (!iece)

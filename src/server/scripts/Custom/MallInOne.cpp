@@ -974,7 +974,7 @@ bool MallInOne::ShowInventory(Player* player, Creature* creature, uint32 invList
                 data << uint32(vItemTemplate->BuyPrice);        // Price
                 data << uint32(vItemTemplate->MaxDurability);   // Durability
                 data << uint32(vItemTemplate->BuyCount);        // Buy Count
-                if (player->IsVIP() && creature->IsVipVendor())
+                if (player->GetSession()->GetSecurity() >= SEC_VIP && creature->IsVipVendor())
                     data << uint32(0);
                 else
                     data << uint32(vItem->ExtendedCost);

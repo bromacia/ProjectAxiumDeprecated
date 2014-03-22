@@ -2991,8 +2991,6 @@ class Player : public Unit, public GridObject<Player>
 
         bool IsAlwaysDetectableFor(WorldObject const* seer) const;
 
-        uint32 m_grantableLevels;
-
         uint32 m_DelayedOperations;
 
     private:
