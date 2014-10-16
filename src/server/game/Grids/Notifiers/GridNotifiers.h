@@ -1,5 +1,5 @@
-#ifndef TRINITY_GRIDNOTIFIERS_H
-#define TRINITY_GRIDNOTIFIERS_H
+#ifndef AXIUM_GRIDNOTIFIERS_H
+#define AXIUM_GRIDNOTIFIERS_H
 
 #include "ObjectGridLoader.h"
 #include "UpdateData.h"
@@ -16,7 +16,7 @@
 class Player;
 //class Map;
 
-namespace Trinity
+namespace Axium
 {
     struct VisibleNotifier
     {

@@ -1,5 +1,5 @@
-#ifndef TRINITY_TOTEMAI_H
-#define TRINITY_TOTEMAI_H
+#ifndef AXIUM_TOTEMAI_H
+#define AXIUM_TOTEMAI_H
 
 #include "CreatureAI.h"
 #include "Timer.h"

@@ -85,8 +85,8 @@ bool ConfusedMovementGenerator<T>::Update(T &unit, const uint32 &diff)
             i_waypoints[idx][1] = y + wanderY;
 
             // prevent invalid coordinates generation
-            Trinity::NormalizeMapCoord(i_waypoints[idx][0]);
-            Trinity::NormalizeMapCoord(i_waypoints[idx][1]);
+            Axium::NormalizeMapCoord(i_waypoints[idx][0]);
+            Axium::NormalizeMapCoord(i_waypoints[idx][1]);
             i_waypoints[idx][2] =  z;
         }
 

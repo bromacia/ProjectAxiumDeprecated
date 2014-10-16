@@ -1,5 +1,5 @@
-#ifndef TRINITY_CREATUREAI_H
-#define TRINITY_CREATUREAI_H
+#ifndef AXIUM_CREATUREAI_H
+#define AXIUM_CREATUREAI_H
 
 #include "UnitAI.h"
 #include "Common.h"

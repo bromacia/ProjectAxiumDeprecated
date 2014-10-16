@@ -1,5 +1,5 @@
-#ifndef TRINITY_SMARTAI_H
-#define TRINITY_SMARTAI_H
+#ifndef AXIUM_SMARTAI_H
+#define AXIUM_SMARTAI_H
 
 #include "Common.h"
 #include "Creature.h"

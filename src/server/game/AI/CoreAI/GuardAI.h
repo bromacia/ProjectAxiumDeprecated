@@ -1,5 +1,5 @@
-#ifndef TRINITY_GUARDAI_H
-#define TRINITY_GUARDAI_H
+#ifndef AXIUM_GUARDAI_H
+#define AXIUM_GUARDAI_H
 
 #include "ScriptedCreature.h"
 #include "Timer.h"

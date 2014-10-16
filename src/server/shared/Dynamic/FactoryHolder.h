@@ -1,5 +1,5 @@
-#ifndef TRINITY_FACTORY_HOLDER
-#define TRINITY_FACTORY_HOLDER
+#ifndef AXIUM_FACTORY_HOLDER
+#define AXIUM_FACTORY_HOLDER
 
 #include "Define.h"
 #include "Dynamic/TypeList.h"

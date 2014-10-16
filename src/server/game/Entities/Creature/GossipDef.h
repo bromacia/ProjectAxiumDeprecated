@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_GOSSIP_H
-#define TRINITYCORE_GOSSIP_H
+#ifndef AXIUMCORE_GOSSIP_H
+#define AXIUMCORE_GOSSIP_H
 
 #include "Common.h"
 #include "QuestDef.h"

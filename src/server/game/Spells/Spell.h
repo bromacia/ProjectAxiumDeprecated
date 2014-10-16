@@ -204,14 +204,14 @@ enum SpellTargets
     SPELL_TARGETS_GO
 };
 
-namespace Trinity
+namespace Axium
 {
     struct SpellNotifierCreatureAndPlayer;
 }
 
 class Spell
 {
-    friend struct Trinity::SpellNotifierCreatureAndPlayer;
+    friend struct Axium::SpellNotifierCreatureAndPlayer;
     friend void Unit::SetCurrentCastedSpell(Spell* pSpell);
     friend class SpellScript;
     public:
@@ -662,7 +662,7 @@ class Spell
 #endif
 };
 
-namespace Trinity
+namespace Axium
 {
     struct SpellNotifierCreatureAndPlayer
     {

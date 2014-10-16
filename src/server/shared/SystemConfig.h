@@ -1,14 +1,14 @@
 // THIS FILE IS DEPRECATED
 
-#ifndef TRINITY_SYSTEMCONFIG_H
-#define TRINITY_SYSTEMCONFIG_H
+#ifndef AXIUM_SYSTEMCONFIG_H
+#define AXIUM_SYSTEMCONFIG_H
 
 #include "Define.h"
 #include "revision.h"
 
-#define _PACKAGENAME "TrinityCore"
+#define _PACKAGENAME "AxiumCore"
 
-#if TRINITY_ENDIAN == TRINITY_BIGENDIAN
+#if AXIUM_ENDIAN == AXIUM_BIGENDIAN
 # define _ENDIAN_STRING "big-endian"
 #else
 # define _ENDIAN_STRING "little-endian"

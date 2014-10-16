@@ -1,5 +1,5 @@
-#ifndef TRINITY_OBJECTREGISTRY_H
-#define TRINITY_OBJECTREGISTRY_H
+#ifndef AXIUM_OBJECTREGISTRY_H
+#define AXIUM_OBJECTREGISTRY_H
 
 #include "Define.h"
 #include "Dynamic/UnorderedMap.h"

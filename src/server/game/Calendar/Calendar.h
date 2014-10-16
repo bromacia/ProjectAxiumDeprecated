@@ -1,5 +1,5 @@
-#ifndef TRINITY_CALENDAR_H
-#define TRINITY_CALENDAR_H
+#ifndef AXIUM_CALENDAR_H
+#define AXIUM_CALENDAR_H
 
 class Calendar
 {

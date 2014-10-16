@@ -1,5 +1,5 @@
-#ifndef TRINITY_CONFUSEDGENERATOR_H
-#define TRINITY_CONFUSEDGENERATOR_H
+#ifndef AXIUM_CONFUSEDGENERATOR_H
+#define AXIUM_CONFUSEDGENERATOR_H
 
 #include "MovementGenerator.h"
 #include "Timer.h"

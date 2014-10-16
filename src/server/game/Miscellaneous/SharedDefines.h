@@ -1,5 +1,5 @@
-#ifndef TRINITY_SHAREDDEFINES_H
-#define TRINITY_SHAREDDEFINES_H
+#ifndef AXIUM_SHAREDDEFINES_H
+#define AXIUM_SHAREDDEFINES_H
 
 #include "DetourNavMesh.h"
 #include "Define.h"

@@ -1,5 +1,5 @@
-#ifndef TRINITYSERVER_PACKET_BUILDER_H
-#define TRINITYSERVER_PACKET_BUILDER_H
+#ifndef AXIUMSERVER_PACKET_BUILDER_H
+#define AXIUMSERVER_PACKET_BUILDER_H
 
 class ByteBuffer;
 class WorldPacket;
@@ -16,4 +16,4 @@ namespace Movement
             static void WriteCreate(const MoveSpline& mov, ByteBuffer& data);
     };
 }
-#endif // TRINITYSERVER_PACKET_BUILDER_H
+#endif // AXIUMSERVER_PACKET_BUILDER_H

@@ -1,5 +1,5 @@
-#ifndef TRINITY_WAYPOINTMOVEMENTGENERATOR_H
-#define TRINITY_WAYPOINTMOVEMENTGENERATOR_H
+#ifndef AXIUM_WAYPOINTMOVEMENTGENERATOR_H
+#define AXIUM_WAYPOINTMOVEMENTGENERATOR_H
 
 /* @page PathMovementGenerator is used to generate movements
  * of waypoints and flight paths.  Each serves the purpose

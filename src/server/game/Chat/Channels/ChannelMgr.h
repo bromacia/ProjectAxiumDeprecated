@@ -1,5 +1,5 @@
-#ifndef __TRINITY_CHANNELMGR_H
-#define __TRINITY_CHANNELMGR_H
+#ifndef __AXIUM_CHANNELMGR_H
+#define __AXIUM_CHANNELMGR_H
 
 #include "Common.h"
 #include "Channel.h"

@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_TOTEM_H
-#define TRINITYCORE_TOTEM_H
+#ifndef AXIUMCORE_TOTEM_H
+#define AXIUMCORE_TOTEM_H
 
 #include "TemporarySummon.h"
 

@@ -1,5 +1,5 @@
-#ifndef __TRINITY_SOCIALMGR_H
-#define __TRINITY_SOCIALMGR_H
+#ifndef __AXIUM_SOCIALMGR_H
+#define __AXIUM_SOCIALMGR_H
 
 #include <ace/Singleton.h>
 #include "DatabaseEnv.h"

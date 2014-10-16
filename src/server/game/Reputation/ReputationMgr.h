@@ -1,5 +1,5 @@
-#ifndef __TRINITY_REPUTATION_MGR_H
-#define __TRINITY_REPUTATION_MGR_H
+#ifndef __AXIUM_REPUTATION_MGR_H
+#define __AXIUM_REPUTATION_MGR_H
 
 #include "Common.h"
 #include "SharedDefines.h"

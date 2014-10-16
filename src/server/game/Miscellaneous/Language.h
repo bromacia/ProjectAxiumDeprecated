@@ -1,7 +1,7 @@
-#ifndef __TRINITY_LANGUAGE_H
-#define __TRINITY_LANGUAGE_H
+#ifndef __AXIUM_LANGUAGE_H
+#define __AXIUM_LANGUAGE_H
 
-enum TrinityStrings
+enum AxiumStrings
 {
     // for chat commands
     LANG_SELECT_CHAR_OR_CREATURE        = 1,
@@ -869,7 +869,7 @@ enum TrinityStrings
     LANG_BG_AV_START_TWO_MINUTES        = 1333,
     // FREE IDS                           1334-1999
 
-    // Trinity strings                    5000-9999
+    // Axium strings                    5000-9999
     LANG_COMMAND_FREEZE                 = 5000,
     LANG_COMMAND_FREEZE_ERROR           = 5001,
     LANG_COMMAND_FREEZE_WRONG           = 5002,
@@ -903,7 +903,7 @@ enum TrinityStrings
     LANG_COMMAND_LOOKUP_MAX_RESULTS     = 5029,
     LANG_FLEE                           = 5030,
     LANG_NPCINFO_AIINFO                 = 5031,
-    // Room for more Trinity strings      5032-9999
+    // Room for more Axium strings      5032-9999
 
     // Level requirement notifications
     LANG_SAY_REQ                        = 6604,

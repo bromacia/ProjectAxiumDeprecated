@@ -1,5 +1,5 @@
-#ifndef TRINITY_CREATUREAIFACTORY_H
-#define TRINITY_CREATUREAIFACTORY_H
+#ifndef AXIUM_CREATUREAIFACTORY_H
+#define AXIUM_CREATUREAIFACTORY_H
 
 //#include "Policies/Singleton.h"
 #include "ObjectRegistry.h"

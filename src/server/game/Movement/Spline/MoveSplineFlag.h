@@ -1,5 +1,5 @@
-#ifndef TRINITYSERVER_MOVESPLINEFLAG_H
-#define TRINITYSERVER_MOVESPLINEFLAG_H
+#ifndef AXIUMSERVER_MOVESPLINEFLAG_H
+#define AXIUMSERVER_MOVESPLINEFLAG_H
 #include "MovementTypedefs.h"
 
 #include <string>
@@ -125,4 +125,4 @@ namespace Movement
 #endif
 }
 
-#endif // TRINITYSERVER_MOVESPLINEFLAG_H
+#endif // AXIUMSERVER_MOVESPLINEFLAG_H

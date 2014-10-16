@@ -1,5 +1,5 @@
-#ifndef TRINITY_MAP_INSTANCED_H
-#define TRINITY_MAP_INSTANCED_H
+#ifndef AXIUM_MAP_INSTANCED_H
+#define AXIUM_MAP_INSTANCED_H
 
 #include "Map.h"
 #include "InstanceSaveMgr.h"

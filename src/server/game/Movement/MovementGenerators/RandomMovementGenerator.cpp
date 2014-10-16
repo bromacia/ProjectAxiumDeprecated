@@ -34,8 +34,8 @@ void RandomMovementGenerator<Creature>::_setRandomLocation(Creature &creature)
     destY = respY + distanceY;
 
     // prevent invalid coordinates generation
-    Trinity::NormalizeMapCoord(destX);
-    Trinity::NormalizeMapCoord(destY);
+    Axium::NormalizeMapCoord(destX);
+    Axium::NormalizeMapCoord(destY);
 
     travelDistZ = distanceX*distanceX + distanceY*distanceY;
 

@@ -1,5 +1,5 @@
-#ifndef TRINITY_GAMEEVENT_MGR_H
-#define TRINITY_GAMEEVENT_MGR_H
+#ifndef AXIUM_GAMEEVENT_MGR_H
+#define AXIUM_GAMEEVENT_MGR_H
 
 #include "Common.h"
 #include "SharedDefines.h"

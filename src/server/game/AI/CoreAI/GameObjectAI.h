@@ -1,5 +1,5 @@
-#ifndef TRINITY_GAMEOBJECTAI_H
-#define TRINITY_GAMEOBJECTAI_H
+#ifndef AXIUM_GAMEOBJECTAI_H
+#define AXIUM_GAMEOBJECTAI_H
 
 #include "Define.h"
 #include <list>

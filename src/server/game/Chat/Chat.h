@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_CHAT_H
-#define TRINITYCORE_CHAT_H
+#ifndef AXIUMCORE_CHAT_H
+#define AXIUMCORE_CHAT_H
 
 #include "SharedDefines.h"
 #include "Player.h"
@@ -48,7 +48,7 @@ class ChatHandler
         static char* LineFromMessage(char*& pos) { char* start = strtok(pos, "\n"); pos = NULL; return start; }
 
         // function with different implementation for chat/console
-        virtual const char *GetTrinityString(int32 entry) const;
+        virtual const char *GetAxiumString(int32 entry) const;
         virtual void SendSysMessage(const char *str);
 
         void SendSysMessage(int32 entry);
@@ -348,7 +348,7 @@ class CliHandler : public ChatHandler
         explicit CliHandler(void* callbackArg, Print* zprint) : m_callbackArg(callbackArg), m_print(zprint) {}
 
         // overwrite functions
-        const char *GetTrinityString(int32 entry) const;
+        const char *GetAxiumString(int32 entry) const;
         bool isAvailable(ChatCommand const& cmd) const;
         void SendSysMessage(const char *str);
         std::string GetNameLink() const;

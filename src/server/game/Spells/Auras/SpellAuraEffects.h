@@ -1,5 +1,5 @@
-#ifndef TRINITY_SPELLAURAEFFECTS_H
-#define TRINITY_SPELLAURAEFFECTS_H
+#ifndef AXIUM_SPELLAURAEFFECTS_H
+#define AXIUM_SPELLAURAEFFECTS_H
 
 class Unit;
 class AuraEffect;
@@ -286,7 +286,7 @@ class AuraEffect
         void HandleRaidProcFromChargeWithValueAuraProc(AuraApplication* aurApp, ProcEventInfo& eventInfo);
 };
 
-namespace Trinity
+namespace Axium
 {
     // Binary predicate for sorting the priority of absorption aura effects
     class AbsorbAuraOrderPred

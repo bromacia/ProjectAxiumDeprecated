@@ -1,5 +1,5 @@
-#ifndef TRINITY_GRIDSTATES_H
-#define TRINITY_GRIDSTATES_H
+#ifndef AXIUM_GRIDSTATES_H
+#define AXIUM_GRIDSTATES_H
 
 #include "Map.h"
 #include "Object.h"
@@ -7,7 +7,7 @@
 class GridState
 {
     public:
-#ifdef TRINITY_DEBUG
+#ifdef AXIUM_DEBUG
 #define MAGIC_TESTVAL 0xFBE823BA
         GridState() { i_Magic = MAGIC_TESTVAL; }
         bool checkMagic()

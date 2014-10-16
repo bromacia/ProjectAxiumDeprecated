@@ -130,7 +130,7 @@ namespace MMAP
         dtStatus stat;
 
         {
-            TRINITY_WRITE_GUARD(ACE_RW_Thread_Mutex, i_tileLock);
+            AXIUM_WRITE_GUARD(ACE_RW_Thread_Mutex, i_tileLock);
             stat = mmap->navMesh->addTile(data, fileHeader.size, DT_TILE_FREE_DATA, 0, &tileRef);
         }
         // memory allocated for data is now managed by detour, and will be deallocated when the tile is removed
@@ -177,7 +177,7 @@ namespace MMAP
         dtStatus status;
         // unload, and mark as non loaded
         {
-            TRINITY_WRITE_GUARD(ACE_RW_Thread_Mutex, i_tileLock);
+            AXIUM_WRITE_GUARD(ACE_RW_Thread_Mutex, i_tileLock);
             status = mmap->navMesh->removeTile(tileRef, NULL, NULL);
         }
 

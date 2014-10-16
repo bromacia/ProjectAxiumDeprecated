@@ -1,5 +1,5 @@
-#ifndef TRINITY_CREATURE_EAI_H
-#define TRINITY_CREATURE_EAI_H
+#ifndef AXIUM_CREATURE_EAI_H
+#define AXIUM_CREATURE_EAI_H
 
 #include "Common.h"
 #include "Creature.h"

@@ -1,5 +1,5 @@
-#ifndef TRINITY_DBCSTRUCTURE_H
-#define TRINITY_DBCSTRUCTURE_H
+#ifndef AXIUM_DBCSTRUCTURE_H
+#define AXIUM_DBCSTRUCTURE_H
 
 #include "Common.h"
 #include "DBCEnums.h"

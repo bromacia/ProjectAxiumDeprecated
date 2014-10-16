@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_ERRORS_H
-#define TRINITYCORE_ERRORS_H
+#ifndef AXIUMCORE_ERRORS_H
+#define AXIUMCORE_ERRORS_H
 
 #include "Common.h"
 #include "Log.h"

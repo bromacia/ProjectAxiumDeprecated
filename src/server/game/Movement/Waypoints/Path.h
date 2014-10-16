@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_PATH_H
-#define TRINITYCORE_PATH_H
+#ifndef AXIUMCORE_PATH_H
+#define AXIUMCORE_PATH_H
 
 #include "Common.h"
 #include <deque>

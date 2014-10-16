@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_CORPSE_H
-#define TRINITYCORE_CORPSE_H
+#ifndef AXIUMCORE_CORPSE_H
+#define AXIUMCORE_CORPSE_H
 
 #include "Object.h"
 #include "DatabaseEnv.h"

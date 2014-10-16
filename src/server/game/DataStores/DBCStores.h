@@ -1,5 +1,5 @@
-#ifndef TRINITY_DBCSTORES_H
-#define TRINITY_DBCSTORES_H
+#ifndef AXIUM_DBCSTORES_H
+#define AXIUM_DBCSTORES_H
 
 #include "Common.h"
 #include "DBCStore.h"

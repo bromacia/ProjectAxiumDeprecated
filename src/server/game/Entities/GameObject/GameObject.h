@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_GAMEOBJECT_H
-#define TRINITYCORE_GAMEOBJECT_H
+#ifndef AXIUMCORE_GAMEOBJECT_H
+#define AXIUMCORE_GAMEOBJECT_H
 
 #include "Common.h"
 #include "SharedDefines.h"

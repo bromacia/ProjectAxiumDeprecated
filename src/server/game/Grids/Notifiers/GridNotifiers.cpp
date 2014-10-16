@@ -10,7 +10,7 @@
 #include "CellImpl.h"
 #include "SpellInfo.h"
 
-using namespace Trinity;
+using namespace Axium;
 
 void VisibleNotifier::SendToSelf()
 {
@@ -207,7 +207,7 @@ void DelayedUnitRelocation::Visit(PlayerMapType &m)
         if (player != player->m_seer && !player->m_seer->IsPositionValid())
             continue;
 
-        CellCoord pair2(Trinity::ComputeCellCoord(player->m_seer->GetPositionX(), player->m_seer->GetPositionY()));
+        CellCoord pair2(Axium::ComputeCellCoord(player->m_seer->GetPositionX(), player->m_seer->GetPositionY()));
         Cell cell2(pair2);
         //cell.SetNoCreate(); need load cells around viewPoint or player, that's why its commented
 

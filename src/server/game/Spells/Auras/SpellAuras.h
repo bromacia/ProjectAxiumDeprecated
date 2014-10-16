@@ -1,5 +1,5 @@
-#ifndef TRINITY_SPELLAURAS_H
-#define TRINITY_SPELLAURAS_H
+#ifndef AXIUM_SPELLAURAS_H
+#define AXIUM_SPELLAURAS_H
 
 #include "SpellAuraDefines.h"
 #include "SpellInfo.h"

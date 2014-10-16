@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_ITEM_H
-#define TRINITYCORE_ITEM_H
+#ifndef AXIUMCORE_ITEM_H
+#define AXIUMCORE_ITEM_H
 
 #include "Common.h"
 #include "Object.h"

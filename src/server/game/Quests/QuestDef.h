@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_QUEST_H
-#define TRINITYCORE_QUEST_H
+#ifndef AXIUMCORE_QUEST_H
+#define AXIUMCORE_QUEST_H
 
 #include "Define.h"
 #include "DatabaseEnv.h"
@@ -127,20 +127,20 @@ enum __QuestFlags
     QUEST_FLAGS_OBJ_TEXT       = 0x00040000,                // use Objective text as Complete text
     QUEST_FLAGS_AUTO_ACCEPT    = 0x00080000,                // The client recognizes this flag as auto-accept. However, NONE of the current quests (3.3.5a) have this flag. Maybe blizz used to use it, or will use it in the future.
 
-    // Trinity flags for set SpecialFlags in DB if required but used only at server
-    QUEST_TRINITY_FLAGS_REPEATABLE           = 0x00100000,   // Set by 1 in SpecialFlags from DB
-    QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT = 0x00200000,   // Set by 2 in SpecialFlags from DB (if reequired area explore, spell SPELL_EFFECT_QUEST_COMPLETE casting, table `*_script` command SCRIPT_COMMAND_QUEST_EXPLORED use, set from script)
-    QUEST_TRINITY_FLAGS_AUTO_ACCEPT          = 0x00400000,  // Set by 4 in SpecialFlags in DB if the quest is to be auto-accepted.
-    QUEST_TRINITY_FLAGS_DF_QUEST             = 0x00800000,  // Set by 8 in SpecialFlags in DB if the quest is used by Dungeon Finder.
+    // Axium flags for set SpecialFlags in DB if required but used only at server
+    QUEST_AXIUM_FLAGS_REPEATABLE           = 0x00100000,   // Set by 1 in SpecialFlags from DB
+    QUEST_AXIUM_FLAGS_EXPLORATION_OR_EVENT = 0x00200000,   // Set by 2 in SpecialFlags from DB (if reequired area explore, spell SPELL_EFFECT_QUEST_COMPLETE casting, table `*_script` command SCRIPT_COMMAND_QUEST_EXPLORED use, set from script)
+    QUEST_AXIUM_FLAGS_AUTO_ACCEPT          = 0x00400000,  // Set by 4 in SpecialFlags in DB if the quest is to be auto-accepted.
+    QUEST_AXIUM_FLAGS_DF_QUEST             = 0x00800000,  // Set by 8 in SpecialFlags in DB if the quest is used by Dungeon Finder.
 
-    QUEST_TRINITY_FLAGS_DB_ALLOWED = 0xFFFFF | QUEST_TRINITY_FLAGS_REPEATABLE | QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT | QUEST_TRINITY_FLAGS_AUTO_ACCEPT | QUEST_TRINITY_FLAGS_DF_QUEST,
+    QUEST_AXIUM_FLAGS_DB_ALLOWED = 0xFFFFF | QUEST_AXIUM_FLAGS_REPEATABLE | QUEST_AXIUM_FLAGS_EXPLORATION_OR_EVENT | QUEST_AXIUM_FLAGS_AUTO_ACCEPT | QUEST_AXIUM_FLAGS_DF_QUEST,
 
-    // Trinity flags for internal use only
-    QUEST_TRINITY_FLAGS_DELIVER              = 0x04000000,   // Internal flag computed only
-    QUEST_TRINITY_FLAGS_SPEAKTO              = 0x08000000,   // Internal flag computed only
-    QUEST_TRINITY_FLAGS_KILL_OR_CAST         = 0x10000000,   // Internal flag computed only
-    QUEST_TRINITY_FLAGS_TIMED                = 0x20000000,   // Internal flag computed only
-    QUEST_TRINITY_FLAGS_PLAYER_KILL          = 0x40000000,   // Internal flag computed only
+    // Axium flags for internal use only
+    QUEST_AXIUM_FLAGS_DELIVER              = 0x04000000,   // Internal flag computed only
+    QUEST_AXIUM_FLAGS_SPEAKTO              = 0x08000000,   // Internal flag computed only
+    QUEST_AXIUM_FLAGS_KILL_OR_CAST         = 0x10000000,   // Internal flag computed only
+    QUEST_AXIUM_FLAGS_TIMED                = 0x20000000,   // Internal flag computed only
+    QUEST_AXIUM_FLAGS_PLAYER_KILL          = 0x40000000,   // Internal flag computed only
 };
 
 struct QuestLocale
@@ -228,7 +228,7 @@ class Quest
         uint32 GetCompleteEmote() const { return EmoteOnComplete; }
         uint32 GetQuestStartScript() const { return StartScript; }
         uint32 GetQuestCompleteScript() const { return CompleteScript; }
-        bool   IsRepeatable() const { return Flags & QUEST_TRINITY_FLAGS_REPEATABLE; }
+        bool   IsRepeatable() const { return Flags & QUEST_AXIUM_FLAGS_REPEATABLE; }
         bool   IsAutoAccept() const;
         bool   IsAutoComplete() const;
         uint32 GetFlags() const { return Flags; }
@@ -238,7 +238,7 @@ class Quest
         bool   IsDailyOrWeekly() const { return Flags & (QUEST_FLAGS_DAILY | QUEST_FLAGS_WEEKLY); }
         bool   IsRaidQuest() const { return Type == QUEST_TYPE_RAID || Type == QUEST_TYPE_RAID_10 || Type == QUEST_TYPE_RAID_25; }
         bool   IsAllowedInRaid() const;
-        bool   IsDFQuest() const { return Flags & QUEST_TRINITY_FLAGS_DF_QUEST; }
+        bool   IsDFQuest() const { return Flags & QUEST_AXIUM_FLAGS_DF_QUEST; }
         uint32 CalculateHonorGain(uint8 level) const;
 
         // multiple values

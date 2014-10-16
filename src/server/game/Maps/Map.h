@@ -1,5 +1,5 @@
-#ifndef TRINITY_MAP_H
-#define TRINITY_MAP_H
+#ifndef AXIUM_MAP_H
+#define AXIUM_MAP_H
 
 #include "Define.h"
 #include <ace/RW_Thread_Mutex.h>
@@ -34,7 +34,7 @@ struct Position;
 class Battleground;
 class MapInstanced;
 class InstanceMap;
-namespace Trinity { struct ObjectUpdater; }
+namespace Axium { struct ObjectUpdater; }
 
 struct ScriptAction
 {
@@ -239,7 +239,7 @@ class Map : public GridRefManager<NGridType>
         template<class T> bool AddToMap(T *);
         template<class T> void RemoveFromMap(T *, bool);
 
-        void VisitNearbyCellsOf(WorldObject* obj, TypeContainerVisitor<Trinity::ObjectUpdater, GridTypeMapContainer> &gridVisitor, TypeContainerVisitor<Trinity::ObjectUpdater, WorldTypeMapContainer> &worldVisitor);
+        void VisitNearbyCellsOf(WorldObject* obj, TypeContainerVisitor<Axium::ObjectUpdater, GridTypeMapContainer> &gridVisitor, TypeContainerVisitor<Axium::ObjectUpdater, WorldTypeMapContainer> &worldVisitor);
         virtual void Update(const uint32);
 
         float GetVisibilityRange() const { return m_VisibleDistance; }
@@ -253,13 +253,13 @@ class Map : public GridRefManager<NGridType>
 
         bool IsRemovalGrid(float x, float y) const
         {
-            GridCoord p = Trinity::ComputeGridCoord(x, y);
+            GridCoord p = Axium::ComputeGridCoord(x, y);
             return !getNGrid(p.x_coord, p.y_coord) || getNGrid(p.x_coord, p.y_coord)->GetGridState() == GRID_STATE_REMOVAL;
         }
 
         bool IsGridLoaded(float x, float y) const
         {
-            return IsGridLoaded(Trinity::ComputeGridCoord(x, y));
+            return IsGridLoaded(Axium::ComputeGridCoord(x, y));
         }
 
         bool GetUnloadLock(const GridCoord &p) const { return getNGrid(p.x_coord, p.y_coord)->getUnloadLock(); }
@@ -666,7 +666,7 @@ inline void Map::Visit(Cell const& cell, TypeContainerVisitor<T, CONTAINER>& vis
 template<class NOTIFIER>
 inline void Map::VisitAll(float const& x, float const& y, float radius, NOTIFIER& notifier)
 {
-    CellCoord p(Trinity::ComputeCellCoord(x, y));
+    CellCoord p(Axium::ComputeCellCoord(x, y));
     Cell cell(p);
     cell.SetNoCreate();
 
@@ -680,7 +680,7 @@ inline void Map::VisitAll(float const& x, float const& y, float radius, NOTIFIER
 template<class NOTIFIER>
 inline void Map::VisitFirstFound(const float &x, const float &y, float radius, NOTIFIER &notifier)
 {
-    CellCoord p(Trinity::ComputeCellCoord(x, y));
+    CellCoord p(Axium::ComputeCellCoord(x, y));
     Cell cell(p);
     cell.SetNoCreate();
 
@@ -696,7 +696,7 @@ inline void Map::VisitFirstFound(const float &x, const float &y, float radius, N
 template<class NOTIFIER>
 inline void Map::VisitWorld(const float &x, const float &y, float radius, NOTIFIER &notifier)
 {
-    CellCoord p(Trinity::ComputeCellCoord(x, y));
+    CellCoord p(Axium::ComputeCellCoord(x, y));
     Cell cell(p);
     cell.SetNoCreate();
 
@@ -707,7 +707,7 @@ inline void Map::VisitWorld(const float &x, const float &y, float radius, NOTIFI
 template<class NOTIFIER>
 inline void Map::VisitGrid(const float &x, const float &y, float radius, NOTIFIER &notifier)
 {
-    CellCoord p(Trinity::ComputeCellCoord(x, y));
+    CellCoord p(Axium::ComputeCellCoord(x, y));
     Cell cell(p);
     cell.SetNoCreate();
 

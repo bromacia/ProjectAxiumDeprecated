@@ -1,5 +1,5 @@
-#ifndef TRINITYSERVER_MOVESPLINEINIT_H
-#define TRINITYSERVER_MOVESPLINEINIT_H
+#ifndef AXIUMSERVER_MOVESPLINEINIT_H
+#define AXIUMSERVER_MOVESPLINEINIT_H
 
 #include "MoveSplineInitArgs.h"
 #include "PathFinderMovementGenerator.h"
@@ -166,4 +166,4 @@ namespace Movement
 
     inline void MoveSplineInit::DisableTransportPathTransformations() { args.TransformForTransport = false; }
 }
-#endif // TRINITYSERVER_MOVESPLINEINIT_H
+#endif // AXIUMSERVER_MOVESPLINEINIT_H

@@ -1,5 +1,5 @@
-#ifndef TRINITY_WAYPOINTMANAGER_H
-#define TRINITY_WAYPOINTMANAGER_H
+#ifndef AXIUM_WAYPOINTMANAGER_H
+#define AXIUM_WAYPOINTMANAGER_H
 
 #include <ace/Singleton.h>
 #include <ace/Null_Mutex.h>

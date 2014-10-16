@@ -41,8 +41,8 @@ bool PathFinderMovementGenerator::Calculate(float destX, float destY, float dest
 
     _clear();
 
-    if (!Trinity::IsValidMapCoord(destX, destY, destZ) ||
-        !Trinity::IsValidMapCoord(_sourceUnit->GetPositionX(), _sourceUnit->GetPositionY(), _sourceUnit->GetPositionZ()))
+    if (!Axium::IsValidMapCoord(destX, destY, destZ) ||
+        !Axium::IsValidMapCoord(_sourceUnit->GetPositionX(), _sourceUnit->GetPositionY(), _sourceUnit->GetPositionZ()))
         return false;
 
     Vector3 oldDest = GetEndPosition();
@@ -71,7 +71,7 @@ bool PathFinderMovementGenerator::Calculate(float destX, float destY, float dest
     _updateFilter();
 
     // target moved, so we need to update the poly path
-    TRINITY_GUARD(ACE_Thread_Mutex, _lock);
+    AXIUM_GUARD(ACE_Thread_Mutex, _lock);
     _buildPolyPath(start, dest);
     return true;
 }

@@ -1,5 +1,5 @@
-#ifndef TRINITY_BAG_H
-#define TRINITY_BAG_H
+#ifndef AXIUM_BAG_H
+#define AXIUM_BAG_H
 
 // Maximum 36 Slots ((CONTAINER_END - CONTAINER_FIELD_SLOT_1)/2
 #define MAX_BAG_SIZE 36                                     // 2.0.12

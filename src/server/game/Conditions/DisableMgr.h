@@ -1,5 +1,5 @@
-#ifndef TRINITY_DISABLEMGR_H
-#define TRINITY_DISABLEMGR_H
+#ifndef AXIUM_DISABLEMGR_H
+#define AXIUM_DISABLEMGR_H
 
 #include "Define.h"
 
@@ -44,4 +44,4 @@ namespace DisableMgr
     void CheckQuestDisables();
 }
 
-#endif //TRINITY_DISABLEMGR_H
+#endif //AXIUM_DISABLEMGR_H

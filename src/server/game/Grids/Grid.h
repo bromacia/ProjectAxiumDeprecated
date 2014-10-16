@@ -1,5 +1,5 @@
-#ifndef TRINITY_GRID_H
-#define TRINITY_GRID_H
+#ifndef AXIUM_GRID_H
+#define AXIUM_GRID_H
 
 /*
   @class Grid

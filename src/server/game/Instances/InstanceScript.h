@@ -1,5 +1,5 @@
-#ifndef TRINITY_INSTANCE_DATA_H
-#define TRINITY_INSTANCE_DATA_H
+#ifndef AXIUM_INSTANCE_DATA_H
+#define AXIUM_INSTANCE_DATA_H
 
 #include "ZoneScript.h"
 #include "World.h"

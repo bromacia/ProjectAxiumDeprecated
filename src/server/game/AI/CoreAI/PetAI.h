@@ -1,5 +1,5 @@
-#ifndef TRINITY_PETAI_H
-#define TRINITY_PETAI_H
+#ifndef AXIUM_PETAI_H
+#define AXIUM_PETAI_H
 
 #include "CreatureAI.h"
 #include "Timer.h"

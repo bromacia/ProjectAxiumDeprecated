@@ -1,5 +1,5 @@
-#ifndef TRINITY_MOVEMENTGENERATOR_H
-#define TRINITY_MOVEMENTGENERATOR_H
+#ifndef AXIUM_MOVEMENTGENERATOR_H
+#define AXIUM_MOVEMENTGENERATOR_H
 
 #include "Define.h"
 #include <ace/Singleton.h>

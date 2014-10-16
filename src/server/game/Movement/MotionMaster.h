@@ -1,5 +1,5 @@
-#ifndef TRINITY_MOTIONMASTER_H
-#define TRINITY_MOTIONMASTER_H
+#ifndef AXIUM_MOTIONMASTER_H
+#define AXIUM_MOTIONMASTER_H
 
 #include "Common.h"
 #include <vector>

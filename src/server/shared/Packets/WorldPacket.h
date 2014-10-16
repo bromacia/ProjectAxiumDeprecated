@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_WORLDPACKET_H
-#define TRINITYCORE_WORLDPACKET_H
+#ifndef AXIUMCORE_WORLDPACKET_H
+#define AXIUMCORE_WORLDPACKET_H
 
 #include "Common.h"
 #include "ByteBuffer.h"

@@ -3,7 +3,7 @@
 
 #include <ace/Event_Handler.h>
 
-namespace Trinity
+namespace Axium
 {
 
 /// Handle termination signals

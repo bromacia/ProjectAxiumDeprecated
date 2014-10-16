@@ -1,5 +1,5 @@
-#ifndef TRINITY_REACTORAI_H
-#define TRINITY_REACTORAI_H
+#ifndef AXIUM_REACTORAI_H
+#define AXIUM_REACTORAI_H
 
 #include "CreatureAI.h"
 

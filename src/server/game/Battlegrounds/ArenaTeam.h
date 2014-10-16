@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_ARENATEAM_H
-#define TRINITYCORE_ARENATEAM_H
+#ifndef AXIUMCORE_ARENATEAM_H
+#define AXIUMCORE_ARENATEAM_H
 
 #include "QueryResult.h"
 #include <ace/Singleton.h>

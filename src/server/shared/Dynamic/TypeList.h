@@ -1,5 +1,5 @@
-#ifndef TRINITY_TYPELIST_H
-#define TRINITY_TYPELIST_H
+#ifndef AXIUM_TYPELIST_H
+#define AXIUM_TYPELIST_H
 
 /*
   @struct TypeList

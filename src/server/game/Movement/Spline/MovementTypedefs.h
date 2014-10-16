@@ -1,5 +1,5 @@
-#ifndef TRINITYSERVER_TYPEDEFS_H
-#define TRINITYSERVER_TYPEDEFS_H
+#ifndef AXIUMSERVER_TYPEDEFS_H
+#define AXIUMSERVER_TYPEDEFS_H
 
 #include "Common.h"
 
@@ -61,4 +61,4 @@ namespace Movement
     extern UInt32Counter splineIdGen;
 }
 
-#endif // TRINITYSERVER_TYPEDEFS_H
+#endif // AXIUMSERVER_TYPEDEFS_H

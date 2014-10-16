@@ -1,5 +1,5 @@
-#ifndef TRINITY_OBJECTGRIDLOADER_H
-#define TRINITY_OBJECTGRIDLOADER_H
+#ifndef AXIUM_OBJECTGRIDLOADER_H
+#define AXIUM_OBJECTGRIDLOADER_H
 
 #include "TypeList.h"
 #include "Define.h"

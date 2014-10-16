@@ -2,8 +2,8 @@
 /// @{
 /// \file
 
-#ifndef TRINITY_WORLDLOG_H
-#define TRINITY_WORLDLOG_H
+#ifndef AXIUM_WORLDLOG_H
+#define AXIUM_WORLDLOG_H
 
 #include "Common.h"
 #include <ace/Singleton.h>

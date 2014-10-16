@@ -1,5 +1,5 @@
 /** \file
-    \ingroup Trinityd
+    \ingroup Axiumd
 */
 
 #include <ace/Sig_Handler.h>
@@ -31,7 +31,7 @@ extern int m_ServiceStatus;
 #endif
 
 /// Handle worldservers's termination signals
-class WorldServerSignalHandler : public Trinity::SignalHandler
+class WorldServerSignalHandler : public Axium::SignalHandler
 {
     public:
         virtual void HandleSignal(int SigNum)

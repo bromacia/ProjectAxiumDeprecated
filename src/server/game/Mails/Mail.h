@@ -1,5 +1,5 @@
-#ifndef TRINITY_MAIL_H
-#define TRINITY_MAIL_H
+#ifndef AXIUM_MAIL_H
+#define AXIUM_MAIL_H
 
 #include "Common.h"
 #include <map>

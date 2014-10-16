@@ -1,5 +1,5 @@
 /** \file
-    \ingroup Trinityd
+    \ingroup Axiumd
 */
 
 #include "Common.h"

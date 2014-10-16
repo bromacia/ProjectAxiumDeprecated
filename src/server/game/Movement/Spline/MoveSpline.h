@@ -1,5 +1,5 @@
-#ifndef TRINITYSERVER_MOVEPLINE_H
-#define TRINITYSERVER_MOVEPLINE_H
+#ifndef AXIUMSERVER_MOVEPLINE_H
+#define AXIUMSERVER_MOVEPLINE_H
 
 #include "Spline.h"
 #include "MoveSplineInitArgs.h"
@@ -106,4 +106,4 @@ namespace Movement
             std::string ToString() const;
     };
 }
-#endif // TRINITYSERVER_MOVEPLINE_H
+#endif // AXIUMSERVER_MOVEPLINE_H

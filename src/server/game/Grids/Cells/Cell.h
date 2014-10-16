@@ -1,5 +1,5 @@
-#ifndef TRINITY_CELL_H
-#define TRINITY_CELL_H
+#ifndef AXIUM_CELL_H
+#define AXIUM_CELL_H
 
 #include <cmath>
 

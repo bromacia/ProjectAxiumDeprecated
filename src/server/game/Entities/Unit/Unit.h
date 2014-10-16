@@ -2406,7 +2406,7 @@ class Unit : public WorldObject
         ShapeshiftForm m_oldShapeshiftForm;
 };
 
-namespace Trinity
+namespace Axium
 {
     // Binary predicate for sorting Units based on percent value of a power
     class PowerPctOrderPred

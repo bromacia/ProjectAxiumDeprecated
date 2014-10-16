@@ -1,5 +1,5 @@
-#ifndef TRINITY_CREATURE_EAI_MGR_H
-#define TRINITY_CREATURE_EAI_MGR_H
+#ifndef AXIUM_CREATURE_EAI_MGR_H
+#define AXIUM_CREATURE_EAI_MGR_H
 
 #include "Common.h"
 #include "CreatureEventAI.h"

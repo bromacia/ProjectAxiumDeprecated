@@ -1,5 +1,5 @@
-#ifndef __TRINITY_VEHICLEDEFINES_H
-#define __TRINITY_VEHICLEDEFINES_H
+#ifndef __AXIUM_VEHICLEDEFINES_H
+#define __AXIUM_VEHICLEDEFINES_H
 
 #include "Define.h"
 #include <vector>

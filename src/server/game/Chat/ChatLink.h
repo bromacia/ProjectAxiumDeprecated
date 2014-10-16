@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_CHATLINK_H
-#define TRINITYCORE_CHATLINK_H
+#ifndef AXIUMCORE_CHATLINK_H
+#define AXIUMCORE_CHATLINK_H
 
 #include "SharedDefines.h"
 #include <sstream>
@@ -150,4 +150,4 @@ private:
 };
 
 
-#endif // TRINITYCORE_CHATLINK_H
+#endif // AXIUMCORE_CHATLINK_H

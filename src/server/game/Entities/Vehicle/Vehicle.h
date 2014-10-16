@@ -1,5 +1,5 @@
-#ifndef __TRINITY_VEHICLE_H
-#define __TRINITY_VEHICLE_H
+#ifndef __AXIUM_VEHICLE_H
+#define __AXIUM_VEHICLE_H
 
 #include "ObjectDefines.h"
 #include "VehicleDefines.h"

@@ -1,5 +1,5 @@
-#ifndef TRINITY_SMARTSCRIPTMGR_H
-#define TRINITY_SMARTSCRIPTMGR_H
+#ifndef AXIUM_SMARTSCRIPTMGR_H
+#define AXIUM_SMARTSCRIPTMGR_H
 
 #include "Common.h"
 #include "Creature.h"

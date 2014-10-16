@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_LOG_H
-#define TRINITYCORE_LOG_H
+#ifndef AXIUMCORE_LOG_H
+#define AXIUMCORE_LOG_H
 
 #include "Common.h"
 #include <ace/Singleton.h>

@@ -1,5 +1,5 @@
-#ifndef __TRINITY_ACHIEVEMENTMGR_H
-#define __TRINITY_ACHIEVEMENTMGR_H
+#ifndef __AXIUM_ACHIEVEMENTMGR_H
+#define __AXIUM_ACHIEVEMENTMGR_H
 
 #include <map>
 #include <string>

@@ -1,5 +1,5 @@
-#ifndef TRINITY_COMBATAI_H
-#define TRINITY_COMBATAI_H
+#ifndef AXIUM_COMBATAI_H
+#define AXIUM_COMBATAI_H
 
 #include "CreatureAI.h"
 #include "CreatureAIImpl.h"

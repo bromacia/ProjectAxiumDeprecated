@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_PET_H
-#define TRINITYCORE_PET_H
+#ifndef AXIUMCORE_PET_H
+#define AXIUMCORE_PET_H
 
 #include "ObjectDefines.h"
 #include "Unit.h"

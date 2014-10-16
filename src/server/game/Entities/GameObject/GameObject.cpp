@@ -435,8 +435,8 @@ void GameObject::Update(uint32 diff)
                         // environmental damage spells already have around enemies targeting but this not help in case not existed GO casting support
                         // affect only players
                         Player* player = NULL;
-                        Trinity::AnyPlayerInObjectRangeCheck checker(this, radius);
-                        Trinity::PlayerSearcher<Trinity::AnyPlayerInObjectRangeCheck> searcher(this, player, checker);
+                        Axium::AnyPlayerInObjectRangeCheck checker(this, radius);
+                        Axium::PlayerSearcher<Axium::AnyPlayerInObjectRangeCheck> searcher(this, player, checker);
                         VisitNearbyWorldObject(radius, searcher);
                         target = player;
                     }
@@ -953,13 +953,13 @@ void GameObject::TriggeringLinkedGameObject(uint32 trapEntry, Unit* target)
     GameObject* trapGO = NULL;
     {
         // using original GO distance
-        CellCoord p(Trinity::ComputeCellCoord(GetPositionX(), GetPositionY()));
+        CellCoord p(Axium::ComputeCellCoord(GetPositionX(), GetPositionY()));
         Cell cell(p);
 
-        Trinity::NearestGameObjectEntryInObjectRangeCheck go_check(*target, trapEntry, range);
-        Trinity::GameObjectLastSearcher<Trinity::NearestGameObjectEntryInObjectRangeCheck> checker(this, trapGO, go_check);
+        Axium::NearestGameObjectEntryInObjectRangeCheck go_check(*target, trapEntry, range);
+        Axium::GameObjectLastSearcher<Axium::NearestGameObjectEntryInObjectRangeCheck> checker(this, trapGO, go_check);
 
-        TypeContainerVisitor<Trinity::GameObjectLastSearcher<Trinity::NearestGameObjectEntryInObjectRangeCheck>, GridTypeMapContainer > object_checker(checker);
+        TypeContainerVisitor<Axium::GameObjectLastSearcher<Axium::NearestGameObjectEntryInObjectRangeCheck>, GridTypeMapContainer > object_checker(checker);
         cell.Visit(p, object_checker, *GetMap(), *target, range);
     }
 
@@ -972,12 +972,12 @@ GameObject* GameObject::LookupFishingHoleAround(float range)
 {
     GameObject* ok = NULL;
 
-    CellCoord p(Trinity::ComputeCellCoord(GetPositionX(), GetPositionY()));
+    CellCoord p(Axium::ComputeCellCoord(GetPositionX(), GetPositionY()));
     Cell cell(p);
-    Trinity::NearestGameObjectFishingHole u_check(*this, range);
-    Trinity::GameObjectSearcher<Trinity::NearestGameObjectFishingHole> checker(this, ok, u_check);
+    Axium::NearestGameObjectFishingHole u_check(*this, range);
+    Axium::GameObjectSearcher<Axium::NearestGameObjectFishingHole> checker(this, ok, u_check);
 
-    TypeContainerVisitor<Trinity::GameObjectSearcher<Trinity::NearestGameObjectFishingHole>, GridTypeMapContainer > grid_object_checker(checker);
+    TypeContainerVisitor<Axium::GameObjectSearcher<Axium::NearestGameObjectFishingHole>, GridTypeMapContainer > grid_object_checker(checker);
     cell.Visit(p, grid_object_checker, *GetMap(), *this, range);
 
     return ok;
@@ -1705,7 +1705,7 @@ bool GameObject::IsInRange(float x, float y, float z, float radius) const
 
 Unit* GameObject::SelectNearestTrapableTarget(Unit* owner, float dist) const
 {
-    CellCoord p(Trinity::ComputeCellCoord(GetPositionX(), GetPositionY()));
+    CellCoord p(Axium::ComputeCellCoord(GetPositionX(), GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
@@ -1718,11 +1718,11 @@ Unit* GameObject::SelectNearestTrapableTarget(Unit* owner, float dist) const
 
     UnitList targets;
 
-    Trinity::NearestAttackableUnitInTrapRangeCheck u_check(this, owner, searchDistance);
-    Trinity::UnitListSearcher<Trinity::NearestAttackableUnitInTrapRangeCheck> searcher(this, targets, u_check);
+    Axium::NearestAttackableUnitInTrapRangeCheck u_check(this, owner, searchDistance);
+    Axium::UnitListSearcher<Axium::NearestAttackableUnitInTrapRangeCheck> searcher(this, targets, u_check);
 
-    TypeContainerVisitor<Trinity::UnitListSearcher<Trinity::NearestAttackableUnitInTrapRangeCheck>, WorldTypeMapContainer> world_unit_searcher(searcher);
-    TypeContainerVisitor<Trinity::UnitListSearcher<Trinity::NearestAttackableUnitInTrapRangeCheck>, GridTypeMapContainer> grid_unit_searcher(searcher);
+    TypeContainerVisitor<Axium::UnitListSearcher<Axium::NearestAttackableUnitInTrapRangeCheck>, WorldTypeMapContainer> world_unit_searcher(searcher);
+    TypeContainerVisitor<Axium::UnitListSearcher<Axium::NearestAttackableUnitInTrapRangeCheck>, GridTypeMapContainer> grid_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *GetMap(), *this, searchDistance);
     cell.Visit(p, grid_unit_searcher, *GetMap(), *this, searchDistance);

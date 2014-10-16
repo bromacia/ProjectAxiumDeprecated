@@ -15,8 +15,8 @@
 #include "RealmList.h"
 #include "RealmAcceptor.h"
 
-#ifndef _TRINITY_REALM_CONFIG
-#define _TRINITY_REALM_CONFIG  "authserver.conf"
+#ifndef _AXIUM_REALM_CONFIG
+#define _AXIUM_REALM_CONFIG  "authserver.conf"
 #endif
 
 bool StartDB();
@@ -28,7 +28,7 @@ LoginDatabaseWorkerPool LoginDatabase;                      // Accessor to the a
 LogDatabaseWorkerPool LogDatabase;                          // Accessor to the log server database (UNUSED, Causes linker errors without because of shared project)
 
 // Handle authserver's termination signals
-class AuthServerSignalHandler : public Trinity::SignalHandler
+class AuthServerSignalHandler : public Axium::SignalHandler
 {
 public:
     virtual void HandleSignal(int SigNum)
@@ -56,7 +56,7 @@ extern int main(int argc, char **argv)
 {
     sLog->SetLogDB(false);
     // Command line parsing to get the configuration file name
-    char const* cfg_file = _TRINITY_REALM_CONFIG;
+    char const* cfg_file = _AXIUM_REALM_CONFIG;
     int c = 1;
     while (c < argc)
     {

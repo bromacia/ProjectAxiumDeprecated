@@ -1,5 +1,5 @@
-#ifndef TRINITY_PASSIVEAI_H
-#define TRINITY_PASSIVEAI_H
+#ifndef AXIUM_PASSIVEAI_H
+#define AXIUM_PASSIVEAI_H
 
 #include "CreatureAI.h"
 //#include "CreatureAIImpl.h"

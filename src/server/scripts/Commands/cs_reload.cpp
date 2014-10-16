@@ -132,7 +132,7 @@ public:
             { "spell_target_position",         SEC_ADMINISTRATOR, true,  &HandleReloadSpellTargetPositionCommand,        "", NULL },
             { "spell_threats",                 SEC_ADMINISTRATOR, true,  &HandleReloadSpellThreatsCommand,               "", NULL },
             { "spell_group_stack_rules",       SEC_ADMINISTRATOR, true,  &HandleReloadSpellGroupStackRulesCommand,       "", NULL },
-            { "trinity_string",                SEC_ADMINISTRATOR, true,  &HandleReloadTrinityStringCommand,              "", NULL },
+            { "axium_string",                SEC_ADMINISTRATOR, true,  &HandleReloadAxiumStringCommand,              "", NULL },
             { "warden_action",                 SEC_ADMINISTRATOR, true,  &HandleReloadWardenActionCommand,               "", NULL },
             { "waypoint_scripts",              SEC_ADMINISTRATOR, true,  &HandleReloadWpScriptsCommand,                  "", NULL },
             { "waypoint_data",                 SEC_ADMINISTRATOR, true,  &HandleReloadWpCommand,                         "", NULL },
@@ -174,7 +174,7 @@ public:
         HandleReloadMailLevelRewardCommand(handler, "");
         HandleReloadCommandCommand(handler, "");
         HandleReloadReservedNameCommand(handler, "");
-        HandleReloadTrinityStringCommand(handler, "");
+        HandleReloadAxiumStringCommand(handler, "");
         HandleReloadGameTeleCommand(handler, "");
 
         HandleReloadVehicleAccessoryCommand(handler, "");
@@ -715,11 +715,11 @@ public:
         return true;
     }
 
-    static bool HandleReloadTrinityStringCommand(ChatHandler* handler, const char* /*args*/)
+    static bool HandleReloadAxiumStringCommand(ChatHandler* handler, const char* /*args*/)
     {
-        sLog->outString("Re-Loading trinity_string Table!");
-        sObjectMgr->LoadTrinityStrings();
-        handler->SendGlobalGMSysMessage("DB table `trinity_string` reloaded.");
+        sLog->outString("Re-Loading axium_string Table!");
+        sObjectMgr->LoadAxiumStrings();
+        handler->SendGlobalGMSysMessage("DB table `axium_string` reloaded.");
         return true;
     }
 

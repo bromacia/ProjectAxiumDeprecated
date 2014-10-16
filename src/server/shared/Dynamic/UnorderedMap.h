@@ -1,5 +1,5 @@
-#ifndef TRINITY_UNORDERED_MAP_H
-#define TRINITY_UNORDERED_MAP_H
+#ifndef AXIUM_UNORDERED_MAP_H
+#define AXIUM_UNORDERED_MAP_H
 
 #include "CompilerDefs.h"
 #include "Define.h"

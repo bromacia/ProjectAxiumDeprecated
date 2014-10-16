@@ -239,7 +239,7 @@ class ThreatManager
 
 //=================================================
 
-namespace Trinity
+namespace Axium
 {
     // Binary predicate for sorting HostileReferences based on threat value
     class ThreatOrderPred

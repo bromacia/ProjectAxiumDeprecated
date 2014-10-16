@@ -1,4 +1,4 @@
-/// \addtogroup Trinityd
+/// \addtogroup Axiumd
 /// @{
 /// \file
 

@@ -1,11 +1,11 @@
-#ifndef TRINITY_FORMULAS_H
-#define TRINITY_FORMULAS_H
+#ifndef AXIUM_FORMULAS_H
+#define AXIUM_FORMULAS_H
 
 #include "World.h"
 #include "SharedDefines.h"
 #include "ScriptMgr.h"
 
-namespace Trinity
+namespace Axium
 {
     namespace Honor
     {

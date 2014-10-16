@@ -1,5 +1,5 @@
-#ifndef TRINITY_UNITAI_H
-#define TRINITY_UNITAI_H
+#ifndef AXIUM_UNITAI_H
+#define AXIUM_UNITAI_H
 
 #include "Define.h"
 #include <list>
@@ -150,7 +150,7 @@ class UnitAI
                 return NULL;
 
             if (targetType == SELECT_TARGET_NEAREST || targetType == SELECT_TARGET_FARTHEST)
-                targetList.sort(Trinity::ObjectDistanceOrderPred(me));
+                targetList.sort(Axium::ObjectDistanceOrderPred(me));
 
             switch (targetType)
             {
@@ -199,13 +199,13 @@ class UnitAI
                 return;
 
             if (targetType == SELECT_TARGET_NEAREST || targetType == SELECT_TARGET_FARTHEST)
-                targetList.sort(Trinity::ObjectDistanceOrderPred(me));
+                targetList.sort(Axium::ObjectDistanceOrderPred(me));
 
             if (targetType == SELECT_TARGET_FARTHEST || targetType == SELECT_TARGET_BOTTOMAGGRO)
                 targetList.reverse();
 
             if (targetType == SELECT_TARGET_RANDOM)
-                Trinity::RandomResizeList(targetList, maxTargets);
+                Axium::RandomResizeList(targetList, maxTargets);
             else
                 targetList.resize(maxTargets);
         }

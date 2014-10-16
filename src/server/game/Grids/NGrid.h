@@ -1,5 +1,5 @@
-#ifndef TRINITY_NGRID_H
-#define TRINITY_NGRID_H
+#ifndef AXIUM_NGRID_H
+#define AXIUM_NGRID_H
 
 /** NGrid is nothing more than a wrapper of the Grid with an NxN cells
  */

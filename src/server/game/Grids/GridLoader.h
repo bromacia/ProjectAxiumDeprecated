@@ -1,5 +1,5 @@
-#ifndef TRINITY_GRIDLOADER_H
-#define TRINITY_GRIDLOADER_H
+#ifndef AXIUM_GRIDLOADER_H
+#define AXIUM_GRIDLOADER_H
 
 /**
   @class GridLoader

@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_GROUP_H
-#define TRINITYCORE_GROUP_H
+#ifndef AXIUMCORE_GROUP_H
+#define AXIUMCORE_GROUP_H
 
 #include "Battleground.h"
 #include "DBCEnums.h"

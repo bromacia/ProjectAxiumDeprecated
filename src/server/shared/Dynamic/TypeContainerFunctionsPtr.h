@@ -11,7 +11,7 @@
 #include "Utilities/TypeList.h"
 #include <map>
 
-namespace Trinity
+namespace Axium
 {
     /* ContainerMapList Helpers */
     // count functions

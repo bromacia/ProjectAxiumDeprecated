@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_CREATURE_H
-#define TRINITYCORE_CREATURE_H
+#ifndef AXIUMCORE_CREATURE_H
+#define AXIUMCORE_CREATURE_H
 
 #include "Common.h"
 #include "Unit.h"

@@ -1,5 +1,5 @@
-#ifndef TRINITYCORE_GUILD_H
-#define TRINITYCORE_GUILD_H
+#ifndef AXIUMCORE_GUILD_H
+#define AXIUMCORE_GUILD_H
 
 #include "World.h"
 #include "Item.h"

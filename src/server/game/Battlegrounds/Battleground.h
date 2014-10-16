@@ -551,7 +551,7 @@ class Battleground
         void DoorOpen(uint32 type, bool despawnAfterAnim = false);
         void DoorClose(uint32 type);
         //to be removed
-        const char* GetTrinityString(int32 entry);
+        const char* GetAxiumString(int32 entry);
 
         virtual bool HandlePlayerUnderMap(Player* /*player*/) { return false; }
 
